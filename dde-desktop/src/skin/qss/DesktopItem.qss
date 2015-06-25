@@ -1,4 +1,4 @@
-QFrame {
+QFrame#DesktopItem {
     background-color: rgba(0, 0, 0, 0);
     border: 2px solid rgba(255, 255, 255, 100);
     border-radius: 4px;
@@ -6,15 +6,15 @@ QFrame {
 }
 QLabel#Icon {
     background-color: rgba(0, 0, 0, 0);
-    border: 1px solid rgba(255, 255, 255, 255);
-    border-radius: 4px;
+/*    border: 1px solid rgba(255, 255, 255, 255);
+    border-radius: 4px;*/
     color:white
 }
 QLabel#Name {
     background-color: rgba(0, 0, 0, 0);
-    border: 2px solid rgba(255, 255, 255, 255);
+/*    border: 2px solid rgba(255, 255, 255, 255);
     border-radius: 4px;
-    color:white
+*/    color:white
 }
 
 QFrame#Border{

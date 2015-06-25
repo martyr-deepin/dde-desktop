@@ -7,10 +7,12 @@
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    _desktopIcon = "11";
-    _desktopName = "225454";
+    _desktopIcon = "";
+    _desktopName = "";
     _checked = false;
     _hover = false;
+
+    setObjectName("DesktopItem");
 
     initUI();
     initConnect();
