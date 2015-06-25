@@ -4,18 +4,10 @@
 #include "views/translucentframe.h"
 #include "views/griditem.h"
 #include "views/desktopitem.h"
-#include <QWidget>
-#include <QFrame>
-#include <QFocusEvent>
-#include <QMouseEvent>
-#include <QKeyEvent>
-#include <QDragEnterEvent>
-#include <QDragLeaveEvent>
-#include <QDragMoveEvent>
-#include <QDropEvent>
-#include <QPaintEvent>
-#include <QSharedPointer>
-#include <QPoint>
+
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
 typedef QSharedPointer<GridItem> GridItemPointer;
 typedef QList<GridItemPointer> GridList;
@@ -44,7 +36,6 @@ public:
 
     DesktopItemPointer getTopDesktopItemByPos(QPoint pos);
 
-    void unHoverAllItems();
     void unCheckAllItems();
     void unCheckCheckedItems();
     void checkRaiseItem(DesktopItemPointer& item);
@@ -67,7 +58,6 @@ protected:
 
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
-    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     QPoint pressedEventPos;

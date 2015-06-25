@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = dde-desktop
 TEMPLATE = app
 
+include(./widgets/widgets.pri)
 
 # build dir
 BuildDir =build_$$QT_VERSION

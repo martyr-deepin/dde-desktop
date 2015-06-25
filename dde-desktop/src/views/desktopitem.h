@@ -1,13 +1,11 @@
 #ifndef DESKTOPITEM_H
 #define DESKTOPITEM_H
 
-#include <QWidget>
-#include <QFrame>
-#include <QLabel>
-#include <QString>
+#include "widgets/elidelabel.h"
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
-
-//static const QString mstyle;
 
 class DesktopItem : public QFrame
 {
@@ -41,14 +39,17 @@ public slots:
     void setChecked(bool checked);
     void setHover(bool hover);
 
+protected:
+    void enterEvent(QEvent* event);
+    void leaveEvent(QEvent* event);
+
 private:
     QLabel* iconLabel;
-    QLabel* nameLabel;
+    ElidedLabel* nameLabel;
     QString _desktopIcon;
     QString _desktopName;
     bool _checked;
     bool _hover;
-
 };
 
 #endif // DESKTOPITEM_H

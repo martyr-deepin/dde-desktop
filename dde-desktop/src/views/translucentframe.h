@@ -1,8 +1,9 @@
 #ifndef TRANSLUCENTFRAME_H
 #define TRANSLUCENTFRAME_H
 
-#include <QFrame>
-#include <QWidget>
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
 class TranslucentFrame : public QFrame
 {

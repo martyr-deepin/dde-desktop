@@ -1,71 +1,17 @@
 #include "desktopitem.h"
+#include "widgets/elidelabel.h"
+#include "widgets/util.h"
 
-#include <QVBoxLayout>
-#include <QString>
-#include <QDebug>
-
-static QString mstyle = "\
-        QFrame {\
-            background-color: rgba(0, 0, 0, 0);\
-            border: 2px solid rgba(255, 255, 255, 100);\
-            border-radius: 4px;\
-            color:white\
-        }\
-        QLabel#Icon {\
-            background-color: rgba(0, 0, 0, 0);\
-            border: 1px solid rgba(255, 255, 255, 255);\
-            border-radius: 4px;\
-            color:white\
-        }\
-        QLabel#Name {\
-            background-color: rgba(0, 0, 0, 0);\
-            border: 2px solid rgba(255, 255, 255, 255);\
-            border-radius: 4px;\
-            color:white\
-        }\
-\
-        QFrame#Border{\
-            background-color: transparent;\
-            border: 2px solid rgba(0, 0, 0, 0);\
-            border-radius: 4px;\
-            color:white\
-        }\
-\
-        QFrame#Normal{\
-            background-color: rgba(0, 0, 0, 0);\
-            border: 2px solid rgba(0, 0, 0, 0);\
-            border-radius: 4px;\
-            color:white\
-        }\
-\
-        QFrame#Hover{\
-            background-color: rgba(0, 0, 0, 0.15);\
-            border: 2px solid rgba(255, 255, 255, 0.15);\
-            border-radius: 4px;\
-            color:white\
-        }\
-\
-        QFrame#Checked{\
-            background-color: rgba(0, 0, 0, 0.4);\
-            border: 2px solid rgba(255, 255, 255, 0.4);\
-            border-radius: 4px;\
-            color:white\
-        }\
-\
-        QLineEdit {\
-            background-color: rgba(0, 0, 0, 0);\
-            color:white;\
-            border: None\
-        }\
-";
 
 
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
     _desktopIcon = "11";
     _desktopName = "225454";
     _checked = false;
     _hover = false;
+
     initUI();
     initConnect();
 
@@ -90,7 +36,7 @@ DesktopItem::DesktopItem(QString icon, QString name, QWidget *parent):
 void DesktopItem::initUI(){
     iconLabel = new QLabel;
     iconLabel->setObjectName("Icon");
-    nameLabel = new QLabel;
+    nameLabel = new ElidedLabel;
     nameLabel->setObjectName("Name");
 
     iconLabel->resize(64, 64);
@@ -101,8 +47,6 @@ void DesktopItem::initUI(){
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     setLayout(mainLayout);
-
-    setStyleSheet(mstyle);
 }
 
 void DesktopItem::initConnect(){
@@ -119,7 +63,7 @@ QString DesktopItem::getDesktopName(){
 
 void DesktopItem::setDesktopName(QString name){
     _desktopName = name;
-    nameLabel->setText(name);
+    nameLabel->setFullText(name);
 }
 
 QString DesktopItem::getDesktopIcon(){
@@ -144,7 +88,7 @@ void DesktopItem::setHover(bool hover){
             setObjectName(QString("Normal"));
         }
         _hover = hover;
-        setStyleSheet(mstyle);
+        setStyleSheet(qApp->styleSheet());
     }
 
 }
@@ -162,12 +106,21 @@ void DesktopItem::setChecked(bool checked){
             setObjectName(QString("Normal"));
         }
         _checked = checked;
-        setStyleSheet(mstyle);
+        setStyleSheet(qApp->styleSheet());
      }
+}
+
+
+void DesktopItem::enterEvent(QEvent *event){
+    emit hoverChanged(true);
+}
+
+void DesktopItem::leaveEvent(QEvent *event){
+    emit hoverChanged(false);
 }
 
 DesktopItem::~DesktopItem()
 {
-
+    qDebug() << "Desktop Item delete";
 }
 

@@ -1,22 +1,10 @@
 #include "views/desktopframe.h"
-
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QPainter>
-#include <QEvent>
-#include <QHoverEvent>
-#include <QDrag>
-#include <QByteArray>
-#include <QDataStream>
-#include <QMimeData>
-#include <QIODevice>
-#include <QCursor>
-#include <QDebug>
+#include "widgets/util.h"
 
 DesktopFrame::DesktopFrame(QWidget *parent)
     : TranslucentFrame(parent)
 {
-    setAttribute(Qt::WA_Hover);
+
     setAcceptDrops(true);
 
     gridItemWidth = 110;
@@ -30,7 +18,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     initGrid();
     initDesktopItems();
 
-    installEventFilter(this);
+    qApp->setStyleSheet(getQssFromFile(":/skin/qss/DesktopItem.qss"));
 }
 
 void DesktopFrame::initGrid(){
@@ -58,8 +46,8 @@ void DesktopFrame::initGrid(){
 }
 
 void DesktopFrame::initDesktopItems(){
-    for(int i=0; i<5; i++){
-        for (int j=0; j<5; j++){
+    for(int i=0; i<12; i++){
+        for (int j=0; j<7; j++){
             DesktopItemPointer  desktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", "11145454545544554144545", this);
             desktopItem->resize(110, 110);
             m_desktopItems.append(desktopItem);
@@ -91,12 +79,6 @@ void DesktopFrame::checkDesktopItemsByRect(QRect rect){
         }else{
             emit pItem->checkedChanged(false);
         }
-    }
-}
-
-void DesktopFrame::unHoverAllItems(){
-    foreach (DesktopItemPointer pItem, m_desktopItems) {
-        emit pItem->hoverChanged(false);
     }
 }
 
@@ -194,11 +176,13 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
     pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(pressedEventPos);
+    m_checkedDesktopItems = getCheckedDesktopItems();
+
     if (event->button() == Qt::LeftButton){
-        m_checkedDesktopItems = getCheckedDesktopItems();
+
         if (pTopDesktopItem.isNull()){
             setFocus();
-            unCheckAllItems();
+            unCheckCheckedItems();
         }else{
             if (!pTopDesktopItem->isChecked()){
                 checkRaiseItem(pTopDesktopItem);
@@ -214,7 +198,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
         }
 
     }else if (event->button() == Qt::RightButton){
-        unCheckAllItems();
+        unCheckCheckedItems();
         if (!pTopDesktopItem.isNull()){
             checkRaiseItem(pTopDesktopItem);
         }
@@ -224,11 +208,10 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
 }
 
 void DesktopFrame::startDrag(){
-
-    QByteArray* itemData = new QByteArray;
-    QDataStream dataStream(itemData, QIODevice::WriteOnly);
+    QByteArray itemData;
+    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
     QMimeData* mimeData = new QMimeData;
-    mimeData->setData("application/x-dnditemdata", *itemData);
+    mimeData->setData("application/x-dnditemdata", itemData);
 
     QPixmap dragPixmap = getCheckedPixmap();
 
@@ -253,12 +236,11 @@ void DesktopFrame::startDrag(){
             checkRaiseItem(m_TopDeskItem);
         }
     }
-
 }
 
 
 QPixmap DesktopFrame::getCheckedPixmap(){
-    TranslucentFrame* F=new TranslucentFrame(this);
+    TranslucentFrame* F = new TranslucentFrame(this);
     F->resize(size());
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
         DesktopItem* item = new DesktopItem(pItem->getDesktopIcon(),
@@ -269,7 +251,6 @@ QPixmap DesktopFrame::getCheckedPixmap(){
     QPixmap ret = F->grab();
     F->close();
     return ret;
-
 }
 
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
@@ -318,32 +299,6 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
         close();
     }
     TranslucentFrame::keyPressEvent(event);
-}
-
-bool DesktopFrame::eventFilter(QObject *obj, QEvent *event){
-    if (obj == this && event->type() == QEvent::HoverMove){
-        QHoverEvent* realEvent = static_cast<QHoverEvent*>(event);
-        DesktopItemPointer pDesktopItem = getTopDesktopItemByPos(realEvent->pos());
-        if ( !pDesktopItem.isNull() && pDesktopItem->isChecked()){
-            return true;
-        }else{
-            if (!pDesktopItem.isNull()){
-                foreach (DesktopItemPointer pItem, m_desktopItems) {
-                     if (pItem == pDesktopItem){
-                         emit pItem->hoverChanged(true);
-                     }else{
-                         emit pItem->hoverChanged(false);
-                     }
-                }
-            }else{
-                unHoverAllItems();
-            }
-            return true;
-        }
-
-    }
-
-    return QFrame::eventFilter(obj, event);
 }
 
 DesktopFrame::~DesktopFrame()

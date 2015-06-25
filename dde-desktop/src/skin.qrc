@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>skin/images/fvoice.png</file>
         <file>skin/images/QFramer.png</file>
+        <file>skin/qss/DesktopItem.qss</file>
     </qresource>
 </RCC>

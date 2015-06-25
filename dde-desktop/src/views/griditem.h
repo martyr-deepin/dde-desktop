@@ -1,8 +1,9 @@
 #ifndef GRIDITEM_H
 #define GRIDITEM_H
 
-#include <QObject>
-#include <QRect>
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
 class GridItem : public QObject
 {
