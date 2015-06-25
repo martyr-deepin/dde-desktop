@@ -46,10 +46,10 @@ protected:
 private:
     QLabel* iconLabel;
     ElidedLabel* nameLabel;
-    QString _desktopIcon;
-    QString _desktopName;
-    bool _checked;
-    bool _hover;
+    QString m_desktopIcon;
+    QString m_desktopName;
+    bool m_checked;
+    bool m_hover;
 };
 
 #endif // DESKTOPITEM_H

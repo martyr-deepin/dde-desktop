@@ -119,15 +119,15 @@ QList<DesktopItemPointer> DesktopFrame::getCheckedDesktopItems(){
 }
 
 void DesktopFrame::focusInEvent(QFocusEvent *event){
-    isSelectable = true;
-    selectRect = QRect(0, 0, 0, 0);
+    m_isSelectable = true;
+    m_selectRect = QRect(0, 0, 0, 0);
     TranslucentFrame::focusInEvent(event);
 }
 
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
-    isSelectable = false;
-    selectRect = QRect(0, 0, 0, 0);
+    m_isSelectable = false;
+    m_selectRect = QRect(0, 0, 0, 0);
     TranslucentFrame::focusOutEvent(event);
 }
 
@@ -174,8 +174,8 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 
 
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
-    pressedEventPos = event->pos();
-    DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(pressedEventPos);
+    m_pressedEventPos = event->pos();
+    DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
     m_checkedDesktopItems = getCheckedDesktopItems();
 
     if (event->button() == Qt::LeftButton){
@@ -223,7 +223,7 @@ void DesktopFrame::startDrag(){
         Qt::DropAction action = drag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
             foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-                QPoint newPos = pItem->pos() + QCursor::pos() - pressedEventPos;
+                QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
                 pItem->move(newPos);
                 m_desktopItems.removeOne(pItem);
             }
@@ -247,7 +247,9 @@ QPixmap DesktopFrame::getCheckedPixmap(){
                                        pItem->getDesktopName(), F);
         item->resize(pItem->size());
         item->move(pItem->pos());
+        item->setObjectName("DragChecked");
     }
+    F->setStyleSheet(qApp->styleSheet());
     QPixmap ret = F->grab();
     F->close();
     return ret;
@@ -262,13 +264,13 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
 
 void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
 
-    int x = pressedEventPos.x();
-    int y = pressedEventPos.y();
+    int x = m_pressedEventPos.x();
+    int y = m_pressedEventPos.y();
     int width = event->pos().x() - x;
     int height = event->pos().y() -y;
-    selectRect = QRect(x, y , width, height);
+    m_selectRect = QRect(x, y , width, height);
     update();
-    checkDesktopItemsByRect(selectRect);
+    checkDesktopItemsByRect(m_selectRect);
     TranslucentFrame::mouseMoveEvent(event);
 }
 
@@ -286,9 +288,9 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
             painter.fillRect(pGridItem->getRect(), color);
         }
     }
-    if (isSelectable){
+    if (m_isSelectable){
         QColor color(0, 0, 0, 90);
-        painter.fillRect(selectRect, color);
+        painter.fillRect(m_selectRect, color);
     }
     TranslucentFrame::paintEvent(event);
 }

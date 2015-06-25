@@ -24,9 +24,9 @@ signals:
 public slots:
 
 private:
-    int _column;
-    int _row;
-    QRect _rect;
+    int m_column;
+    int m_row;
+    QRect m_rect;
 };
 
 #endif // GRIDITEM_H

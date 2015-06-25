@@ -2,33 +2,33 @@
 
 GridItem::GridItem(int row, int column, QRect rect, QObject *parent) : QObject(parent)
 {
-    _row = row;
-    _column = column;
-    _rect = rect;
+    m_row = row;
+    m_column = column;
+    m_rect = rect;
 }
 
 int GridItem::getRow(){
-    return _row;
+    return m_row;
 }
 
 void GridItem::setRow(const int row){
-    _row = row;
+    m_row = row;
 }
 
 int GridItem::getColumn(){
-    return _column;
+    return m_column;
 }
 
 void GridItem::setColumn(const int column){
-    _column = column;
+    m_column = column;
 }
 
 QRect GridItem::getRect(){
-    return _rect;
+    return m_rect;
 }
 
 void GridItem::setRect(const QRect rect){
-    _rect = rect;
+    m_rect = rect;
 }
 
 GridItem::~GridItem()

@@ -60,9 +60,9 @@ protected:
     void paintEvent(QPaintEvent* event);
 
 private:
-    QPoint pressedEventPos;
-    QRect selectRect;
-    bool isSelectable;
+    QPoint m_pressedEventPos;
+    QRect m_selectRect;
+    bool m_isSelectable;
     DesktopItemPointer m_TopDeskItem;
     QList<GridListPointer> m_gridItems;
     QList<DesktopItemPointer> m_desktopItems;

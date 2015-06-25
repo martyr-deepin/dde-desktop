@@ -7,32 +7,32 @@
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    _desktopIcon = "";
-    _desktopName = "";
-    _checked = false;
-    _hover = false;
+    m_desktopIcon = "";
+    m_desktopName = "";
+    m_checked = false;
+    m_hover = false;
 
     setObjectName("DesktopItem");
 
     initUI();
     initConnect();
 
-    emit desktopIconChanged(_desktopIcon);
-    emit desktopNameChanged(_desktopName);
+    emit desktopIconChanged(m_desktopIcon);
+    emit desktopNameChanged(m_desktopName);
 }
 
 DesktopItem::DesktopItem(QString icon, QString name, QWidget *parent):
     QFrame(parent)
 {
-    _desktopIcon = icon;
-    _desktopName = name;
-    _checked = false;
-    _hover = false;
+    m_desktopIcon = icon;
+    m_desktopName = name;
+    m_checked = false;
+    m_hover = false;
     initUI();
     initConnect();
 
-    emit desktopIconChanged(_desktopIcon);
-    emit desktopNameChanged(_desktopName);
+    emit desktopIconChanged(m_desktopIcon);
+    emit desktopNameChanged(m_desktopName);
 }
 
 void DesktopItem::initUI(){
@@ -60,54 +60,54 @@ void DesktopItem::initConnect(){
 
 
 QString DesktopItem::getDesktopName(){
-    return _desktopName;
+    return m_desktopName;
 }
 
 void DesktopItem::setDesktopName(QString name){
-    _desktopName = name;
+    m_desktopName = name;
     nameLabel->setFullText(name);
 }
 
 QString DesktopItem::getDesktopIcon(){
-    return _desktopIcon;
+    return m_desktopIcon;
 }
 
 void DesktopItem::setDesktopIcon(QString icon){
-    _desktopIcon = icon;
+    m_desktopIcon = icon;
     iconLabel->setPixmap(QPixmap(icon).scaled(iconLabel->size()));
 }
 
 bool DesktopItem::isHover(){
-    return _hover;
+    return m_hover;
 }
 
 
 void DesktopItem::setHover(bool hover){
-    if (_hover != hover && !_checked){
+    if (m_hover != hover && !m_checked){
         if (hover){
             setObjectName(QString("Hover"));
         }else{
             setObjectName(QString("Normal"));
         }
-        _hover = hover;
+        m_hover = hover;
         setStyleSheet(qApp->styleSheet());
     }
 
 }
 
 bool DesktopItem::isChecked(){
-    return _checked;
+    return m_checked;
 }
 
 
 void DesktopItem::setChecked(bool checked){
-     if (_checked != checked){
+     if (m_checked != checked){
         if (checked){
             setObjectName(QString("Checked"));
         }else{
             setObjectName(QString("Normal"));
         }
-        _checked = checked;
+        m_checked = checked;
         setStyleSheet(qApp->styleSheet());
      }
 }
@@ -115,14 +115,16 @@ void DesktopItem::setChecked(bool checked){
 
 void DesktopItem::enterEvent(QEvent *event){
     emit hoverChanged(true);
+    QFrame::enterEvent(event);
 }
 
 void DesktopItem::leaveEvent(QEvent *event){
     emit hoverChanged(false);
+    QFrame::leaveEvent(event);
 }
 
 DesktopItem::~DesktopItem()
 {
-    qDebug() << "Desktop Item delete";
+//    qDebug() << "Desktop Item delete";
 }
 
