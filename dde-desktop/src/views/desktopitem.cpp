@@ -125,6 +125,6 @@ void DesktopItem::leaveEvent(QEvent *event){
 
 DesktopItem::~DesktopItem()
 {
-//    qDebug() << "Desktop Item delete";
+    qDebug() << "Desktop Item delete";
 }
 

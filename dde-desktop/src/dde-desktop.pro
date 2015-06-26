@@ -37,13 +37,15 @@ SOURCES += main.cpp \
     views/desktopframe.cpp \
     views/griditem.cpp \
     views/translucentframe.cpp \
-    views/desktopitem.cpp
+    views/desktopitem.cpp \
+    views/gridmanager.cpp
 
 HEADERS  += \
     views/desktopframe.h \
     views/griditem.h \
     views/translucentframe.h \
-    views/desktopitem.h
+    views/desktopitem.h \
+    views/gridmanager.h
 
 
 

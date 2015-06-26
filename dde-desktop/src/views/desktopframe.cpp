@@ -7,14 +7,6 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 
     setAcceptDrops(true);
 
-    gridItemWidth = 110;
-    xGridSpacing = 10;
-    yGridSpacing = 10;
-    xGridStartPos = 10;
-    yGridStartPos = 10;
-    columnCount = 0;
-    rowCount = 0;
-
     initGrid();
     initDesktopItems();
 
@@ -22,34 +14,19 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 }
 
 void DesktopFrame::initGrid(){
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int _desktopWidth = availableGeometry.width();
-    int _desktopHeight = availableGeometry.height();
-
-    columnCount = _desktopWidth / (gridItemWidth + xGridSpacing);
-    rowCount = _desktopHeight / (gridItemWidth + yGridSpacing);
-
-    int x=xGridStartPos;
-    int y=yGridStartPos;
-    for (int i=0; i< columnCount; i++){
-        GridListPointer _gridlist =GridListPointer::create();
-        m_gridItems.append(_gridlist);
-        for (int j=0; j< rowCount; j++){
-            QRect rect = QRect(x, y, gridItemWidth, gridItemWidth);
-            GridItemPointer item = GridItemPointer::create(j, i, rect);
-            _gridlist->append(item);
-            y = (gridItemWidth + yGridSpacing) * (j + 1) + yGridStartPos;
-        }
-        x = (gridItemWidth + xGridSpacing) * (i + 1) + xGridStartPos;
-        y = yGridStartPos;
-    }
+    m_gridManager = GridManager::getInstance();
+    m_gridItems = m_gridManager->getMiddleItems();
 }
 
 void DesktopFrame::initDesktopItems(){
-    for(int i=0; i<12; i++){
-        for (int j=0; j<7; j++){
-            DesktopItemPointer  desktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", "11145454545544554144545", this);
-            desktopItem->resize(110, 110);
+    int width = m_gridManager->getItemWidth();
+    int height = m_gridManager->getItemHeight();
+    int column = m_gridManager->getColumnCount();
+    int row = m_gridManager->getRowCount();
+    for(int i=0; i<column; i++){
+        for (int j=0; j< row; j++){
+            DesktopItemPointer  desktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", "1114\n54545455\n44554144545", this);
+            desktopItem->resize(width, height);
             m_desktopItems.append(desktopItem);
 
             GridItemPointer gridItem = m_gridItems.at(i)->at(j);
@@ -213,12 +190,12 @@ void DesktopFrame::startDrag(){
     QMimeData* mimeData = new QMimeData;
     mimeData->setData("application/x-dnditemdata", itemData);
 
-    QPixmap dragPixmap = getCheckedPixmap();
+//    QPixmap dragPixmap = getCheckedPixmap();
 
     if (m_checkedDesktopItems.length() > 0){
         QDrag* drag = new QDrag(this);
         drag->setMimeData(mimeData);
-        drag->setPixmap(dragPixmap);
+//        drag->setPixmap(dragPixmap);
         drag->setHotSpot(mapFromGlobal(QCursor::pos()));
         Qt::DropAction action = drag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
@@ -252,6 +229,7 @@ QPixmap DesktopFrame::getCheckedPixmap(){
     F->setStyleSheet(qApp->styleSheet());
     QPixmap ret = F->grab();
     F->close();
+    ret.save("1.png");
     return ret;
 }
 
@@ -276,6 +254,9 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
 
 void DesktopFrame::paintEvent(QPaintEvent *event){
     Q_UNUSED(event)
+
+    int rowCount = m_gridManager->getRowCount();
+    int columnCount = m_gridManager->getColumnCount();
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);

@@ -4,14 +4,13 @@
 #include "views/translucentframe.h"
 #include "views/griditem.h"
 #include "views/desktopitem.h"
+#include "gridmanager.h"
 
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
 
-typedef QSharedPointer<GridItem> GridItemPointer;
-typedef QList<GridItemPointer> GridList;
-typedef QSharedPointer<GridList> GridListPointer;
+
 
 typedef QSharedPointer<DesktopItem> DesktopItemPointer;
 
@@ -22,14 +21,6 @@ class DesktopFrame : public TranslucentFrame
 public:
     DesktopFrame(QWidget *parent = 0);
     ~DesktopFrame();
-
-    int gridItemWidth;
-    int xGridSpacing;
-    int yGridSpacing;
-    int xGridStartPos;
-    int yGridStartPos;
-    int columnCount;
-    int rowCount;
 
     void initGrid();
     void initDesktopItems();
@@ -63,8 +54,11 @@ private:
     QPoint m_pressedEventPos;
     QRect m_selectRect;
     bool m_isSelectable;
+
+    GridManager* m_gridManager=NULL;
+    DoubleGridItemPointerList m_gridItems;
+
     DesktopItemPointer m_TopDeskItem;
-    QList<GridListPointer> m_gridItems;
     QList<DesktopItemPointer> m_desktopItems;
     QList<DesktopItemPointer> m_checkedDesktopItems;
 };
