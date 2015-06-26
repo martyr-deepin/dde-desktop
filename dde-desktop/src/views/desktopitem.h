@@ -6,7 +6,6 @@
 #include <QtGui>
 #include <QtWidgets>
 
-
 class DesktopItem : public QFrame
 {
     Q_OBJECT

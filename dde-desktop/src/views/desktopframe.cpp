@@ -6,7 +6,8 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 {
 
     setAcceptDrops(true);
-
+    m_isOrdered = true;
+    m_gridManager = GridManager::getInstance();
     initGrid();
     initDesktopItems();
 
@@ -14,15 +15,15 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 }
 
 void DesktopFrame::initGrid(){
-    m_gridManager = GridManager::getInstance();
-    m_gridItems = m_gridManager->getMiddleItems();
+    setGridByType(SizeType::Middle);
 }
 
 void DesktopFrame::initDesktopItems(){
     int width = m_gridManager->getItemWidth();
     int height = m_gridManager->getItemHeight();
-    int column = m_gridManager->getColumnCount();
-    int row = m_gridManager->getRowCount();
+    int column = m_gridManager->getColumnCount() / 2;
+    int row = m_gridManager->getRowCount() / 2;
+
     for(int i=0; i<column; i++){
         for (int j=0; j< row; j++){
             DesktopItemPointer  desktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", "1114\n54545455\n44554144545", this);
@@ -33,11 +34,17 @@ void DesktopFrame::initDesktopItems(){
             if (!gridItem.isNull()){
                 QRect rect = gridItem->getRect();
                 desktopItem->move(rect.topLeft());
+                gridItem->setDesktopItem(desktopItem);
             }
         }
     }
 }
 
+void DesktopFrame::setGridByType(SizeType type){
+    m_gridItems = m_gridManager->getItemsByType(type);
+    m_mapItems = m_gridManager->getMapItems();
+    update();
+}
 
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
     for (int i=m_desktopItems.count() - 1; i >= 0; i--){
@@ -190,23 +197,37 @@ void DesktopFrame::startDrag(){
     QMimeData* mimeData = new QMimeData;
     mimeData->setData("application/x-dnditemdata", itemData);
 
-//    QPixmap dragPixmap = getCheckedPixmap();
+    QPixmap dragPixmap = getCheckedPixmap();
 
     if (m_checkedDesktopItems.length() > 0){
         QDrag* drag = new QDrag(this);
         drag->setMimeData(mimeData);
-//        drag->setPixmap(dragPixmap);
-        drag->setHotSpot(mapFromGlobal(QCursor::pos()));
+        drag->setPixmap(dragPixmap);
+        drag->setHotSpot(QCursor::pos());
         Qt::DropAction action = drag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
-            foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-                QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
-                pItem->move(newPos);
-                m_desktopItems.removeOne(pItem);
-            }
-            m_desktopItems.append(m_checkedDesktopItems);
-            foreach (DesktopItemPointer pItem, m_desktopItems) {
-                pItem->raise();
+            if (!m_isOrdered){
+                foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+                    QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
+                    pItem->move(newPos);
+                    m_desktopItems.removeOne(pItem);
+                }
+                m_desktopItems.append(m_checkedDesktopItems);
+                foreach (DesktopItemPointer pItem, m_desktopItems) {
+                    pItem->raise();
+                }
+            }else{
+                foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+                    QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
+
+                    GridItemPointer item = m_gridManager->getProperItemByPos(newPos);
+
+                    if (!item.isNull()){
+                         QPoint pos = item->getPos();
+                         pItem->move(pos);
+                         item->setDesktopItem(pItem);
+                    }
+                }
             }
         }else{
             unCheckCheckedItems();
@@ -229,7 +250,6 @@ QPixmap DesktopFrame::getCheckedPixmap(){
     F->setStyleSheet(qApp->styleSheet());
     QPixmap ret = F->grab();
     F->close();
-    ret.save("1.png");
     return ret;
 }
 
@@ -254,17 +274,19 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
 
 void DesktopFrame::paintEvent(QPaintEvent *event){
     Q_UNUSED(event)
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
 
     int rowCount = m_gridManager->getRowCount();
     int columnCount = m_gridManager->getColumnCount();
-
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
     foreach (GridListPointer gridlist, m_gridItems) {
         foreach (GridItemPointer pGridItem, *gridlist) {
             int row = pGridItem->getRow();
             int column = pGridItem->getColumn();
             int _c = 255 * (row + column * rowCount) / (columnCount * rowCount);
+            if (_c >= 255){
+                _c = 255;
+            }
             QColor color(_c, _c, _c, 100);
             painter.fillRect(pGridItem->getRect(), color);
         }
@@ -280,7 +302,16 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
 void DesktopFrame::keyPressEvent(QKeyEvent *event){
     if (event->key() == Qt::Key_Escape){
         close();
+    }else if (event->key() == Qt::Key_1){
+        setGridByType(SizeType::Small);
+    }else if (event->key() == Qt::Key_2){
+        setGridByType(SizeType::Middle);
+    }else if (event->key() == Qt::Key_3){
+        setGridByType(SizeType::Large);
+    }else if (event->key() == Qt::Key_F1){
+        m_isOrdered = !m_isOrdered;
     }
+
     TranslucentFrame::keyPressEvent(event);
 }
 

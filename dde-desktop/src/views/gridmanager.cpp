@@ -33,12 +33,17 @@ int GridManager::getItemHeight(){
     return m_itemHeight;
 }
 
+QMap<QString, GridItemPointer> GridManager::getMapItems(){
+    return m_mapItems;
+}
+
 DoubleGridItemPointerList GridManager::generateItems(const int width, const int height,
                                                  const int itemWidth, const int itemHeight,
                                                  const int xMinimumSpacing, const int yMinimumSpacing,
                                                  const int leftMargin, const int topMargin,
                                                  const int rightMargin, const int bottomMargin){
-//    m_gridItems.clear();
+    m_gridItems.clear();
+    m_mapItems.clear();
     m_width = width;
     m_height = height;
     m_itemWidth = itemWidth;
@@ -67,12 +72,31 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
             y = m_itemHeight * j + m_ySpacing * j  + m_topMargin;
             QRect rect = QRect(x, y, m_itemWidth, m_itemHeight);
             GridItemPointer item = GridItemPointer::create(j, i, rect);
+            QString key = QString("%1-%2").arg(QString::number(x), QString::number(y));
+            m_mapItems.insert(key, item);
             _gridlist->append(item);
         }
     }
-
-
     return m_gridItems;
+}
+
+GridItemPointer GridManager::getProperItemByPos(QPoint pos){
+    int x = pos.x();
+    int y = pos.y();
+
+    if (x > m_leftMargin && x < m_width - m_rightMargin && y > m_topMargin && y < m_height - m_bottomMargin){
+        int row = y / (m_itemHeight + m_ySpacing);
+        int column = x / (m_itemWidth + m_xSpacing);
+
+        if (row <= m_rowCount && column <= m_columnCount){
+            GridItemPointer item = m_gridItems.at(column)->at(row);
+            qDebug() << row << column << item.data()->getRow() << item->hasDesktopItem();
+            if (!item->hasDesktopItem()){
+                return item;
+            }
+        }
+    }
+    return GridItemPointer();
 }
 
 DoubleGridItemPointerList GridManager::getItemsByType(SizeType type){

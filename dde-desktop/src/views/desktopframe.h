@@ -10,10 +10,6 @@
 #include <QtGui>
 #include <QtWidgets>
 
-
-
-typedef QSharedPointer<DesktopItem> DesktopItemPointer;
-
 class DesktopFrame : public TranslucentFrame
 {
     Q_OBJECT
@@ -24,6 +20,8 @@ public:
 
     void initGrid();
     void initDesktopItems();
+
+    void setGridByType(SizeType type);
 
     DesktopItemPointer getTopDesktopItemByPos(QPoint pos);
 
@@ -54,13 +52,16 @@ private:
     QPoint m_pressedEventPos;
     QRect m_selectRect;
     bool m_isSelectable;
+    bool m_isOrdered;
 
     GridManager* m_gridManager=NULL;
     DoubleGridItemPointerList m_gridItems;
+    QMap<QString, GridItemPointer> m_mapItems;
 
     DesktopItemPointer m_TopDeskItem;
     QList<DesktopItemPointer> m_desktopItems;
     QList<DesktopItemPointer> m_checkedDesktopItems;
+
 };
 
 #endif // DESKTOPFRAME__H

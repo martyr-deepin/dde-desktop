@@ -4,6 +4,9 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
+#include "desktopitem.h"
+
+typedef QSharedPointer<DesktopItem> DesktopItemPointer;
 
 class GridItem : public QObject
 {
@@ -18,15 +21,24 @@ public:
     void setRow(const int row);
     QRect getRect();
     void setRect(const QRect rect);
+    QPoint getPos();
+
+    DesktopItemPointer getDesktopItem();
+    bool hasDesktopItem();
 
 signals:
 
 public slots:
+    void setDesktopItem(DesktopItemPointer desktopItem);
+    void clearDesktopItem();
 
 private:
     int m_column;
     int m_row;
     QRect m_rect;
+    QPoint m_pos;
+    bool m_isDesktopItemIn;
+    DesktopItemPointer m_desktopItem;
 };
 
 #endif // GRIDITEM_H

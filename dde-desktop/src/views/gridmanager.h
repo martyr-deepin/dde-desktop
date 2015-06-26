@@ -11,20 +11,20 @@ typedef QList<GridItemPointer> GridItemPointerList;
 typedef QSharedPointer<GridItemPointerList> GridListPointer;
 typedef QList<GridListPointer> DoubleGridItemPointerList;
 
+enum SizeType {
+    Small,
+    Middle,
+    Large
+};
+
 class GridManager : public QObject
 {
     Q_OBJECT
-
 
 public:
     explicit GridManager(QObject *parent = 0);
     ~GridManager();
 
-    enum SizeType {
-        Small,
-        Middle,
-        Large
-    };
     static GridManager* instance;
     static GridManager* getInstance();
 
@@ -32,6 +32,8 @@ public:
     int getRowCount();
     int getItemWidth();
     int getItemHeight();
+    GridItemPointer getProperItemByPos(QPoint pos);
+    QMap<QString, GridItemPointer> getMapItems();
     DoubleGridItemPointerList getItemsByType(SizeType type);
     DoubleGridItemPointerList getSmallItems();
     DoubleGridItemPointerList getMiddleItems();
@@ -63,6 +65,7 @@ private:
     int m_columnCount = 0;
     int m_rowCount = 0;
     DoubleGridItemPointerList m_gridItems;
+    QMap<QString, GridItemPointer> m_mapItems;
 };
 
 #endif // GRIDMANAGER_H
