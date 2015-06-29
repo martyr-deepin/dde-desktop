@@ -99,35 +99,92 @@ GridItemPointer GridManager::getProperItemByPos(QPoint pos){
         int column = x / (m_itemWidth + m_xSpacing);
 
         if (row <= m_rowCount && column <= m_columnCount){
-            GridItemPointer item = m_gridItems.at(column)->at(row);
+//            GridItemPointer item = m_gridItems.at(column)->at(row);
 //            qDebug() << row << column << item->hasDesktopItem();
 
+            GridItemPointer neareastItem  = getNeareastItem(row, column, pos);
+            return neareastItem;
 
-
-            if (!item->hasDesktopItem()){
-                return item;
-            }
         }
     }
     return GridItemPointer();
 }
 
 GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
-    int level = 2;
+    QMap<QString, GridItemPointer> _items;
+    int startRow = row;
+    int startColumn = column;
+    int count = 2;
+
+    int _column = 0;
+    int _row = 0;
     while (true) {
-        GridItemPointerList items;
-        int start = 0;
-        int end = level;
-        for (int i=start; i < end; i++){
-            int _row = row + i;
-            int _column = row + i;
-            if (_row <= m_rowCount && _column <= m_columnCount){
-                GridItemPointer item = m_gridItems.at(column)->at(row);
-                if (!item->hasDesktopItem()){
-                    items.append(item);
+        _items.clear();
+
+        _column = startColumn;
+        if (_column >= 0){
+            for (int i=0; i < count; i++){
+                int _row = startRow + i;
+                if (_row <= m_rowCount && _column <= m_columnCount && _row >=0){
+                    GridItemPointer item = m_gridItems.at(_column)->at(_row);
+                    if (!item->hasDesktopItem()){
+                        _items.insert(item->key(), item);
+                    }
                 }
             }
         }
+
+        _row = startRow;
+        if (_row >= 0){
+            for (int i=0; i < count; i++){
+                if (i> 0 && i< count - 1){
+                    int _column = startColumn + i;
+                    if (_row <= m_rowCount && _column <= m_columnCount && _column >=0){
+                        GridItemPointer item = m_gridItems.at(_column)->at(_row);
+                        if (!item->hasDesktopItem()){
+                            _items.insert(item->key(), item);
+                        }
+                    }
+                 }
+            }
+        }
+
+        _column = startColumn + count - 1;
+        if (_column >= 0){
+            for (int i=0; i < count; i++){
+                int _row = startRow + i;
+                if (_row <= m_rowCount && _column <= m_columnCount && _row >=0){
+                    GridItemPointer item = m_gridItems.at(_column)->at(_row);
+                    if (!item->hasDesktopItem()){
+                        _items.insert(item->key(), item);
+                    }
+                }
+            }
+        }
+
+        _row = startRow + count - 1;
+        if(_row >= 0){
+            for (int i=0; i < count; i++){
+                if (i> 0 && i< count - 1){
+                    int _column = startColumn + i;
+                    if (_row <= m_rowCount && _column <= m_columnCount && _column >=0){
+                        GridItemPointer item = m_gridItems.at(_column)->at(_row);
+                        if (!item->hasDesktopItem()){
+                            _items.insert(item->key(), item);
+                        }
+                    }
+                 }
+            }
+        }
+
+        if (_items.count() > 0){
+            qDebug() << _items.count() << count;
+            return _items.values()[0];
+        }
+
+        startRow -= 1;
+        startColumn -= 1;
+        count = 2 * count;
     }
 }
 

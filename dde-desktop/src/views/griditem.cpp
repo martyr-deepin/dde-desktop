@@ -47,6 +47,10 @@ void GridItem::setDesktopItem(bool flag){
     m_isDesktopItemIn = flag;
 }
 
+QString GridItem::key(){
+    return QString("%1-%2").arg(QString::number(m_pos.x()), QString::number(m_pos.y()));
+}
+
 GridItem::~GridItem()
 {
 

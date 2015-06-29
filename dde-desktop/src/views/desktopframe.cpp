@@ -11,6 +11,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     initGrid();
     initDesktopItems();
 
+    setGeometry(qApp->desktop()->availableGeometry());
     qApp->setStyleSheet(getQssFromFile(":/skin/qss/DesktopItem.qss"));
 }
 

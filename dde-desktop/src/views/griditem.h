@@ -25,6 +25,7 @@ public:
     QRect getRect();
     void setRect(const QRect rect);
     QPoint getPos();
+    QString key();
 
     bool hasDesktopItem();
 
