@@ -98,15 +98,6 @@ bool DesktopItem::isChecked(){
     return m_checked;
 }
 
-
-DesktopItemType DesktopItem::getType(){
-    return m_type;
-}
-
-void DesktopItem::setType(DesktopItemType type){
-    m_type = type;
-}
-
 void DesktopItem::setChecked(bool checked){
      if (m_checked != checked){
         if (checked){

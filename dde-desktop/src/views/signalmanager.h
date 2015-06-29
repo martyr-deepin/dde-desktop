@@ -1,7 +1,7 @@
 #ifndef SIGNALMANAGER_H
 #define SIGNALMANAGER_H
 
-#include "desktopitem.h"
+#include "views/desktopitem.h"
 #include <QtCore>
 
 
@@ -13,7 +13,7 @@ public:
 
 signals:
     void girdModeChanged(bool mode); /*true: grid on; false: grid off*/
-    void contextMenuShowed(DesktopItemType type, QPoint pos);
+    void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
 
 private:
     SignalManager();

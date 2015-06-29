@@ -1,7 +1,9 @@
 #ifndef MENUCONTROLLER_H
 #define MENUCONTROLLER_H
 
-#include <QObject>
+
+#include <QtCore>
+#include "views/desktopitem.h"
 
 class MenuController : public QObject
 {
@@ -10,9 +12,12 @@ public:
     explicit MenuController(QObject *parent = 0);
     ~MenuController();
 
+    void initConnect();
+
 signals:
 
 public slots:
+    void showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos);
 };
 
 #endif // MENUCONTROLLER_H

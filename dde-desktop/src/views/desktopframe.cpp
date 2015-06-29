@@ -119,7 +119,6 @@ void DesktopFrame::focusInEvent(QFocusEvent *event){
 
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
-    qDebug() << "foucs out";
     m_isSelectable = false;
     m_selectRect = QRect(0, 0, 0, 0);
     TranslucentFrame::focusOutEvent(event);
@@ -192,11 +191,10 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
     }else if (event->button() == Qt::RightButton){
         if (pTopDesktopItem.isNull()){
             unCheckCheckedItems();
-            signalManager->contextMenuShowed(DesktopItemType::Desktop, m_pressedEventPos);
+            signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
         }else{
             checkRaiseItem(pTopDesktopItem);
-            DesktopItemType type = pTopDesktopItem->getType();
-            signalManager->contextMenuShowed(type, m_pressedEventPos);
+            signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
         }
     }
 
@@ -270,8 +268,6 @@ QPixmap DesktopFrame::getCheckedPixmap(){
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     clearFocus();
     update();
-    qDebug()<< "mouse release" << m_isSelectable;
-
     TranslucentFrame::mouseReleaseEvent(event);
 }
 

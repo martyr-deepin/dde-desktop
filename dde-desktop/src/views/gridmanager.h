@@ -1,15 +1,10 @@
 #ifndef GRIDMANAGER_H
 #define GRIDMANAGER_H
 
+#include "griditem.h"
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
-#include "griditem.h"
-
-typedef QSharedPointer<GridItem> GridItemPointer;
-typedef QList<GridItemPointer> GridItemPointerList;
-typedef QSharedPointer<GridItemPointerList> GridListPointer;
-typedef QList<GridListPointer> DoubleGridItemPointerList;
 
 enum SizeType {
     Small,
@@ -33,6 +28,7 @@ public:
     int getItemHeight();
     GridItemPointer getItemByPos(QPoint pos);
     GridItemPointer getProperItemByPos(QPoint pos);
+    GridItemPointer getNeareastItem(int row, int column, QPoint pos);
     QMap<QString, GridItemPointer> getMapItems();
     DoubleGridItemPointerList getItemsByType(SizeType type);
     DoubleGridItemPointerList getSmallItems();

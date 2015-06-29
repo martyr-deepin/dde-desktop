@@ -4,9 +4,12 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
-#include "desktopitem.h"
 
-typedef QSharedPointer<DesktopItem> DesktopItemPointer;
+class GridItem;
+typedef QSharedPointer<GridItem> GridItemPointer;
+typedef QList<GridItemPointer> GridItemPointerList;
+typedef QSharedPointer<GridItemPointerList> GridListPointer;
+typedef QList<GridListPointer> DoubleGridItemPointerList;
 
 class GridItem : public QObject
 {

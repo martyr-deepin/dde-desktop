@@ -6,15 +6,8 @@
 #include <QtGui>
 #include <QtWidgets>
 
-enum DesktopItemType {
-    Computer,
-    RecycleBin,
-    Application,
-    File,
-    Folder,
-    ApplicationGroup,
-    Desktop
-};
+class DesktopItem;
+typedef QSharedPointer<DesktopItem> DesktopItemPointer;
 
 class DesktopItem : public QFrame
 {
@@ -35,7 +28,6 @@ public:
     QString getDesktopName();
     bool isChecked();
     bool isHover();
-    DesktopItemType getType();
 
 signals:
     void desktopIconChanged(QString icon);
@@ -48,7 +40,6 @@ public slots:
     void setDesktopName(QString name);
     void setChecked(bool checked);
     void setHover(bool hover);
-    void setType(DesktopItemType type);
 
 protected:
     void enterEvent(QEvent* event);
@@ -61,7 +52,6 @@ private:
     QString m_desktopName;
     bool m_checked;
     bool m_hover;
-    DesktopItemType m_type = DesktopItemType::Application;
 };
 
 #endif // DESKTOPITEM_H

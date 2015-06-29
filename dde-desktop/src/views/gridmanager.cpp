@@ -101,6 +101,9 @@ GridItemPointer GridManager::getProperItemByPos(QPoint pos){
         if (row <= m_rowCount && column <= m_columnCount){
             GridItemPointer item = m_gridItems.at(column)->at(row);
 //            qDebug() << row << column << item->hasDesktopItem();
+
+
+
             if (!item->hasDesktopItem()){
                 return item;
             }
@@ -108,6 +111,27 @@ GridItemPointer GridManager::getProperItemByPos(QPoint pos){
     }
     return GridItemPointer();
 }
+
+GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
+    int level = 2;
+    while (true) {
+        GridItemPointerList items;
+        int start = 0;
+        int end = level;
+        for (int i=start; i < end; i++){
+            int _row = row + i;
+            int _column = row + i;
+            if (_row <= m_rowCount && _column <= m_columnCount){
+                GridItemPointer item = m_gridItems.at(column)->at(row);
+                if (!item->hasDesktopItem()){
+                    items.append(item);
+                }
+            }
+        }
+    }
+}
+
+
 
 DoubleGridItemPointerList GridManager::getItemsByType(SizeType type){
     if (type == SizeType::Small){
