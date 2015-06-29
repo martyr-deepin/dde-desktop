@@ -38,14 +38,23 @@ SOURCES += main.cpp \
     views/griditem.cpp \
     views/translucentframe.cpp \
     views/desktopitem.cpp \
-    views/gridmanager.cpp
+    views/gridmanager.cpp \
+    views/signalmanager.cpp \
+    controllers/menucontroller.cpp \
+    controllers/appcontroller.cpp \
+    app/desktopapp.cpp
 
 HEADERS  += \
     views/desktopframe.h \
     views/griditem.h \
     views/translucentframe.h \
     views/desktopitem.h \
-    views/gridmanager.h
+    views/gridmanager.h \
+    views/signalmanager.h \
+    views/global.h \
+    controllers/menucontroller.h \
+    controllers/appcontroller.h \
+    app/desktopapp.h
 
 
 

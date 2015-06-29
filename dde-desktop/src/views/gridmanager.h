@@ -25,8 +25,7 @@ public:
     explicit GridManager(QObject *parent = 0);
     ~GridManager();
 
-    static GridManager* instance;
-    static GridManager* getInstance();
+    static GridManager* instance();
 
     int getColumnCount();
     int getRowCount();
@@ -65,6 +64,7 @@ private:
     int m_bottomMargin = 10;
     int m_columnCount = 0;
     int m_rowCount = 0;
+    static GridManager* m_instance;
     DoubleGridItemPointerList m_gridItems;
     QMap<QString, GridItemPointer> m_mapItems;
 };

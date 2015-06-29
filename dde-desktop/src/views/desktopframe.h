@@ -6,6 +6,8 @@
 #include "views/desktopitem.h"
 #include "gridmanager.h"
 
+#include "controllers/menucontroller.h"
+
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
@@ -54,7 +56,6 @@ private:
     bool m_isSelectable;
     bool m_isOrdered;
 
-    GridManager* m_gridManager=NULL;
     DoubleGridItemPointerList m_gridItems;
     QMap<QString, GridItemPointer> m_mapItems;
 

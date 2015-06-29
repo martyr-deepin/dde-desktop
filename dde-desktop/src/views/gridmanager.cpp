@@ -1,19 +1,21 @@
 #include "gridmanager.h"
 
-GridManager* GridManager::instance = NULL;
+GridManager* GridManager::m_instance = NULL;
 
 GridManager::GridManager(QObject *parent) : QObject(parent)
 {
 
 }
 
-GridManager* GridManager::getInstance()
+GridManager* GridManager::instance()
 {
-    if(!instance)
-    {
-        instance = new GridManager();
+    static QMutex mutex;
+    if (!m_instance) {
+        QMutexLocker locker(&mutex);
+        if (!m_instance)
+            m_instance = new GridManager;
     }
-    return instance;
+    return m_instance;
 }
 
 

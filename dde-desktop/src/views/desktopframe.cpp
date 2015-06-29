@@ -1,5 +1,6 @@
 #include "views/desktopframe.h"
 #include "widgets/util.h"
+#include "global.h"
 
 DesktopFrame::DesktopFrame(QWidget *parent)
     : TranslucentFrame(parent)
@@ -7,7 +8,6 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 
     setAcceptDrops(true);
     m_isOrdered = true;
-    m_gridManager = GridManager::getInstance();
     initGrid();
     initDesktopItems();
 
@@ -16,13 +16,14 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 
 void DesktopFrame::initGrid(){
     setGridByType(SizeType::Middle);
+
 }
 
 void DesktopFrame::initDesktopItems(){
-    int width = m_gridManager->getItemWidth();
-    int height = m_gridManager->getItemHeight();
-    int column = m_gridManager->getColumnCount() / 2;
-    int row = m_gridManager->getRowCount() / 2;
+    int width = gridManager->getItemWidth();
+    int height = gridManager->getItemHeight();
+    int column = gridManager->getColumnCount() / 2;
+    int row = gridManager->getRowCount() / 2;
 
     for(int i=0; i<column; i++){
         for (int j=0; j< row; j++){
@@ -41,9 +42,17 @@ void DesktopFrame::initDesktopItems(){
 }
 
 void DesktopFrame::setGridByType(SizeType type){
-    m_gridItems = m_gridManager->getItemsByType(type);
-    m_mapItems = m_gridManager->getMapItems();
+    m_gridItems = gridManager->getItemsByType(type);
+    m_mapItems = gridManager->getMapItems();
     update();
+
+    int itemWidth = gridManager->getItemWidth();
+    int itemHeight = gridManager->getItemHeight();
+    foreach (DesktopItemPointer pItem, m_desktopItems) {
+            pItem->resize(itemWidth, itemHeight);
+//            pItem->move(newGridItem->getPos());
+//        }
+    }
 }
 
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
@@ -110,6 +119,7 @@ void DesktopFrame::focusInEvent(QFocusEvent *event){
 
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
+    qDebug() << "foucs out";
     m_isSelectable = false;
     m_selectRect = QRect(0, 0, 0, 0);
     TranslucentFrame::focusOutEvent(event);
@@ -161,7 +171,6 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
     m_checkedDesktopItems = getCheckedDesktopItems();
-
     if (event->button() == Qt::LeftButton){
 
         if (pTopDesktopItem.isNull()){
@@ -178,13 +187,16 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
             }
 
             startDrag();
-
         }
 
     }else if (event->button() == Qt::RightButton){
-        unCheckCheckedItems();
-        if (!pTopDesktopItem.isNull()){
+        if (pTopDesktopItem.isNull()){
+            unCheckCheckedItems();
+            signalManager->contextMenuShowed(DesktopItemType::Desktop, m_pressedEventPos);
+        }else{
             checkRaiseItem(pTopDesktopItem);
+            DesktopItemType type = pTopDesktopItem->getType();
+            signalManager->contextMenuShowed(type, m_pressedEventPos);
         }
     }
 
@@ -219,9 +231,9 @@ void DesktopFrame::startDrag(){
             }else{
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
                     QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
-                    GridItemPointer oldItem = m_gridManager->getItemByPos(pItem->pos());
+                    GridItemPointer oldItem = gridManager->getItemByPos(pItem->pos());
                     if (!oldItem.isNull()){
-                        GridItemPointer newItem = m_gridManager->getProperItemByPos(newPos);
+                        GridItemPointer newItem = gridManager->getProperItemByPos(newPos);
                         if (!newItem.isNull()){
                              QPoint pos = newItem->getPos();
                              pItem->move(pos);
@@ -258,6 +270,7 @@ QPixmap DesktopFrame::getCheckedPixmap(){
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     clearFocus();
     update();
+    qDebug()<< "mouse release" << m_isSelectable;
 
     TranslucentFrame::mouseReleaseEvent(event);
 }
@@ -279,8 +292,8 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    int rowCount = m_gridManager->getRowCount();
-    int columnCount = m_gridManager->getColumnCount();
+    int rowCount = gridManager->getRowCount();
+    int columnCount = gridManager->getColumnCount();
     foreach (GridListPointer gridlist, m_gridItems) {
         foreach (GridItemPointer pGridItem, *gridlist) {
             int row = pGridItem->getRow();
@@ -311,7 +324,7 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
     }else if (event->key() == Qt::Key_3){
         setGridByType(SizeType::Large);
     }else if (event->key() == Qt::Key_F1){
-        m_isOrdered = !m_isOrdered;
+        emit signalManager->girdModeChanged(!m_isOrdered);
     }
 
     TranslucentFrame::keyPressEvent(event);
