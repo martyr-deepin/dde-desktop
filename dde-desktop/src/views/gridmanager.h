@@ -32,6 +32,7 @@ public:
     int getRowCount();
     int getItemWidth();
     int getItemHeight();
+    GridItemPointer getItemByPos(QPoint pos);
     GridItemPointer getProperItemByPos(QPoint pos);
     QMap<QString, GridItemPointer> getMapItems();
     DoubleGridItemPointerList getItemsByType(SizeType type);

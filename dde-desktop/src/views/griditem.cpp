@@ -6,7 +6,7 @@ GridItem::GridItem(int row, int column, QRect rect, QObject *parent) : QObject(p
     m_column = column;
     m_rect = rect;
     m_pos = QPoint(rect.x(), rect.y());
-    m_desktopItem = DesktopItemPointer();
+    m_isDesktopItemIn = false;
 }
 
 int GridItem::getRow(){
@@ -42,19 +42,9 @@ bool GridItem::hasDesktopItem(){
     return m_isDesktopItemIn;
 }
 
-DesktopItemPointer GridItem::getDesktopItem(){
-    return m_desktopItem;
-}
 
-void GridItem::setDesktopItem(DesktopItemPointer desktopItem){
-//    clearDesktopItem();
-    m_desktopItem = desktopItem;
-    m_isDesktopItemIn = true;
-}
-
-void GridItem::clearDesktopItem(){
-    m_desktopItem = DesktopItemPointer();
-    m_isDesktopItemIn = false;
+void GridItem::setDesktopItem(bool flag){
+    m_isDesktopItemIn = flag;
 }
 
 GridItem::~GridItem()

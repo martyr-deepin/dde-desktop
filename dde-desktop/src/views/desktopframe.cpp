@@ -34,7 +34,7 @@ void DesktopFrame::initDesktopItems(){
             if (!gridItem.isNull()){
                 QRect rect = gridItem->getRect();
                 desktopItem->move(rect.topLeft());
-                gridItem->setDesktopItem(desktopItem);
+                gridItem->setDesktopItem(true);
             }
         }
     }
@@ -219,13 +219,15 @@ void DesktopFrame::startDrag(){
             }else{
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
                     QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
-
-                    GridItemPointer item = m_gridManager->getProperItemByPos(newPos);
-
-                    if (!item.isNull()){
-                         QPoint pos = item->getPos();
-                         pItem->move(pos);
-                         item->setDesktopItem(pItem);
+                    GridItemPointer oldItem = m_gridManager->getItemByPos(pItem->pos());
+                    if (!oldItem.isNull()){
+                        GridItemPointer newItem = m_gridManager->getProperItemByPos(newPos);
+                        if (!newItem.isNull()){
+                             QPoint pos = newItem->getPos();
+                             pItem->move(pos);
+                             newItem->setDesktopItem(true);
+                             oldItem->setDesktopItem(false);
+                        }
                     }
                 }
             }

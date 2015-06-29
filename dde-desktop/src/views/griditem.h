@@ -23,14 +23,12 @@ public:
     void setRect(const QRect rect);
     QPoint getPos();
 
-    DesktopItemPointer getDesktopItem();
     bool hasDesktopItem();
 
 signals:
 
 public slots:
-    void setDesktopItem(DesktopItemPointer desktopItem);
-    void clearDesktopItem();
+    void setDesktopItem(bool flag);
 
 private:
     int m_column;
@@ -38,7 +36,6 @@ private:
     QRect m_rect;
     QPoint m_pos;
     bool m_isDesktopItemIn;
-    DesktopItemPointer m_desktopItem;
 };
 
 #endif // GRIDITEM_H
