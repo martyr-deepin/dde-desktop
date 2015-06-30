@@ -45,6 +45,7 @@ protected:
 
     void dragEnterEvent(QDragEnterEvent* event);
     void dragMoveEvent(QDragMoveEvent* event);
+    void dragLeaveEvent(QDragLeaveEvent* event);
     void dropEvent(QDropEvent* event);
 
     void keyPressEvent(QKeyEvent* event);
@@ -52,6 +53,7 @@ protected:
 
 private:
     QPoint m_pressedEventPos;
+    QPoint m_dragMovePos;
     QRect m_selectRect;
     bool m_isSelectable;
     bool m_isOrdered;

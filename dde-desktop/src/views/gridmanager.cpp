@@ -90,6 +90,42 @@ GridItemPointer GridManager::getItemByPos(QPoint pos){
     return GridItemPointer();
 }
 
+bool GridManager::isPosInGrid(QPoint pos){
+    int x = pos.x();
+    int y = pos.y();
+
+    if (x > m_leftMargin && x < m_width - m_rightMargin && y > m_topMargin && y < m_height - m_bottomMargin){
+        return true;
+    }
+    return false;
+}
+
+GridItemPointer GridManager::getBlankItemByPos(QPoint pos){
+    int x = pos.x();
+    int y = pos.y();
+
+    if (x > m_leftMargin && x < m_width - m_rightMargin && y > m_topMargin && y < m_height - m_bottomMargin){
+//        int row = y / (m_itemHeight + m_ySpacing);
+//        int column = x / (m_itemWidth + m_xSpacing);
+
+//        if (row <= m_rowCount && column <= m_columnCount){
+//            GridItemPointer pItem  = m_gridItems.at(column)->at(row);
+//            if (!pItem->hasDesktopItem()){
+//                return pItem;
+//            }
+//        }
+        foreach (GridItemPointer pItem, m_mapItems.values()) {
+            QRect rect = pItem->getRect();
+            if (rect.contains(pos)){
+                if (!pItem->hasDesktopItem()){
+                    return pItem;
+                }
+            }
+        }
+    }
+    return GridItemPointer();
+}
+
 GridItemPointer GridManager::getProperItemByPos(QPoint pos){
     int x = pos.x();
     int y = pos.y();
@@ -99,36 +135,32 @@ GridItemPointer GridManager::getProperItemByPos(QPoint pos){
         int column = x / (m_itemWidth + m_xSpacing);
 
         if (row <= m_rowCount && column <= m_columnCount){
-//            GridItemPointer item = m_gridItems.at(column)->at(row);
-//            qDebug() << row << column << item->hasDesktopItem();
-
             GridItemPointer neareastItem  = getNeareastItem(row, column, pos);
-            return neareastItem;
-
+            if (!neareastItem->hasDesktopItem()){
+                return neareastItem;
+            }
         }
     }
     return GridItemPointer();
 }
 
 GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
-    QMap<QString, GridItemPointer> _items;
+    QMap<QString, GridItemPointer> _pItems;
     int startRow = row;
     int startColumn = column;
     int count = 2;
-
     int _column = 0;
     int _row = 0;
     while (true) {
-        _items.clear();
-
+        _pItems.clear();
         _column = startColumn;
         if (_column >= 0){
             for (int i=0; i < count; i++){
                 int _row = startRow + i;
-                if (_row <= m_rowCount && _column <= m_columnCount && _row >=0){
-                    GridItemPointer item = m_gridItems.at(_column)->at(_row);
-                    if (!item->hasDesktopItem()){
-                        _items.insert(item->key(), item);
+                if (_row < m_rowCount && _column < m_columnCount && _row >=0){
+                    GridItemPointer pItem = m_gridItems.at(_column)->at(_row);
+                    if (!pItem->hasDesktopItem()){
+                        _pItems.insert(pItem->key(), pItem);
                     }
                 }
             }
@@ -139,10 +171,10 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
             for (int i=0; i < count; i++){
                 if (i> 0 && i< count - 1){
                     int _column = startColumn + i;
-                    if (_row <= m_rowCount && _column <= m_columnCount && _column >=0){
-                        GridItemPointer item = m_gridItems.at(_column)->at(_row);
-                        if (!item->hasDesktopItem()){
-                            _items.insert(item->key(), item);
+                    if (_row < m_rowCount && _column < m_columnCount && _column >=0){
+                        GridItemPointer pItem = m_gridItems.at(_column)->at(_row);
+                        if (!pItem->hasDesktopItem()){
+                            _pItems.insert(pItem->key(), pItem);
                         }
                     }
                  }
@@ -153,10 +185,10 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
         if (_column >= 0){
             for (int i=0; i < count; i++){
                 int _row = startRow + i;
-                if (_row <= m_rowCount && _column <= m_columnCount && _row >=0){
-                    GridItemPointer item = m_gridItems.at(_column)->at(_row);
-                    if (!item->hasDesktopItem()){
-                        _items.insert(item->key(), item);
+                if (_row < m_rowCount && _column < m_columnCount && _row >=0){
+                    GridItemPointer pItem = m_gridItems.at(_column)->at(_row);
+                    if (!pItem->hasDesktopItem()){
+                        _pItems.insert(pItem->key(), pItem);
                     }
                 }
             }
@@ -167,21 +199,37 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
             for (int i=0; i < count; i++){
                 if (i> 0 && i< count - 1){
                     int _column = startColumn + i;
-                    if (_row <= m_rowCount && _column <= m_columnCount && _column >=0){
-                        GridItemPointer item = m_gridItems.at(_column)->at(_row);
-                        if (!item->hasDesktopItem()){
-                            _items.insert(item->key(), item);
+                    if (_row < m_rowCount && _column < m_columnCount && _column >=0){
+                        GridItemPointer pItem = m_gridItems.at(_column)->at(_row);
+                        if (!pItem->hasDesktopItem()){
+                            _pItems.insert(pItem->key(), pItem);
                         }
                     }
                  }
             }
         }
 
-        if (_items.count() > 0){
-            qDebug() << _items.count() << count;
-            return _items.values()[0];
+        int itemsCount = _pItems.count();
+        GridItemPointerList pItemsList = _pItems.values();
+        if (itemsCount > 0){
+            GridItemPointer pNeareastItem;
+            if (itemsCount == 1){
+                return pItemsList.at(0);
+            }else{
+                for (int i=0; i < itemsCount - 1; i++) {
+                    QPoint dPoint1 = pItemsList.at(i)->getRect().center() - pos;
+                    int d1 = dPoint1.x() * dPoint1.x() + dPoint1.y() * dPoint1.y();
+                    QPoint dPoint2 = pItemsList.at(i + 1)->getRect().center() - pos;
+                    int d2 = dPoint2.x() * dPoint2.x() + dPoint2.y() * dPoint2.y();
+                    if (d1 <= d2){
+                        pNeareastItem = pItemsList.at(i);
+                    }else{
+                        pNeareastItem = pItemsList.at(i + 1);
+                    }
+                }
+                return pNeareastItem;
+            }
         }
-
         startRow -= 1;
         startColumn -= 1;
         count = 2 * count;

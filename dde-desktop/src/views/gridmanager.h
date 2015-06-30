@@ -26,7 +26,9 @@ public:
     int getRowCount();
     int getItemWidth();
     int getItemHeight();
+    bool isPosInGrid(QPoint pos);
     GridItemPointer getItemByPos(QPoint pos);
+    GridItemPointer getBlankItemByPos(QPoint pos);
     GridItemPointer getProperItemByPos(QPoint pos);
     GridItemPointer getNeareastItem(int row, int column, QPoint pos);
     QMap<QString, GridItemPointer> getMapItems();

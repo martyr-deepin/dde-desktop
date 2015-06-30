@@ -28,7 +28,7 @@ void DesktopFrame::initDesktopItems(){
 
     for(int i=0; i<column; i++){
         for (int j=0; j< row; j++){
-            DesktopItemPointer  desktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", "1114\n54545455\n44554144545", this);
+            DesktopItemPointer  desktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", QString::number(i * row + j), this);
             desktopItem->resize(width, height);
             m_desktopItems.append(desktopItem);
 
@@ -141,23 +141,37 @@ void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
 
 
 void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
+    foreach(DesktopItemPointer pItem, m_desktopItems){
+        if (pItem->geometry().contains(event->pos())){
+            pItem->hoverChanged(true);
+        }else{
+            pItem->hoverChanged(false);
+        }
+    }
+
+    m_dragMovePos = event->pos();
+
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
         if (event->source() == this){
             event->setDropAction(Qt::MoveAction);
             event->accept();
         }else{
-            event->acceptProposedAction();
+            event->ignore();
         }
     }else{
         event->ignore();
     }
 }
 
+void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
+    qDebug() << event << "111";
+}
+
 void DesktopFrame::dropEvent(QDropEvent *event){
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
-        if (event->source() == this){
-            event->setDropAction(Qt::MoveAction);
-            event->accept();
+        if (event->source() == this){    
+             event->setDropAction(Qt::MoveAction);
+             event->accept();
         }else{
             event->acceptProposedAction();
         }
@@ -217,6 +231,7 @@ void DesktopFrame::startDrag(){
         drag->setHotSpot(QCursor::pos());
         Qt::DropAction action = drag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
+
             if (!m_isOrdered){
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
                     QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
@@ -228,23 +243,60 @@ void DesktopFrame::startDrag(){
                     pItem->raise();
                 }
             }else{
-                foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-                    QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
-                    GridItemPointer oldItem = gridManager->getItemByPos(pItem->pos());
-                    if (!oldItem.isNull()){
-                        GridItemPointer newItem = gridManager->getProperItemByPos(newPos);
-                        if (!newItem.isNull()){
-                             QPoint pos = newItem->getPos();
-                             pItem->move(pos);
-                             newItem->setDesktopItem(true);
-                             oldItem->setDesktopItem(false);
+                DesktopItemPointer pUnderMouseDesktopItem  = getTopDesktopItemByPos(QCursor::pos()); //鼠标位置是否存在DesktopItem
+                if (m_checkedDesktopItems.contains(pUnderMouseDesktopItem)){
+                    pUnderMouseDesktopItem = DesktopItemPointer(); //置空鼠标当前位置的DesktopItem
+                }
+
+                if (!pUnderMouseDesktopItem.isNull()){ //鼠标当前位置的DesktopItem不为空
+
+                }else{ //鼠标当前位置的DesktopItem为空
+
+
+                    QList<DesktopItemPointer> outsideDesktopItems; //桌面范围内的desktopitems
+                    QList<DesktopItemPointer> insideDesktopItems; // 桌面范围外的desktopitems
+                    QList<DesktopItemPointer> occupiedDesktopItems; // 位置被占据了的desktopitems
+
+                    foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {//清空gridItem状态, 如果超出桌面范围, 设置相应gridItem无法容纳desktopitem
+                        gridManager->getItemByPos(pItem->pos())->setDesktopItem(false);
+                        QPoint newPos = pItem->geometry().center() + QCursor::pos() - m_pressedEventPos;
+                        bool isnewPosInGrid = gridManager->isPosInGrid(newPos);
+                        if (!isnewPosInGrid){
+                            gridManager->getItemByPos(pItem->pos())->setDesktopItem(true);
+                            outsideDesktopItems.append(pItem);
+                        }else{
+                            insideDesktopItems.append(pItem);
+                        }
+                    }
+
+                    foreach (DesktopItemPointer pItem, insideDesktopItems) { //填充空位
+                        QPoint newPos = pItem->geometry().center() + QCursor::pos() - m_pressedEventPos;
+                        GridItemPointer newGridItem = gridManager->getBlankItemByPos(newPos);
+                        if (!newGridItem.isNull()){
+                            QPoint pos = newGridItem->getPos();
+                            pItem->move(pos);
+                            newGridItem->setDesktopItem(true);
+                        }else{
+                            occupiedDesktopItems.append(pItem);
+                        }
+                    }
+
+                    foreach (DesktopItemPointer pItem, occupiedDesktopItems) { // 为位置被占据的desktopitem寻找可安放的girditem
+                        QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
+                        GridItemPointer newGridItem = gridManager->getProperItemByPos(newPos);
+                        qDebug() << pItem->getDesktopName() << "位置被占据" << gridManager->getItemByPos(pItem->pos())->hasDesktopItem();
+                        if (!newGridItem.isNull()){
+                            QPoint pos = newGridItem->getPos();
+                            pItem->move(pos);
+                            newGridItem->setDesktopItem(true);
                         }
                     }
                 }
             }
         }else{
-            unCheckCheckedItems();
-            checkRaiseItem(m_TopDeskItem);
+            qDebug() << "==========";
+//            unCheckCheckedItems();
+//            checkRaiseItem(m_TopDeskItem);
         }
     }
 }
@@ -258,7 +310,7 @@ QPixmap DesktopFrame::getCheckedPixmap(){
                                        pItem->getDesktopName(), F);
         item->resize(pItem->size());
         item->move(pItem->pos());
-        item->setObjectName("DragChecked");
+        item->setObjectName("Checked");
     }
     F->setStyleSheet(qApp->styleSheet());
     QPixmap ret = F->grab();
@@ -321,6 +373,7 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
     }else if (event->key() == Qt::Key_3){
         setGridByType(SizeType::Large);
     }else if (event->key() == Qt::Key_F1){
+        m_isOrdered = !m_isOrdered;
         emit signalManager->girdModeChanged(!m_isOrdered);
     }
 

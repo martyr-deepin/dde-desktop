@@ -52,6 +52,7 @@ private:
     QString m_desktopName;
     bool m_checked;
     bool m_hover;
+
 };
 
 #endif // DESKTOPITEM_H
