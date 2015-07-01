@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     views/signalmanager.cpp \
     controllers/menucontroller.cpp \
     controllers/appcontroller.cpp \
-    app/desktopapp.cpp
+    app/desktopapp.cpp \
+    views/desktopitemmanager.cpp
 
 HEADERS  += \
     views/desktopframe.h \
@@ -54,7 +55,8 @@ HEADERS  += \
     views/global.h \
     controllers/menucontroller.h \
     controllers/appcontroller.h \
-    app/desktopapp.h
+    app/desktopapp.h \
+    views/desktopitemmanager.h
 
 
 

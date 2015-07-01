@@ -5,7 +5,7 @@
 #include "views/griditem.h"
 #include "views/desktopitem.h"
 #include "gridmanager.h"
-
+#include "desktopitemmanager.h"
 #include "controllers/menucontroller.h"
 
 #include <QtCore>
@@ -20,8 +20,7 @@ public:
     DesktopFrame(QWidget *parent = 0);
     ~DesktopFrame();
 
-    void initGrid();
-    void initDesktopItems();
+    void initItems();
 
     void setGridByType(SizeType type);
 
@@ -57,6 +56,10 @@ private:
     QRect m_selectRect;
     bool m_isSelectable;
     bool m_isOrdered;
+    bool m_dragLeave;
+    SizeType m_sizeType;
+
+    DesktopItemManager* m_desktopItemManager;
 
     DoubleGridItemPointerList m_gridItems;
     QMap<QString, GridItemPointer> m_mapItems;

@@ -9,6 +9,5 @@
 #define signalManager  SignalManager::instance()
 
 
-
 #endif // GLOBAL_H
 

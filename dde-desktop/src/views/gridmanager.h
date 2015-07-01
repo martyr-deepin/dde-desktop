@@ -26,7 +26,7 @@ public:
     int getRowCount();
     int getItemWidth();
     int getItemHeight();
-    bool isPosInGrid(QPoint pos);
+    bool isRectInGrid(QRect rect);
     GridItemPointer getItemByPos(QPoint pos);
     GridItemPointer getBlankItemByPos(QPoint pos);
     GridItemPointer getProperItemByPos(QPoint pos);
@@ -42,6 +42,8 @@ public:
                                   const int leftMargin, const int topMargin,
                                   const int rightMargin, const int bottomMargin);
 
+
+    DoubleGridItemPointerList getItems();
 signals:
 
 public slots:
