@@ -6,7 +6,16 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     : TranslucentFrame(parent)
 {
     setAcceptDrops(true);
-    m_isGridOn = true;
+
+
+    QSettings settings;
+    settings.beginGroup("Desktop");
+    bool isGridOn = settings.value("isGridOn", true).toBool();
+    int sizeType = settings.value("sizeType", SizeType::Middle).toInt();
+    settings.endGroup();
+
+    m_isGridOn = isGridOn;
+    m_sizeType = static_cast<SizeType>(sizeType);
     m_desktopItemManager = QSharedPointer<DesktopItemManager>::create(this);
 
     initItems();
@@ -15,7 +24,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 }
 
 void DesktopFrame::initItems(){
-    m_sizeType = SizeType::Middle;
+
     m_gridItems = gridManager->getItemsByType(m_sizeType);
     m_mapItems = gridManager->getMapItems();
 
@@ -25,9 +34,20 @@ void DesktopFrame::initItems(){
 
 void DesktopFrame::initConnect(){
     connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(changeGridBySizeType(SizeType)));
-    connect(signalManager, SIGNAL(girdModeChanged(bool)), this, SLOT(changeGridMode(bool)));
+    connect(signalManager, SIGNAL(gridModeChanged(bool)), this, SLOT(changeGridMode(bool)));
 }
 
+QSharedPointer<DesktopItemManager> DesktopFrame::getTopDesktopItemManager(){
+    return m_desktopItemManager;
+}
+
+SizeType DesktopFrame::getSizeType(){
+    return m_sizeType;
+}
+
+bool DesktopFrame::isGridOn(){
+    return m_isGridOn;
+}
 
 void DesktopFrame::changeGridBySizeType(SizeType type){
     m_gridItems = gridManager->getItemsByType(type);
@@ -288,6 +308,7 @@ void DesktopFrame::startDrag(){
                     }
                 }
             }
+            emit signalManager->moveActionFinished();
         }else{
             if (!m_dragLeave){
                 unCheckCheckedItems();
@@ -370,15 +391,15 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
     }else if (event->key() == Qt::Key_3){
         emit signalManager->gridSizeTypeChanged(SizeType::Large);
     }else if (event->key() == Qt::Key_4){
-        emit signalManager->orderByName();
+        emit signalManager->sortedModeChanged(QDir::Name);
     }else if (event->key() == Qt::Key_5){
-        emit signalManager->orderBySize();
+        emit signalManager->sortedModeChanged(QDir::Size);
     }else if (event->key() == Qt::Key_6){
-        emit signalManager->orderByType();
+        emit signalManager->sortedModeChanged(QDir::Type);
     }else if (event->key() == Qt::Key_7){
-        emit signalManager->orderByTime();
+        emit signalManager->sortedModeChanged(QDir::Time);
     }else if (event->key() == Qt::Key_F1){
-        emit signalManager->girdModeChanged(!m_isGridOn);
+        emit signalManager->gridModeChanged(!m_isGridOn);
     }
 
     TranslucentFrame::keyPressEvent(event);

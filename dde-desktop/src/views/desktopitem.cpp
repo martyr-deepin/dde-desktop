@@ -10,12 +10,9 @@ DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
     m_desktopName = "";
     m_checked = false;
     m_hover = false;
-
     setObjectName("DesktopItem");
-
     initUI();
     initConnect();
-
     emit desktopIconChanged(m_desktopIcon);
     emit desktopNameChanged(m_desktopName);
 }
@@ -27,12 +24,29 @@ DesktopItem::DesktopItem(QString icon, QString name, QWidget *parent):
     m_desktopName = name;
     m_checked = false;
     m_hover = false;
+    setObjectName("DesktopItem");
     initUI();
     initConnect();
 
     emit desktopIconChanged(m_desktopIcon);
     emit desktopNameChanged(m_desktopName);
 }
+
+DesktopItem::DesktopItem(QString url, QString icon, QString name, QWidget *parent):
+    QFrame(parent)
+{
+    m_url = url;
+    m_desktopIcon = icon;
+    m_desktopName = name;
+    m_checked = false;
+    m_hover = false;
+    setObjectName("DesktopItem");
+    initUI();
+    initConnect();
+    emit desktopIconChanged(m_desktopIcon);
+    emit desktopNameChanged(m_desktopName);
+}
+
 
 void DesktopItem::initUI(){
     iconLabel = new QLabel;
@@ -118,6 +132,9 @@ void DesktopItem::setChecked(bool checked){
      }
 }
 
+void DesktopItem::moveEvent(QMoveEvent *event){
+    QFrame::moveEvent(event);
+}
 
 void DesktopItem::enterEvent(QEvent *event){
     emit hoverChanged(true);

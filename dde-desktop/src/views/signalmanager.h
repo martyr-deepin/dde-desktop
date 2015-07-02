@@ -13,15 +13,12 @@ public:
     static SignalManager* instance();
 
 signals:
-    void girdModeChanged(bool mode); /*true: grid on; false: grid off*/
+    void moveActionFinished();
+    void gridModeChanged(bool mode); /*true: grid on; false: grid off*/
     void gridOnResorted(); /*sort desktop item when grid on */
 
     void gridSizeTypeChanged(SizeType type);
-
-    void orderByName();
-    void orderBySize();
-    void orderByType();
-    void orderByTime();
+    void sortedModeChanged(QDir::SortFlag flag);
 
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
 

@@ -14,8 +14,6 @@ public:
     ~DesktopItemManager();
 
     void loadDesktopItems();
-
-
     void initComputerItem();
     void initTrashItem();
     void initDesktopFolder();
@@ -24,20 +22,19 @@ public:
 
     QList<DesktopItemPointer> getItems();
 
+    QDir::SortFlag getSortFlag();
 
 
 signals:
 
 public slots:
+    void saveItems();
     void changeSizeByGrid();
     void sortedByFlags(QDir::SortFlag flag);
-    void sortedByName();
-    void sortedByTime();
-    void sortedBySize();
-    void sortedByType();
     void resort();
 
 private:
+    QSettings m_settings;
     DesktopItemPointer m_pComputerItem;
     DesktopItemPointer m_pTrashItem;
     QWidget* m_parentWindow;

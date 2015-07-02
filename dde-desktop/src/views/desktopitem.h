@@ -19,6 +19,7 @@ public:
 
     explicit DesktopItem(QWidget *parent = 0);
     explicit DesktopItem(QString icon, QString name, QWidget *parent = 0);
+    explicit DesktopItem(QString url, QString icon, QString name, QWidget *parent = 0);
     ~DesktopItem();
 
     void initUI();
@@ -44,6 +45,7 @@ public slots:
     void setUrl(QString url);
 
 protected:
+    void moveEvent(QMoveEvent* event);
     void enterEvent(QEvent* event);
     void leaveEvent(QEvent* event);
 

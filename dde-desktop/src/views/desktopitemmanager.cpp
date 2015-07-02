@@ -5,32 +5,60 @@
 DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
 
     m_parentWindow = static_cast<QWidget*>(this->parent());
-    m_sortFlag = QDir::Name;
+
+    QSettings settings;
+    settings.beginGroup("Desktop");
+    int flag = settings.value("sortFlag", QDir::Name).toInt();
+    settings.endGroup();
+    m_sortFlag = static_cast<QDir::SortFlag>(flag);
     initConnect();
 }
 
 void DesktopItemManager::initComputerItem(){
+    QString url = "Computer://";
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
     m_pComputerItem  = DesktopItemPointer::create(":/skin/images/QFramer.png", this->tr("Computer"), m_parentWindow);
+    m_pComputerItem->setUrl(url);
     m_pComputerItem->resize(width, height);
+
     GridItemPointer pGridItem = gridManager->getItems().at(0)->at(0);
     QRect rect = pGridItem->getRect();
-    pGridItem->setDesktopItem(true);
-    m_pComputerItem->move(rect.topLeft());
+    QPoint pos = rect.topLeft();
+
+    m_settings.beginGroup("DesktopItems");
+    pos = m_settings.value(url, pos).toPoint();
+    m_settings.endGroup();
+
+    pGridItem = gridManager->getItemByPos(pos);
+    if (!pGridItem.isNull()){
+        pGridItem->setDesktopItem(true);
+    }
+    m_pComputerItem->move(pos);
     m_pItems.insert("Computer", m_pComputerItem);
     m_list_pItems.append(m_pComputerItem);
 }
 
 void DesktopItemManager::initTrashItem(){
+    QString url = "Trash://";
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
     m_pTrashItem  = DesktopItemPointer::create(":/skin/images/QFramer.png", this->tr("Trash"), m_parentWindow);
+    m_pTrashItem->setUrl(url);
     m_pTrashItem->resize(width, height);
+
     GridItemPointer pGridItem = gridManager->getItems().at(0)->at(1);
     QRect rect = pGridItem->getRect();
-    pGridItem->setDesktopItem(true);
-    m_pTrashItem->move(rect.topLeft());
+    QPoint pos = rect.topLeft();
+    m_settings.beginGroup("DesktopItems");
+    pos = m_settings.value(url, pos).toPoint();
+    m_settings.endGroup();
+
+    pGridItem = gridManager->getItemByPos(pos);
+    if (!pGridItem.isNull()){
+        pGridItem->setDesktopItem(true);
+    }
+    m_pTrashItem->move(pos);
     m_pItems.insert("Trash", m_pTrashItem);
     m_list_pItems.append(m_pTrashItem);
 }
@@ -44,6 +72,7 @@ void DesktopItemManager::initDesktopFolder(){
     QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::Hidden, m_sortFlag);
 
     int size = desktopInfoList.size();
+    m_settings.beginGroup("DesktopItems");
     for (int i = 0; i < size; i++) {
         int _column = (i + 2) /  row;
         int _row = (i + 2) % row;
@@ -63,21 +92,29 @@ void DesktopItemManager::initDesktopFolder(){
         pDesktopItem->resize(width, height);
         m_pItems.insert(url, pDesktopItem);
         m_list_pItems.append(pDesktopItem);
+
+
+
         GridItemPointer pGridItem = gridManager->getItems().at(_column)->at(_row);
         if (!pGridItem.isNull()){
             QRect rect = pGridItem->getRect();
-            pDesktopItem->move(rect.topLeft());
-            pGridItem->setDesktopItem(true);
+            QPoint pos = rect.topLeft();
+            pos = m_settings.value(url, pos).toPoint();
+            pDesktopItem->move(pos);
+
+            pGridItem = gridManager->getItemByPos(pos);
+            if (!pGridItem.isNull()){
+                pGridItem->setDesktopItem(true);
+            }
         }
     }
+    m_settings.endGroup();
 }
 
 
 void DesktopItemManager::initConnect(){
-    connect(signalManager, SIGNAL(orderByName()), this, SLOT(sortedByName()));
-    connect(signalManager, SIGNAL(orderBySize()), this, SLOT(sortedBySize()));
-    connect(signalManager, SIGNAL(orderByType()), this, SLOT(sortedByType()));
-    connect(signalManager, SIGNAL(orderByTime()), this, SLOT(sortedByTime()));
+    connect(signalManager, SIGNAL(moveActionFinished()), this, SLOT(saveItems()));
+    connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(sortedByFlags(QDir::SortFlag)));
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
 }
 
@@ -85,6 +122,14 @@ void DesktopItemManager::loadDesktopItems(){
     initComputerItem();
     initTrashItem();
     initDesktopFolder();
+}
+
+void DesktopItemManager::saveItems(){
+    m_settings.beginGroup("DesktopItems");
+    foreach (DesktopItemPointer pItem, m_list_pItems) {
+        m_settings.setValue(pItem->getUrl(), pItem->pos());
+    }
+    m_settings.endGroup();
 }
 
 
@@ -139,24 +184,12 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     m_sortFlag = flag;
 }
 
-void DesktopItemManager::sortedByName(){
-    sortedByFlags(QDir::Name);
-}
-
-void DesktopItemManager::sortedByTime(){
-    sortedByFlags(QDir::Time);
-}
-
-void DesktopItemManager::sortedBySize(){
-    sortedByFlags(QDir::Size);
-}
-
-void DesktopItemManager::sortedByType(){
-    sortedByFlags(QDir::Type);
-}
-
 void DesktopItemManager::resort(){
     sortedByFlags(m_sortFlag);
+}
+
+QDir::SortFlag DesktopItemManager::getSortFlag(){
+    return m_sortFlag;
 }
 
 DesktopItemManager::~DesktopItemManager()

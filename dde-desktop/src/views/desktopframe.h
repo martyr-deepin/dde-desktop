@@ -23,6 +23,7 @@ public:
     void initItems();
     void initConnect();
 
+    QSharedPointer<DesktopItemManager> getTopDesktopItemManager();
     DesktopItemPointer getTopDesktopItemByPos(QPoint pos);
 
     void unCheckAllItems();
@@ -33,6 +34,9 @@ public:
 
     void startDrag();
     QPixmap getCheckedPixmap();
+
+    SizeType getSizeType();
+    bool isGridOn();
 
 public slots:
     void changeGridBySizeType(SizeType type);
