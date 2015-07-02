@@ -6,6 +6,7 @@ TranslucentFrame::TranslucentFrame(QWidget *parent) : QFrame(parent)
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::FramelessWindowHint);
     setWindowState(Qt::WindowMaximized);
+    setGeometry(qApp->desktop()->availableGeometry());
 }
 
 TranslucentFrame::~TranslucentFrame()

@@ -19,6 +19,12 @@ GridManager* GridManager::instance()
 }
 
 
+void GridManager::clearDeskopItemsStatus(){
+    foreach (GridItemPointer pItem, m_map_items.values()) {
+        pItem->setDesktopItem(false);
+    }
+}
+
 int GridManager::getRowCount(){
     return m_rowCount;
 }
@@ -36,11 +42,11 @@ int GridManager::getItemHeight(){
 }
 
 QMap<QString, GridItemPointer> GridManager::getMapItems(){
-    return m_mapItems;
+    return m_map_items;
 }
 
 DoubleGridItemPointerList GridManager::getItems(){
-    return m_gridItems;
+    return m_list_items;
 }
 
 DoubleGridItemPointerList GridManager::generateItems(const int width, const int height,
@@ -48,8 +54,8 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
                                                  const int xMinimumSpacing, const int yMinimumSpacing,
                                                  const int leftMargin, const int topMargin,
                                                  const int rightMargin, const int bottomMargin){
-    m_gridItems.clear();
-    m_mapItems.clear();
+    m_list_items.clear();
+    m_map_items.clear();
     m_width = width;
     m_height = height;
     m_itemWidth = itemWidth;
@@ -73,23 +79,23 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
     for (int i=0; i< m_columnCount; i++){
         x = m_itemWidth * i  + m_xSpacing * i + m_leftMargin;
         GridListPointer _gridlist = GridListPointer::create();
-        m_gridItems.append(_gridlist);
+        m_list_items.append(_gridlist);
         for (int j=0; j< m_rowCount; j++){
             y = m_itemHeight * j + m_ySpacing * j  + m_topMargin;
             QRect rect = QRect(x, y, m_itemWidth, m_itemHeight);
             GridItemPointer item = GridItemPointer::create(j, i, rect);
             QString key = QString("%1-%2").arg(QString::number(x), QString::number(y));
-            m_mapItems.insert(key, item);
+            m_map_items.insert(key, item);
             _gridlist->append(item);
         }
     }
-    return m_gridItems;
+    return m_list_items;
 }
 
 GridItemPointer GridManager::getItemByPos(QPoint pos){
     QString key = QString("%1-%2").arg(QString::number(pos.x()), QString::number(pos.y()));
-    if (m_mapItems.contains(key)){
-        return m_mapItems.value(key);
+    if (m_map_items.contains(key)){
+        return m_map_items.value(key);
     }
     return GridItemPointer();
 }
@@ -103,7 +109,7 @@ bool GridManager::isRectInGrid(QRect rect){
 GridItemPointer GridManager::getBlankItemByPos(QPoint pos){
     QRect rect(pos, QSize(m_itemWidth, m_itemHeight));
     if (isRectInGrid(rect)){
-        foreach (GridItemPointer pItem, m_mapItems.values()) {
+        foreach (GridItemPointer pItem, m_map_items.values()) {
             QRect rect = pItem->getRect();
             if (pItem->getRow() < m_rowCount - 1 || pItem->getColumn() < m_columnCount - 1){
                 rect.adjust(0, 0, m_xSpacing, m_ySpacing);
@@ -145,6 +151,7 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
     int count = 2;
     int _column = 0;
     int _row = 0;
+    int loopCount = 2;
     while (true) {
         _pItems.clear();
         _column = startColumn;
@@ -152,7 +159,7 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
             for (int i=0; i < count; i++){
                 int _row = startRow + i;
                 if (_row < m_rowCount && _column < m_columnCount && _row >=0){
-                    GridItemPointer pItem = m_gridItems.at(_column)->at(_row);
+                    GridItemPointer pItem = m_list_items.at(_column)->at(_row);
                     if (!pItem->hasDesktopItem()){
                         _pItems.insert(pItem->key(), pItem);
                     }
@@ -162,16 +169,14 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
 
         _row = startRow;
         if (_row >= 0){
-            for (int i=0; i < count; i++){
-                if (i> 0 && i< count - 1){
-                    int _column = startColumn + i;
-                    if (_row < m_rowCount && _column < m_columnCount && _column >=0){
-                        GridItemPointer pItem = m_gridItems.at(_column)->at(_row);
-                        if (!pItem->hasDesktopItem()){
-                            _pItems.insert(pItem->key(), pItem);
-                        }
+            for (int i=1; i < count - 1; i++){
+                int _column = startColumn + i;
+                if (_row < m_rowCount && _column < m_columnCount && _column >=0){
+                    GridItemPointer pItem = m_list_items.at(_column)->at(_row);
+                    if (!pItem->hasDesktopItem()){
+                        _pItems.insert(pItem->key(), pItem);
                     }
-                 }
+                }
             }
         }
 
@@ -180,7 +185,7 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
             for (int i=0; i < count; i++){
                 int _row = startRow + i;
                 if (_row < m_rowCount && _column < m_columnCount && _row >=0){
-                    GridItemPointer pItem = m_gridItems.at(_column)->at(_row);
+                    GridItemPointer pItem = m_list_items.at(_column)->at(_row);
                     if (!pItem->hasDesktopItem()){
                         _pItems.insert(pItem->key(), pItem);
                     }
@@ -190,16 +195,14 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
 
         _row = startRow + count - 1;
         if(_row >= 0){
-            for (int i=0; i < count; i++){
-                if (i> 0 && i< count - 1){
-                    int _column = startColumn + i;
-                    if (_row < m_rowCount && _column < m_columnCount && _column >=0){
-                        GridItemPointer pItem = m_gridItems.at(_column)->at(_row);
-                        if (!pItem->hasDesktopItem()){
-                            _pItems.insert(pItem->key(), pItem);
-                        }
+            for (int i=1; i < count - 1; i++){
+                int _column = startColumn + i;
+                if (_row < m_rowCount && _column < m_columnCount && _column >=0){
+                    GridItemPointer pItem = m_list_items.at(_column)->at(_row);
+                    if (!pItem->hasDesktopItem()){
+                        _pItems.insert(pItem->key(), pItem);
                     }
-                 }
+                }
             }
         }
 
@@ -227,8 +230,8 @@ GridItemPointer GridManager::getNeareastItem(int row, int column, QPoint pos){
         }
         startRow -= 1;
         startColumn -= 1;
-        count = 2 * count;
-
+        count = 2 * loopCount;
+        loopCount += 1;
         if (count > qMax(m_rowCount, m_columnCount)){
             return GridItemPointer();
         }
@@ -256,6 +259,7 @@ DoubleGridItemPointerList GridManager::getSmallItems(){
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 10, 10);
+    clearDeskopItemsStatus();
     return ret;
 }
 
@@ -265,6 +269,7 @@ DoubleGridItemPointerList GridManager::getMiddleItems(){
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 10, 10);
+    clearDeskopItemsStatus();
     return ret;
 }
 
@@ -274,6 +279,7 @@ DoubleGridItemPointerList GridManager::getLargeItems(){
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 10, 10);
+    clearDeskopItemsStatus();
     return ret;
 }
 

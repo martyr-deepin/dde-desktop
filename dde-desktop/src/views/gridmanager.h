@@ -47,7 +47,7 @@ public:
 signals:
 
 public slots:
-
+    void clearDeskopItemsStatus();
 
 private:
     int m_width = 0;
@@ -65,8 +65,8 @@ private:
     int m_columnCount = 0;
     int m_rowCount = 0;
     static GridManager* m_instance;
-    DoubleGridItemPointerList m_gridItems;
-    QMap<QString, GridItemPointer> m_mapItems;
+    DoubleGridItemPointerList m_list_items;
+    QMap<QString, GridItemPointer> m_map_items;
 };
 
 #endif // GRIDMANAGER_H

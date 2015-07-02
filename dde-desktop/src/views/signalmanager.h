@@ -1,7 +1,8 @@
 #ifndef SIGNALMANAGER_H
 #define SIGNALMANAGER_H
 
-#include "views/desktopitem.h"
+#include "desktopitem.h"
+#include "gridmanager.h"
 #include <QtCore>
 
 
@@ -13,6 +14,15 @@ public:
 
 signals:
     void girdModeChanged(bool mode); /*true: grid on; false: grid off*/
+    void gridOnResorted(); /*sort desktop item when grid on */
+
+    void gridSizeTypeChanged(SizeType type);
+
+    void orderByName();
+    void orderBySize();
+    void orderByType();
+    void orderByTime();
+
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
 
 private:

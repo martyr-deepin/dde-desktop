@@ -21,8 +21,7 @@ public:
     ~DesktopFrame();
 
     void initItems();
-
-    void setGridByType(SizeType type);
+    void initConnect();
 
     DesktopItemPointer getTopDesktopItemByPos(QPoint pos);
 
@@ -34,6 +33,10 @@ public:
 
     void startDrag();
     QPixmap getCheckedPixmap();
+
+public slots:
+    void changeGridBySizeType(SizeType type);
+    void changeGridMode(bool mode);
 
 protected:
     void focusInEvent(QFocusEvent* event);
@@ -55,11 +58,11 @@ private:
     QPoint m_dragMovePos;
     QRect m_selectRect;
     bool m_isSelectable;
-    bool m_isOrdered;
+    bool m_isGridOn;
     bool m_dragLeave;
     SizeType m_sizeType;
 
-    DesktopItemManager* m_desktopItemManager;
+    QSharedPointer<DesktopItemManager> m_desktopItemManager;
 
     DoubleGridItemPointerList m_gridItems;
     QMap<QString, GridItemPointer> m_mapItems;

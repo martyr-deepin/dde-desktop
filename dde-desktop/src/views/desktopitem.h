@@ -26,6 +26,7 @@ public:
 
     QString getDesktopIcon();
     QString getDesktopName();
+    QString getUrl();
     bool isChecked();
     bool isHover();
 
@@ -40,6 +41,7 @@ public slots:
     void setDesktopName(QString name);
     void setChecked(bool checked);
     void setHover(bool hover);
+    void setUrl(QString url);
 
 protected:
     void enterEvent(QEvent* event);
@@ -50,6 +52,7 @@ private:
     ElidedLabel* nameLabel;
     QString m_desktopIcon;
     QString m_desktopName;
+    QString m_url;
     bool m_checked;
     bool m_hover;
 

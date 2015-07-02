@@ -10,21 +10,40 @@ class DesktopItemManager : public QObject
 {
     Q_OBJECT
 public:
-    DesktopItemManager();
+    DesktopItemManager(QObject* parent=0);
     ~DesktopItemManager();
 
     void loadDesktopItems();
-    void changeSizeByGrid();
+
+
+    void initComputerItem();
+    void initTrashItem();
+    void initDesktopFolder();
+
+    void initConnect();
 
     QList<DesktopItemPointer> getItems();
+
+
 
 signals:
 
 public slots:
+    void changeSizeByGrid();
+    void sortedByFlags(QDir::SortFlag flag);
+    void sortedByName();
+    void sortedByTime();
+    void sortedBySize();
+    void sortedByType();
+    void resort();
 
 private:
-
-    QList<DesktopItemPointer> m_desktopItems;
+    DesktopItemPointer m_pComputerItem;
+    DesktopItemPointer m_pTrashItem;
+    QWidget* m_parentWindow;
+    QDir::SortFlag m_sortFlag;
+    QList<DesktopItemPointer> m_list_pItems;
+    QMap<QString, DesktopItemPointer> m_pItems;
 };
 
 #endif // DESKTOPITEMMANAGER_H

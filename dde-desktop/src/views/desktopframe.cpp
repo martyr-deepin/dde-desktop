@@ -5,15 +5,12 @@
 DesktopFrame::DesktopFrame(QWidget *parent)
     : TranslucentFrame(parent)
 {
-
     setAcceptDrops(true);
-    m_isOrdered = true;
-
-    m_desktopItemManager = new DesktopItemManager;
+    m_isGridOn = true;
+    m_desktopItemManager = QSharedPointer<DesktopItemManager>::create(this);
 
     initItems();
-
-    setGeometry(qApp->desktop()->availableGeometry());
+    initConnect();
     qApp->setStyleSheet(getQssFromFile(":/skin/qss/DesktopItem.qss"));
 }
 
@@ -24,19 +21,28 @@ void DesktopFrame::initItems(){
 
     m_desktopItemManager->loadDesktopItems();
     m_desktopItems = m_desktopItemManager->getItems();
-    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
-        pItem->setParent(this);
-    }
+}
+
+void DesktopFrame::initConnect(){
+    connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(changeGridBySizeType(SizeType)));
+    connect(signalManager, SIGNAL(girdModeChanged(bool)), this, SLOT(changeGridMode(bool)));
 }
 
 
-void DesktopFrame::setGridByType(SizeType type){
+void DesktopFrame::changeGridBySizeType(SizeType type){
     m_gridItems = gridManager->getItemsByType(type);
     m_mapItems = gridManager->getMapItems();
     m_sizeType = type;
     m_desktopItemManager->changeSizeByGrid();
-
     update();
+}
+
+void DesktopFrame::changeGridMode(bool mode){
+    m_isGridOn = mode;
+    if(m_isGridOn){
+        gridManager->clearDeskopItemsStatus();
+        emit signalManager->gridOnResorted();
+    }
 }
 
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
@@ -218,7 +224,7 @@ void DesktopFrame::startDrag(){
         Qt::DropAction action = drag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
 
-            if (!m_isOrdered){
+            if (!m_isGridOn){
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
                     QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
                     pItem->move(newPos);
@@ -289,6 +295,7 @@ void DesktopFrame::startDrag(){
             }
         }
     }
+
 }
 
 
@@ -357,14 +364,21 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
     if (event->key() == Qt::Key_Escape){
         close();
     }else if (event->key() == Qt::Key_1){
-        setGridByType(SizeType::Small);
+        emit signalManager->gridSizeTypeChanged(SizeType::Small);
     }else if (event->key() == Qt::Key_2){
-        setGridByType(SizeType::Middle);
+        emit signalManager->gridSizeTypeChanged(SizeType::Middle);
     }else if (event->key() == Qt::Key_3){
-        setGridByType(SizeType::Large);
+        emit signalManager->gridSizeTypeChanged(SizeType::Large);
+    }else if (event->key() == Qt::Key_4){
+        emit signalManager->orderByName();
+    }else if (event->key() == Qt::Key_5){
+        emit signalManager->orderBySize();
+    }else if (event->key() == Qt::Key_6){
+        emit signalManager->orderByType();
+    }else if (event->key() == Qt::Key_7){
+        emit signalManager->orderByTime();
     }else if (event->key() == Qt::Key_F1){
-        m_isOrdered = !m_isOrdered;
-        emit signalManager->girdModeChanged(!m_isOrdered);
+        emit signalManager->girdModeChanged(!m_isGridOn);
     }
 
     TranslucentFrame::keyPressEvent(event);

@@ -76,6 +76,14 @@ void DesktopItem::setDesktopIcon(QString icon){
     iconLabel->setPixmap(QPixmap(icon).scaled(iconLabel->size()));
 }
 
+void DesktopItem::setUrl(QString url){
+    m_url = url;
+}
+
+QString DesktopItem::getUrl(){
+    return m_url;
+}
+
 bool DesktopItem::isHover(){
     return m_hover;
 }
@@ -123,6 +131,6 @@ void DesktopItem::leaveEvent(QEvent *event){
 
 DesktopItem::~DesktopItem()
 {
-    qDebug() << this << "Desktop Item delete";
+//    qDebug() << this << "Desktop Item delete";
 }
 
