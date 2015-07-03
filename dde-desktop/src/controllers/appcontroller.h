@@ -18,6 +18,7 @@ signals:
 public slots:
 
 
+
 private:
     MenuController* m_menuController;
 };

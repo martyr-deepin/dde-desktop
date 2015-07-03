@@ -28,12 +28,15 @@ public:
 signals:
 
 public slots:
+    void addItem(const QString& path);
+    void changeItem(const QString& path);
     void saveItems();
     void changeSizeByGrid();
     void sortedByFlags(QDir::SortFlag flag);
     void resort();
 
 private:
+    QFileSystemWatcher* m_fileSystemWatcher;
     QSettings m_settings;
     DesktopItemPointer m_pComputerItem;
     DesktopItemPointer m_pTrashItem;

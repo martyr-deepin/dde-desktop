@@ -308,7 +308,7 @@ void DesktopFrame::startDrag(){
                     }
                 }
             }
-            emit signalManager->moveActionFinished();
+            emit signalManager->desktopItemsSaved();
         }else{
             if (!m_dragLeave){
                 unCheckCheckedItems();

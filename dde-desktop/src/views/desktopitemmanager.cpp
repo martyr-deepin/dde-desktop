@@ -5,6 +5,8 @@
 DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
 
     m_parentWindow = static_cast<QWidget*>(this->parent());
+    m_fileSystemWatcher = new QFileSystemWatcher;\
+    m_fileSystemWatcher->addPath(desktopLocation);
 
     QSettings settings;
     settings.beginGroup("Desktop");
@@ -78,6 +80,7 @@ void DesktopItemManager::initDesktopFolder(){
         int _row = (i + 2) % row;
         QFileInfo fileInfo = desktopInfoList.at(i);
         QString url = fileInfo.absoluteFilePath();
+        m_fileSystemWatcher->addPath(url);
         QString fileName = fileInfo.fileName();
         QString baseName;
         if (fileName.startsWith(RichDirPrefix)){
@@ -113,15 +116,27 @@ void DesktopItemManager::initDesktopFolder(){
 
 
 void DesktopItemManager::initConnect(){
-    connect(signalManager, SIGNAL(moveActionFinished()), this, SLOT(saveItems()));
+    connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(sortedByFlags(QDir::SortFlag)));
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
+    connect(m_fileSystemWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(addItem(QString)));
+    connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changeItem(QString)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
     initComputerItem();
     initTrashItem();
     initDesktopFolder();
+}
+
+
+void DesktopItemManager::addItem(const QString &path){
+    qDebug() << path;
+}
+
+
+void DesktopItemManager::changeItem(const QString &path){
+    qDebug() << "change: "<< path;
 }
 
 void DesktopItemManager::saveItems(){
@@ -149,6 +164,7 @@ void DesktopItemManager::changeSizeByGrid(){
             pGridItem->setDesktopItem(true);
         }
     }
+    emit signalManager->desktopItemsSaved();
 }
 
 QList<DesktopItemPointer> DesktopItemManager::getItems(){
@@ -180,7 +196,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
             pItem->move(rect.topLeft());
         }
     }
-
+    emit signalManager->desktopItemsSaved();
     m_sortFlag = flag;
 }
 

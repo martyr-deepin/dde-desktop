@@ -13,7 +13,8 @@ public:
     static SignalManager* instance();
 
 signals:
-    void moveActionFinished();
+    void desktopItemsSaved();
+
     void gridModeChanged(bool mode); /*true: grid on; false: grid off*/
     void gridOnResorted(); /*sort desktop item when grid on */
 

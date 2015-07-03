@@ -30,16 +30,7 @@ void DesktopApp::show(){
 }
 
 void DesktopApp::loadSettings(){
-    QSettings settings;
-    settings.beginGroup("Desktop");
 
-    bool isGridOn = settings.value("isGridOn", true).toBool();
-    int sizeType = settings.value("sizeType", SizeType::Middle).toInt();
-    int flag = settings.value("sortFlag", QDir::Name).toInt();
-//    emit signalManager->gridSizeTypeChanged(sizeType);
-//    emit signalManager->gridModeChanged(isGridOn);
-//    emit signalManager->sortedModeChanged(flag);
-    settings.endGroup();
 }
 
 void DesktopApp::saveSettings(){

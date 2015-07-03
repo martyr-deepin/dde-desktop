@@ -89,6 +89,7 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
             _gridlist->append(item);
         }
     }
+    clearDeskopItemsStatus();
     return m_list_items;
 }
 
@@ -259,7 +260,6 @@ DoubleGridItemPointerList GridManager::getSmallItems(){
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 10, 10);
-    clearDeskopItemsStatus();
     return ret;
 }
 
@@ -269,7 +269,6 @@ DoubleGridItemPointerList GridManager::getMiddleItems(){
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 10, 10);
-    clearDeskopItemsStatus();
     return ret;
 }
 
@@ -279,7 +278,6 @@ DoubleGridItemPointerList GridManager::getLargeItems(){
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 10, 10);
-    clearDeskopItemsStatus();
     return ret;
 }
 
