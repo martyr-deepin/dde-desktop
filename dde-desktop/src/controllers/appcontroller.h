@@ -2,6 +2,7 @@
 #define APPCONTROLLER_H
 
 #include "menucontroller.h"
+#include "dbuscontroller.h"
 #include <QObject>
 
 class AppController : public QObject
@@ -21,6 +22,7 @@ public slots:
 
 private:
     MenuController* m_menuController;
+    DBusController* m_dbusController;
 };
 
 #endif // APPCONTROLLER_H

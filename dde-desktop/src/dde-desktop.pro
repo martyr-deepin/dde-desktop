@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui dbus
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -43,7 +43,13 @@ SOURCES += main.cpp \
     controllers/menucontroller.cpp \
     controllers/appcontroller.cpp \
     app/desktopapp.cpp \
-    views/desktopitemmanager.cpp
+    views/desktopitemmanager.cpp \
+    controllers/dbuscontroller.cpp \
+    dbusinterface/filelistjob_interface.cpp \
+    dbusinterface/filemonitor_interface.cpp \
+    dbusinterface/fileoperations_interface.cpp \
+    dbusinterface/fileoperationsflags_interface.cpp \
+    dbusinterface/trashmonitor_interface.cpp
 
 HEADERS  += \
     views/desktopframe.h \
@@ -56,9 +62,23 @@ HEADERS  += \
     controllers/menucontroller.h \
     controllers/appcontroller.h \
     app/desktopapp.h \
-    views/desktopitemmanager.h
+    views/desktopitemmanager.h \
+    dbusinterface/trashmonitor_interface.h \
+    controllers/dbuscontroller.h \
+    dbusinterface/fileoperationsflags_interface.h \
+    dbusinterface/fileoperations_interface.h \
+    dbusinterface/filemonitor_interface.h \
+    dbusinterface/filelistjob_interface.h \
+    dbusinterface/dbustype.h
 
 
 
 RESOURCES += \
     skin.qrc
+
+DISTFILES += \
+    dbusinterface/filelistjob.xml \
+    dbusinterface/filemonitor.xml \
+    dbusinterface/fileoperations.xml \
+    dbusinterface/fileoperationsflags.xml \
+    dbusinterface/trashmonitor.xml
