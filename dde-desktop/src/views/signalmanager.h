@@ -3,6 +3,7 @@
 
 #include "desktopitem.h"
 #include "gridmanager.h"
+#include "dbusinterface/dbustype.h"
 #include <QtCore>
 
 
@@ -13,6 +14,7 @@ public:
     static SignalManager* instance();
 
 signals:
+    void desktopItemsLoaded(EntryInfoObjList& entryInfoObjList);
     void desktopItemsSaved();
 
     void gridModeChanged(bool mode); /*true: grid on; false: grid off*/
@@ -20,6 +22,11 @@ signals:
 
     void gridSizeTypeChanged(SizeType type);
     void sortedModeChanged(QDir::SortFlag flag);
+
+    void keyUpPressed();
+    void keyDownPressed();
+    void keyLeftPressed();
+    void keyRightPressed();
 
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
 

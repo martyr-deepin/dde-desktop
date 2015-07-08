@@ -5,8 +5,6 @@
 DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
 
     m_parentWindow = static_cast<QWidget*>(this->parent());
-    m_fileSystemWatcher = new QFileSystemWatcher;\
-    m_fileSystemWatcher->addPath(desktopLocation);
 
     QSettings settings;
     settings.beginGroup("Desktop");
@@ -37,7 +35,7 @@ void DesktopItemManager::initComputerItem(){
         pGridItem->setDesktopItem(true);
     }
     m_pComputerItem->move(pos);
-    m_pItems.insert("Computer", m_pComputerItem);
+    m_pItems.insert(url, m_pComputerItem);
     m_list_pItems.append(m_pComputerItem);
 }
 
@@ -61,7 +59,7 @@ void DesktopItemManager::initTrashItem(){
         pGridItem->setDesktopItem(true);
     }
     m_pTrashItem->move(pos);
-    m_pItems.insert("Trash", m_pTrashItem);
+    m_pItems.insert(url, m_pTrashItem);
     m_list_pItems.append(m_pTrashItem);
 }
 
@@ -80,7 +78,7 @@ void DesktopItemManager::initDesktopFolder(){
         int _row = (i + 2) % row;
         QFileInfo fileInfo = desktopInfoList.at(i);
         QString url = fileInfo.absoluteFilePath();
-        m_fileSystemWatcher->addPath(url);
+//        m_fileSystemWatcher->addPath(url);
         QString fileName = fileInfo.fileName();
         QString baseName;
         if (fileName.startsWith(RichDirPrefix)){
@@ -116,28 +114,67 @@ void DesktopItemManager::initDesktopFolder(){
 
 
 void DesktopItemManager::initConnect(){
+    connect(signalManager, SIGNAL(desktopItemsLoaded(EntryInfoObjList&)), this, SLOT(addItems(EntryInfoObjList&)));
     connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(sortedByFlags(QDir::SortFlag)));
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
-    connect(m_fileSystemWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(addItem(QString)));
-    connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changeItem(QString)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
     initComputerItem();
     initTrashItem();
-    initDesktopFolder();
+//    initDesktopFolder();
 }
 
-
-void DesktopItemManager::addItem(const QString &path){
-    qDebug() << path;
+void DesktopItemManager::addItems(EntryInfoObjList& entryInfoObjList){
+    for(int i=0; i< entryInfoObjList.count(); i++){
+        addItem(entryInfoObjList.at(i), i);
+    }
 }
 
+void DesktopItemManager::addItem(EntryInfoObj fileInfo, int index){
+    int width = gridManager->getItemWidth();
+    int height = gridManager->getItemHeight();
+    int row = gridManager->getRowCount();
 
-void DesktopItemManager::changeItem(const QString &path){
-    qDebug() << "change: "<< path;
+    m_settings.beginGroup("DesktopItems");
+
+    int _column = (index + 2) /  row;
+    int _row = (index + 2) % row;
+    QString desktopDisplayName;
+    QString displayName = fileInfo.DisplayName;
+    QString uri = fileInfo.URI;
+    QString url = QUrl(uri).toString();
+
+    if (displayName.startsWith(RichDirPrefix)){
+        int l = QString(RichDirPrefix).length();
+        desktopDisplayName = displayName.remove(0, l);
+    }else{
+        desktopDisplayName = displayName;
+    }
+
+    DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", desktopDisplayName, m_parentWindow);
+    pDesktopItem->setUrl(url);
+    pDesktopItem->resize(width, height);
+    pDesktopItem->show();
+    m_pItems.insert(url, pDesktopItem);
+    m_list_pItems.append(pDesktopItem);
+
+    GridItemPointer pGridItem = gridManager->getItems().at(_column)->at(_row);
+    if (!pGridItem.isNull()){
+        QRect rect = pGridItem->getRect();
+        QPoint pos = rect.topLeft();
+        pos = m_settings.value(url, pos).toPoint();
+        pDesktopItem->move(pos);
+
+        pGridItem = gridManager->getItemByPos(pos);
+        if (!pGridItem.isNull()){
+            pGridItem->setDesktopItem(true);
+        }
+    }
+    m_settings.endGroup();
 }
+
 
 void DesktopItemManager::saveItems(){
     m_settings.beginGroup("DesktopItems");
@@ -182,7 +219,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     int size = desktopInfoList.size();
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
-        QString url = fileInfo.absoluteFilePath();
+        QString url = "file://" + QUrl(fileInfo.absoluteFilePath()).toString();
         DesktopItemPointer  pDesktopItem = m_pItems.value(url);
         m_list_pItems.append(pDesktopItem);
     }

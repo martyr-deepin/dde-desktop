@@ -1,16 +1,31 @@
 #include "dbuscontroller.h"
-
+#include "views/global.h"
 
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
     QDBusConnection bus = QDBusConnection::sessionBus();
-    m_fileMonitorInterface = new FileMonitorInterface(FileMonitor_service, FileMonitor_path, bus);
+    m_monitorManagerInterface = new MonitorManagerInterface(FileMonitor_service, FileMonitor_path, bus);
     m_FileOperationsInterface = new FileOperationsInterface(FileOperations_service, FileOperations_path, bus);
     m_FileOperationsFlagsInterface = new FileOperationsFlagsInterface(FileOperations_service, FileOperations_path, bus);
 
     getOperationsFlags();
+    monitorDesktop();
 
-    call_FileOperations_NewListJob("/home/djf/桌面", ListJobFlagIncludeHidden);
+    call_FileOperations_NewListJob(desktopLocation, ListJobFlagIncludeHidden);
+}
+
+void DBusController::monitorDesktop(){
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_monitorManagerInterface->Monitor(desktopLocation, G_FILE_MONITOR_SEND_MOVED);
+    reply.waitForFinished();
+    if (!reply.isError()){
+        QString service = reply.argumentAt(0).toString();
+        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
+        FileMonitorInstanceInterface* desktopMonitorInterface = new FileMonitorInstanceInterface(service, path, QDBusConnection::sessionBus());
+        connect(desktopMonitorInterface, SIGNAL(Changed(QString,QString,uint)), this, SLOT(desktopFileChanged(QString,QString,uint)));
+        qDebug() << service << path << "=========";
+    }else{
+        qDebug() << reply.error().message();
+    }
 }
 
 void DBusController::getOperationsFlags(){
@@ -48,6 +63,8 @@ void DBusController::call_FileListJob_execute(const QString &service, const QStr
     QDBusPendingReply<EntryInfoObjList> reply =  fileListJobInterface->Execute();
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),this, SLOT(fileListJob_execute_finished(QDBusPendingCallWatcher*)));
+    fileListJobInterface->deleteLater();
+    // todo entryinfo
 }
 
 
@@ -55,15 +72,45 @@ void DBusController::fileListJob_execute_finished(QDBusPendingCallWatcher *call)
     QDBusPendingReply<EntryInfoObjList> reply = *call;
     if (!reply.isError()) {
         EntryInfoObjList objList = qdbus_cast<EntryInfoObjList>(reply.argumentAt(0));
-        foreach (EntryInfoObj obj, objList) {
-            qDebug() << obj.DisplayName << obj.Icon;
-        }
+        emit signalManager->desktopItemsLoaded(objList);
     }else {
         qDebug() << reply.error().message();
     }
     call->deleteLater();
 }
 
+
+void DBusController::desktopFileChanged(const QString &url, const QString &in1, uint event){
+    qDebug() << url << in1;
+    switch (event) {
+    case G_FILE_MONITOR_EVENT_CHANGED:
+        qDebug() << "file content changed";
+        break;
+    case G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
+        qDebug() << "file event changed over";
+        break;
+    case G_FILE_MONITOR_EVENT_DELETED:
+        qDebug() << "file deleted";
+        break;
+    case G_FILE_MONITOR_EVENT_CREATED:
+        qDebug() << "file created";
+        break;
+    case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
+        qDebug() << "file attribute changed";
+        break;
+    case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
+        qDebug() << "file pre unmount";
+        break;
+    case G_FILE_MONITOR_EVENT_UNMOUNTED:
+        qDebug() << "file event unmounted";
+        break;
+    case G_FILE_MONITOR_EVENT_MOVED:
+        qDebug() << "file event moved";
+        break;
+    default:
+        break;
+    }
+}
 
 DBusController::~DBusController()
 {

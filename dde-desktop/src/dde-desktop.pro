@@ -46,11 +46,12 @@ SOURCES += main.cpp \
     views/desktopitemmanager.cpp \
     controllers/dbuscontroller.cpp \
     dbusinterface/filelistjob_interface.cpp \
-    dbusinterface/filemonitor_interface.cpp \
     dbusinterface/fileoperations_interface.cpp \
     dbusinterface/fileoperationsflags_interface.cpp \
     dbusinterface/trashmonitor_interface.cpp \
-    dbusinterface/dbustype.cpp
+    dbusinterface/dbustype.cpp \
+    dbusinterface/filemonitorInstance_interface.cpp \
+    dbusinterface/monitormanager_interface.cpp
 
 HEADERS  += \
     views/desktopframe.h \
@@ -68,9 +69,10 @@ HEADERS  += \
     controllers/dbuscontroller.h \
     dbusinterface/fileoperationsflags_interface.h \
     dbusinterface/fileoperations_interface.h \
-    dbusinterface/filemonitor_interface.h \
     dbusinterface/filelistjob_interface.h \
-    dbusinterface/dbustype.h
+    dbusinterface/dbustype.h \
+    dbusinterface/filemonitorInstance_interface.h \
+    dbusinterface/monitormanager_interface.h
 
 
 

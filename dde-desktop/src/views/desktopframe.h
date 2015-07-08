@@ -72,7 +72,6 @@ private:
     QMap<QString, GridItemPointer> m_mapItems;
 
     DesktopItemPointer m_TopDeskItem;
-    QList<DesktopItemPointer> m_desktopItems;
     QList<DesktopItemPointer> m_checkedDesktopItems;
 
 };

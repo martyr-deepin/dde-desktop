@@ -29,7 +29,6 @@ void DesktopFrame::initItems(){
     m_mapItems = gridManager->getMapItems();
 
     m_desktopItemManager->loadDesktopItems();
-    m_desktopItems = m_desktopItemManager->getItems();
 }
 
 void DesktopFrame::initConnect(){
@@ -66,9 +65,9 @@ void DesktopFrame::changeGridMode(bool mode){
 }
 
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
-    for (int i=m_desktopItems.count() - 1; i >= 0; i--){
-        if (m_desktopItems.at(i)->geometry().contains(pos)){
-            m_TopDeskItem = m_desktopItems.at(i);
+    for (int i=m_desktopItemManager->getItems().count() - 1; i >= 0; i--){
+        if (m_desktopItemManager->getItems().at(i)->geometry().contains(pos)){
+            m_TopDeskItem = m_desktopItemManager->getItems().at(i);
             return m_TopDeskItem;
         }
     }
@@ -76,7 +75,7 @@ DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
 }
 
 void DesktopFrame::checkDesktopItemsByRect(QRect rect){
-    foreach (DesktopItemPointer pItem, m_desktopItems) {
+    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         if (rect.intersects(pItem->geometry())){
             emit pItem->checkedChanged(true);
         }else{
@@ -86,7 +85,7 @@ void DesktopFrame::checkDesktopItemsByRect(QRect rect){
 }
 
 void DesktopFrame::unCheckAllItems(){
-    foreach (DesktopItemPointer pItem, m_desktopItems) {
+    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         emit pItem->checkedChanged(false);
     }
 }
@@ -104,16 +103,16 @@ void DesktopFrame::checkRaiseItem(DesktopItemPointer& item){
         emit item->checkedChanged(true);
         item->raise();
 
-        bool flag = m_desktopItems.removeOne(item);
+        bool flag = m_desktopItemManager->getItems().removeOne(item);
         if (flag){
-            m_desktopItems.append(item);
+            m_desktopItemManager->getItems().append(item);
         }
     }
 }
 
 QList<DesktopItemPointer> DesktopFrame::getCheckedDesktopItems(){
     m_checkedDesktopItems.clear();
-    foreach (DesktopItemPointer pItem, m_desktopItems) {
+    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         if (pItem->isChecked()){
             m_checkedDesktopItems.append(pItem);
         }
@@ -152,7 +151,7 @@ void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
 
 
 void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
-    foreach(DesktopItemPointer pItem, m_desktopItems){
+    foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
         if (pItem->geometry().contains(event->pos())){
             pItem->hoverChanged(true);
         }else{
@@ -248,10 +247,10 @@ void DesktopFrame::startDrag(){
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
                     QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
                     pItem->move(newPos);
-                    m_desktopItems.removeOne(pItem);
+                    m_desktopItemManager->getItems().removeOne(pItem);
                 }
-                m_desktopItems.append(m_checkedDesktopItems);
-                foreach (DesktopItemPointer pItem, m_desktopItems) {
+                m_desktopItemManager->getItems().append(m_checkedDesktopItems);
+                foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
                     pItem->raise();
                 }
             }else{
@@ -400,7 +399,16 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
         emit signalManager->sortedModeChanged(QDir::Time);
     }else if (event->key() == Qt::Key_F1){
         emit signalManager->gridModeChanged(!m_isGridOn);
+    }else if (event->key() == Qt::Key_Up){
+        emit signalManager->keyUpPressed();
+    }else if (event->key() == Qt::Key_Down){
+        emit signalManager->keyDownPressed();
+    }else if (event->key() == Qt::Key_Left){
+        emit signalManager->keyLeftPressed();
+    }else if (event->key() == Qt::Key_Right){
+        emit signalManager->keyRightPressed();
     }
+
 
     TranslucentFrame::keyPressEvent(event);
 }
