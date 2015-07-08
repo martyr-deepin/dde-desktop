@@ -12,7 +12,7 @@ void MenuController::initConnect(){
 
 
 void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos){
-    qDebug() << pItem;
+    qDebug() << pItem->getUrl() << pos;
 }
 
 MenuController::~MenuController()

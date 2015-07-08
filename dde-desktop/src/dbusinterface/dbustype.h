@@ -4,7 +4,10 @@
 #include <QtCore>
 #include <QtDBus>
 
-struct EntryInfoObj {
+class  EntryInfoObj
+{
+
+public:
     QString DisplayName;
     QString BaseName;
     QString URI;
@@ -12,6 +15,7 @@ struct EntryInfoObj {
     QString Icon;
     qlonglong Size;
     ushort FileType;
+    bool IsBackup;
     bool IsHidden;
     bool IsReadOnly;
     bool IsSymlink;
@@ -22,41 +26,18 @@ struct EntryInfoObj {
     bool CanTrash;
     bool CanWrite;
 
-    QDBusArgument &operator<<(QDBusArgument &argument, const EntryInfoObj &obj)
-    {
-        argument.beginStructure();
-        argument << obj.DisplayName << obj.BaseName;
-        argument << obj.URI << obj.MIME;
-        argument << obj.Icon << obj.Size;
-        argument << obj.FileType << obj.IsHidden;
-        argument << obj.IsReadOnly << obj.IsSymlink;
-        argument << obj.CanDelete << obj.CanExecute;
-        argument << obj.CanRead << obj.CanRename;
-        argument << obj.CanTrash << obj.CanWrite;
-        argument.endStructure();
-        return argument;
-    }
+    EntryInfoObj();
+    ~EntryInfoObj();
 
+    friend QDBusArgument &operator<<(QDBusArgument &argument, const EntryInfoObj &obj);
 
-    const QDBusArgument &operator>>(const QDBusArgument &argument, EntryInfoObj &obj)
-    {
-        argument.beginStructure();
-        argument >> obj.DisplayName >> obj.BaseName;
-        argument >> obj.URI >> obj.MIME;
-        argument >> obj.Icon >> obj.Size;
-        argument >> obj.FileType >> obj.IsHidden;
-        argument >> obj.IsReadOnly >> obj.IsSymlink;
-        argument >> obj.CanDelete >> obj.CanExecute;
-        argument >> obj.CanRead >> obj.CanRename;
-        argument >> obj.CanTrash >> obj.CanWrite;
-        argument.endStructure();
-        return argument;
-    }
+    friend const QDBusArgument &operator>>(const QDBusArgument &argument, EntryInfoObj &obj);
+
+    static void registerMetaType();
 };
 
 typedef QList<EntryInfoObj> EntryInfoObjList;
+Q_DECLARE_METATYPE(EntryInfoObj)
 Q_DECLARE_METATYPE(EntryInfoObjList)
-
-
 #endif // DBUSTYPE_H
 

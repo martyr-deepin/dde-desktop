@@ -49,7 +49,8 @@ SOURCES += main.cpp \
     dbusinterface/filemonitor_interface.cpp \
     dbusinterface/fileoperations_interface.cpp \
     dbusinterface/fileoperationsflags_interface.cpp \
-    dbusinterface/trashmonitor_interface.cpp
+    dbusinterface/trashmonitor_interface.cpp \
+    dbusinterface/dbustype.cpp
 
 HEADERS  += \
     views/desktopframe.h \

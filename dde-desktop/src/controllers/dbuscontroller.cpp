@@ -8,22 +8,62 @@ DBusController::DBusController(QObject *parent) : QObject(parent)
     m_FileOperationsInterface = new FileOperationsInterface(FileOperations_service, FileOperations_path, bus);
     m_FileOperationsFlagsInterface = new FileOperationsFlagsInterface(FileOperations_service, FileOperations_path, bus);
 
-//    QDBusObjectPath job;
-//    QString out2;
-//    QDBusReply<QString> reply = m_FileOperationsInterface->NewListJob("/home/djf/桌面/Terminator.desktop", 0, job, out2);
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_FileOperationsInterface->NewListJob("/home/djf/桌面/Terminator.desktop", 0);
-    reply.waitForFinished();
-    qDebug() << reply.isFinished();
-    if (!reply.isError()){
-        QString service = reply.argumentAt(0).toString();
-        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        FileListJobInterface* fileListJobInterface = new FileListJobInterface(service, path, bus);
-        QDBusPendingReply<EntryInfoObjList> r =  fileListJobInterface->Execute();
+    getOperationsFlags();
 
-    }else{
-        qDebug() << reply.error().message() << "=======";
+    call_FileOperations_NewListJob("/home/djf/桌面", ListJobFlagIncludeHidden);
+}
+
+void DBusController::getOperationsFlags(){
+    ListJobFlagIncludeHidden = m_FileOperationsFlagsInterface->listJobFlagIncludeHidden();
+    ListJobFlagNone = m_FileOperationsFlagsInterface->listJobFlagRecusive();
+    ListJobFlagRecusive = m_FileOperationsFlagsInterface->listJobFlagRecusive();
+    CopyFlagNofollowSymlinks = m_FileOperationsFlagsInterface->copyFlagNofollowSymlinks();
+    CopyFlagNone = m_FileOperationsFlagsInterface->copyFlagNone();
+}
+
+void DBusController::call_FileOperations_NewListJob(QString path, int flag){
+    if (QDir(path).exists()){
+        QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_FileOperationsInterface->NewListJob(path, flag);
+        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+        connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),this, SLOT(newListJob_finished(QDBusPendingCallWatcher*)));
     }
 }
+
+void DBusController::newListJob_finished(QDBusPendingCallWatcher *call)
+{
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = *call;
+    if (!reply.isError()) {
+        QString service = reply.argumentAt(0).toString();
+        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
+        call_FileListJob_execute(service, path);
+    }else {
+        qDebug() << reply.error().message();
+    }
+    call->deleteLater();
+}
+
+void DBusController::call_FileListJob_execute(const QString &service, const QString &path){
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    FileListJobInterface* fileListJobInterface = new FileListJobInterface(service, path, bus);
+    QDBusPendingReply<EntryInfoObjList> reply =  fileListJobInterface->Execute();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),this, SLOT(fileListJob_execute_finished(QDBusPendingCallWatcher*)));
+}
+
+
+void DBusController::fileListJob_execute_finished(QDBusPendingCallWatcher *call){
+    QDBusPendingReply<EntryInfoObjList> reply = *call;
+    if (!reply.isError()) {
+        EntryInfoObjList objList = qdbus_cast<EntryInfoObjList>(reply.argumentAt(0));
+        foreach (EntryInfoObj obj, objList) {
+            qDebug() << obj.DisplayName << obj.Icon;
+        }
+    }else {
+        qDebug() << reply.error().message();
+    }
+    call->deleteLater();
+}
+
 
 DBusController::~DBusController()
 {
