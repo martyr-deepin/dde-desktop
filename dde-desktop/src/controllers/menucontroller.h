@@ -18,6 +18,7 @@ signals:
 
 public slots:
     void showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos);
+    void showMenuByDesktopItem(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
 };
 
 #endif // MENUCONTROLLER_H

@@ -29,6 +29,7 @@ signals:
     void keyRightPressed();
 
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
+    void contextMenuShowed(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
 
 private:
     SignalManager();

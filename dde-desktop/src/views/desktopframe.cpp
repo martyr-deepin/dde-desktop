@@ -17,6 +17,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_isGridOn = isGridOn;
     m_sizeType = static_cast<SizeType>(sizeType);
     m_desktopItemManager = QSharedPointer<DesktopItemManager>::create(this);
+    m_keyEventManager = QSharedPointer<KeyEventManager>::create(this);
 
     initItems();
     initConnect();
@@ -27,7 +28,6 @@ void DesktopFrame::initItems(){
 
     m_gridItems = gridManager->getItemsByType(m_sizeType);
     m_mapItems = gridManager->getMapItems();
-
     m_desktopItemManager->loadDesktopItems();
 }
 
@@ -77,8 +77,15 @@ DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
 void DesktopFrame::checkDesktopItemsByRect(QRect rect){
     foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         if (rect.intersects(pItem->geometry())){
+            if (!m_checkedDesktopItems.contains(pItem)){
+                m_checkedDesktopItems.append(pItem);
+            }
             emit pItem->checkedChanged(true);
         }else{
+            if (m_checkedDesktopItems.contains(pItem)){
+                int index = m_checkedDesktopItems.indexOf(pItem);
+                m_checkedDesktopItems.removeAt(index);
+            }
             emit pItem->checkedChanged(false);
         }
     }
@@ -101,6 +108,9 @@ void DesktopFrame::unCheckCheckedItems(){
 void DesktopFrame::checkRaiseItem(DesktopItemPointer& item){
     if (!item.isNull()){
         emit item->checkedChanged(true);
+        if(!m_checkedDesktopItems.contains(item)){
+            m_checkedDesktopItems.append(item);
+        }
         item->raise();
 
         bool flag = m_desktopItemManager->getItems().removeOne(item);
@@ -111,12 +121,12 @@ void DesktopFrame::checkRaiseItem(DesktopItemPointer& item){
 }
 
 QList<DesktopItemPointer> DesktopFrame::getCheckedDesktopItems(){
-    m_checkedDesktopItems.clear();
-    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
-        if (pItem->isChecked()){
-            m_checkedDesktopItems.append(pItem);
-        }
-    }
+//    m_checkedDesktopItems.clear();
+//    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
+//        if (pItem->isChecked()){
+//            m_checkedDesktopItems.append(pItem);
+//        }
+//    }
     return m_checkedDesktopItems;
 }
 
@@ -195,21 +205,22 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
-    m_checkedDesktopItems = getCheckedDesktopItems();
+//    m_checkedDesktopItems = getCheckedDesktopItems();
     if (event->button() == Qt::LeftButton){
 
         if (pTopDesktopItem.isNull()){
             setFocus();
             unCheckCheckedItems();
+            qDebug() << "===========";
         }else{
             if (!pTopDesktopItem->isChecked()){
                 checkRaiseItem(pTopDesktopItem);
             }
 
-            if (m_checkedDesktopItems.indexOf(pTopDesktopItem) == -1){
-                unCheckCheckedItems();
-                m_checkedDesktopItems.append(pTopDesktopItem);
-            }
+//            if (m_checkedDesktopItems.indexOf(pTopDesktopItem) == -1){
+//                unCheckCheckedItems();
+//                m_checkedDesktopItems.append(pTopDesktopItem);
+//            }
 
             startDrag();
         }
@@ -217,10 +228,15 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
     }else if (event->button() == Qt::RightButton){
         if (pTopDesktopItem.isNull()){
             unCheckCheckedItems();
-            signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
+            emit signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
         }else{
-            checkRaiseItem(pTopDesktopItem);
-            signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
+            if (m_checkedDesktopItems.contains(pTopDesktopItem) && m_checkedDesktopItems.count() > 1){
+                emit signalManager->contextMenuShowed(m_checkedDesktopItems, pTopDesktopItem, m_pressedEventPos);
+            }else{
+                unCheckCheckedItems();
+                checkRaiseItem(pTopDesktopItem);
+                emit signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
+            }
         }
     }
 
@@ -408,8 +424,6 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
     }else if (event->key() == Qt::Key_Right){
         emit signalManager->keyRightPressed();
     }
-
-
     TranslucentFrame::keyPressEvent(event);
 }
 

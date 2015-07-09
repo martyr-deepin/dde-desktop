@@ -6,6 +6,7 @@
 #include "views/desktopitem.h"
 #include "gridmanager.h"
 #include "desktopitemmanager.h"
+#include "keyeventmanager.h"
 #include "controllers/menucontroller.h"
 
 #include <QtCore>
@@ -19,6 +20,8 @@ class DesktopFrame : public TranslucentFrame
 public:
     DesktopFrame(QWidget *parent = 0);
     ~DesktopFrame();
+
+    friend class KeyEventManager;
 
     void initItems();
     void initConnect();
@@ -67,6 +70,7 @@ private:
     SizeType m_sizeType;
 
     QSharedPointer<DesktopItemManager> m_desktopItemManager;
+    QSharedPointer<KeyEventManager> m_keyEventManager;
 
     DoubleGridItemPointerList m_gridItems;
     QMap<QString, GridItemPointer> m_mapItems;

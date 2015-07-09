@@ -51,7 +51,8 @@ SOURCES += main.cpp \
     dbusinterface/trashmonitor_interface.cpp \
     dbusinterface/dbustype.cpp \
     dbusinterface/filemonitorInstance_interface.cpp \
-    dbusinterface/monitormanager_interface.cpp
+    dbusinterface/monitormanager_interface.cpp \
+    views/keyeventmanager.cpp
 
 HEADERS  += \
     views/desktopframe.h \
@@ -72,7 +73,8 @@ HEADERS  += \
     dbusinterface/filelistjob_interface.h \
     dbusinterface/dbustype.h \
     dbusinterface/filemonitorInstance_interface.h \
-    dbusinterface/monitormanager_interface.h
+    dbusinterface/monitormanager_interface.h \
+    views/keyeventmanager.h
 
 
 
