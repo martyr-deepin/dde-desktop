@@ -132,6 +132,10 @@ void DesktopItem::setChecked(bool checked){
      }
 }
 
+QString DesktopItem::gridKey(){
+    return QString("%1-%2").arg(QString::number(pos().x()), QString::number(pos()   .y()));
+}
+
 void DesktopItem::moveEvent(QMoveEvent *event){
     QFrame::moveEvent(event);
 }

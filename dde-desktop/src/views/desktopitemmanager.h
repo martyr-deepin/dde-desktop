@@ -21,6 +21,8 @@ public:
 
     void initConnect();
 
+    DesktopItemPointer getItemByPos(QPoint pos);
+
     QList<DesktopItemPointer> getItems();
 
     QDir::SortFlag getSortFlag();

@@ -204,6 +204,15 @@ void DesktopItemManager::changeSizeByGrid(){
     emit signalManager->desktopItemsSaved();
 }
 
+DesktopItemPointer DesktopItemManager::getItemByPos(QPoint pos){
+    foreach (DesktopItemPointer pItem, m_list_pItems) {
+        if (pItem->pos() == pos){
+            return pItem;
+        }
+    }
+    return DesktopItemPointer();
+}
+
 QList<DesktopItemPointer> DesktopItemManager::getItems(){
     return m_list_pItems;
 }

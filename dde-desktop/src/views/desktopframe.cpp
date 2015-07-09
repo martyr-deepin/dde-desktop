@@ -19,6 +19,10 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_desktopItemManager = QSharedPointer<DesktopItemManager>::create(this);
     m_keyEventManager = QSharedPointer<KeyEventManager>::create(this);
 
+    m_TopDesktopItem = DesktopItemPointer();
+    m_lastPressedCheckDesktopItem = DesktopItemPointer();
+    m_lastCheckedDesktopItem = DesktopItemPointer();
+
     initItems();
     initConnect();
     qApp->setStyleSheet(getQssFromFile(":/skin/qss/DesktopItem.qss"));
@@ -32,8 +36,17 @@ void DesktopFrame::initItems(){
 }
 
 void DesktopFrame::initConnect(){
-    connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(changeGridBySizeType(SizeType)));
-    connect(signalManager, SIGNAL(gridModeChanged(bool)), this, SLOT(changeGridMode(bool)));
+    connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)),
+            this, SLOT(changeGridBySizeType(SizeType)));
+    connect(signalManager, SIGNAL(gridModeChanged(bool)),
+            this, SLOT(changeGridMode(bool)));
+    connect(this, SIGNAL(lastCheckedDesktopItemChanged(DesktopItemPointer)),
+            this, SLOT(setLastCheckedDesktopItem(DesktopItemPointer)));
+    connect(this, SIGNAL(checkedDesktopItemsAdded(DesktopItemPointer)),
+            this, SLOT(addCheckedDesktopItem(DesktopItemPointer)));
+    connect(this, SIGNAL(checkedDesktopItemsRemoved(DesktopItemPointer)),
+            this, SLOT(removeCheckedDesktopItem(DesktopItemPointer)));
+    connect(this, SIGNAL(multiCheckedByMouseChanged(bool)), this, SLOT(setMultiCheckedByMouse(bool)));
 }
 
 QSharedPointer<DesktopItemManager> DesktopFrame::getTopDesktopItemManager(){
@@ -67,8 +80,8 @@ void DesktopFrame::changeGridMode(bool mode){
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
     for (int i=m_desktopItemManager->getItems().count() - 1; i >= 0; i--){
         if (m_desktopItemManager->getItems().at(i)->geometry().contains(pos)){
-            m_TopDeskItem = m_desktopItemManager->getItems().at(i);
-            return m_TopDeskItem;
+            m_TopDesktopItem = m_desktopItemManager->getItems().at(i);
+            return m_TopDesktopItem;
         }
     }
     return DesktopItemPointer();
@@ -77,18 +90,32 @@ DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
 void DesktopFrame::checkDesktopItemsByRect(QRect rect){
     foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         if (rect.intersects(pItem->geometry())){
-            if (!m_checkedDesktopItems.contains(pItem)){
-                m_checkedDesktopItems.append(pItem);
+            if (!pItem->isChecked()){
+                emit pItem->checkedChanged(true);
+                emit lastCheckedDesktopItemChanged(pItem);
             }
-            emit pItem->checkedChanged(true);
         }else{
-            if (m_checkedDesktopItems.contains(pItem)){
-                int index = m_checkedDesktopItems.indexOf(pItem);
-                m_checkedDesktopItems.removeAt(index);
+            if (pItem->isChecked()){
+                emit pItem->checkedChanged(false);
+                if (m_checkedDesktopItems.contains(pItem)){
+                    int index = m_checkedDesktopItems.indexOf(pItem);
+                    m_checkedDesktopItems.removeAt(index);
+                }
             }
-            emit pItem->checkedChanged(false);
         }
     }
+
+    if (m_checkedDesktopItems.count() > 1){
+        m_multiCheckedByMouse = true;
+    }
+}
+
+bool DesktopFrame::isMultiCheckedByMouse(){
+    return m_multiCheckedByMouse;
+}
+
+void DesktopFrame::setMultiCheckedByMouse(bool flag){
+    m_multiCheckedByMouse = flag;
 }
 
 void DesktopFrame::unCheckAllItems(){
@@ -105,28 +132,47 @@ void DesktopFrame::unCheckCheckedItems(){
 }
 
 
-void DesktopFrame::checkRaiseItem(DesktopItemPointer& item){
-    if (!item.isNull()){
-        emit item->checkedChanged(true);
-        if(!m_checkedDesktopItems.contains(item)){
-            m_checkedDesktopItems.append(item);
-        }
-        item->raise();
+void DesktopFrame::checkRaiseItem(DesktopItemPointer& pItem){
+    if (!pItem.isNull()){
+        emit pItem->checkedChanged(true);
+        emit lastCheckedDesktopItemChanged(pItem);
+        m_lastPressedCheckDesktopItem = pItem;
+        pItem->raise();
 
-        bool flag = m_desktopItemManager->getItems().removeOne(item);
+        bool flag = m_desktopItemManager->getItems().removeOne(pItem);
         if (flag){
-            m_desktopItemManager->getItems().append(item);
+            m_desktopItemManager->getItems().append(pItem);
         }
     }
 }
 
+DesktopItemPointer DesktopFrame::getLastPressedCheckedDesktopItem(){
+    return m_lastPressedCheckDesktopItem;
+}
+
+DesktopItemPointer DesktopFrame::getLastCheckedDesktopItem(){
+    return m_lastCheckedDesktopItem;
+}
+
+void DesktopFrame::setLastCheckedDesktopItem(DesktopItemPointer pItem){
+    m_lastCheckedDesktopItem = pItem;
+    addCheckedDesktopItem(pItem);
+}
+
+void DesktopFrame::addCheckedDesktopItem(DesktopItemPointer pItem){
+    if (!m_checkedDesktopItems.contains(pItem)){
+        m_checkedDesktopItems.append(pItem);
+    }
+}
+
+void DesktopFrame::removeCheckedDesktopItem(DesktopItemPointer pItem){
+    if (m_checkedDesktopItems.contains(pItem)){
+        int index = m_checkedDesktopItems.indexOf(pItem);
+        m_checkedDesktopItems.removeAt(index);
+    }
+}
+
 QList<DesktopItemPointer> DesktopFrame::getCheckedDesktopItems(){
-//    m_checkedDesktopItems.clear();
-//    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
-//        if (pItem->isChecked()){
-//            m_checkedDesktopItems.append(pItem);
-//        }
-//    }
     return m_checkedDesktopItems;
 }
 
@@ -205,23 +251,16 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
-//    m_checkedDesktopItems = getCheckedDesktopItems();
     if (event->button() == Qt::LeftButton){
 
         if (pTopDesktopItem.isNull()){
             setFocus();
             unCheckCheckedItems();
-            qDebug() << "===========";
         }else{
             if (!pTopDesktopItem->isChecked()){
+                unCheckCheckedItems();
                 checkRaiseItem(pTopDesktopItem);
             }
-
-//            if (m_checkedDesktopItems.indexOf(pTopDesktopItem) == -1){
-//                unCheckCheckedItems();
-//                m_checkedDesktopItems.append(pTopDesktopItem);
-//            }
-
             startDrag();
         }
 
@@ -327,7 +366,7 @@ void DesktopFrame::startDrag(){
         }else{
             if (!m_dragLeave){
                 unCheckCheckedItems();
-                checkRaiseItem(m_TopDeskItem);
+                checkRaiseItem(m_TopDesktopItem);
             }
         }
     }
@@ -397,6 +436,7 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
 
 
 void DesktopFrame::keyPressEvent(QKeyEvent *event){
+
     if (event->key() == Qt::Key_Escape){
         close();
     }else if (event->key() == Qt::Key_1){
@@ -415,15 +455,24 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
         emit signalManager->sortedModeChanged(QDir::Time);
     }else if (event->key() == Qt::Key_F1){
         emit signalManager->gridModeChanged(!m_isGridOn);
-    }else if (event->key() == Qt::Key_Up){
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
         emit signalManager->keyUpPressed();
-    }else if (event->key() == Qt::Key_Down){
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Down){
         emit signalManager->keyDownPressed();
-    }else if (event->key() == Qt::Key_Left){
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Left){
         emit signalManager->keyLeftPressed();
-    }else if (event->key() == Qt::Key_Right){
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Right){
         emit signalManager->keyRightPressed();
+    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Left){
+        emit signalManager->keyShiftLeftPressed();
+    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Right){
+        emit signalManager->keyShiftRightPressed();
+    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Up){
+        emit signalManager->keyShiftUpPressed();
+    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Down){
+        emit signalManager->keyShiftDownPressed();
     }
+
     TranslucentFrame::keyPressEvent(event);
 }
 

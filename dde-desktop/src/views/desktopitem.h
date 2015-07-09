@@ -30,6 +30,7 @@ public:
     QString getUrl();
     bool isChecked();
     bool isHover();
+    QString gridKey();
 
 signals:
     void desktopIconChanged(QString icon);

@@ -28,6 +28,11 @@ signals:
     void keyLeftPressed();
     void keyRightPressed();
 
+    void keyShiftLeftPressed();
+    void keyShiftRightPressed();
+    void keyShiftUpPressed();
+    void keyShiftDownPressed();
+
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
     void contextMenuShowed(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
 

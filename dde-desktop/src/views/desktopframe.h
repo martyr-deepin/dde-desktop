@@ -31,9 +31,12 @@ public:
 
     void unCheckAllItems();
     void unCheckCheckedItems();
-    void checkRaiseItem(DesktopItemPointer& item);
-    QList<DesktopItemPointer> getCheckedDesktopItems();
+    void checkRaiseItem(DesktopItemPointer& pItem);
     void checkDesktopItemsByRect(QRect rect);
+    DesktopItemPointer getLastPressedCheckedDesktopItem();
+    DesktopItemPointer getLastCheckedDesktopItem();
+    QList<DesktopItemPointer> getCheckedDesktopItems();
+
 
     void startDrag();
     QPixmap getCheckedPixmap();
@@ -41,9 +44,21 @@ public:
     SizeType getSizeType();
     bool isGridOn();
 
+    bool isMultiCheckedByMouse();
+
+signals:
+    void lastCheckedDesktopItemChanged(DesktopItemPointer pItem);
+    void checkedDesktopItemsAdded(DesktopItemPointer pItem);
+    void checkedDesktopItemsRemoved(DesktopItemPointer pItem);
+    void multiCheckedByMouseChanged(bool flag);
+
 public slots:
     void changeGridBySizeType(SizeType type);
     void changeGridMode(bool mode);
+    void setLastCheckedDesktopItem(DesktopItemPointer pItem);
+    void addCheckedDesktopItem(DesktopItemPointer pItem);
+    void removeCheckedDesktopItem(DesktopItemPointer pItem);
+    void setMultiCheckedByMouse(bool flag);
 
 protected:
     void focusInEvent(QFocusEvent* event);
@@ -65,6 +80,7 @@ private:
     QPoint m_dragMovePos;
     QRect m_selectRect;
     bool m_isSelectable;
+    bool m_multiCheckedByMouse;
     bool m_isGridOn;
     bool m_dragLeave;
     SizeType m_sizeType;
@@ -75,7 +91,9 @@ private:
     DoubleGridItemPointerList m_gridItems;
     QMap<QString, GridItemPointer> m_mapItems;
 
-    DesktopItemPointer m_TopDeskItem;
+    DesktopItemPointer m_TopDesktopItem; // z order top item
+    DesktopItemPointer m_lastPressedCheckDesktopItem; // last press checked item
+    DesktopItemPointer m_lastCheckedDesktopItem; // last checked item
     QList<DesktopItemPointer> m_checkedDesktopItems;
 
 };
