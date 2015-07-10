@@ -15,6 +15,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     settings.endGroup();
 
     m_isGridOn = isGridOn;
+    m_ctrlPressed = false;
     m_sizeType = static_cast<SizeType>(sizeType);
     m_desktopItemManager = QSharedPointer<DesktopItemManager>::create(this);
     m_keyEventManager = QSharedPointer<KeyEventManager>::create(this);
@@ -252,14 +253,22 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
     if (event->button() == Qt::LeftButton){
-
         if (pTopDesktopItem.isNull()){
-            setFocus();
-            unCheckCheckedItems();
-        }else{
-            if (!pTopDesktopItem->isChecked()){
+            if(!m_ctrlPressed){
+                setFocus();
                 unCheckCheckedItems();
-                checkRaiseItem(pTopDesktopItem);
+            }
+        }else{
+            if (m_ctrlPressed){
+                if (!pTopDesktopItem->isChecked()){
+                    checkRaiseItem(pTopDesktopItem);
+                    qDebug() << pTopDesktopItem->getDesktopName();
+                }
+            }else{
+                if (!pTopDesktopItem->isChecked()){
+                    unCheckCheckedItems();
+                    checkRaiseItem(pTopDesktopItem);
+                }
             }
             startDrag();
         }
@@ -365,8 +374,16 @@ void DesktopFrame::startDrag(){
             emit signalManager->desktopItemsSaved();
         }else{
             if (!m_dragLeave){
-                unCheckCheckedItems();
-                checkRaiseItem(m_TopDesktopItem);
+                if (m_ctrlPressed){
+                    if (!m_TopDesktopItem->isChecked()){
+                        checkRaiseItem(m_TopDesktopItem);
+                    }
+                }else{
+                    if (!m_TopDesktopItem->isChecked()){
+                        unCheckCheckedItems();
+                        checkRaiseItem(m_TopDesktopItem);
+                    }
+                }
             }
         }
     }
@@ -382,7 +399,7 @@ QPixmap DesktopFrame::getCheckedPixmap(){
                                        pItem->getDesktopName(), F);
         item->resize(pItem->size());
         item->move(pItem->pos());
-        item->setObjectName("Checked");
+        item->setObjectName("DragChecked");
     }
     F->setStyleSheet(qApp->styleSheet());
     QPixmap ret = F->grab();
@@ -413,20 +430,20 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    int rowCount = gridManager->getRowCount();
-    int columnCount = gridManager->getColumnCount();
-    foreach (GridListPointer gridlist, m_gridItems) {
-        foreach (GridItemPointer pGridItem, *gridlist) {
-            int row = pGridItem->getRow();
-            int column = pGridItem->getColumn();
-            int _c = 255 * (row + column * rowCount) / (columnCount * rowCount);
-            if (_c >= 255){
-                _c = 255;
-            }
-            QColor color(_c, _c, _c, 100);
-            painter.fillRect(pGridItem->getRect(), color);
-        }
-    }
+//    int rowCount = gridManager->getRowCount();
+//    int columnCount = gridManager->getColumnCount();
+//    foreach (GridListPointer gridlist, m_gridItems) {
+//        foreach (GridItemPointer pGridItem, *gridlist) {
+//            int row = pGridItem->getRow();
+//            int column = pGridItem->getColumn();
+//            int _c = 255 * (row + column * rowCount) / (columnCount * rowCount);
+//            if (_c >= 255){
+//                _c = 255;
+//            }
+//            QColor color(_c, _c, _c, 100);
+//            painter.fillRect(pGridItem->getRect(), color);
+//        }
+//    }
     if (m_isSelectable){
         QColor color(0, 0, 0, 90);
         painter.fillRect(m_selectRect, color);
@@ -436,6 +453,10 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
 
 
 void DesktopFrame::keyPressEvent(QKeyEvent *event){
+
+    if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_Control){
+        m_ctrlPressed = !m_ctrlPressed;
+    }
 
     if (event->key() == Qt::Key_Escape){
         close();
@@ -456,24 +477,47 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
     }else if (event->key() == Qt::Key_F1){
         emit signalManager->gridModeChanged(!m_isGridOn);
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
-        emit signalManager->keyUpPressed();
+        if (m_isGridOn){
+            emit signalManager->keyUpPressed();
+        }
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Down){
-        emit signalManager->keyDownPressed();
+        if (m_isGridOn){
+            emit signalManager->keyDownPressed();
+        }
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Left){
-        emit signalManager->keyLeftPressed();
+        if (m_isGridOn){
+            emit signalManager->keyLeftPressed();
+        }
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Right){
-        emit signalManager->keyRightPressed();
+        if (m_isGridOn){
+            emit signalManager->keyRightPressed();
+        }
     }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Left){
-        emit signalManager->keyShiftLeftPressed();
+        if (m_isGridOn){
+            emit signalManager->keyShiftLeftPressed();
+        }
     }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Right){
-        emit signalManager->keyShiftRightPressed();
+        if (m_isGridOn){
+            emit signalManager->keyShiftRightPressed();
+        }
     }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Up){
-        emit signalManager->keyShiftUpPressed();
+        if (m_isGridOn){
+            emit signalManager->keyShiftUpPressed();
+        }
     }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Down){
-        emit signalManager->keyShiftDownPressed();
+        if (m_isGridOn){
+            emit signalManager->keyShiftDownPressed();
+        }
     }
 
     TranslucentFrame::keyPressEvent(event);
+}
+
+void DesktopFrame::keyReleaseEvent(QKeyEvent *event){
+    if (event->modifiers() != Qt::ControlModifier && event->key() == Qt::Key_Control){
+        m_ctrlPressed = !m_ctrlPressed;
+    }
+    TranslucentFrame::keyReleaseEvent(event);
 }
 
 DesktopFrame::~DesktopFrame()

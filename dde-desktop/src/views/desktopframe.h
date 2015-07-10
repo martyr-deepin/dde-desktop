@@ -73,6 +73,7 @@ protected:
     void dropEvent(QDropEvent* event);
 
     void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
 
 private:
@@ -81,6 +82,8 @@ private:
     QRect m_selectRect;
     bool m_isSelectable;
     bool m_multiCheckedByMouse;
+    bool m_ctrlPressed;
+
     bool m_isGridOn;
     bool m_dragLeave;
     SizeType m_sizeType;

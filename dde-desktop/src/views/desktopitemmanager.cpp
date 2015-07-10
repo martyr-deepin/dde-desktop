@@ -15,7 +15,7 @@ DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
 }
 
 void DesktopItemManager::initComputerItem(){
-    QString url = "Computer://";
+    QString url = "computer://";
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
     m_pComputerItem  = DesktopItemPointer::create(":/skin/images/QFramer.png", this->tr("Computer"), m_parentWindow);
@@ -40,7 +40,7 @@ void DesktopItemManager::initComputerItem(){
 }
 
 void DesktopItemManager::initTrashItem(){
-    QString url = "Trash://";
+    QString url = "trash://";
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
     m_pTrashItem  = DesktopItemPointer::create(":/skin/images/QFramer.png", this->tr("Trash"), m_parentWindow);
@@ -78,7 +78,6 @@ void DesktopItemManager::initDesktopFolder(){
         int _row = (i + 2) % row;
         QFileInfo fileInfo = desktopInfoList.at(i);
         QString url = fileInfo.absoluteFilePath();
-//        m_fileSystemWatcher->addPath(url);
         QString fileName = fileInfo.fileName();
         QString baseName;
         if (fileName.startsWith(RichDirPrefix)){
@@ -145,6 +144,8 @@ void DesktopItemManager::addItem(EntryInfoObj fileInfo, int index){
     QString displayName = fileInfo.DisplayName;
     QString uri = fileInfo.URI;
     QString url = QUrl(uri).toString();
+
+//    qDebug() << fileInfo.Icon;
 
     if (displayName.startsWith(RichDirPrefix)){
         int l = QString(RichDirPrefix).length();
