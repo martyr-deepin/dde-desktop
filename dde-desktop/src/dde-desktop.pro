@@ -50,7 +50,10 @@ SOURCES += main.cpp \
     dbusinterface/fileoperations_interface.cpp \
     dbusinterface/fileoperationsflags_interface.cpp \
     dbusinterface/trashmonitor_interface.cpp \
-    dbusinterface/dbustype.cpp
+    dbusinterface/dbustype.cpp \
+    dbusinterface/menumanager_interface.cpp \
+    dbusinterface/desktopback_interface.cpp \
+    dbusinterface/showmenu_interface.cpp
 
 HEADERS  += \
     views/desktopframe.h \
@@ -70,7 +73,10 @@ HEADERS  += \
     dbusinterface/fileoperations_interface.h \
     dbusinterface/filemonitor_interface.h \
     dbusinterface/filelistjob_interface.h \
-    dbusinterface/dbustype.h
+    dbusinterface/dbustype.h \
+    dbusinterface/menumanager_interface.h \
+    dbusinterface/desktopback_interface.h \
+    dbusinterface/showmenu_interface.h
 
 
 

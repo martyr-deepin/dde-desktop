@@ -22,7 +22,7 @@ signals:
     void sortedModeChanged(QDir::SortFlag flag);
 
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
-
+    void sendItemDesktopBack(QString itemId);
 private:
     SignalManager();
     ~SignalManager();

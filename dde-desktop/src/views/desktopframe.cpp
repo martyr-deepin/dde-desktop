@@ -176,7 +176,7 @@ void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
 
 void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
     m_dragLeave = true;
-//    event->accept();
+    event->accept();
 }
 
 void DesktopFrame::dropEvent(QDropEvent *event){
@@ -185,7 +185,7 @@ void DesktopFrame::dropEvent(QDropEvent *event){
              event->setDropAction(Qt::MoveAction);
              event->accept();
         }else{
-            event->acceptProposedAction();
+            event->accept();//eptProposedAction();
         }
     }else{
         event->ignore();
