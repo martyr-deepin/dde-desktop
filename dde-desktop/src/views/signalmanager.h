@@ -33,10 +33,14 @@ signals:
     void keyShiftUpPressed();
     void keyShiftDownPressed();
 
+    void keyCtrlAPressed();
+
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
     void contextMenuShowed(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
 
     void sendItemDesktopBack(QString itemId);
+
+    void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
 
 private:
     SignalManager();

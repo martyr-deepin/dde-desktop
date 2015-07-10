@@ -74,8 +74,8 @@ typedef QList<EntryInfoObj> EntryInfoObjList;
 Q_DECLARE_METATYPE(EntryInfoObj)
 Q_DECLARE_METATYPE(EntryInfoObjList)
 
-typedef QList<DesktopItemInfo> DesktopItemInfoList;
+typedef QMap<QString, DesktopItemInfo> DesktopItemInfoMap;
 Q_DECLARE_METATYPE(DesktopItemInfo)
-Q_DECLARE_METATYPE(DesktopItemInfoList)
+Q_DECLARE_METATYPE(DesktopItemInfoMap)
 #endif // DBUSTYPE_H
 

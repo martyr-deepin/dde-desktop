@@ -4,7 +4,7 @@
 AppController::AppController(QObject *parent) : QObject(parent)
 {
     m_menuController = new MenuController;
-    m_dbusController = new DBusController;
+    m_dbusController = DBusController::instance();
 }
 
 void AppController::initConnect(){

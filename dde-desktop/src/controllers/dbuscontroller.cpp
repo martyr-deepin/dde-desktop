@@ -1,17 +1,35 @@
 #include "dbuscontroller.h"
 #include "views/global.h"
 
+
+DBusController* DBusController::m_instance=NULL;
+
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
     QDBusConnection bus = QDBusConnection::sessionBus();
     m_monitorManagerInterface = new MonitorManagerInterface(FileMonitor_service, FileMonitor_path, bus);
     m_FileOperationsInterface = new FileOperationsInterface(FileOperations_service, FileOperations_path, bus);
     m_FileOperationsFlagsInterface = new FileOperationsFlagsInterface(FileOperations_service, FileOperations_path, bus);
-
+    m_desktopDaemonInterface = new DesktopDaemonInterface(DesktopDaemon_service, DesktopDaemon_path, bus);
     getOperationsFlags();
     monitorDesktop();
 
     call_FileOperations_NewListJob(desktopLocation, ListJobFlagIncludeHidden);
+}
+
+
+DBusController* DBusController::instance(){
+    static QMutex mutex;
+    if (!m_instance) {
+        QMutexLocker locker(&mutex);
+        if (!m_instance)
+            m_instance = new DBusController;
+    }
+    return m_instance;
+}
+
+DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
+    return m_desktopDaemonInterface;
 }
 
 void DBusController::monitorDesktop(){
@@ -23,6 +41,18 @@ void DBusController::monitorDesktop(){
         FileMonitorInstanceInterface* desktopMonitorInterface = new FileMonitorInstanceInterface(service, path, QDBusConnection::sessionBus());
         connect(desktopMonitorInterface, SIGNAL(Changed(QString,QString,uint)), this, SLOT(desktopFileChanged(QString,QString,uint)));
         qDebug() << service << path << "=========";
+    }else{
+        qDebug() << reply.error().message();
+    }
+}
+
+void DBusController::getDesktopItems(){
+    QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
+    reply.waitForFinished();
+    if (!reply.isError()){
+        DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
+        emit signalManager->desktopItemsChanged(desktopItems);
+        qDebug() << desktopItems.count();
     }else{
         qDebug() << reply.error().message();
     }
@@ -73,6 +103,7 @@ void DBusController::fileListJob_execute_finished(QDBusPendingCallWatcher *call)
     if (!reply.isError()) {
         EntryInfoObjList objList = qdbus_cast<EntryInfoObjList>(reply.argumentAt(0));
         emit signalManager->desktopItemsLoaded(objList);
+        getDesktopItems();
     }else {
         qDebug() << reply.error().message();
     }

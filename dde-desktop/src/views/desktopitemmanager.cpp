@@ -117,12 +117,26 @@ void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(sortedByFlags(QDir::SortFlag)));
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
+    connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)), this, SLOT(updateDesktopItemIcons(DesktopItemInfoMap&)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
     initComputerItem();
     initTrashItem();
 //    initDesktopFolder();
+}
+
+void DesktopItemManager::updateDesktopItemIcons(DesktopItemInfoMap &desktopItems){
+    qDebug() << "updateDesktopItemIcons";
+    qDebug() << desktopItems.keys();
+    foreach (QString key, desktopItems.keys()) {
+        QString url = QUrl(key).toString();
+        qDebug() << url << desktopItems.value(key).Icon;
+        if (m_pItems.contains(url)){
+            QString icon = desktopItems.value(key).Icon;
+            m_pItems.value(url)->setDesktopIcon(icon);
+        }
+    }
 }
 
 void DesktopItemManager::addItems(EntryInfoObjList& entryInfoObjList){

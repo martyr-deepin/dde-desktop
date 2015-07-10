@@ -1,12 +1,12 @@
 #include "menucontroller.h"
 #include "views/global.h"
+#include "dbuscontroller.h"
 
 MenuController::MenuController(QObject *parent) : QObject(parent)
 {
     QDBusConnection menu_dbus = QDBusConnection::sessionBus();
 
     m_menuManagerInterface = new MenumanagerInterface(MenuManager_service, MenuManager_path, menu_dbus);
-    m_desktopBackInterface = new DesktopDaemonInterface(DesktopBack_service, DesktopBack_path, menu_dbus);
     MenuCreate_path = "";
     initConnect();
 }
@@ -53,7 +53,7 @@ void MenuController::showMenuByDesktopItem(const QList<DesktopItemPointer> &pChe
 }
 
 QString MenuController::createMenuContent(QStringList createmenupath) {
-    QDBusPendingReply<QString> menu_content_reply = m_desktopBackInterface->GenMenuContent(createmenupath);
+    QDBusPendingReply<QString> menu_content_reply = DBusController::instance()->getDesktopDaemonInterface()->GenMenuContent(createmenupath);
     menu_content_reply.waitForFinished();
     if (!menu_content_reply.isError()){
         QString menu_content = menu_content_reply.argumentAt(0).toString();
@@ -94,7 +94,7 @@ void MenuController::showMenu(const QString showmenu_path, QString menucontent) 
 }
 
 void MenuController::handleSelectedItem(QString itemId) {
-    m_desktopBackInterface->HandleSelectedMenuItem(itemId);
+    DBusController::instance()->getDesktopDaemonInterface()->HandleSelectedMenuItem(itemId);
 }
 
 void MenuController::menuItemInvoked(QString itemId) {

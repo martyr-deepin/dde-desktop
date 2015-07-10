@@ -69,7 +69,7 @@ public Q_SLOTS: // METHODS
         return asyncCallWithArgumentList(QStringLiteral("GenMenuContent"), argumentList);
     }
 
-    inline QDBusPendingReply<DesktopItemInfo> GetDesktopItems()
+    inline QDBusPendingReply<DesktopItemInfoMap> GetDesktopItems()
     {
         QList<QVariant> argumentList;
         return asyncCallWithArgumentList(QStringLiteral("GetDesktopItems"), argumentList);

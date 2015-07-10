@@ -6,6 +6,7 @@
 #include "dbusinterface/fileoperations_interface.h"
 #include "dbusinterface/fileoperationsflags_interface.h"
 #include "dbusinterface/filelistjob_interface.h"
+#include "dbusinterface/desktopdaemon_interface.h"
 #include "views/signalmanager.h"
 #include <QObject>
 #include <QtDBus/QtDBus>
@@ -15,6 +16,9 @@
 
 #define FileOperations_service "com.deepin.filemanager.Backend.Operations"
 #define FileOperations_path "/com/deepin/filemanager/Backend/Operations"
+
+#define DesktopDaemon_service "com.deepin.dde.daemon.Desktop"
+#define DesktopDaemon_path "/com/deepin/dde/daemon/Desktop"
 
 class DBusController : public QObject
 {
@@ -39,10 +43,14 @@ class DBusController : public QObject
     };
 
 public:
-    explicit DBusController(QObject *parent = 0);
-    ~DBusController();
+    static DBusController* instance();
+
+    void getOperationsFlags();
 
     void monitorDesktop();
+    void getDesktopItems();
+
+    DesktopDaemonInterface* getDesktopDaemonInterface();
 
     void call_FileOperations_NewListJob(QString path, int flag); //
     void call_FileListJob_execute(const QString& service, const QString& path);
@@ -55,9 +63,12 @@ public slots:
     void desktopFileChanged(const QString &url, const QString &in1, uint event);
 
 private:
+    DBusController(QObject *parent = 0);
+    ~DBusController();
     MonitorManagerInterface* m_monitorManagerInterface;
     FileOperationsInterface* m_FileOperationsInterface;
     FileOperationsFlagsInterface* m_FileOperationsFlagsInterface;
+    DesktopDaemonInterface* m_desktopDaemonInterface;
 
     int ListJobFlagIncludeHidden;
     int ListJobFlagNone;
@@ -65,7 +76,9 @@ private:
     uint CopyFlagNofollowSymlinks;
     uint CopyFlagNone;
 
-    void getOperationsFlags();
+    static DBusController* m_instance;
+    Q_DISABLE_COPY(DBusController)
+
 };
 
 #endif // DBUSCONTROLLER_H

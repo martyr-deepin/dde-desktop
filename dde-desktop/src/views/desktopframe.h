@@ -59,6 +59,7 @@ public slots:
     void addCheckedDesktopItem(DesktopItemPointer pItem);
     void removeCheckedDesktopItem(DesktopItemPointer pItem);
     void setMultiCheckedByMouse(bool flag);
+    void checkAllDesktopItems();
 
 protected:
     void focusInEvent(QFocusEvent* event);

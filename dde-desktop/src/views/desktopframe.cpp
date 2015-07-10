@@ -41,6 +41,7 @@ void DesktopFrame::initConnect(){
             this, SLOT(changeGridBySizeType(SizeType)));
     connect(signalManager, SIGNAL(gridModeChanged(bool)),
             this, SLOT(changeGridMode(bool)));
+    connect(signalManager, SIGNAL(keyCtrlAPressed()), this, SLOT(checkAllDesktopItems()));
     connect(this, SIGNAL(lastCheckedDesktopItemChanged(DesktopItemPointer)),
             this, SLOT(setLastCheckedDesktopItem(DesktopItemPointer)));
     connect(this, SIGNAL(checkedDesktopItemsAdded(DesktopItemPointer)),
@@ -122,6 +123,15 @@ void DesktopFrame::setMultiCheckedByMouse(bool flag){
 void DesktopFrame::unCheckAllItems(){
     foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         emit pItem->checkedChanged(false);
+    }
+}
+
+void DesktopFrame::checkAllDesktopItems(){
+    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
+        if (!pItem->isChecked()){
+            emit pItem->checkedChanged(true);
+            emit checkedDesktopItemsAdded(pItem);
+        }
     }
 }
 
@@ -476,6 +486,8 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
         emit signalManager->sortedModeChanged(QDir::Time);
     }else if (event->key() == Qt::Key_F1){
         emit signalManager->gridModeChanged(!m_isGridOn);
+    }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_A){
+        emit signalManager->keyCtrlAPressed();
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
         if (m_isGridOn){
             emit signalManager->keyUpPressed();

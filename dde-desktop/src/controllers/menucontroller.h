@@ -5,14 +5,10 @@
 #include <QtCore>
 #include "views/desktopitem.h"
 #include "dbusinterface/menumanager_interface.h"
-#include "dbusinterface/desktopdaemon_interface.h"
 #include "dbusinterface/showmenu_interface.h"
 
 #define MenuManager_service "com.deepin.menu"
 #define MenuManager_path "/com/deepin/menu"
-
-#define DesktopBack_service "com.deepin.dde.daemon.Desktop"
-#define DesktopBack_path "/com/deepin/dde/daemon/Desktop"
 
 class MenuController : public QObject
 {
@@ -37,14 +33,12 @@ public slots:
     void handleSelectedItem(QString itemId);
 private:
     MenumanagerInterface* m_menuManagerInterface;
-    DesktopDaemonInterface* m_desktopBackInterface;
     ShowmenuInterface* m_showmenuInterface;
 
     QString createMenuContent(QStringList createmenupath);
     QString registerMenu();
     QString JsonToQString(QPoint pos, QString menucontent);
     void showMenu(const QString path, QString content);
-
 };
 
 #endif // MENUCONTROLLER_H

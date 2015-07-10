@@ -54,7 +54,7 @@ void DesktopItem::initUI(){
     nameLabel = new ElidedLabel;
     nameLabel->setObjectName("Name");
 
-    iconLabel->resize(64, 64);
+    iconLabel->resize(48, 48);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(iconLabel, 0, Qt::AlignHCenter);

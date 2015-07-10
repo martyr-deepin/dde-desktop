@@ -19,8 +19,8 @@ DesktopDaemonInterface::DesktopDaemonInterface(const QString &service, const QSt
     : QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent)
 {
     DesktopItemInfo::registerMetaType();
-    qRegisterMetaType<DesktopItemInfoList>("DesktopItemInfoList");
-    qDBusRegisterMetaType<DesktopItemInfoList>();
+    qRegisterMetaType<DesktopItemInfoMap>("DesktopItemInfoMap");
+    qDBusRegisterMetaType<DesktopItemInfoMap>();
 }
 
 DesktopDaemonInterface::~DesktopDaemonInterface()

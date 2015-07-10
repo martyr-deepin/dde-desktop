@@ -37,6 +37,7 @@ public slots:
     void changeSizeByGrid();
     void sortedByFlags(QDir::SortFlag flag);
     void resort();
+    void updateDesktopItemIcons(DesktopItemInfoMap& desktopItems);
 
 private:
 //    QFileSystemWatcher* m_fileSystemWatcher;
