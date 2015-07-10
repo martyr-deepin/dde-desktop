@@ -5,7 +5,7 @@
 #include <QtCore>
 #include "views/desktopitem.h"
 #include "dbusinterface/menumanager_interface.h"
-#include "dbusinterface/desktopback_interface.h"
+#include "dbusinterface/desktopdaemon_interface.h"
 #include "dbusinterface/showmenu_interface.h"
 
 #define MenuManager_service "com.deepin.menu"
@@ -37,7 +37,7 @@ public slots:
     void handleSelectedItem(QString itemId);
 private:
     MenumanagerInterface* m_menuManagerInterface;
-    DesktopbackInterface* m_desktopBackInterface;
+    DesktopDaemonInterface* m_desktopBackInterface;
     ShowmenuInterface* m_showmenuInterface;
 
     QString createMenuContent(QStringList createmenupath);

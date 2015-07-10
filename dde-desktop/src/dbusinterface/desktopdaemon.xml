@@ -1,0 +1,95 @@
+<!DOCTYPE node PUBLIC '-//freedesktop//DTD D-BUS Object Introspection 1.0//EN' 'http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd'>
+    <node>
+        <interface name="com.deepin.dde.daemon.Desktop">
+            <method name="ActivateFile">
+                <arg direction="in" type="s"/>
+                <arg direction="in" type="as"/>
+                <arg direction="in" type="b"/>
+                <arg direction="in" type="i"/>
+            </method>
+            <method name="DestroyMenu"/>
+            <method name="GenMenuContent">
+                <arg direction="in" type="as"/>
+                <arg direction="out" type="s"/>
+            </method>
+            <method name="GetDesktopItems">
+                <arg direction="out" type="a(sssssxqbbbbbbbbbb)"/>
+                <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="DesktopItemInfo"/>
+            </method>
+            <method name="HandleSelectedMenuItem">
+                <arg direction="in" type="s"/>
+            </method>
+            <method name="IsAppGroup">
+                <arg direction="in" type="s"/>
+                <arg direction="out" type="b"/>
+            </method>
+            <method name="RequestCreatingAppGroup">
+                <arg direction="in" type="as"/>
+            </method>
+            <method name="RequestMergeIntoAppGroup">
+                <arg direction="in" type="as"/>
+                <arg direction="in" type="s"/>
+            </method>
+            <signal name="RequestRename">
+                <arg type="s"/>
+            </signal>
+            <signal name="RequestDelete">
+                <arg type="as"/>
+            </signal>
+            <signal name="RequestEmptyTrash">
+                <arg type="s"/>
+            </signal>
+            <signal name="RequestSort">
+                <arg type="s"/>
+            </signal>
+            <signal name="RequestCleanup"/>
+            <signal name="ReqeustAutoArrange"/>
+            <signal name="RequestCreateFile"/>
+            <signal name="RequestCreateFileFromTemplate">
+                <arg type="s"/>
+            </signal>
+            <signal name="RequestCreateDirectory"/>
+            <signal name="ItemCut">
+                <arg type="as"/>
+            </signal>
+            <signal name="RequestOpen">
+                <arg type="as"/>
+            </signal>
+            <signal name="AvtivateFileFailed">
+                <arg type="s"/>
+            </signal>
+            <signal name="CreateAppGroupFailed">
+                <arg type="s"/>
+            </signal>
+            <signal name="MergeIntoAppGroupFailed">
+                <arg type="s"/>
+            </signal>
+            <signal name="MergedFiles">
+                <arg type="as"/>
+            </signal>
+            <signal name="AppGroupCreated">
+                <arg type="s"/>
+                <arg type="s"/>
+            </signal>
+            <signal name="AppGroupDeleted">
+                <arg type="s"/>
+                <arg type="s"/>
+            </signal>
+            <signal name="AppGroupMerged">
+                <arg type="s"/>
+                <arg type="s"/>
+            </signal>
+            <signal name="ItemDeleted">
+                <arg type="s"/>
+            </signal>
+            <signal name="ItemCreated">
+                <arg type="s"/>
+            </signal>
+            <signal name="ItemModified">
+                <arg type="s"/>
+            </signal>
+            <property name="ActivateFlagDisplay" access="read" type="i"/>
+            <property name="ActivateFlagRunInTerminal" access="read" type="i"/>
+            <property name="ActivateFlagRun" access="read" type="i"/>
+        </interface>
+    </node>

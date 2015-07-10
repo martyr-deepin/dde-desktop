@@ -54,8 +54,8 @@ SOURCES += main.cpp \
     dbusinterface/monitormanager_interface.cpp \
     views/keyeventmanager.cpp\
     dbusinterface/menumanager_interface.cpp \
-    dbusinterface/desktopback_interface.cpp \
-    dbusinterface/showmenu_interface.cpp
+    dbusinterface/showmenu_interface.cpp \
+    dbusinterface/desktopdaemon_interface.cpp
 
 
 HEADERS  += \
@@ -80,8 +80,8 @@ HEADERS  += \
     dbusinterface/monitormanager_interface.h \
     views/keyeventmanager.h\
     dbusinterface/menumanager_interface.h \
-    dbusinterface/desktopback_interface.h \
-    dbusinterface/showmenu_interface.h
+    dbusinterface/showmenu_interface.h \
+    dbusinterface/desktopdaemon_interface.h
 
 
 RESOURCES += \

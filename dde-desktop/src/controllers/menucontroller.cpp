@@ -6,7 +6,7 @@ MenuController::MenuController(QObject *parent) : QObject(parent)
     QDBusConnection menu_dbus = QDBusConnection::sessionBus();
 
     m_menuManagerInterface = new MenumanagerInterface(MenuManager_service, MenuManager_path, menu_dbus);
-    m_desktopBackInterface = new DesktopbackInterface(DesktopBack_service, DesktopBack_path, menu_dbus);
+    m_desktopBackInterface = new DesktopDaemonInterface(DesktopBack_service, DesktopBack_path, menu_dbus);
     MenuCreate_path = "";
     initConnect();
 }
