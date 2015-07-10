@@ -32,6 +32,9 @@ public slots:
     void onKeyShiftLeftPressed();
     void onKeyShiftRightPressed();
 
+private:
+    DesktopItemPointer m_lastCheckedByKeyboard;
+
 };
 
 #endif // KEYEVENTMANAGER_H

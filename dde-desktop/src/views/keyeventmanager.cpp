@@ -5,6 +5,7 @@
 
 KeyEventManager::KeyEventManager(QWidget *parent) : QObject(parent)
 {
+    m_lastCheckedByKeyboard = DesktopItemPointer();
     initConnect();
 }
 
@@ -129,8 +130,14 @@ void KeyEventManager::clearMultiCheckedByMouse(){
 }
 
 void KeyEventManager::onKeyShiftLeftPressed(){
+    DesktopItemPointer lastCheckedDesktopItem;
+    if (static_cast<DesktopFrame*>(parent())->isMultiCheckedByMouse()){
+        lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
+    }else{
+        lastCheckedDesktopItem = m_lastCheckedByKeyboard;
+    }
+
     clearMultiCheckedByMouse();
-    DesktopItemPointer lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
     if (!lastCheckedDesktopItem.isNull()){
         QString key = lastCheckedDesktopItem->gridKey();
         GridItemPointer pItem = gridManager->getMapItems().value(key);
@@ -158,17 +165,20 @@ void KeyEventManager::onKeyShiftLeftPressed(){
                 }
             }
         }
+        if (static_cast<DesktopFrame*>(parent())->getCheckedDesktopItems().count() > 1){
+            emit static_cast<DesktopFrame*>(parent())->multiCheckedByMouseChanged(false);
+        }
     }
-
-    if (static_cast<DesktopFrame*>(parent())->getCheckedDesktopItems().count() > 1){
-        emit static_cast<DesktopFrame*>(parent())->multiCheckedByMouseChanged(false);
-    }
-
 }
 
 void KeyEventManager::onKeyShiftRightPressed(){
+    DesktopItemPointer lastCheckedDesktopItem;
+    if (static_cast<DesktopFrame*>(parent())->isMultiCheckedByMouse()){
+        lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
+    }else{
+        lastCheckedDesktopItem = m_lastCheckedByKeyboard;
+    }
     clearMultiCheckedByMouse();
-    DesktopItemPointer lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
     if (!lastCheckedDesktopItem.isNull()){
         QString key = lastCheckedDesktopItem->gridKey();
         GridItemPointer pItem = gridManager->getMapItems().value(key);
@@ -194,22 +204,185 @@ void KeyEventManager::onKeyShiftRightPressed(){
             }
             index++;
         }
-    }
-    if (static_cast<DesktopFrame*>(parent())->getCheckedDesktopItems().count() > 1){
-        emit static_cast<DesktopFrame*>(parent())->multiCheckedByMouseChanged(false);
+        if (static_cast<DesktopFrame*>(parent())->getCheckedDesktopItems().count() > 1){
+            emit static_cast<DesktopFrame*>(parent())->multiCheckedByMouseChanged(false);
+        }
     }
 }
 
 void KeyEventManager::onKeyShiftUpPressed(){
     clearMultiCheckedByMouse();
     DesktopItemPointer lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
+    if (!lastCheckedDesktopItem.isNull()){
+        QString key = lastCheckedDesktopItem->gridKey();
+        GridItemPointer pItem = gridManager->getMapItems().value(key);
+        int row = pItem->getRow();
+        int column = pItem->getColumn();
+        int rowCount = gridManager->getRowCount();
+        int columnCount = gridManager->getColumnCount();
 
+        int rowIndex;
+        for(rowIndex = rowCount - 1; rowIndex > 0; rowIndex--) {
+            bool isRowChecked(true);
+            QList<DesktopItemPointer> rowLeftItems;
+            QList<DesktopItemPointer> rowRightItems;
+            QList<DesktopItemPointer> rowItems;
+            rowLeftItems.clear();
+            rowRightItems.clear();
+            rowItems.clear();
+            if (rowIndex < rowCount){
+                for (int i = 0; i<= column; i++){
+                    QPoint pos = gridManager->getItems().at(i)->at(rowIndex)->getPos();
+                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    if (!pItem.isNull()){
+                        if (!rowLeftItems.contains(pItem)){
+                            rowLeftItems.append(pItem);
+                        }
+                    }
+                }
+            }
+            if (rowIndex - 1 >= 0){
+                for (int i=column + 1; i < columnCount; i++){
+                    QPoint pos = gridManager->getItems().at(i)->at(rowIndex - 1)->getPos();
+                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    if (!pItem.isNull()){
+                        if (!rowRightItems.contains(pItem)){
+                            rowRightItems.append(pItem);
+                        }
+                    }
+                }
+            }
+
+            rowItems = rowLeftItems + rowRightItems;
+//            qDebug() << rowIndex << rowLeftItems.count() << rowRightItems.count();
+            if (rowItems.count() > 0){
+                foreach (DesktopItemPointer _pItem, rowItems) {
+                    isRowChecked = isRowChecked && _pItem->isChecked();
+                }
+            }else{
+                continue;
+            }
+
+            if (rowIndex >= row + 1 && rowItems.count() > 0 && isRowChecked){
+                foreach (DesktopItemPointer _pItem, rowItems) {
+                    if (_pItem != lastCheckedDesktopItem){
+                        if (_pItem->isChecked()){
+                            emit _pItem->checkedChanged(false);
+                            emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsRemoved(_pItem);
+                        }
+                    }
+                }
+                break;
+            }
+            if (rowIndex < row + 1 && rowItems.count() > 0 && !isRowChecked){
+                for (int i= rowItems.count() - 1; i>=0; i--){
+                    DesktopItemPointer _pItem = rowItems.at(i);
+                    emit _pItem->checkedChanged(true);
+                    emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsAdded(_pItem);
+                }
+
+                if (rowRightItems.count() > 0){
+                    m_lastCheckedByKeyboard = rowRightItems.at(0);
+                }else{
+                    m_lastCheckedByKeyboard = rowLeftItems.at(0);
+                }
+
+                break;
+            }
+        }
+        if (static_cast<DesktopFrame*>(parent())->getCheckedDesktopItems().count() > 1){
+            emit static_cast<DesktopFrame*>(parent())->multiCheckedByMouseChanged(false);
+        }
+    }
+
+//    if (!m_lastCheckedByKeyboard.isNull()){
+//        qDebug() << m_lastCheckedByKeyboard->getDesktopName();
+//    }
 }
 
 void KeyEventManager::onKeyShiftDownPressed(){
     clearMultiCheckedByMouse();
     DesktopItemPointer lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
+    if (!lastCheckedDesktopItem.isNull()){
+        QString key = lastCheckedDesktopItem->gridKey();
+        GridItemPointer pItem = gridManager->getMapItems().value(key);
+        int row = pItem->getRow();
+        int column = pItem->getColumn();
+        int rowCount = gridManager->getRowCount();
+        int columnCount = gridManager->getColumnCount();
 
+        int rowIndex;
+        for(rowIndex = 0; rowIndex < rowCount - 1; rowIndex++) {
+            bool isRowChecked(true);
+            QList<DesktopItemPointer> rowLeftItems;
+            QList<DesktopItemPointer> rowRightItems;
+            QList<DesktopItemPointer> rowItems;
+            rowLeftItems.clear();
+            rowRightItems.clear();
+            rowItems.clear();
+            if (rowIndex >= 0){
+                for (int i = column + 1; i< columnCount; i++){
+                    QPoint pos = gridManager->getItems().at(i)->at(rowIndex)->getPos();
+                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    if (!pItem.isNull()){
+                        if (!rowRightItems.contains(pItem)){
+                            rowRightItems.append(pItem);
+                        }
+                    }
+                }
+            }
+
+            for (int i=0; i <= column; i++){
+                QPoint pos = gridManager->getItems().at(i)->at(rowIndex + 1)->getPos();
+                DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                if (!pItem.isNull()){
+                    if (!rowLeftItems.contains(pItem)){
+                        rowLeftItems.append(pItem);
+                    }
+                }
+            }
+
+            rowItems = rowRightItems + rowLeftItems;
+            if (rowItems.count() > 0){
+                foreach (DesktopItemPointer _pItem, rowItems) {
+                    isRowChecked = isRowChecked && _pItem->isChecked();
+                }
+            }else{
+                continue;
+            }
+
+            if (rowIndex < row && rowItems.count() > 0 && isRowChecked){
+                foreach (DesktopItemPointer _pItem, rowItems) {
+                    if (_pItem != lastCheckedDesktopItem){
+                        emit _pItem->checkedChanged(false);
+                        emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsRemoved(_pItem);
+                    }
+                }
+                break;
+            }
+            if (rowIndex >= row && rowItems.count() > 0 && !isRowChecked){
+                foreach (DesktopItemPointer _pItem, rowItems) {
+                    emit _pItem->checkedChanged(true);
+                    emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsAdded(_pItem);
+                }
+
+                if (rowLeftItems.count() > 0){
+                    m_lastCheckedByKeyboard = rowLeftItems.last();
+                }else{
+                    m_lastCheckedByKeyboard = rowRightItems.last();
+                }
+
+                break;
+            }
+        }
+        if (static_cast<DesktopFrame*>(parent())->getCheckedDesktopItems().count() > 1){
+            emit static_cast<DesktopFrame*>(parent())->multiCheckedByMouseChanged(false);
+        }
+    }
+
+//    if (!m_lastCheckedByKeyboard.isNull()){
+//        qDebug() << m_lastCheckedByKeyboard->getDesktopName();
+//    }
 }
 
 KeyEventManager::~KeyEventManager()
