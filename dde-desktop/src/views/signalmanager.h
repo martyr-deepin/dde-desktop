@@ -14,7 +14,7 @@ public:
     static SignalManager* instance();
 
 signals:
-    void desktopItemsLoaded(EntryInfoObjList& entryInfoObjList);
+
     void desktopItemsSaved();
 
     void gridModeChanged(bool mode); /*true: grid on; false: grid off*/
@@ -46,9 +46,11 @@ signals:
     void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
 
     /*monitor desktop folder*/
-    void itemCreated(QString url);
+    void itemCreated(const DesktopItemInfo& fileInfo);
     void itemDeleted(QString url);
-    void itemMoved(QString oldUrl, QString newUrl);
+
+    void itemShoudBeMoved(QString url);
+    void itemMoved(DesktopItemInfo& fileInfo);
 
 private:
     SignalManager();

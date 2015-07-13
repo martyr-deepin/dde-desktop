@@ -27,6 +27,7 @@ public:
     int getItemWidth();
     int getItemHeight();
     bool isRectInGrid(QRect rect);
+    GridItemPointer getBlankItem();
     GridItemPointer getItemByPos(QPoint pos);
     GridItemPointer getBlankItemByPos(QPoint pos);
     GridItemPointer getProperItemByPos(QPoint pos);

@@ -2,6 +2,7 @@
 #define DESKTOPITEM_H
 
 #include "widgets/elidelabel.h"
+#include "dbusinterface/dbustype.h"
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
@@ -31,6 +32,7 @@ public:
     bool isChecked();
     bool isHover();
     QString gridKey();
+    DesktopItemInfo getDesktopItemInfo();
 
 signals:
     void desktopIconChanged(QString icon);
@@ -44,6 +46,7 @@ public slots:
     void setChecked(bool checked);
     void setHover(bool hover);
     void setUrl(QString url);
+    void setDesktopItemInfo(DesktopItemInfo desktopItemInfo);
 
 protected:
     void moveEvent(QMoveEvent* event);
@@ -58,6 +61,7 @@ private:
     QString m_url;
     bool m_checked;
     bool m_hover;
+    DesktopItemInfo m_desktopItemInfo;
 
 };
 

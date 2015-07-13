@@ -72,6 +72,16 @@ void DesktopItem::initConnect(){
 }
 
 
+DesktopItemInfo DesktopItem::getDesktopItemInfo(){
+    return m_desktopItemInfo;
+}
+
+
+void DesktopItem::setDesktopItemInfo(DesktopItemInfo desktopItemInfo){
+    m_desktopItemInfo = desktopItemInfo;
+}
+
+
 QString DesktopItem::getDesktopName(){
     return m_desktopName;
 }

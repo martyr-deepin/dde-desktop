@@ -93,6 +93,18 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
     return m_list_items;
 }
 
+GridItemPointer GridManager::getBlankItem(){
+    for(int column = 0; column < m_columnCount; column++){
+        for (int row = 0; row < m_rowCount; row++){
+            GridItemPointer pItem = m_list_items.at(column)->at(row);
+            if (!pItem->hasDesktopItem()){
+                return pItem;
+            }
+        }
+    }
+    return GridItemPointer();
+}
+
 GridItemPointer GridManager::getItemByPos(QPoint pos){
     QString key = QString("%1-%2").arg(QString::number(pos.x()), QString::number(pos.y()));
     if (m_map_items.contains(key)){

@@ -8,8 +8,8 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#ifndef DESKTOPDAEMON_INTERFACE_H_1436523806
-#define DESKTOPDAEMON_INTERFACE_H_1436523806
+#ifndef DESKTOPDAEMON_INTERFACE_H_1436776297
+#define DESKTOPDAEMON_INTERFACE_H_1436776297
 
 #include "dbustype.h"
 #include <QtCore/QObject>
@@ -73,6 +73,13 @@ public Q_SLOTS: // METHODS
     {
         QList<QVariant> argumentList;
         return asyncCallWithArgumentList(QStringLiteral("GetDesktopItems"), argumentList);
+    }
+
+    inline QDBusPendingReply<DesktopItemInfo> GetItemInfo(const QString &in0)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(in0);
+        return asyncCallWithArgumentList(QStringLiteral("GetItemInfo"), argumentList);
     }
 
     inline QDBusPendingReply<> HandleSelectedMenuItem(const QString &in0)

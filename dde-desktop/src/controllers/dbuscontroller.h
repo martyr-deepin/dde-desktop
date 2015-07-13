@@ -44,18 +44,21 @@ class DBusController : public QObject
 public:
     static DBusController* instance();
 
-    void getOperationsFlags();
-
     void monitorDesktop();
     void getDesktopItems();
+    void asyncRenameDesktopItemByUrl(QString url);
+    void asyncCreateDesktopItemByUrl(QString url);
 
     DesktopDaemonInterface* getDesktopDaemonInterface();
+
 
 
 signals:
 
 public slots:
     void desktopFileChanged(const QString &url, const QString &in1, uint event);
+    void asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
+    void asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
 
 private:
     DBusController(QObject *parent = 0);

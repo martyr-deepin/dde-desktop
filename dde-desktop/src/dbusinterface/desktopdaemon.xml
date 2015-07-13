@@ -2,33 +2,38 @@
     <node>
         <interface name="com.deepin.dde.daemon.Desktop">
             <method name="ActivateFile">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="as"/>
-                <arg direction="in" type="b"/>
-                <arg direction="in" type="i"/>
+                <arg type="s" direction="in"/>
+                <arg type="as" direction="in"/>
+                <arg type="b" direction="in"/>
+                <arg type="i" direction="in"/>
             </method>
             <method name="DestroyMenu"/>
             <method name="GenMenuContent">
-                <arg direction="in" type="as"/>
-                <arg direction="out" type="s"/>
+                <arg type="as" direction="in"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="GetDesktopItems">
-                <arg direction="out" type="a(sssssxqbbbbbbbbbb)"/>
+                <arg type="a{s(sssssxqbbbbbbbbbb)}" direction="out"/>
+                <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="DesktopItemInfoMap"/>
+            </method>
+            <method name="GetItemInfo">
+                <arg type="s" direction="in"/>
+                <arg type="(sssssxqbbbbbbbbbb)" direction="out"/>
                 <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="DesktopItemInfo"/>
             </method>
             <method name="HandleSelectedMenuItem">
-                <arg direction="in" type="s"/>
+                <arg type="s" direction="in"/>
             </method>
             <method name="IsAppGroup">
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="b"/>
+                <arg type="s" direction="in"/>
+                <arg type="b" direction="out"/>
             </method>
             <method name="RequestCreatingAppGroup">
-                <arg direction="in" type="as"/>
+                <arg type="as" direction="in"/>
             </method>
             <method name="RequestMergeIntoAppGroup">
-                <arg direction="in" type="as"/>
-                <arg direction="in" type="s"/>
+                <arg type="as" direction="in"/>
+                <arg type="s" direction="in"/>
             </method>
             <signal name="RequestRename">
                 <arg type="s"/>
@@ -88,8 +93,8 @@
             <signal name="ItemModified">
                 <arg type="s"/>
             </signal>
-            <property name="ActivateFlagDisplay" access="read" type="i"/>
-            <property name="ActivateFlagRunInTerminal" access="read" type="i"/>
-            <property name="ActivateFlagRun" access="read" type="i"/>
+            <property access="read" type="i" name="ActivateFlagDisplay"/>
+            <property access="read" type="i" name="ActivateFlagRunInTerminal"/>
+            <property access="read" type="i" name="ActivateFlagRun"/>
         </interface>
     </node>

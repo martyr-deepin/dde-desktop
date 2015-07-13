@@ -55,6 +55,48 @@ void DBusController::getDesktopItems(){
     }
 }
 
+
+void DBusController::asyncRenameDesktopItemByUrl(QString url){
+    QDBusPendingReply<DesktopItemInfo> reply = m_desktopDaemonInterface->GetItemInfo(url);
+
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                        this, SLOT(asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher*)));
+}
+
+void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher *call){
+    QDBusPendingReply<DesktopItemInfo> reply = *call;
+    if (!reply.isError()) {
+        DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
+        emit signalManager->itemMoved(desktopItemInfo);
+    } else {
+        qDebug() << reply.error().message();
+    }
+    call->deleteLater();
+}
+
+
+void DBusController::asyncCreateDesktopItemByUrl(QString url){
+    QDBusPendingReply<DesktopItemInfo> reply = m_desktopDaemonInterface->GetItemInfo(url);
+
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                        this, SLOT(asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher*)));
+}
+
+
+void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher *call){
+    QDBusPendingReply<DesktopItemInfo> reply = *call;
+    if (!reply.isError()) {
+        DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
+        emit signalManager->itemCreated(desktopItemInfo);
+    } else {
+        qDebug() << reply.error().message();
+    }
+    call->deleteLater();
+}
+
+
 void DBusController::desktopFileChanged(const QString &url, const QString &in1, uint event){
     qDebug() << url << in1;
     switch (event) {
@@ -69,7 +111,7 @@ void DBusController::desktopFileChanged(const QString &url, const QString &in1, 
         emit signalManager->itemDeleted(url);
         break;
     case G_FILE_MONITOR_EVENT_CREATED:
-        emit signalManager->itemCreated(url);
+        asyncCreateDesktopItemByUrl(url);
         qDebug() << "file created";
         break;
     case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
@@ -83,7 +125,8 @@ void DBusController::desktopFileChanged(const QString &url, const QString &in1, 
         break;
     case G_FILE_MONITOR_EVENT_MOVED:
         qDebug() << "file event moved";
-        emit signalManager->itemMoved(url, in1);
+        emit signalManager->itemShoudBeMoved(url);
+        asyncRenameDesktopItemByUrl(in1);
         break;
     default:
         break;
