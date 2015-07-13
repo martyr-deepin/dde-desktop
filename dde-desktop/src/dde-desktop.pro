@@ -45,9 +45,6 @@ SOURCES += main.cpp \
     app/desktopapp.cpp \
     views/desktopitemmanager.cpp \
     controllers/dbuscontroller.cpp \
-    dbusinterface/filelistjob_interface.cpp \
-    dbusinterface/fileoperations_interface.cpp \
-    dbusinterface/fileoperationsflags_interface.cpp \
     dbusinterface/trashmonitor_interface.cpp \
     dbusinterface/dbustype.cpp \
     dbusinterface/filemonitorInstance_interface.cpp \
@@ -55,7 +52,8 @@ SOURCES += main.cpp \
     views/keyeventmanager.cpp\
     dbusinterface/menumanager_interface.cpp \
     dbusinterface/showmenu_interface.cpp \
-    dbusinterface/desktopdaemon_interface.cpp
+    dbusinterface/desktopdaemon_interface.cpp \
+    dbusinterface/fileInfo_interface.cpp
 
 
 HEADERS  += \
@@ -72,16 +70,14 @@ HEADERS  += \
     views/desktopitemmanager.h \
     dbusinterface/trashmonitor_interface.h \
     controllers/dbuscontroller.h \
-    dbusinterface/fileoperationsflags_interface.h \
-    dbusinterface/fileoperations_interface.h \
-    dbusinterface/filelistjob_interface.h \
     dbusinterface/dbustype.h \
     dbusinterface/filemonitorInstance_interface.h \
     dbusinterface/monitormanager_interface.h \
     views/keyeventmanager.h\
     dbusinterface/menumanager_interface.h \
     dbusinterface/showmenu_interface.h \
-    dbusinterface/desktopdaemon_interface.h
+    dbusinterface/desktopdaemon_interface.h \
+    dbusinterface/fileInfo_interface.h
 
 
 RESOURCES += \

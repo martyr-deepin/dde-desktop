@@ -23,6 +23,7 @@ signals:
     void gridSizeTypeChanged(SizeType type);
     void sortedModeChanged(QDir::SortFlag flag);
 
+    /*keyboard signal*/
     void keyUpPressed();
     void keyDownPressed();
     void keyLeftPressed();
@@ -35,12 +36,19 @@ signals:
 
     void keyCtrlAPressed();
 
+    /*context menu signal*/
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
     void contextMenuShowed(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
 
     void sendItemDesktopBack(QString itemId);
 
+    /*update desktop icon*/
     void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
+
+    /*monitor desktop folder*/
+    void itemCreated(QString url);
+    void itemDeleted(QString url);
+    void itemMoved(QString oldUrl, QString newUrl);
 
 private:
     SignalManager();

@@ -56,6 +56,7 @@ public slots:
     void changeGridBySizeType(SizeType type);
     void changeGridMode(bool mode);
     void setLastCheckedDesktopItem(DesktopItemPointer pItem);
+    void setLastPressedCheckedDesktopItem(DesktopItemPointer pItem);
     void addCheckedDesktopItem(DesktopItemPointer pItem);
     void removeCheckedDesktopItem(DesktopItemPointer pItem);
     void setMultiCheckedByMouse(bool flag);
@@ -87,6 +88,8 @@ private:
 
     bool m_isGridOn;
     bool m_dragLeave;
+
+    bool m_isDragStarted;
     SizeType m_sizeType;
 
     QSharedPointer<DesktopItemManager> m_desktopItemManager;

@@ -17,7 +17,6 @@ public:
     void loadDesktopItems();
     void initComputerItem();
     void initTrashItem();
-    void initDesktopFolder();
 
     void initConnect();
 
@@ -27,20 +26,20 @@ public:
 
     QDir::SortFlag getSortFlag();
 
+    static QString decodeUrl(QString url);
 
 signals:
 
 public slots:
-    void addItems(EntryInfoObjList& entryInfoObjList);
-    void addItem(EntryInfoObj fileInfo, int index);
+    void addItems(DesktopItemInfoMap& desktopInfoMap);
+    void addItem(DesktopItemInfo fileInfo, int index);
+    void deleteItem(QString url);
     void saveItems();
     void changeSizeByGrid();
     void sortedByFlags(QDir::SortFlag flag);
     void resort();
-    void updateDesktopItemIcons(DesktopItemInfoMap& desktopItems);
 
 private:
-//    QFileSystemWatcher* m_fileSystemWatcher;
     QSettings m_settings;
     DesktopItemPointer m_pComputerItem;
     DesktopItemPointer m_pTrashItem;

@@ -16,6 +16,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 
     m_isGridOn = isGridOn;
     m_ctrlPressed = false;
+    m_isDragStarted = false;
     m_sizeType = static_cast<SizeType>(sizeType);
     m_desktopItemManager = QSharedPointer<DesktopItemManager>::create(this);
     m_keyEventManager = QSharedPointer<KeyEventManager>::create(this);
@@ -93,7 +94,6 @@ void DesktopFrame::checkDesktopItemsByRect(QRect rect){
     foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         if (rect.intersects(pItem->geometry())){
             if (!pItem->isChecked()){
-                emit pItem->checkedChanged(true);
                 emit lastCheckedDesktopItemChanged(pItem);
             }
         }else{
@@ -145,9 +145,9 @@ void DesktopFrame::unCheckCheckedItems(){
 
 void DesktopFrame::checkRaiseItem(DesktopItemPointer& pItem){
     if (!pItem.isNull()){
-        emit pItem->checkedChanged(true);
         emit lastCheckedDesktopItemChanged(pItem);
-        m_lastPressedCheckDesktopItem = pItem;
+        setLastPressedCheckedDesktopItem(pItem);
+        m_multiCheckedByMouse = false;
         pItem->raise();
 
         bool flag = m_desktopItemManager->getItems().removeOne(pItem);
@@ -161,17 +161,23 @@ DesktopItemPointer DesktopFrame::getLastPressedCheckedDesktopItem(){
     return m_lastPressedCheckDesktopItem;
 }
 
+void DesktopFrame::setLastPressedCheckedDesktopItem(DesktopItemPointer pItem){
+    m_lastPressedCheckDesktopItem = pItem;
+    lastCheckedDesktopItemChanged(pItem);
+}
+
 DesktopItemPointer DesktopFrame::getLastCheckedDesktopItem(){
     return m_lastCheckedDesktopItem;
 }
 
 void DesktopFrame::setLastCheckedDesktopItem(DesktopItemPointer pItem){
+    emit pItem->checkedChanged(true);
     m_lastCheckedDesktopItem = pItem;
     addCheckedDesktopItem(pItem);
 }
 
 void DesktopFrame::addCheckedDesktopItem(DesktopItemPointer pItem){
-    if (!m_checkedDesktopItems.contains(pItem)){
+    if (!m_checkedDesktopItems.contains(pItem) && !pItem.isNull()){
         m_checkedDesktopItems.append(pItem);
     }
 }
@@ -260,6 +266,7 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 
 
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
+    m_isDragStarted = false;
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
     if (event->button() == Qt::LeftButton){
@@ -280,7 +287,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
                     checkRaiseItem(pTopDesktopItem);
                 }
             }
-            startDrag();
+            m_isDragStarted = true;
         }
 
     }else if (event->button() == Qt::RightButton){
@@ -297,7 +304,6 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
             }
         }
     }
-
     TranslucentFrame::mousePressEvent(event);
 }
 
@@ -310,11 +316,11 @@ void DesktopFrame::startDrag(){
     QPixmap dragPixmap = getCheckedPixmap();
 
     if (m_checkedDesktopItems.length() > 0){
-        QDrag* drag = new QDrag(this);
-        drag->setMimeData(mimeData);
-        drag->setPixmap(dragPixmap);
-        drag->setHotSpot(QCursor::pos());
-        Qt::DropAction action = drag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
+        QDrag* pDrag = new QDrag(this);
+        pDrag->setMimeData(mimeData);
+        pDrag->setPixmap(dragPixmap);
+        pDrag->setHotSpot(QCursor::pos());
+        Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
 
             if (!m_isGridOn){
@@ -396,8 +402,10 @@ void DesktopFrame::startDrag(){
                 }
             }
         }
-    }
+        mimeData->deleteLater();
+        pDrag->deleteLater();
 
+    }
 }
 
 
@@ -424,14 +432,17 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
-
-    int x = m_pressedEventPos.x();
-    int y = m_pressedEventPos.y();
-    int width = event->pos().x() - x;
-    int height = event->pos().y() -y;
-    m_selectRect = QRect(x, y , width, height);
-    update();
-    checkDesktopItemsByRect(m_selectRect);
+    if (m_isDragStarted){
+        startDrag();
+    }else{
+        int x = m_pressedEventPos.x();
+        int y = m_pressedEventPos.y();
+        int width = event->pos().x() - x;
+        int height = event->pos().y() -y;
+        m_selectRect = QRect(x, y , width, height);
+        update();
+        checkDesktopItemsByRect(m_selectRect);
+    }
     TranslucentFrame::mouseMoveEvent(event);
 }
 

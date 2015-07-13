@@ -8,13 +8,10 @@ DBusController::DBusController(QObject *parent) : QObject(parent)
 {
     QDBusConnection bus = QDBusConnection::sessionBus();
     m_monitorManagerInterface = new MonitorManagerInterface(FileMonitor_service, FileMonitor_path, bus);
-    m_FileOperationsInterface = new FileOperationsInterface(FileOperations_service, FileOperations_path, bus);
-    m_FileOperationsFlagsInterface = new FileOperationsFlagsInterface(FileOperations_service, FileOperations_path, bus);
+    m_fileInfoInterface = new FileInfoInterface(FileInfo_service, FileInfo_path, bus);
     m_desktopDaemonInterface = new DesktopDaemonInterface(DesktopDaemon_service, DesktopDaemon_path, bus);
-    getOperationsFlags();
+    getDesktopItems();
     monitorDesktop();
-
-    call_FileOperations_NewListJob(desktopLocation, ListJobFlagIncludeHidden);
 }
 
 
@@ -52,64 +49,11 @@ void DBusController::getDesktopItems(){
     if (!reply.isError()){
         DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
         emit signalManager->desktopItemsChanged(desktopItems);
-        qDebug() << desktopItems.count();
+        qDebug() << "=========";
     }else{
         qDebug() << reply.error().message();
     }
 }
-
-void DBusController::getOperationsFlags(){
-    ListJobFlagIncludeHidden = m_FileOperationsFlagsInterface->listJobFlagIncludeHidden();
-    ListJobFlagNone = m_FileOperationsFlagsInterface->listJobFlagRecusive();
-    ListJobFlagRecusive = m_FileOperationsFlagsInterface->listJobFlagRecusive();
-    CopyFlagNofollowSymlinks = m_FileOperationsFlagsInterface->copyFlagNofollowSymlinks();
-    CopyFlagNone = m_FileOperationsFlagsInterface->copyFlagNone();
-}
-
-void DBusController::call_FileOperations_NewListJob(QString path, int flag){
-    if (QDir(path).exists()){
-        QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_FileOperationsInterface->NewListJob(path, flag);
-        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
-        connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),this, SLOT(newListJob_finished(QDBusPendingCallWatcher*)));
-    }
-}
-
-void DBusController::newListJob_finished(QDBusPendingCallWatcher *call)
-{
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = *call;
-    if (!reply.isError()) {
-        QString service = reply.argumentAt(0).toString();
-        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        call_FileListJob_execute(service, path);
-    }else {
-        qDebug() << reply.error().message();
-    }
-    call->deleteLater();
-}
-
-void DBusController::call_FileListJob_execute(const QString &service, const QString &path){
-    QDBusConnection bus = QDBusConnection::sessionBus();
-    FileListJobInterface* fileListJobInterface = new FileListJobInterface(service, path, bus);
-    QDBusPendingReply<EntryInfoObjList> reply =  fileListJobInterface->Execute();
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
-    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),this, SLOT(fileListJob_execute_finished(QDBusPendingCallWatcher*)));
-    fileListJobInterface->deleteLater();
-    // todo entryinfo
-}
-
-
-void DBusController::fileListJob_execute_finished(QDBusPendingCallWatcher *call){
-    QDBusPendingReply<EntryInfoObjList> reply = *call;
-    if (!reply.isError()) {
-        EntryInfoObjList objList = qdbus_cast<EntryInfoObjList>(reply.argumentAt(0));
-        emit signalManager->desktopItemsLoaded(objList);
-        getDesktopItems();
-    }else {
-        qDebug() << reply.error().message();
-    }
-    call->deleteLater();
-}
-
 
 void DBusController::desktopFileChanged(const QString &url, const QString &in1, uint event){
     qDebug() << url << in1;
@@ -122,8 +66,10 @@ void DBusController::desktopFileChanged(const QString &url, const QString &in1, 
         break;
     case G_FILE_MONITOR_EVENT_DELETED:
         qDebug() << "file deleted";
+        emit signalManager->itemDeleted(url);
         break;
     case G_FILE_MONITOR_EVENT_CREATED:
+        emit signalManager->itemCreated(url);
         qDebug() << "file created";
         break;
     case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
@@ -137,6 +83,7 @@ void DBusController::desktopFileChanged(const QString &url, const QString &in1, 
         break;
     case G_FILE_MONITOR_EVENT_MOVED:
         qDebug() << "file event moved";
+        emit signalManager->itemMoved(url, in1);
         break;
     default:
         break;

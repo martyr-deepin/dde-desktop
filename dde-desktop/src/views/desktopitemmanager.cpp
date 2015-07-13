@@ -63,89 +63,33 @@ void DesktopItemManager::initTrashItem(){
     m_list_pItems.append(m_pTrashItem);
 }
 
-void DesktopItemManager::initDesktopFolder(){
-    int width = gridManager->getItemWidth();
-    int height = gridManager->getItemHeight();
-    int row = gridManager->getRowCount();
-
-    QDir desktopDir(desktopLocation);
-    QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::Hidden, m_sortFlag);
-
-    int size = desktopInfoList.size();
-    m_settings.beginGroup("DesktopItems");
-    for (int i = 0; i < size; i++) {
-        int _column = (i + 2) /  row;
-        int _row = (i + 2) % row;
-        QFileInfo fileInfo = desktopInfoList.at(i);
-        QString url = fileInfo.absoluteFilePath();
-        QString fileName = fileInfo.fileName();
-        QString baseName;
-        if (fileName.startsWith(RichDirPrefix)){
-            int l = QString(RichDirPrefix).length();
-            baseName = fileName.remove(0, l);
-        }else{
-            baseName = fileInfo.baseName();
-        }
-
-        DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", baseName, m_parentWindow);
-        pDesktopItem->setUrl(url);
-        pDesktopItem->resize(width, height);
-        m_pItems.insert(url, pDesktopItem);
-        m_list_pItems.append(pDesktopItem);
-
-
-
-        GridItemPointer pGridItem = gridManager->getItems().at(_column)->at(_row);
-        if (!pGridItem.isNull()){
-            QRect rect = pGridItem->getRect();
-            QPoint pos = rect.topLeft();
-            pos = m_settings.value(url, pos).toPoint();
-            pDesktopItem->move(pos);
-
-            pGridItem = gridManager->getItemByPos(pos);
-            if (!pGridItem.isNull()){
-                pGridItem->setDesktopItem(true);
-            }
-        }
-    }
-    m_settings.endGroup();
-}
-
 
 void DesktopItemManager::initConnect(){
-    connect(signalManager, SIGNAL(desktopItemsLoaded(EntryInfoObjList&)), this, SLOT(addItems(EntryInfoObjList&)));
     connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(sortedByFlags(QDir::SortFlag)));
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
-    connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)), this, SLOT(updateDesktopItemIcons(DesktopItemInfoMap&)));
+    connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)), this, SLOT(addItems(DesktopItemInfoMap&)));
+    connect(signalManager, SIGNAL(itemDeleted(QString)), this, SLOT(deleteItem(QString)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
     initComputerItem();
     initTrashItem();
-//    initDesktopFolder();
+
 }
 
-void DesktopItemManager::updateDesktopItemIcons(DesktopItemInfoMap &desktopItems){
-    qDebug() << "updateDesktopItemIcons";
-    qDebug() << desktopItems.keys();
-    foreach (QString key, desktopItems.keys()) {
-        QString url = QUrl(key).toString();
-        qDebug() << url << desktopItems.value(key).Icon;
-        if (m_pItems.contains(url)){
-            QString icon = desktopItems.value(key).Icon;
-            m_pItems.value(url)->setDesktopIcon(icon);
-        }
+QString DesktopItemManager::decodeUrl(QString url){
+    return QUrl(url).toString();
+}
+
+
+void DesktopItemManager::addItems(DesktopItemInfoMap &desktopInfoMap){
+    for(int i=0; i< desktopInfoMap.values().count(); i++){
+        addItem(desktopInfoMap.values().at(i), i);
     }
 }
 
-void DesktopItemManager::addItems(EntryInfoObjList& entryInfoObjList){
-    for(int i=0; i< entryInfoObjList.count(); i++){
-        addItem(entryInfoObjList.at(i), i);
-    }
-}
-
-void DesktopItemManager::addItem(EntryInfoObj fileInfo, int index){
+void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
     int row = gridManager->getRowCount();
@@ -157,9 +101,8 @@ void DesktopItemManager::addItem(EntryInfoObj fileInfo, int index){
     QString desktopDisplayName;
     QString displayName = fileInfo.DisplayName;
     QString uri = fileInfo.URI;
-    QString url = QUrl(uri).toString();
-
-//    qDebug() << fileInfo.Icon;
+    QString url = decodeUrl(uri);
+    QString icon = fileInfo.Icon;
 
     if (displayName.startsWith(RichDirPrefix)){
         int l = QString(RichDirPrefix).length();
@@ -170,6 +113,7 @@ void DesktopItemManager::addItem(EntryInfoObj fileInfo, int index){
 
     DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", desktopDisplayName, m_parentWindow);
     pDesktopItem->setUrl(url);
+    pDesktopItem->setDesktopIcon(icon);
     pDesktopItem->resize(width, height);
     pDesktopItem->show();
     m_pItems.insert(url, pDesktopItem);
@@ -190,6 +134,23 @@ void DesktopItemManager::addItem(EntryInfoObj fileInfo, int index){
     m_settings.endGroup();
 }
 
+
+void DesktopItemManager::deleteItem(QString url){
+    QString _url = decodeUrl(url);
+    qDebug() << _url << m_pItems.contains(_url);
+    if (m_pItems.contains(_url)){
+        DesktopItemPointer pItem = m_pItems.value(_url);
+        if (m_list_pItems.contains(pItem)){
+            m_list_pItems.removeOne(pItem);
+            qDebug() << "remove from list=======";
+        }
+        m_pItems.remove(url);
+        pItem->close();
+
+
+        qDebug() << "remove from map=======";
+    }
+}
 
 void DesktopItemManager::saveItems(){
     m_settings.beginGroup("DesktopItems");
@@ -243,7 +204,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     int size = desktopInfoList.size();
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
-        QString url = "file://" + QUrl(fileInfo.absoluteFilePath()).toString();
+        QString url = "file://" + decodeUrl(fileInfo.absoluteFilePath());
         DesktopItemPointer  pDesktopItem = m_pItems.value(url);
         m_list_pItems.append(pDesktopItem);
     }

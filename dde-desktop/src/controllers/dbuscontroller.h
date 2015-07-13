@@ -3,10 +3,9 @@
 
 #include "dbusinterface/monitormanager_interface.h"
 #include "dbusinterface/filemonitorInstance_interface.h"
-#include "dbusinterface/fileoperations_interface.h"
-#include "dbusinterface/fileoperationsflags_interface.h"
-#include "dbusinterface/filelistjob_interface.h"
+#include "dbusinterface/fileInfo_interface.h"
 #include "dbusinterface/desktopdaemon_interface.h"
+
 #include "views/signalmanager.h"
 #include <QObject>
 #include <QtDBus/QtDBus>
@@ -14,8 +13,8 @@
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
 #define FileMonitor_path "/com/deepin/filemanager/Backend/MonitorManager"
 
-#define FileOperations_service "com.deepin.filemanager.Backend.Operations"
-#define FileOperations_path "/com/deepin/filemanager/Backend/Operations"
+#define FileInfo_service "com.deepin.filemanager.Backend.FileInfo"
+#define FileInfo_path "com/deepin/filemanager/Backend/FileInfo"
 
 #define DesktopDaemon_service "com.deepin.dde.daemon.Desktop"
 #define DesktopDaemon_path "/com/deepin/dde/daemon/Desktop"
@@ -52,29 +51,18 @@ public:
 
     DesktopDaemonInterface* getDesktopDaemonInterface();
 
-    void call_FileOperations_NewListJob(QString path, int flag); //
-    void call_FileListJob_execute(const QString& service, const QString& path);
 
 signals:
 
 public slots:
-    void newListJob_finished(QDBusPendingCallWatcher *call);
-    void fileListJob_execute_finished(QDBusPendingCallWatcher *call);
     void desktopFileChanged(const QString &url, const QString &in1, uint event);
 
 private:
     DBusController(QObject *parent = 0);
     ~DBusController();
     MonitorManagerInterface* m_monitorManagerInterface;
-    FileOperationsInterface* m_FileOperationsInterface;
-    FileOperationsFlagsInterface* m_FileOperationsFlagsInterface;
+    FileInfoInterface* m_fileInfoInterface;
     DesktopDaemonInterface* m_desktopDaemonInterface;
-
-    int ListJobFlagIncludeHidden;
-    int ListJobFlagNone;
-    int ListJobFlagRecusive;
-    uint CopyFlagNofollowSymlinks;
-    uint CopyFlagNone;
 
     static DBusController* m_instance;
     Q_DISABLE_COPY(DBusController)

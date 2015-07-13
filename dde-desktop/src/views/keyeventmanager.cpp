@@ -131,13 +131,13 @@ void KeyEventManager::clearMultiCheckedByMouse(){
 
 void KeyEventManager::onKeyShiftLeftPressed(){
     DesktopItemPointer lastCheckedDesktopItem;
-    if (static_cast<DesktopFrame*>(parent())->isMultiCheckedByMouse()){
+    if (!static_cast<DesktopFrame*>(parent())->getLastPressedCheckedDesktopItem().isNull()){
         lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
+        clearMultiCheckedByMouse();
     }else{
         lastCheckedDesktopItem = m_lastCheckedByKeyboard;
     }
 
-    clearMultiCheckedByMouse();
     if (!lastCheckedDesktopItem.isNull()){
         QString key = lastCheckedDesktopItem->gridKey();
         GridItemPointer pItem = gridManager->getMapItems().value(key);
@@ -146,21 +146,21 @@ void KeyEventManager::onKeyShiftLeftPressed(){
         int columnCount = gridManager->getColumnCount();
 
         int index=columnCount;
+
         while (index > 0) {
             index = index - 1;
             QPoint pos = gridManager->getItems().at(index)->at(row)->getPos();
             DesktopItemPointer nextCheckedDesktopItem =
                     static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
-                if (!nextCheckedDesktopItem->isChecked() && index > column){
 
+                if (nextCheckedDesktopItem->isChecked() && index > column){
+                    emit nextCheckedDesktopItem->checkedChanged(false);
+                    emit static_cast<DesktopFrame*>(parent())->removeCheckedDesktopItem(nextCheckedDesktopItem);
+                    break;
                 }else if (!nextCheckedDesktopItem->isChecked() && index < column){
                     emit nextCheckedDesktopItem->checkedChanged(true);
                     emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsAdded(nextCheckedDesktopItem);
-                    break;
-                }else if (nextCheckedDesktopItem->isChecked() && index > column){
-                    emit nextCheckedDesktopItem->checkedChanged(false);
-                    emit static_cast<DesktopFrame*>(parent())->removeCheckedDesktopItem(nextCheckedDesktopItem);
                     break;
                 }
             }
@@ -173,7 +173,7 @@ void KeyEventManager::onKeyShiftLeftPressed(){
 
 void KeyEventManager::onKeyShiftRightPressed(){
     DesktopItemPointer lastCheckedDesktopItem;
-    if (static_cast<DesktopFrame*>(parent())->isMultiCheckedByMouse()){
+    if (!static_cast<DesktopFrame*>(parent())->getLastPressedCheckedDesktopItem().isNull()){
         lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
     }else{
         lastCheckedDesktopItem = m_lastCheckedByKeyboard;
