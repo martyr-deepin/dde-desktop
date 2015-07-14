@@ -37,6 +37,7 @@ void DBusController::initConnect(){
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateDirectory()), this, SLOT(createDirectory()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFile()), this, SLOT(createFile()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFileFromTemplate(QString)), this, SLOT(createFileFromTemplate(QString)));
+    connect(m_desktopDaemonInterface, SIGNAL(RequestSort(QString)),this, SLOT(sortByKey(QString)));
 }
 
 DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
@@ -246,6 +247,11 @@ void DBusController::createFileFromTemplateFinished(QString filename){
     m_createFileFromTemplateJobInterface = NULL;
 }
 
+
+void DBusController::sortByKey(QString key){
+    qDebug() << key;
+    emit signalManager->sortByKey(key);
+}
 
 DBusController::~DBusController()
 {

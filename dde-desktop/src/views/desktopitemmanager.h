@@ -40,6 +40,7 @@ public slots:
     void saveItems();
     void changeSizeByGrid();
     void sortedByFlags(QDir::SortFlag flag);
+    void sortedByKey(QString key);
     void resort();
 
     void setShoudByMovedItem(DesktopItemPointer pItem);

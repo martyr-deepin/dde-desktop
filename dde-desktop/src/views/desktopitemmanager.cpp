@@ -68,8 +68,9 @@ void DesktopItemManager::initTrashItem(){
 
 void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(sortedByFlags(QDir::SortFlag)));
+    connect(signalManager, SIGNAL(sortByKey(QString)), this, SLOT(sortedByKey(QString)));
+
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
     connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)), this, SLOT(addItems(DesktopItemInfoMap&)));
     connect(signalManager, SIGNAL(itemCreated(DesktopItemInfo)), this, SLOT(addItem(DesktopItemInfo)));
@@ -299,6 +300,24 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     }
     emit signalManager->desktopItemsSaved();
     m_sortFlag = flag;
+}
+
+void DesktopItemManager::sortedByKey(QString key){
+    if (key == "name"){
+        sortedByFlags(QDir::SortFlag::Name);
+    }else if (key == "size"){
+        sortedByFlags(QDir::SortFlag::Size);
+    }else if (key == "filetype"){
+        sortedByFlags(QDir::SortFlag::Type);
+    }else if (key == "mtime"){
+
+    }else if (key == "atime"){
+
+    }else if (key == "open-with"){
+
+    }else if (key == "tag-info"){
+
+    }
 }
 
 void DesktopItemManager::resort(){

@@ -75,6 +75,7 @@ public slots:
     void createFileFinished(QString filename);
     void createFileFromTemplate(QString templatefile);
     void createFileFromTemplateFinished(QString filename);
+    void sortByKey(QString key);
 
 
 private:
