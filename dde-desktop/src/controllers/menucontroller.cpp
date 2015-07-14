@@ -4,10 +4,7 @@
 
 MenuController::MenuController(QObject *parent) : QObject(parent)
 {
-    QDBusConnection menu_dbus = QDBusConnection::sessionBus();
-
-    m_menuManagerInterface = new MenumanagerInterface(MenuManager_service, MenuManager_path, menu_dbus);
-    MenuCreate_path = "";
+    m_menuManagerInterface = new MenumanagerInterface(MenuManager_service, MenuManager_path, QDBusConnection::sessionBus());
     initConnect();
 }
 
@@ -15,15 +12,14 @@ MenuController::MenuController(QObject *parent) : QObject(parent)
 void MenuController::initConnect(){
     connect(signalManager, SIGNAL(contextMenuShowed(QList<DesktopItemPointer>,DesktopItemPointer,QPoint)),
             this, SLOT(showMenuByDesktopItem(QList<DesktopItemPointer>,DesktopItemPointer,QPoint)));
-    connect(signalManager, SIGNAL(contextMenuShowed(DesktopItemPointer,QPoint)), this, SLOT(createMenu(DesktopItemPointer,QPoint)));
-    connect(signalManager, SIGNAL(sendItemDesktopBack(QString)), this, SLOT(handleSelectedItem(QString)));
+    connect(signalManager, SIGNAL(contextMenuShowed(DesktopItemPointer,QPoint)), this, SLOT(showMenuByDesktopItem(DesktopItemPointer,QPoint)));
 }
 
 MenuController::~MenuController()
 {
 }
 
-void MenuController::createMenu(DesktopItemPointer pItem, QPoint pos){
+void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos){
     QStringList iconurl;
     if (!pItem.isNull()) {
         iconurl = QStringList(pItem->getUrl());
@@ -31,21 +27,13 @@ void MenuController::createMenu(DesktopItemPointer pItem, QPoint pos){
     QString menucontent = createMenuContent(iconurl);
     QString menucontentfinal = JsonToQString(pos, menucontent);
     QString menucreatepath = registerMenu();
-    MenuCreate_path = menucreatepath;
-    showMenu(menucreatepath, menucontentfinal);
-}
-void MenuController::destroyMenu(QString menupath) {
-    m_menuManagerInterface->UnregisterMenu(menupath);
-}
-
-void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos){
-    if (!pItem.isNull()){
-        qDebug() << pItem->getUrl() << pos;
+    if (menucreatepath.length() > 0){
+        showMenu(menucreatepath, menucontentfinal);
     }else{
-        qDebug() << "Desktop Menu" << pos;
+        qDebug() << "register menu fail!";
     }
-
 }
+
 
 void MenuController::showMenuByDesktopItem(const QList<DesktopItemPointer> &pCheckItems,
                                            const DesktopItemPointer &pItem, QPoint pos){
@@ -85,19 +73,13 @@ QString MenuController::registerMenu() {
 }
 
 void MenuController::showMenu(const QString showmenu_path, QString menucontent) {
-
-    QDBusConnection menu_dbus = QDBusConnection::sessionBus();
-    m_showmenuInterface = new ShowmenuInterface(MenuManager_service, showmenu_path, menu_dbus);
+    m_showmenuInterface = new ShowmenuInterface(MenuManager_service, showmenu_path, QDBusConnection::sessionBus());
     m_showmenuInterface->ShowMenu(menucontent);
-    connect(m_showmenuInterface, SIGNAL(ItemInvoked(QString, bool)), this, SLOT(menuItemInvoked(QString)));
-
+    connect(m_showmenuInterface, SIGNAL(ItemInvoked(QString, bool)),this, SLOT(menuItemInvoked(QString,bool)));
+    connect(m_showmenuInterface, SIGNAL(MenuUnregistered()), DBusController::instance()->getDesktopDaemonInterface(), SLOT(DestroyMenu()));
 }
 
-void MenuController::handleSelectedItem(QString itemId) {
+void MenuController::menuItemInvoked(QString itemId, bool flag){
+    Q_UNUSED(flag)
     DBusController::instance()->getDesktopDaemonInterface()->HandleSelectedMenuItem(itemId);
-}
-
-void MenuController::menuItemInvoked(QString itemId) {
-    signalManager->sendItemDesktopBack(itemId);
-    qDebug() << itemId;
 }

@@ -40,8 +40,6 @@ signals:
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
     void contextMenuShowed(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
 
-    void sendItemDesktopBack(QString itemId);
-
     /*update desktop icon*/
     void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
 

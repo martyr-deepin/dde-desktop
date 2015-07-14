@@ -14,7 +14,7 @@ class MenuController : public QObject
 {
     Q_OBJECT
 public:
-    QString MenuCreate_path = "";
+
     explicit MenuController(QObject *parent = 0);
     ~MenuController();
 
@@ -26,11 +26,8 @@ public slots:
 
     void showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos);
     void showMenuByDesktopItem(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
+    void menuItemInvoked(QString itemId, bool flag);
 
-    void createMenu(DesktopItemPointer pItem, QPoint pos);
-    void destroyMenu(QString path);
-    void menuItemInvoked(QString itemId);
-    void handleSelectedItem(QString itemId);
 private:
     MenumanagerInterface* m_menuManagerInterface;
     ShowmenuInterface* m_showmenuInterface;
