@@ -53,7 +53,11 @@ SOURCES += main.cpp \
     dbusinterface/menumanager_interface.cpp \
     dbusinterface/showmenu_interface.cpp \
     dbusinterface/desktopdaemon_interface.cpp \
-    dbusinterface/fileInfo_interface.cpp
+    dbusinterface/fileInfo_interface.cpp \
+    dbusinterface/fileoperations_interface.cpp \
+    dbusinterface/createdirjob_interface.cpp \
+    dbusinterface/createfilejob_interface.cpp \
+    dbusinterface/createfilefromtemplatejob_interface.cpp
 
 
 HEADERS  += \
@@ -77,7 +81,11 @@ HEADERS  += \
     dbusinterface/menumanager_interface.h \
     dbusinterface/showmenu_interface.h \
     dbusinterface/desktopdaemon_interface.h \
-    dbusinterface/fileInfo_interface.h
+    dbusinterface/fileInfo_interface.h \
+    dbusinterface/fileoperations_interface.h \
+    dbusinterface/createdirjob_interface.h \
+    dbusinterface/createfilejob_interface.h \
+    dbusinterface/createfilefromtemplatejob_interface.h
 
 
 RESOURCES += \

@@ -5,6 +5,10 @@
 #include "dbusinterface/filemonitorInstance_interface.h"
 #include "dbusinterface/fileInfo_interface.h"
 #include "dbusinterface/desktopdaemon_interface.h"
+#include "dbusinterface/fileoperations_interface.h"
+#include "dbusinterface/createdirjob_interface.h"
+#include "dbusinterface/createfilejob_interface.h"
+#include "dbusinterface/createfilefromtemplatejob_interface.h"
 
 #include "views/signalmanager.h"
 #include <QObject>
@@ -12,6 +16,7 @@
 
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
 #define FileMonitor_path "/com/deepin/filemanager/Backend/MonitorManager"
+#define FileOperations_path "/com/deepin/filemanager/Backend/Operations"
 
 #define FileInfo_service "com.deepin.filemanager.Backend.FileInfo"
 #define FileInfo_path "com/deepin/filemanager/Backend/FileInfo"
@@ -43,7 +48,7 @@ class DBusController : public QObject
 
 public:
     static DBusController* instance();
-
+    void initConnect();
     void monitorDesktop();
     void getDesktopItems();
     void asyncRenameDesktopItemByUrl(QString url);
@@ -51,7 +56,9 @@ public:
 
     DesktopDaemonInterface* getDesktopDaemonInterface();
 
-
+    void updateDesktopItemInfoMap(DesktopItemInfo desktopItemInfo);
+    void updateDesktopItemInfoMap_moved(DesktopItemInfo desktopItemInfo);
+    void removeDesktopItemInfoByUrl(QString url);
 
 signals:
 
@@ -60,13 +67,31 @@ public slots:
     void asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
     void asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
 
+    void openFiles(QStringList files);
+
+    void createDirectory();
+    void createDirectoryFinished(QString dirName);
+    void createFile();
+    void createFileFinished(QString filename);
+    void createFileFromTemplate(QString templatefile);
+    void createFileFromTemplateFinished(QString filename);
+
+
 private:
     DBusController(QObject *parent = 0);
     ~DBusController();
     MonitorManagerInterface* m_monitorManagerInterface;
+    FileMonitorInstanceInterface* m_desktopMonitorInterface;
     FileInfoInterface* m_fileInfoInterface;
     DesktopDaemonInterface* m_desktopDaemonInterface;
+    FileOperationsInterface* m_fileOperationsInterface;
 
+    CreateDirJobInterface* m_createDirJobInterface;
+    CreateFileJobInterface* m_createFileJobInterface;
+    CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface;
+
+    DesktopItemInfoMap m_desktopItemInfoMap;
+    QString m_itemShoudBeMoved;
     static DBusController* m_instance;
     Q_DISABLE_COPY(DBusController)
 

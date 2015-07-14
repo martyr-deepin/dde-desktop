@@ -2,151 +2,163 @@
     <node>
         <interface name="com.deepin.filemanager.Backend.Operations">
             <method name="NewChmodJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="u"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="u" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewChownJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewCopyJob">
-                <arg direction="in" type="as"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="u"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="as" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="u" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewCreateDirectoryJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewCreateFileFromTemplateJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewCreateFileJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewDeleteJob">
-                <arg direction="in" type="as"/>
-                <arg direction="in" type="b"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="as" direction="in"/>
+                <arg type="b" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewEmptyTrashJob">
-                <arg direction="in" type="b"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="b" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
+            </method>
+            <method name="NewGetAllLaunchAppsJob">
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewGetLaunchAppJob">
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="b" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
+            </method>
+            <method name="NewGetRecommendedLaunchAppsJob">
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewGetTemplateJob">
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewLinkJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewListJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="i"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="i" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewMoveJob">
-                <arg direction="in" type="as"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="u"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="as" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="u" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewRenameJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewSetLaunchAppJob">
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewStatJob">
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
             <method name="NewTrashJob">
-                <arg direction="in" type="as"/>
-                <arg direction="in" type="b"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="in" type="s"/>
-                <arg direction="out" type="s"/>
-                <arg direction="out" type="o"/>
-                <arg direction="out" type="s"/>
+                <arg type="as" direction="in"/>
+                <arg type="b" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="in"/>
+                <arg type="s" direction="out"/>
+                <arg type="o" direction="out"/>
+                <arg type="s" direction="out"/>
             </method>
         </interface>
     </node>

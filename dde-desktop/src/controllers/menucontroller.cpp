@@ -4,7 +4,8 @@
 
 MenuController::MenuController(QObject *parent) : QObject(parent)
 {
-    m_menuManagerInterface = new MenumanagerInterface(MenuManager_service, MenuManager_path, QDBusConnection::sessionBus());
+    m_menuManagerInterface = new MenumanagerInterface(MenuManager_service, MenuManager_path, QDBusConnection::sessionBus(), this);
+    m_showmenuInterface = NULL;
     initConnect();
 }
 
@@ -73,7 +74,7 @@ QString MenuController::registerMenu() {
 }
 
 void MenuController::showMenu(const QString showmenu_path, QString menucontent) {
-    m_showmenuInterface = new ShowmenuInterface(MenuManager_service, showmenu_path, QDBusConnection::sessionBus());
+    m_showmenuInterface = new ShowmenuInterface(MenuManager_service, showmenu_path, QDBusConnection::sessionBus(), this);
     m_showmenuInterface->ShowMenu(menucontent);
     connect(m_showmenuInterface, SIGNAL(ItemInvoked(QString, bool)),this, SLOT(menuItemInvoked(QString,bool)));
     connect(m_showmenuInterface, SIGNAL(MenuUnregistered()), DBusController::instance()->getDesktopDaemonInterface(), SLOT(DestroyMenu()));

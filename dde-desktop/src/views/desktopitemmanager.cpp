@@ -68,6 +68,7 @@ void DesktopItemManager::initTrashItem(){
 
 void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(sortedByFlags(QDir::SortFlag)));
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
     connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)), this, SLOT(addItems(DesktopItemInfoMap&)));
@@ -176,6 +177,10 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
         if (!pGridItem.isNull()){
             pDesktopItem->move(pGridItem->getPos());
             pGridItem->setDesktopItem(true);
+
+            m_settings.beginGroup("DesktopItems");
+            m_settings.setValue(pDesktopItem->getUrl(), pDesktopItem->pos());
+            m_settings.endGroup();
         }
     }
 }
@@ -189,17 +194,19 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
 
         QString oldKey = m_shoudbeMovedItem->getUrl();
         if (m_pItems.contains(oldKey)){
-            QMap<QString, DesktopItemPointer>::iterator iterator = m_pItems.find(oldKey);
             QString newKey = decodeUrl(desktopItemInfo.URI);
-            m_shoudbeMovedItem->setUrl(newKey);
-            m_pItems.insert(iterator, newKey, m_shoudbeMovedItem);
+            QMap<QString, DesktopItemPointer>::iterator iterator = m_pItems.find(oldKey);
+            if (iterator!= m_pItems.end()){
+                m_shoudbeMovedItem->setUrl(newKey);
+                m_pItems.insert(iterator, newKey, m_shoudbeMovedItem);
 
-            m_settings.beginGroup("DesktopItems");
-            if (m_settings.contains(oldKey)){
-                m_settings.remove(oldKey);
-                m_settings.setValue(newKey, m_shoudbeMovedItem->pos());
+                m_settings.beginGroup("DesktopItems");
+                if (m_settings.contains(oldKey)){
+                    m_settings.remove(oldKey);
+                    m_settings.setValue(newKey, m_shoudbeMovedItem->pos());
+                }
+                m_settings.endGroup();
             }
-            m_settings.endGroup();
         }
     }
 }
@@ -224,6 +231,7 @@ void DesktopItemManager::deleteItem(QString url){
 }
 
 void DesktopItemManager::saveItems(){
+    qDebug() << "===================" << sender();
     m_settings.beginGroup("DesktopItems");
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         m_settings.setValue(pItem->getUrl(), pItem->pos());
