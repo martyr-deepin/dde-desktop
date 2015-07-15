@@ -6,6 +6,7 @@
 #include "griditem.h"
 #include "gridmanager.h"
 #include "dbusinterface/dbustype.h"
+#include "widgets/arrowrectangle.h"
 
 class DesktopItemManager : public QObject
 {
@@ -24,7 +25,7 @@ public:
     DesktopItemPointer createItem(const DesktopItemInfo& fileInfo);
     QList<DesktopItemPointer> getItems();
 
-
+    QList<int> getColumnRowByCount(int count);
 
     QDir::SortFlag getSortFlag();
     QString getDesktopDisplayName(const DesktopItemInfo& desktopItemInfo);
@@ -37,6 +38,9 @@ public slots:
     void addItem(const DesktopItemInfo& fileInfo, int index);
     void addItem(const DesktopItemInfo& fileInfo);
     void updateAppGounpItem(QString group_url, DesktopItemInfoMap& appItems);
+    void showAppGroupDetail(DesktopItemPointer& pItem, QPoint pos);
+    void closeAppGroupDetail(QPoint pos);
+    void closeAppGroupDetail();
     void deleteItem(QString url);
     void saveItems();
     void changeSizeByGrid();
@@ -57,6 +61,7 @@ private:
     QDir::SortFlag m_sortFlag;
     QList<DesktopItemPointer> m_list_pItems;
     QMap<QString, DesktopItemPointer> m_pItems;
+    ArrowRectangle* m_appGroupContainer=NULL;
 };
 
 #endif // DESKTOPITEMMANAGER_H

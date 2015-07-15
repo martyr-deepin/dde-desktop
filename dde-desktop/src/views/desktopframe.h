@@ -32,6 +32,7 @@ public:
     void unCheckAllItems();
     void unCheckCheckedItems();
     void checkRaiseItem(DesktopItemPointer& pItem);
+    void unCheckItem(DesktopItemPointer& pItem);
     void checkDesktopItemsByRect(QRect rect);
     DesktopItemPointer getLastPressedCheckedDesktopItem();
     DesktopItemPointer getLastCheckedDesktopItem();
@@ -90,6 +91,8 @@ private:
     bool m_dragLeave;
 
     bool m_isDragStarted;
+    bool m_isGridBackgoundOn = false;
+
     SizeType m_sizeType;
 
     QSharedPointer<DesktopItemManager> m_desktopItemManager;

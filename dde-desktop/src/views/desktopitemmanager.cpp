@@ -68,19 +68,33 @@ void DesktopItemManager::initTrashItem(){
 
 
 void DesktopItemManager::initConnect(){
-    connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
-    connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(sortedByFlags(QDir::SortFlag)));
-    connect(signalManager, SIGNAL(sortByKey(QString)), this, SLOT(sortedByKey(QString)));
+    connect(signalManager, SIGNAL(desktopItemsSaved()),
+            this, SLOT(saveItems()));
+    connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)),
+            this, SLOT(sortedByFlags(QDir::SortFlag)));
+    connect(signalManager, SIGNAL(sortByKey(QString)),
+            this, SLOT(sortedByKey(QString)));
 
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
-    connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)), this, SLOT(addItems(DesktopItemInfoMap&)));
-    connect(signalManager, SIGNAL(appGounpItemsChanged(QString,DesktopItemInfoMap&)), this, SLOT(updateAppGounpItem(QString,DesktopItemInfoMap&)));
+    connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)),
+            this, SLOT(addItems(DesktopItemInfoMap&)));
+    connect(signalManager, SIGNAL(appGounpItemsChanged(QString,DesktopItemInfoMap&)),
+            this, SLOT(updateAppGounpItem(QString,DesktopItemInfoMap&)));
+    connect(signalManager, SIGNAL(appGounpDetailShowed(DesktopItemPointer&,QPoint)),
+            this, SLOT(showAppGroupDetail(DesktopItemPointer&,QPoint)));
+    connect(signalManager, SIGNAL(appGounpDetailClosed(QPoint)), this, SLOT(closeAppGroupDetail(QPoint)));
+    connect(signalManager, SIGNAL(appGounpDetailClosed()), this, SLOT(closeAppGroupDetail()));
 
-    connect(signalManager, SIGNAL(itemCreated(DesktopItemInfo)), this, SLOT(addItem(DesktopItemInfo)));
-    connect(signalManager, SIGNAL(itemDeleted(QString)), this, SLOT(deleteItem(QString)));
 
-    connect(signalManager, SIGNAL(itemShoudBeMoved(QString)), this, SLOT(setShoudByMovedItemByUrl(QString)));
-    connect(signalManager, SIGNAL(itemMoved(DesktopItemInfo&)), this, SLOT(renameDesktopItem(DesktopItemInfo&)));
+    connect(signalManager, SIGNAL(itemCreated(DesktopItemInfo)),
+            this, SLOT(addItem(DesktopItemInfo)));
+    connect(signalManager, SIGNAL(itemDeleted(QString)),
+            this, SLOT(deleteItem(QString)));
+
+    connect(signalManager, SIGNAL(itemShoudBeMoved(QString)),
+            this, SLOT(setShoudByMovedItemByUrl(QString)));
+    connect(signalManager, SIGNAL(itemMoved(DesktopItemInfo&)),
+            this, SLOT(renameDesktopItem(DesktopItemInfo&)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
@@ -146,24 +160,17 @@ DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInf
 
     DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", desktopDisplayName, m_parentWindow);
     pDesktopItem->setUrl(url);
-    pDesktopItem->setDesktopItemInfo(fileInfo);
-
-//    if (isAppGroup(url)){
-//        qDebug() << "======="<< DBusController::instance();
-////        pDesktopItem->setAppGroupItems(DBusController::instance()->getAppGroups().value(url));
-//    }
-
     pDesktopItem->setDesktopIcon(icon);
+    pDesktopItem->setDesktopItemInfo(fileInfo);
     pDesktopItem->resize(width, height);
-    pDesktopItem->show();
-    m_pItems.insert(url, pDesktopItem);
-    m_list_pItems.append(pDesktopItem);
-
+//    pDesktopItem->show();
     return pDesktopItem;
 }
 
 void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo, int index){
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
+    m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
+    m_list_pItems.append(pDesktopItem);
     if (!pDesktopItem.isNull()){
         int row = gridManager->getRowCount();
         m_settings.beginGroup("DesktopItems");
@@ -247,7 +254,6 @@ void DesktopItemManager::deleteItem(QString url){
 }
 
 void DesktopItemManager::saveItems(){
-    qDebug() << "===================" << sender();
     m_settings.beginGroup("DesktopItems");
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         m_settings.setValue(pItem->getUrl(), pItem->pos());
@@ -277,7 +283,7 @@ void DesktopItemManager::changeSizeByGrid(){
 
 DesktopItemPointer DesktopItemManager::getItemByPos(QPoint pos){
     foreach (DesktopItemPointer pItem, m_list_pItems) {
-        if (pItem->pos() == pos){
+        if (pItem->geometry().contains(pos)){
             return pItem;
         }
     }
@@ -289,6 +295,7 @@ QList<DesktopItemPointer> DesktopItemManager::getItems(){
 }
 
 void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
+    gridManager->clearDeskopItemsStatus();
     QDir desktopDir(desktopLocation);
     QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::Hidden, flag);
     m_list_pItems.clear();
@@ -307,10 +314,11 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         int i = m_list_pItems.indexOf(pItem) / row;
         int j = m_list_pItems.indexOf(pItem) % row;
-        GridItemPointer gridItem = gridManager->getItems().at(i)->at(j);
-        if (!gridItem.isNull()){
-            QRect rect = gridItem->getRect();
+        GridItemPointer pGridItem = gridManager->getItems().at(i)->at(j);
+        if (!pGridItem.isNull()){
+            QRect rect = pGridItem->getRect();
             pItem->move(rect.topLeft());
+            pGridItem->setDesktopItem(true);
         }
     }
     emit signalManager->desktopItemsSaved();
@@ -341,6 +349,103 @@ void DesktopItemManager::resort(){
 
 QDir::SortFlag DesktopItemManager::getSortFlag(){
     return m_sortFlag;
+}
+
+void DesktopItemManager::showAppGroupDetail(DesktopItemPointer &pItem, QPoint pos){
+    if (m_appGroupContainer){
+        if (pItem->getUrl() == m_appGroupContainer->property("url").toString()){
+            closeAppGroupDetail();
+            return;
+        }
+    }
+
+    m_appGroupContainer = new ArrowRectangle(m_parentWindow);;
+    m_appGroupContainer->setArrorDirection(ArrowRectangle::ArrowTop);
+    m_appGroupContainer->setProperty("url", pItem->getUrl());
+    int width = gridManager->getItemWidth();
+    int height = gridManager->getItemHeight();
+    int count = pItem->getAppGroupItems().count();
+    QList<int> ret = getColumnRowByCount(count);
+    int column = ret.at(0);
+    int row = ret.at(1);
+    QTableWidget* tableWidget = new QTableWidget(row, column);
+    tableWidget->setAttribute(Qt::WA_TranslucentBackground);
+    tableWidget->horizontalHeader()->hide();
+    tableWidget->verticalHeader()->hide();
+    tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    tableWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    tableWidget->setShowGrid(false);
+    tableWidget->resize(column * width + 5, row * height + 5);
+
+    QList<DesktopItemInfo> itemInfos= pItem->getAppGroupItems().values();
+    for (int i=0; i < itemInfos.count(); i++){
+        int _row = i / column;
+        int _column = i % column;
+
+        DesktopItemInfo fileInfo = itemInfos.at(i);
+        QString desktopDisplayName = getDesktopDisplayName(fileInfo);
+        QString displayName = fileInfo.DisplayName;
+        QString uri = fileInfo.URI;
+        QString url = decodeUrl(uri);
+        QString icon = fileInfo.Icon;
+
+        DesktopItem*  pDesktopItem = new DesktopItem(":/skin/images/QFramer.png", desktopDisplayName, tableWidget);
+        pDesktopItem->setUrl(url);
+        pDesktopItem->setDesktopIcon(icon);
+        pDesktopItem->setDesktopItemInfo(fileInfo);
+        pDesktopItem->resize(width, height);
+
+        tableWidget->setCellWidget(_row, _column, pDesktopItem);
+        tableWidget->setRowHeight(_row, height);
+        tableWidget->setColumnWidth(_column, width);
+        qDebug() << _row << _column;
+    }
+    tableWidget->setStyleSheet("QTableWidget{\
+                               background-color: transparent;\
+                           }");
+    m_appGroupContainer->setContent(tableWidget);
+    m_appGroupContainer->showAtTop(pItem->pos().x() + width / 2, pItem->pos().y() + height);
+}
+
+
+void DesktopItemManager::closeAppGroupDetail(QPoint pos){
+    if (m_appGroupContainer){
+        DesktopItemPointer pItem = getItemByPos(pos);
+        qDebug() << m_appGroupContainer->property("url") << pItem <<"////////";
+        if(!pItem.isNull()){
+            qDebug() << pItem->getUrl() << m_appGroupContainer->property("url").toString() << "////////";
+            if (pItem->getUrl() == m_appGroupContainer->property("url").toString()){
+
+            }else{
+                m_appGroupContainer->close();
+                m_appGroupContainer = NULL;
+            }
+        }else{
+            m_appGroupContainer->close();
+            m_appGroupContainer = NULL;
+        }
+    }
+}
+
+void DesktopItemManager::closeAppGroupDetail(){
+    if (m_appGroupContainer){
+        m_appGroupContainer->close();
+        m_appGroupContainer = NULL;
+    }
+}
+
+QList<int> DesktopItemManager::getColumnRowByCount(int count){
+    int i = qFloor(qSqrt((double)count));
+    int j = 0;
+    if (count % i > 0){
+        j = count / i + 1;
+    }else{
+        j = count / i;
+    }
+    QList<int> ret;
+    ret.append(qMax(i, j));
+    ret.append(qMin(i, j));
+    return ret;
 }
 
 DesktopItemManager::~DesktopItemManager()

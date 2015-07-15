@@ -193,6 +193,7 @@ void DesktopItem::setHover(bool hover){
             setObjectName(QString("Normal"));
         }
         m_hover = hover;
+        m_checked = false;
         setStyleSheet(qApp->styleSheet());
     }
 
@@ -210,6 +211,7 @@ void DesktopItem::setChecked(bool checked){
             setObjectName(QString("Normal"));
         }
         m_checked = checked;
+        m_hover = false;
         setStyleSheet(qApp->styleSheet());
      }
 }

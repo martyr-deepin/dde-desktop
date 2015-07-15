@@ -47,6 +47,11 @@ signals:
     void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
     void appGounpItemsChanged(QString group_url, DesktopItemInfoMap& appItems);
 
+    /*app group detail show*/
+    void appGounpDetailShowed(DesktopItemPointer& pItem, QPoint pos);
+    void appGounpDetailClosed(QPoint pos);
+    void appGounpDetailClosed();
+
     /*monitor desktop folder*/
     void itemCreated(const DesktopItemInfo& fileInfo);
     void itemDeleted(QString url);
