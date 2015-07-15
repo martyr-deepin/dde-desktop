@@ -57,7 +57,8 @@ SOURCES += main.cpp \
     dbusinterface/fileoperations_interface.cpp \
     dbusinterface/createdirjob_interface.cpp \
     dbusinterface/createfilejob_interface.cpp \
-    dbusinterface/createfilefromtemplatejob_interface.cpp
+    dbusinterface/createfilefromtemplatejob_interface.cpp \
+    views/global.cpp
 
 
 HEADERS  += \

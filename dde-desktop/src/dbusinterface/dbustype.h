@@ -40,5 +40,9 @@ public:
 typedef QMap<QString, DesktopItemInfo> DesktopItemInfoMap;
 Q_DECLARE_METATYPE(DesktopItemInfo)
 Q_DECLARE_METATYPE(DesktopItemInfoMap)
+
+typedef QList<int> IntList;
+Q_DECLARE_METATYPE(IntList)
+
 #endif // DBUSTYPE_H
 

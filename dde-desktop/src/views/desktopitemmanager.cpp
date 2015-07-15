@@ -1,5 +1,6 @@
 #include "desktopitemmanager.h"
 #include "global.h"
+#include "controllers/dbuscontroller.h"
 
 
 DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
@@ -73,6 +74,8 @@ void DesktopItemManager::initConnect(){
 
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
     connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)), this, SLOT(addItems(DesktopItemInfoMap&)));
+    connect(signalManager, SIGNAL(appGounpItemsChanged(QString,DesktopItemInfoMap&)), this, SLOT(updateAppGounpItem(QString,DesktopItemInfoMap&)));
+
     connect(signalManager, SIGNAL(itemCreated(DesktopItemInfo)), this, SLOT(addItem(DesktopItemInfo)));
     connect(signalManager, SIGNAL(itemDeleted(QString)), this, SLOT(deleteItem(QString)));
 
@@ -83,7 +86,6 @@ void DesktopItemManager::initConnect(){
 void DesktopItemManager::loadDesktopItems(){
     initComputerItem();
     initTrashItem();
-
 }
 
 QString DesktopItemManager::decodeUrl(QString url){
@@ -125,6 +127,13 @@ void DesktopItemManager::addItems(DesktopItemInfoMap &desktopInfoMap){
     }
 }
 
+void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap &appItems){
+    QString key = decodeUrl(group_url);
+    if (m_pItems.contains(key)){
+        m_pItems.value(key)->setAppGroupItems(appItems);
+    }
+}
+
 DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInfo){
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
@@ -137,8 +146,14 @@ DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInf
 
     DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", desktopDisplayName, m_parentWindow);
     pDesktopItem->setUrl(url);
-    pDesktopItem->setDesktopIcon(icon);
     pDesktopItem->setDesktopItemInfo(fileInfo);
+
+//    if (isAppGroup(url)){
+//        qDebug() << "======="<< DBusController::instance();
+////        pDesktopItem->setAppGroupItems(DBusController::instance()->getAppGroups().value(url));
+//    }
+
+    pDesktopItem->setDesktopIcon(icon);
     pDesktopItem->resize(width, height);
     pDesktopItem->show();
     m_pItems.insert(url, pDesktopItem);

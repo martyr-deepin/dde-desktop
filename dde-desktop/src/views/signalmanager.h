@@ -45,6 +45,7 @@ signals:
 
     /*update desktop icon*/
     void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
+    void appGounpItemsChanged(QString group_url, DesktopItemInfoMap& appItems);
 
     /*monitor desktop folder*/
     void itemCreated(const DesktopItemInfo& fileInfo);

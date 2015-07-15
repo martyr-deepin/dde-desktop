@@ -3,8 +3,8 @@
 
 AppController::AppController(QObject *parent) : QObject(parent)
 {
-    m_menuController = new MenuController;
     m_dbusController = DBusController::instance();
+    m_menuController = new MenuController;
 }
 
 void AppController::initConnect(){

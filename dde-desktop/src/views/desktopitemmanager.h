@@ -36,6 +36,7 @@ public slots:
     void addItems(DesktopItemInfoMap& desktopInfoMap);
     void addItem(const DesktopItemInfo& fileInfo, int index);
     void addItem(const DesktopItemInfo& fileInfo);
+    void updateAppGounpItem(QString group_url, DesktopItemInfoMap& appItems);
     void deleteItem(QString url);
     void saveItems();
     void changeSizeByGrid();

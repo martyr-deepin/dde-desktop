@@ -8,8 +8,8 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#ifndef DESKTOPDAEMON_INTERFACE_H_1436776297
-#define DESKTOPDAEMON_INTERFACE_H_1436776297
+#ifndef DESKTOPDAEMON_INTERFACE_H_1436928754
+#define DESKTOPDAEMON_INTERFACE_H_1436928754
 
 #include "dbustype.h"
 #include <QtCore/QObject>
@@ -48,6 +48,14 @@ public:
     inline int activateFlagRunInTerminal() const
     { return qvariant_cast< int >(property("ActivateFlagRunInTerminal")); }
 
+    Q_PROPERTY(int RequestOpenPolicyOpen READ requestOpenPolicyOpen)
+    inline int requestOpenPolicyOpen() const
+    { return qvariant_cast< int >(property("RequestOpenPolicyOpen")); }
+
+    Q_PROPERTY(int RequestOpenPolicySelect READ requestOpenPolicySelect)
+    inline int requestOpenPolicySelect() const
+    { return qvariant_cast< int >(property("RequestOpenPolicySelect")); }
+
 public Q_SLOTS: // METHODS
     inline QDBusPendingReply<> ActivateFile(const QString &in0, const QStringList &in1, bool in2, int in3)
     {
@@ -67,6 +75,13 @@ public Q_SLOTS: // METHODS
         QList<QVariant> argumentList;
         argumentList << QVariant::fromValue(in0);
         return asyncCallWithArgumentList(QStringLiteral("GenMenuContent"), argumentList);
+    }
+
+    inline QDBusPendingReply<DesktopItemInfoMap> GetAppGroupItems(const QString &in0)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(in0);
+        return asyncCallWithArgumentList(QStringLiteral("GetAppGroupItems"), argumentList);
     }
 
     inline QDBusPendingReply<DesktopItemInfoMap> GetDesktopItems()
@@ -111,25 +126,22 @@ public Q_SLOTS: // METHODS
     }
 
 Q_SIGNALS: // SIGNALS
-    void AppGroupCreated(const QString &in0, const QString &in1);
-    void AppGroupDeleted(const QString &in0, const QString &in1);
-    void AppGroupMerged(const QString &in0, const QString &in1);
-    void AvtivateFileFailed(const QString &in0);
-    void CreateAppGroupFailed(const QString &in0);
+    void AppGroupCreated(const QString &in0, const QStringList &in1);
+    void AppGroupDeleted(const QString &in0);
+    void AppGroupMerged(const QString &in0, const QStringList &in1);
     void ItemCreated(const QString &in0);
     void ItemCut(const QStringList &in0);
     void ItemDeleted(const QString &in0);
     void ItemModified(const QString &in0);
-    void MergeIntoAppGroupFailed(const QString &in0);
-    void MergedFiles(const QStringList &in0);
     void ReqeustAutoArrange();
     void RequestCleanup();
     void RequestCreateDirectory();
     void RequestCreateFile();
     void RequestCreateFileFromTemplate(const QString &in0);
     void RequestDelete(const QStringList &in0);
-    void RequestEmptyTrash(const QString &in0);
-    void RequestOpen(const QStringList &in0);
+    void RequestDismissAppGroup(const QString &in0);
+    void RequestEmptyTrash();
+    void RequestOpen(const QStringList &in0, IntList in1);
     void RequestRename(const QString &in0);
     void RequestSort(const QString &in0);
 };

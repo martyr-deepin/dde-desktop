@@ -16,6 +16,7 @@ DBusController::DBusController(QObject *parent) : QObject(parent)
     m_createFileJobInterface = NULL;
     m_createFileFromTemplateJobInterface = NULL;
     getDesktopItems();
+    getAppGroups();
     monitorDesktop();
     initConnect();
 }
@@ -33,7 +34,7 @@ DBusController* DBusController::instance(){
 
 
 void DBusController::initConnect(){
-    connect(m_desktopDaemonInterface, SIGNAL(RequestOpen(QStringList)), this, SLOT(openFiles(QStringList)));
+    connect(m_desktopDaemonInterface, SIGNAL(RequestOpen(QStringList,IntList)), this, SLOT(openFiles(QStringList, IntList)));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateDirectory()), this, SLOT(createDirectory()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFile()), this, SLOT(createFile()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFileFromTemplate(QString)), this, SLOT(createFileFromTemplate(QString)));
@@ -65,9 +66,36 @@ void DBusController::getDesktopItems(){
         DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
         emit signalManager->desktopItemsChanged(desktopItems);
         m_desktopItemInfoMap = desktopItems;
+
+        foreach (QString url, desktopItems.keys()) {
+            if (isAppGroup(decodeUrl(url))){
+                getAppGroupItems(url);
+            }
+        }
+
     }else{
         qDebug() << reply.error().message();
     }
+}
+
+QMap<QString, DesktopItemInfoMap> DBusController::getAppGroups(){
+    return m_appGroups;
+}
+
+void DBusController::getAppGroupItems(QString group_url){
+    QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetAppGroupItems(group_url);
+    reply.waitForFinished();
+    if (!reply.isError()){
+        DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
+        emit signalManager->appGounpItemsChanged(group_url, desktopItems);
+        m_appGroups.insert(group_url, desktopItems);
+    }else{
+        qDebug() << reply.error().message();
+    }
+}
+
+DesktopItemInfoMap DBusController::getDesktopItemInfoMap(){
+    return m_desktopItemInfoMap;
 }
 
 
@@ -174,7 +202,7 @@ void DBusController::removeDesktopItemInfoByUrl(QString url){
     }
 }
 
-void DBusController::openFiles(QStringList files){
+void DBusController::openFiles(QStringList files, IntList intFlags){
     foreach (QString file, files) {
         QString key = QString(QUrl(file.toLocal8Bit()).toEncoded());
         if (m_desktopItemInfoMap.contains(key)){

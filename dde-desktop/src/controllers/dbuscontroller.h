@@ -10,6 +10,7 @@
 #include "dbusinterface/createfilejob_interface.h"
 #include "dbusinterface/createfilefromtemplatejob_interface.h"
 
+#include "dbusinterface/dbustype.h"
 #include "views/signalmanager.h"
 #include <QObject>
 #include <QtDBus/QtDBus>
@@ -51,6 +52,9 @@ public:
     void initConnect();
     void monitorDesktop();
     void getDesktopItems();
+    QMap<QString, DesktopItemInfoMap> getAppGroups();
+    void getAppGroupItems(QString group_url);
+    DesktopItemInfoMap getDesktopItemInfoMap();
     void asyncRenameDesktopItemByUrl(QString url);
     void asyncCreateDesktopItemByUrl(QString url);
 
@@ -67,7 +71,7 @@ public slots:
     void asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
     void asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
 
-    void openFiles(QStringList files);
+    void openFiles(QStringList files, IntList intFlags);
 
     void createDirectory();
     void createDirectoryFinished(QString dirName);
@@ -92,6 +96,8 @@ private:
     CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface;
 
     DesktopItemInfoMap m_desktopItemInfoMap;
+    QMap<QString, DesktopItemInfoMap> m_appGroups;
+
     QString m_itemShoudBeMoved;
     static DBusController* m_instance;
     Q_DISABLE_COPY(DBusController)
