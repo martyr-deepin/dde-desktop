@@ -12,6 +12,7 @@ public:
     explicit AppGroupIconFrame(QWidget *parent = 0);
     ~AppGroupIconFrame();
     static QPixmap getPixmap(QStringList icons);
+    static QPixmap getPixmap(QList<QPixmap> icons);
 signals:
 
 public slots:

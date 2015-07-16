@@ -97,7 +97,7 @@ void DesktopFrame::checkDesktopItemsByRect(QRect rect){
             }
         }else{
             if (pItem->isChecked()){
-                emit pItem->checkedChanged(false);
+                pItem->setChecked(false);
                 if (m_checkedDesktopItems.contains(pItem)){
                     int index = m_checkedDesktopItems.indexOf(pItem);
                     m_checkedDesktopItems.removeAt(index);
@@ -115,20 +115,29 @@ bool DesktopFrame::isMultiCheckedByMouse(){
     return m_multiCheckedByMouse;
 }
 
+
 void DesktopFrame::setMultiCheckedByMouse(bool flag){
     m_multiCheckedByMouse = flag;
 }
 
+bool DesktopFrame::isAllAppCheckedItems(){
+    bool flag = true;
+    foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+        flag = flag && pItem->isChecked();
+    }
+    return flag;
+}
+
 void DesktopFrame::unCheckAllItems(){
     foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
-        emit pItem->checkedChanged(false);
+        pItem->setChecked(false);
     }
 }
 
 void DesktopFrame::checkAllDesktopItems(){
     foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         if (!pItem->isChecked()){
-            emit pItem->checkedChanged(true);
+            pItem->setChecked(true);
             emit checkedDesktopItemsAdded(pItem);
         }
     }
@@ -136,7 +145,7 @@ void DesktopFrame::checkAllDesktopItems(){
 
 void DesktopFrame::unCheckCheckedItems(){
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-        emit pItem->checkedChanged(false);
+        pItem->setChecked(false);
     }
     m_checkedDesktopItems.clear();
 }
@@ -181,7 +190,7 @@ DesktopItemPointer DesktopFrame::getLastCheckedDesktopItem(){
 }
 
 void DesktopFrame::setLastCheckedDesktopItem(DesktopItemPointer pItem){
-    emit pItem->checkedChanged(true);
+    pItem->setChecked(true);
     m_lastCheckedDesktopItem = pItem;
     addCheckedDesktopItem(pItem);
 }
@@ -236,9 +245,16 @@ void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
 void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
     foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
         if (pItem->geometry().contains(event->pos())){
-            pItem->hoverChanged(true);
+            if (isAllAppCheckedItems() && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
+                m_destinationDesktopItem = pItem;
+                pItem->changeToBeAppGroupIcon();
+            }
+            pItem->setHover(true);
         }else{
-            pItem->hoverChanged(false);
+            pItem->setHover(false);
+            if (pItem == m_destinationDesktopItem){
+                pItem->changeBacktoNormal();
+            }
         }
     }
 
@@ -262,6 +278,20 @@ void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
 }
 
 void DesktopFrame::dropEvent(QDropEvent *event){
+    if (!m_destinationDesktopItem.isNull()){
+        if (m_destinationDesktopItem->geometry().contains(event->pos())){
+            QStringList urls;
+            urls.append(m_destinationDesktopItem->getUrl());
+            foreach (DesktopItemPointer pCheckedItem, m_checkedDesktopItems) {
+                urls.append(pCheckedItem->getUrl());
+            }
+            if (isAllAppCheckedItems()){
+                emit signalManager->requestCreatingAppGroup(urls);
+                m_destinationDesktopItem.clear();
+            }
+        }
+    }
+
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
         if (event->source() == this){    
              event->setDropAction(Qt::MoveAction);
@@ -446,7 +476,7 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
         if (!pTopDesktopItem.isNull()){
             if (isAppGroup(pTopDesktopItem->getUrl())){
                 unCheckCheckedItems();
-                emit pTopDesktopItem->hoverChanged(true);
+                emit pTopDesktopItem->setHover(true);
                 emit signalManager->appGounpDetailShowed(pTopDesktopItem, event->pos());
             }
         }

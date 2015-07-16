@@ -34,11 +34,17 @@ DBusController* DBusController::instance(){
 
 
 void DBusController::initConnect(){
-    connect(m_desktopDaemonInterface, SIGNAL(RequestOpen(QStringList,IntList)), this, SLOT(openFiles(QStringList, IntList)));
+    connect(m_desktopDaemonInterface, SIGNAL(RequestOpen(QStringList,IntList)),
+            this, SLOT(openFiles(QStringList, IntList)));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateDirectory()), this, SLOT(createDirectory()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFile()), this, SLOT(createFile()));
-    connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFileFromTemplate(QString)), this, SLOT(createFileFromTemplate(QString)));
+    connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFileFromTemplate(QString)),
+            this, SLOT(createFileFromTemplate(QString)));
     connect(m_desktopDaemonInterface, SIGNAL(RequestSort(QString)),this, SLOT(sortByKey(QString)));
+    connect(signalManager, SIGNAL(requestCreatingAppGroup(QStringList)),
+            this, SLOT(requestCreatingAppGroup(QStringList)));
+
+    connect(signalManager, SIGNAL(appGounpCreated(QString)), this, SLOT(getAppGroupItems(QString)));
 }
 
 DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
@@ -279,6 +285,17 @@ void DBusController::createFileFromTemplateFinished(QString filename){
 void DBusController::sortByKey(QString key){
     qDebug() << key;
     emit signalManager->sortByKey(key);
+}
+
+
+void DBusController::requestCreatingAppGroup(QStringList urls){
+    QDBusPendingReply<> reply = m_desktopDaemonInterface->RequestCreatingAppGroup(urls);
+    reply.waitForFinished();
+    if (!reply.isError()){
+
+    }else{
+        qDebug() << reply.error().message();
+    }
 }
 
 DBusController::~DBusController()

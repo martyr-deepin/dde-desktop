@@ -53,7 +53,7 @@ public:
     void monitorDesktop();
     void getDesktopItems();
     QMap<QString, DesktopItemInfoMap> getAppGroups();
-    void getAppGroupItems(QString group_url);
+
     DesktopItemInfoMap getDesktopItemInfoMap();
     void asyncRenameDesktopItemByUrl(QString url);
     void asyncCreateDesktopItemByUrl(QString url);
@@ -81,6 +81,9 @@ public slots:
     void createFileFromTemplateFinished(QString filename);
     void sortByKey(QString key);
 
+    void requestCreatingAppGroup(QStringList urls);
+
+    void getAppGroupItems(QString group_url);
 
 private:
     DBusController(QObject *parent = 0);

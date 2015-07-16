@@ -13,8 +13,8 @@ DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
     setObjectName("DesktopItem");
     initUI();
     initConnect();
-    emit desktopIconChanged(m_desktopIcon);
-    emit desktopNameChanged(m_desktopName);
+    setDesktopIcon(m_desktopIcon);
+    setDesktopName(m_desktopName);
 }
 
 DesktopItem::DesktopItem(QString icon, QString name, QWidget *parent):
@@ -26,8 +26,8 @@ DesktopItem::DesktopItem(QString icon, QString name, QWidget *parent):
     initUI();
     initConnect();
 
-    emit desktopIconChanged(m_desktopIcon);
-    emit desktopNameChanged(m_desktopName);
+    setDesktopIcon(m_desktopIcon);
+    setDesktopName(m_desktopName);
 }
 
 DesktopItem::DesktopItem(QPixmap icon, QString name, QWidget *parent):
@@ -39,8 +39,8 @@ DesktopItem::DesktopItem(QPixmap icon, QString name, QWidget *parent):
     initUI();
     initConnect();
 
-    emit desktopIconChanged(m_desktopIcon);
-    emit desktopNameChanged(m_desktopName);
+    setDesktopIcon(m_desktopIcon);
+    setDesktopName(m_desktopName);
 }
 
 DesktopItem::DesktopItem(QString url, QString icon, QString name, QWidget *parent):
@@ -54,18 +54,19 @@ DesktopItem::DesktopItem(QString url, QString icon, QString name, QWidget *paren
     setObjectName("DesktopItem");
     initUI();
     initConnect();
-    emit desktopIconChanged(m_desktopIcon);
-    emit desktopNameChanged(m_desktopName);
+    setDesktopIcon(m_desktopIcon);
+    setDesktopName(m_desktopName);
 }
 
 
 void DesktopItem::initUI(){
     iconLabel = new QLabel;
     iconLabel->setObjectName("Icon");
+    iconLabel->setScaledContents(true);
     nameLabel = new ElidedLabel;
     nameLabel->setObjectName("Name");
 
-    iconLabel->resize(48, 48);
+    iconLabel->setFixedSize(48, 48);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(iconLabel, 0, Qt::AlignHCenter);
@@ -76,11 +77,7 @@ void DesktopItem::initUI(){
 }
 
 void DesktopItem::initConnect(){
-    connect(this, SIGNAL(desktopIconChanged(QString)), this,  SLOT(setDesktopIcon(QString)));
-    connect(this, SIGNAL(desktopIconChanged(QPixmap&)), this,  SLOT(setDesktopIcon(QPixmap&)));
-    connect(this, SIGNAL(desktopNameChanged(QString)), this, SLOT(setDesktopName(QString)));
-    connect(this, SIGNAL(hoverChanged(bool)), this, SLOT(setHover(bool)));
-    connect(this, SIGNAL(checkedChanged(bool)), this, SLOT(setChecked(bool)));
+
 }
 
 
@@ -100,6 +97,7 @@ QString DesktopItem::getDesktopName(){
 
 void DesktopItem::setDesktopName(QString name){
     m_desktopName = name;
+    emit desktopNameChanged(name);
     nameLabel->setFullText(name);
 }
 
@@ -109,11 +107,13 @@ QPixmap DesktopItem::getDesktopIcon(){
 
 void DesktopItem::setDesktopIcon(QString icon){
      m_desktopIcon = QPixmap(icon);
+     emit desktopIconChanged(icon);
      iconLabel->setPixmap(m_desktopIcon.scaled(iconLabel->size()));
 }
 
 void DesktopItem::setDesktopIcon(QPixmap &icon){
      m_desktopIcon = icon;
+     emit desktopIconChanged(icon);
      iconLabel->setPixmap(m_desktopIcon.scaled(iconLabel->size()));
 }
 
@@ -159,6 +159,16 @@ QPixmap DesktopItem::getAppGroupIcon(){
     return appGroupIcon;
 }
 
+void DesktopItem::changeToBeAppGroupIcon(){
+    QStringList icons;
+    icons.append(m_desktopItemInfo.Icon);
+    QPixmap appGroupIcon = AppGroupIconFrame::getPixmap(icons);
+    iconLabel->setPixmap(appGroupIcon.scaled(iconLabel->size()));
+}
+
+void DesktopItem::changeBacktoNormal(){
+    iconLabel->setPixmap(m_desktopIcon);
+}
 
 void DesktopItem::setUrl(QString url){
     m_url = url;
@@ -185,6 +195,10 @@ void DesktopItem::setHover(bool hover){
         setStyleSheet(qApp->styleSheet());
     }
 
+    if (m_hover!=hover){
+        emit hoverChanged(m_hover);
+    }
+
 }
 
 void DesktopItem::setHoverObjectName(QString name){
@@ -205,6 +219,8 @@ void DesktopItem::setChecked(bool checked){
         m_checked = checked;
         m_hover = false;
         setStyleSheet(qApp->styleSheet());
+
+        emit checkedChanged(checked);
      }
 }
 
@@ -234,12 +250,12 @@ void DesktopItem::moveEvent(QMoveEvent *event){
 }
 
 void DesktopItem::enterEvent(QEvent *event){
-    emit hoverChanged(true);
+    setHover(true);
     QFrame::enterEvent(event);
 }
 
 void DesktopItem::leaveEvent(QEvent *event){
-    emit hoverChanged(false);
+    setHover(false);
     QFrame::leaveEvent(event);
 }
 

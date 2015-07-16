@@ -57,6 +57,8 @@ public slots:
     void setUrl(QString url);
     void setDesktopItemInfo(DesktopItemInfo desktopItemInfo);
     void setAppGroupItems(QMap<QString, DesktopItemInfo> items);
+    void changeToBeAppGroupIcon();
+    void changeBacktoNormal();
 
 protected:
     void mousePressEvent(QMouseEvent* event);

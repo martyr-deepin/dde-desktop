@@ -45,6 +45,9 @@ signals:
     void sortByKey(QString key);
 
     /*update desktop icon*/
+    void destinationAppGroupTryCreated(DesktopItemPointer& pItem);
+    void requestCreatingAppGroup(QStringList urls);
+
     void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
     void appGounpItemsChanged(QString group_url, DesktopItemInfoMap& appItems);
 
@@ -56,6 +59,8 @@ signals:
     /*monitor desktop folder*/
     void itemCreated(const DesktopItemInfo& fileInfo);
     void itemDeleted(QString url);
+
+    void appGounpCreated(QString url);
 
     void itemShoudBeMoved(QString url);
     void itemMoved(DesktopItemInfo& fileInfo);

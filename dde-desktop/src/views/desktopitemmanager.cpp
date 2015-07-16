@@ -163,7 +163,7 @@ DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInf
     pDesktopItem->setDesktopIcon(icon);
     pDesktopItem->setDesktopItemInfo(fileInfo);
     pDesktopItem->resize(width, height);
-//    pDesktopItem->show();
+    pDesktopItem->show();
     return pDesktopItem;
 }
 
@@ -171,6 +171,7 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo, int index){
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
     m_list_pItems.append(pDesktopItem);
+
     if (!pDesktopItem.isNull()){
         int row = gridManager->getRowCount();
         m_settings.beginGroup("DesktopItems");
@@ -195,6 +196,13 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo, int index){
 
 void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
+    m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
+    m_list_pItems.append(pDesktopItem);
+
+    if (isAppGroup(fileInfo.URI)){
+        emit signalManager->appGounpCreated(fileInfo.URI);
+    }
+
     if (!pDesktopItem.isNull()){
         GridItemPointer pGridItem = gridManager->getBlankItem();
         if (!pGridItem.isNull()){

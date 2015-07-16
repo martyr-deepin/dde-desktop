@@ -13,10 +13,11 @@
 
 #define defaut_icon ":/skin/images/QFramer.png"
 #define RichDirPrefix ".deepin_rich_dir_"
+#define AppSuffix ".desktop"
 
 QString decodeUrl(QString url);
 bool isAppGroup(QString url);
-
+bool isApp(QString url);
 
 #endif // GLOBAL_H
 

@@ -12,3 +12,11 @@ bool isAppGroup(QString url){
     }
     return false;
 }
+
+
+bool isApp(QString url){
+    if (url.endsWith(AppSuffix)){
+        return true;
+    }
+    return false;
+}

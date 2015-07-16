@@ -46,6 +46,7 @@ public:
     bool isGridOn();
 
     bool isMultiCheckedByMouse();
+    bool isAllAppCheckedItems();
 
 signals:
     void lastCheckedDesktopItemChanged(DesktopItemPointer pItem);
@@ -104,6 +105,8 @@ private:
     DesktopItemPointer m_TopDesktopItem; // z order top item
     DesktopItemPointer m_lastPressedCheckDesktopItem; // last press checked item
     DesktopItemPointer m_lastCheckedDesktopItem; // last checked item
+
+    DesktopItemPointer m_destinationDesktopItem = DesktopItemPointer(); /*desktop item which will change to be app group*/
     QList<DesktopItemPointer> m_checkedDesktopItems;
 
 };
