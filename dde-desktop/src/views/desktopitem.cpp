@@ -3,15 +3,13 @@
 #include "widgets/util.h"
 #include "global.h"
 #include "controllers/dbuscontroller.h"
+#include "appgroupiconframe.h"
 
 
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     m_desktopIcon = QPixmap();
-    m_desktopName = "";
-    m_checked = false;
-    m_hover = false;
     setObjectName("DesktopItem");
     initUI();
     initConnect();
@@ -24,8 +22,6 @@ DesktopItem::DesktopItem(QString icon, QString name, QWidget *parent):
 {
     m_desktopIcon = QPixmap(icon);
     m_desktopName = name;
-    m_checked = false;
-    m_hover = false;
     setObjectName("DesktopItem");
     initUI();
     initConnect();
@@ -39,8 +35,6 @@ DesktopItem::DesktopItem(QPixmap icon, QString name, QWidget *parent):
 {
     m_desktopIcon = icon;
     m_desktopName = name;
-    m_checked = false;
-    m_hover = false;
     setObjectName("DesktopItem");
     initUI();
     initConnect();
@@ -123,6 +117,20 @@ void DesktopItem::setDesktopIcon(QPixmap &icon){
      iconLabel->setPixmap(m_desktopIcon.scaled(iconLabel->size()));
 }
 
+
+bool DesktopItem::isInAppGroup(){
+    return m_isInAppGroup;
+}
+
+void DesktopItem::setIsInAppGroup(bool flag){
+    m_isInAppGroup = flag;
+    if (m_isInAppGroup){
+        m_hoverObjectName = "AppGroupHover";
+    }else{
+        m_hoverObjectName = "Hover";
+    }
+}
+
 void DesktopItem::updateAppGroupIcon(){
 
 }
@@ -139,35 +147,15 @@ void DesktopItem::setAppGroupItems(QMap<QString, DesktopItemInfo> items){
 
 
 QPixmap DesktopItem::getAppGroupIcon(){
-    QFrame* appGroupFrame = new QFrame;
-    appGroupFrame->setObjectName("AppGroup");
-    appGroupFrame->setAttribute(Qt::WA_DeleteOnClose);
-
-    QGridLayout* layout = new QGridLayout();
-
+    QStringList icons;
     for(int i = 0; i < 2; i++){
         for (int j=0; j < 2; j++){
-            QLabel* label = new QLabel(appGroupFrame);
-            label->setFixedSize(48, 48);
             if (m_appGounpItems.count() > i *2 + j){
-                QString style = QString("QLabel{border-image:url(") + QString(m_appGounpItems.values().at(i*2 + j).Icon) + QString(")};");
-                qDebug() << style;
-                label->setStyleSheet(style);
+                icons.append(m_appGounpItems.values().at(i*2 + j).Icon);
             }
-            layout->addWidget(label, i, j);
         }
     }
-    layout->setContentsMargins(5, 5, 5, 5);
-    appGroupFrame->setLayout(layout);
-    appGroupFrame->setStyleSheet("QFrame#AppGroup{\
-                                 background-color: rgba(0, 0, 0, 0);\
-                                 border: 6px solid rgba(255, 255, 255, 0.8);\
-                                 border-radius: 14px;\
-                                 color:white\
-                                 }");
-
-    QPixmap appGroupIcon = appGroupFrame->grab();
-    appGroupFrame->close();
+    QPixmap appGroupIcon = AppGroupIconFrame::getPixmap(icons);
     return appGroupIcon;
 }
 
@@ -188,7 +176,7 @@ bool DesktopItem::isHover(){
 void DesktopItem::setHover(bool hover){
     if (m_hover != hover && !m_checked){
         if (hover){
-            setObjectName(QString("Hover"));
+            setObjectName(m_hoverObjectName);
         }else{
             setObjectName(QString("Normal"));
         }
@@ -197,6 +185,10 @@ void DesktopItem::setHover(bool hover){
         setStyleSheet(qApp->styleSheet());
     }
 
+}
+
+void DesktopItem::setHoverObjectName(QString name){
+    m_hoverObjectName = name;
 }
 
 bool DesktopItem::isChecked(){
@@ -219,6 +211,22 @@ void DesktopItem::setChecked(bool checked){
 
 QString DesktopItem::gridKey(){
     return QString("%1-%2").arg(QString::number(pos().x()), QString::number(pos()   .y()));
+}
+
+void DesktopItem::mousePressEvent(QMouseEvent *event){
+    if (event->button() == Qt::RightButton){
+        if (m_isInAppGroup){
+            emit signalManager->contextMenuShowed(m_url, mapToGlobal(event->pos()));
+        }
+    }
+    QFrame::mousePressEvent(event);
+}
+
+void DesktopItem::mouseReleaseEvent(QMouseEvent *event){
+    if (event->button() == Qt::RightButton){
+        m_mouseRightRelease = true;
+    }
+    QFrame::mouseReleaseEvent(event);
 }
 
 void DesktopItem::moveEvent(QMoveEvent *event){

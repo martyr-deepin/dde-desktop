@@ -11,21 +11,38 @@ MenuController::MenuController(QObject *parent) : QObject(parent)
 
 
 void MenuController::initConnect(){
+    connect(signalManager, SIGNAL(contextMenuShowed(QString,QPoint)),
+            this, SLOT(showMenuByDesktopItem(QString,QPoint)));
     connect(signalManager, SIGNAL(contextMenuShowed(QList<DesktopItemPointer>,DesktopItemPointer,QPoint)),
             this, SLOT(showMenuByDesktopItem(QList<DesktopItemPointer>,DesktopItemPointer,QPoint)));
-    connect(signalManager, SIGNAL(contextMenuShowed(DesktopItemPointer,QPoint)), this, SLOT(showMenuByDesktopItem(DesktopItemPointer,QPoint)));
+    connect(signalManager, SIGNAL(contextMenuShowed(DesktopItemPointer,QPoint)),
+            this, SLOT(showMenuByDesktopItem(DesktopItemPointer,QPoint)));
 }
 
 MenuController::~MenuController()
 {
 }
 
-void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos){
-    QStringList iconurl;
-    if (!pItem.isNull()) {
-        iconurl = QStringList(pItem->getUrl());
+
+void MenuController::showMenuByDesktopItem(QString url, QPoint pos){
+    QStringList urlList;
+    urlList.append(url);
+    QString menucontent = createMenuContent(urlList);
+    QString menucontentfinal = JsonToQString(pos, menucontent);
+    QString menucreatepath = registerMenu();
+    if (menucreatepath.length() > 0){
+        showMenu(menucreatepath, menucontentfinal);
+    }else{
+        qDebug() << "register menu fail!";
     }
-    QString menucontent = createMenuContent(iconurl);
+}
+
+void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos){
+    QStringList urlList;
+    if (!pItem.isNull()) {
+        urlList = QStringList(pItem->getUrl());
+    }
+    QString menucontent = createMenuContent(urlList);
     QString menucontentfinal = JsonToQString(pos, menucontent);
     QString menucreatepath = registerMenu();
     if (menucreatepath.length() > 0){

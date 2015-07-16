@@ -23,7 +23,7 @@ public:
 signals:
 
 public slots:
-
+    void showMenuByDesktopItem(QString url, QPoint pos);
     void showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos);
     void showMenuByDesktopItem(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
     void menuItemInvoked(QString itemId, bool flag);

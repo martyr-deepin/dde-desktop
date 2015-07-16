@@ -58,7 +58,10 @@ SOURCES += main.cpp \
     dbusinterface/createdirjob_interface.cpp \
     dbusinterface/createfilejob_interface.cpp \
     dbusinterface/createfilefromtemplatejob_interface.cpp \
-    views/global.cpp
+    views/global.cpp \
+    views/appgroupbox.cpp \
+    views/apptablewidget.cpp \
+    views/appgroupiconframe.cpp
 
 
 HEADERS  += \
@@ -86,7 +89,10 @@ HEADERS  += \
     dbusinterface/fileoperations_interface.h \
     dbusinterface/createdirjob_interface.h \
     dbusinterface/createfilejob_interface.h \
-    dbusinterface/createfilefromtemplatejob_interface.h
+    dbusinterface/createfilefromtemplatejob_interface.h \
+    views/appgroupbox.h \
+    views/apptablewidget.h \
+    views/appgroupiconframe.h
 
 
 RESOURCES += \

@@ -27,6 +27,7 @@ public:
     void initUI();
     void initConnect();
 
+    bool isInAppGroup();
     QPixmap getDesktopIcon();
     QString getDesktopName();
     QPixmap getAppGroupIcon();
@@ -45,17 +46,21 @@ signals:
     void checkedChanged(bool checked);
 
 public slots:
+    void setIsInAppGroup(bool flag);
     void setDesktopIcon(QString icon);
     void setDesktopIcon(QPixmap& icon);
     void updateAppGroupIcon();
     void setDesktopName(QString name);
     void setChecked(bool checked);
     void setHover(bool hover);
+    void setHoverObjectName(QString name);
     void setUrl(QString url);
     void setDesktopItemInfo(DesktopItemInfo desktopItemInfo);
     void setAppGroupItems(QMap<QString, DesktopItemInfo> items);
 
 protected:
+    void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
     void moveEvent(QMoveEvent* event);
     void enterEvent(QEvent* event);
     void leaveEvent(QEvent* event);
@@ -64,10 +69,13 @@ private:
     QLabel* iconLabel;
     ElidedLabel* nameLabel;
     QPixmap m_desktopIcon;
-    QString m_desktopName;
+    QString m_desktopName = "";
     QString m_url;
-    bool m_checked;
-    bool m_hover;
+    bool m_isInAppGroup = false;
+    bool m_mouseRightRelease = false;
+    bool m_checked = false;
+    bool m_hover = false;
+    QString m_hoverObjectName = "Hover";
     DesktopItemInfo m_desktopItemInfo;
     QMap<QString, DesktopItemInfo> m_appGounpItems;
 };

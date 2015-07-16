@@ -21,7 +21,7 @@ void DesktopItemManager::initComputerItem(){
     QString url = "computer://";
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
-    m_pComputerItem  = DesktopItemPointer::create(":/skin/images/QFramer.png", this->tr("Computer"), m_parentWindow);
+    m_pComputerItem  = DesktopItemPointer::create(defaut_icon, this->tr("Computer"), m_parentWindow);
     m_pComputerItem->setUrl(url);
     m_pComputerItem->resize(width, height);
 
@@ -46,7 +46,7 @@ void DesktopItemManager::initTrashItem(){
     QString url = "trash://";
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
-    m_pTrashItem  = DesktopItemPointer::create(":/skin/images/QFramer.png", this->tr("Trash"), m_parentWindow);
+    m_pTrashItem  = DesktopItemPointer::create(defaut_icon, this->tr("Trash"), m_parentWindow);
     m_pTrashItem->setUrl(url);
     m_pTrashItem->resize(width, height);
 
@@ -158,7 +158,7 @@ DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInf
     QString url = decodeUrl(uri);
     QString icon = fileInfo.Icon;
 
-    DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(":/skin/images/QFramer.png", desktopDisplayName, m_parentWindow);
+    DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(defaut_icon, desktopDisplayName, m_parentWindow);
     pDesktopItem->setUrl(url);
     pDesktopItem->setDesktopIcon(icon);
     pDesktopItem->setDesktopItemInfo(fileInfo);
@@ -352,85 +352,37 @@ QDir::SortFlag DesktopItemManager::getSortFlag(){
 }
 
 void DesktopItemManager::showAppGroupDetail(DesktopItemPointer &pItem, QPoint pos){
-    if (m_appGroupContainer){
-        if (pItem->getUrl() == m_appGroupContainer->property("url").toString()){
+    if (m_appGroupBox){
+        if (pItem->getUrl() == m_appGroupBox->property("url").toString()){
             closeAppGroupDetail();
             return;
         }
     }
 
-    m_appGroupContainer = new ArrowRectangle(m_parentWindow);;
-    m_appGroupContainer->setArrorDirection(ArrowRectangle::ArrowTop);
-    m_appGroupContainer->setProperty("url", pItem->getUrl());
-    int width = gridManager->getItemWidth();
-    int height = gridManager->getItemHeight();
-    int count = pItem->getAppGroupItems().count();
-    QList<int> ret = getColumnRowByCount(count);
-    int column = ret.at(0);
-    int row = ret.at(1);
-    QTableWidget* tableWidget = new QTableWidget(row, column);
-    tableWidget->setAttribute(Qt::WA_TranslucentBackground);
-    tableWidget->horizontalHeader()->hide();
-    tableWidget->verticalHeader()->hide();
-    tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    tableWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    tableWidget->setShowGrid(false);
-    tableWidget->resize(column * width + 5, row * height + 5);
-
-    QList<DesktopItemInfo> itemInfos= pItem->getAppGroupItems().values();
-    for (int i=0; i < itemInfos.count(); i++){
-        int _row = i / column;
-        int _column = i % column;
-
-        DesktopItemInfo fileInfo = itemInfos.at(i);
-        QString desktopDisplayName = getDesktopDisplayName(fileInfo);
-        QString displayName = fileInfo.DisplayName;
-        QString uri = fileInfo.URI;
-        QString url = decodeUrl(uri);
-        QString icon = fileInfo.Icon;
-
-        DesktopItem*  pDesktopItem = new DesktopItem(":/skin/images/QFramer.png", desktopDisplayName, tableWidget);
-        pDesktopItem->setUrl(url);
-        pDesktopItem->setDesktopIcon(icon);
-        pDesktopItem->setDesktopItemInfo(fileInfo);
-        pDesktopItem->resize(width, height);
-
-        tableWidget->setCellWidget(_row, _column, pDesktopItem);
-        tableWidget->setRowHeight(_row, height);
-        tableWidget->setColumnWidth(_column, width);
-        qDebug() << _row << _column;
-    }
-    tableWidget->setStyleSheet("QTableWidget{\
-                               background-color: transparent;\
-                           }");
-    m_appGroupContainer->setContent(tableWidget);
-    m_appGroupContainer->showAtTop(pItem->pos().x() + width / 2, pItem->pos().y() + height);
+    m_appGroupBox = new AppGroupBox(m_parentWindow);
+    m_appGroupBox->showDetailByDesktopItem(pItem);
 }
 
 
 void DesktopItemManager::closeAppGroupDetail(QPoint pos){
-    if (m_appGroupContainer){
+    if (m_appGroupBox){
         DesktopItemPointer pItem = getItemByPos(pos);
-        qDebug() << m_appGroupContainer->property("url") << pItem <<"////////";
         if(!pItem.isNull()){
-            qDebug() << pItem->getUrl() << m_appGroupContainer->property("url").toString() << "////////";
-            if (pItem->getUrl() == m_appGroupContainer->property("url").toString()){
-
-            }else{
-                m_appGroupContainer->close();
-                m_appGroupContainer = NULL;
+            if (pItem->getUrl() != m_appGroupBox->property("url").toString()){
+                m_appGroupBox->close();
+                m_appGroupBox = NULL;
             }
         }else{
-            m_appGroupContainer->close();
-            m_appGroupContainer = NULL;
+            m_appGroupBox->close();
+            m_appGroupBox = NULL;
         }
     }
 }
 
 void DesktopItemManager::closeAppGroupDetail(){
-    if (m_appGroupContainer){
-        m_appGroupContainer->close();
-        m_appGroupContainer = NULL;
+    if (m_appGroupBox){
+        m_appGroupBox->close();
+        m_appGroupBox = NULL;
     }
 }
 

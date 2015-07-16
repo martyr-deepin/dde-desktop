@@ -37,6 +37,7 @@ signals:
     void keyCtrlAPressed();
 
     /*context menu signal*/
+    void contextMenuShowed(QString url, QPoint pos);
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);
     void contextMenuShowed(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
 

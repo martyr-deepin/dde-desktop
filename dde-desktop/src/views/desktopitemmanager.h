@@ -7,6 +7,7 @@
 #include "gridmanager.h"
 #include "dbusinterface/dbustype.h"
 #include "widgets/arrowrectangle.h"
+#include "appgroupbox.h"
 
 class DesktopItemManager : public QObject
 {
@@ -61,7 +62,7 @@ private:
     QDir::SortFlag m_sortFlag;
     QList<DesktopItemPointer> m_list_pItems;
     QMap<QString, DesktopItemPointer> m_pItems;
-    ArrowRectangle* m_appGroupContainer=NULL;
+    AppGroupBox* m_appGroupBox=NULL;
 };
 
 #endif // DESKTOPITEMMANAGER_H

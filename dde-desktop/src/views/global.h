@@ -11,6 +11,7 @@
 #define dbusController DBusController::instance()
 #define desktopLocation QStandardPaths::standardLocations(QStandardPaths::StandardLocation::DesktopLocation).at(0)
 
+#define defaut_icon ":/skin/images/QFramer.png"
 #define RichDirPrefix ".deepin_rich_dir_"
 
 QString decodeUrl(QString url);
