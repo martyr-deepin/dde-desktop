@@ -45,7 +45,7 @@ signals:
     void sortByKey(QString key);
 
     /*trash files*/
-    void trashingAboutToExcuted(QStringList files);
+    void trashingAboutToExcute(QStringList files); /*used for keyboard delete/ shift delete*/
     void trashingAboutToAborted();
     void trashingFileChanged(QString file);
     void deletingFileChanged(QString file);

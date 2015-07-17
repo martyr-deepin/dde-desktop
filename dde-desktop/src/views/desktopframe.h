@@ -48,6 +48,8 @@ public:
     bool isMultiCheckedByMouse();
     bool isAllAppCheckedItems();
 
+    QStringList getCheckedFiles();
+
     QPoint getAppGroupDestinationPos();
 
 signals:

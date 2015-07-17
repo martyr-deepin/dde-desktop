@@ -42,9 +42,9 @@ void DBusController::initConnect(){
             this, SLOT(createAppGroup(QString,QStringList)));
 
     connect(m_desktopDaemonInterface, SIGNAL(RequestDelete(QStringList)),
-            this, SLOT(deleteFilesToTrash(QStringList)));
+            this, SLOT(trashJobExcute(QStringList)));
 
-    connect(signalManager, SIGNAL(trashingAboutToExcuted(QStringList)),
+    connect(signalManager, SIGNAL(trashingAboutToExcute(QStringList)),
             this, SLOT(trashJobExcute(QStringList)));
     connect(signalManager, SIGNAL(trashingAboutToAborted()),
             this, SLOT(trashJobAbort()));
@@ -486,6 +486,8 @@ void DBusController::disconnectTrashSignal(){
 void DBusController::trashJobExcuteFinished(){
     disconnectTrashSignal();
     m_trashJobInterface = NULL;
+
+    qDebug() << "trash files deleted";
 }
 
 

@@ -220,6 +220,14 @@ void DesktopFrame::setAppGroupDestinationPos(QPoint pos){
     m_appGroupDestinationPos = pos;
 }
 
+QStringList DesktopFrame::getCheckedFiles(){
+    QStringList files;
+    foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+        files.append(pItem->getUrl());
+    }
+    return files;
+}
+
 void DesktopFrame::focusInEvent(QFocusEvent *event){
     m_isSelectable = true;
     m_selectRect = QRect(0, 0, 0, 0);
@@ -576,7 +584,10 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
         emit signalManager->gridModeChanged(!m_isGridOn);
     }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_A){
         emit signalManager->keyCtrlAPressed();
-    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Delete){
+        emit signalManager->trashingAboutToExcute(getCheckedFiles());
+    }
+    else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
         if (m_isGridOn){
             emit signalManager->keyUpPressed();
         }
