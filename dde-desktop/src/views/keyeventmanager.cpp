@@ -35,8 +35,8 @@ void KeyEventManager::onKeyUpPressed(){
                     static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 static_cast<DesktopFrame*>(parent())->unCheckAllItems();
-                emit lastCheckedDesktopItem->checkedChanged(false);
-                emit nextCheckedDesktopItem->checkedChanged(true);
+                emit lastCheckedDesktopItem->setChecked(false);
+                emit nextCheckedDesktopItem->setChecked(true);
                 emit static_cast<DesktopFrame*>(parent())->lastCheckedDesktopItemChanged(nextCheckedDesktopItem);
                 break;
             }
@@ -59,8 +59,8 @@ void KeyEventManager::onKeyDownPressed(){
                     static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 static_cast<DesktopFrame*>(parent())->unCheckAllItems();
-                emit lastCheckedDesktopItem->checkedChanged(false);
-                emit nextCheckedDesktopItem->checkedChanged(true);
+                emit lastCheckedDesktopItem->setChecked(false);
+                emit nextCheckedDesktopItem->setChecked(true);
                 emit static_cast<DesktopFrame*>(parent())->lastCheckedDesktopItemChanged(nextCheckedDesktopItem);
                 break;
             }
@@ -82,8 +82,8 @@ void KeyEventManager::onKeyLeftPressed(){
                     static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 static_cast<DesktopFrame*>(parent())->unCheckAllItems();
-                emit lastCheckedDesktopItem->checkedChanged(false);
-                emit nextCheckedDesktopItem->checkedChanged(true);
+                emit lastCheckedDesktopItem->setChecked(false);
+                emit nextCheckedDesktopItem->setChecked(true);
                 emit static_cast<DesktopFrame*>(parent())->lastCheckedDesktopItemChanged(nextCheckedDesktopItem);
                 break;
             }
@@ -106,8 +106,8 @@ void KeyEventManager::onKeyRightPressed(){
                     static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 static_cast<DesktopFrame*>(parent())->unCheckAllItems();
-                emit lastCheckedDesktopItem->checkedChanged(false);
-                emit nextCheckedDesktopItem->checkedChanged(true);
+                emit lastCheckedDesktopItem->setChecked(false);
+                emit nextCheckedDesktopItem->setChecked(true);
                 emit static_cast<DesktopFrame*>(parent())->lastCheckedDesktopItemChanged(nextCheckedDesktopItem);
                 break;
             }
@@ -122,7 +122,7 @@ void KeyEventManager::clearMultiCheckedByMouse(){
         if (static_cast<DesktopFrame*>(parent())->getCheckedDesktopItems().count() > 1){
             static_cast<DesktopFrame*>(parent())->unCheckCheckedItems();
             if (!lastCheckedDesktopItem.isNull()){
-                emit lastCheckedDesktopItem->checkedChanged(true);
+                emit lastCheckedDesktopItem->setChecked(true);
                 emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsAdded(lastCheckedDesktopItem);
             }
         }
@@ -130,6 +130,7 @@ void KeyEventManager::clearMultiCheckedByMouse(){
 }
 
 void KeyEventManager::onKeyShiftLeftPressed(){
+
     DesktopItemPointer lastCheckedDesktopItem;
     if (!static_cast<DesktopFrame*>(parent())->getLastPressedCheckedDesktopItem().isNull()){
         lastCheckedDesktopItem = static_cast<DesktopFrame*>(parent())->getLastCheckedDesktopItem();
@@ -155,11 +156,11 @@ void KeyEventManager::onKeyShiftLeftPressed(){
             if(!nextCheckedDesktopItem.isNull()){
 
                 if (nextCheckedDesktopItem->isChecked() && index > column){
-                    emit nextCheckedDesktopItem->checkedChanged(false);
+                    emit nextCheckedDesktopItem->setChecked(false);
                     emit static_cast<DesktopFrame*>(parent())->removeCheckedDesktopItem(nextCheckedDesktopItem);
                     break;
                 }else if (!nextCheckedDesktopItem->isChecked() && index < column){
-                    emit nextCheckedDesktopItem->checkedChanged(true);
+                    emit nextCheckedDesktopItem->setChecked(true);
                     emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsAdded(nextCheckedDesktopItem);
                     break;
                 }
@@ -192,12 +193,12 @@ void KeyEventManager::onKeyShiftRightPressed(){
                     static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 if (nextCheckedDesktopItem->isChecked() && index < column){
-                    emit nextCheckedDesktopItem->checkedChanged(false);
+                    emit nextCheckedDesktopItem->setChecked(false);
                     emit static_cast<DesktopFrame*>(parent())->removeCheckedDesktopItem(nextCheckedDesktopItem);
                     break;
                 }
                 if (!nextCheckedDesktopItem->isChecked() && index > column){
-                    emit nextCheckedDesktopItem->checkedChanged(true);
+                    emit nextCheckedDesktopItem->setChecked(true);
                     emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsAdded(nextCheckedDesktopItem);
                     break;
                 }
@@ -267,7 +268,7 @@ void KeyEventManager::onKeyShiftUpPressed(){
                 foreach (DesktopItemPointer _pItem, rowItems) {
                     if (_pItem != lastCheckedDesktopItem){
                         if (_pItem->isChecked()){
-                            emit _pItem->checkedChanged(false);
+                            emit _pItem->setChecked(false);
                             emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsRemoved(_pItem);
                         }
                     }
@@ -277,7 +278,7 @@ void KeyEventManager::onKeyShiftUpPressed(){
             if (rowIndex < row + 1 && rowItems.count() > 0 && !isRowChecked){
                 for (int i= rowItems.count() - 1; i>=0; i--){
                     DesktopItemPointer _pItem = rowItems.at(i);
-                    emit _pItem->checkedChanged(true);
+                    emit _pItem->setChecked(true);
                     emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsAdded(_pItem);
                 }
 
@@ -354,7 +355,7 @@ void KeyEventManager::onKeyShiftDownPressed(){
             if (rowIndex < row && rowItems.count() > 0 && isRowChecked){
                 foreach (DesktopItemPointer _pItem, rowItems) {
                     if (_pItem != lastCheckedDesktopItem){
-                        emit _pItem->checkedChanged(false);
+                        emit _pItem->setChecked(false);
                         emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsRemoved(_pItem);
                     }
                 }
@@ -362,7 +363,7 @@ void KeyEventManager::onKeyShiftDownPressed(){
             }
             if (rowIndex >= row && rowItems.count() > 0 && !isRowChecked){
                 foreach (DesktopItemPointer _pItem, rowItems) {
-                    emit _pItem->checkedChanged(true);
+                    emit _pItem->setChecked(true);
                     emit static_cast<DesktopFrame*>(parent())->checkedDesktopItemsAdded(_pItem);
                 }
 

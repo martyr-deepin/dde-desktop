@@ -26,8 +26,6 @@ public:
     DesktopItemPointer createItem(const DesktopItemInfo& fileInfo);
     QList<DesktopItemPointer> getItems();
 
-    QList<int> getColumnRowByCount(int count);
-
     QDir::SortFlag getSortFlag();
     QString getDesktopDisplayName(const DesktopItemInfo& desktopItemInfo);
     static QString decodeUrl(QString url);
@@ -40,6 +38,7 @@ public slots:
     void addItem(const DesktopItemInfo& fileInfo);
     void updateAppGounpItem(QString group_url, DesktopItemInfoMap& appItems);
     void showAppGroupDetail(DesktopItemPointer& pItem, QPoint pos);
+    void updateAppGroupDetail(DesktopItemPointer pItem);
     void closeAppGroupDetail(QPoint pos);
     void closeAppGroupDetail();
     void deleteItem(QString url);

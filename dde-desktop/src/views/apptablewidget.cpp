@@ -25,39 +25,42 @@ void AppTableWidget::init(){
 }
 
 void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
-    int width = gridManager->getItemWidth();
-    int height = gridManager->getItemHeight();
 
-    int count = itemInfos.count();
-    QList<int> ret = getColumnRowByCount(count);
-    int columns = ret.at(0);
-    int rows = ret.at(1);
+    if (itemInfos.count() > 1){
+        int width = gridManager->getItemWidth();
+        int height = gridManager->getItemHeight();
 
-    setColumnCount(columns);
-    setRowCount(rows);
+        int count = itemInfos.count();
+        QList<int> ret = getColumnRowByCount(count);
+        int columns = ret.at(0);
+        int rows = ret.at(1);
 
-    setFixedSize(width * columns + 5, rows * height + 5);
+        setColumnCount(columns);
+        setRowCount(rows);
 
-    for (int i=0; i < count; i++){
-        int _row = i / columns;
-        int _column = i % columns;
+        setFixedSize(width * columns + 5, rows * height + 5);
 
-        DesktopItemInfo fileInfo = itemInfos.at(i);
-        QString displayName = fileInfo.DisplayName;
-        QString uri = fileInfo.URI;
-        QString url = decodeUrl(uri);
-        QString icon = fileInfo.Icon;
+        for (int i=0; i < count; i++){
+            int _row = i / columns;
+            int _column = i % columns;
 
-        DesktopItem*  pDesktopItem = new DesktopItem(defaut_icon, displayName, this);
-        pDesktopItem->setUrl(url);
-        pDesktopItem->setDesktopIcon(icon);
-        pDesktopItem->setDesktopItemInfo(fileInfo);
-        pDesktopItem->resize(width, height);
-        pDesktopItem->setIsInAppGroup(true);
+            DesktopItemInfo fileInfo = itemInfos.at(i);
+            QString displayName = fileInfo.DisplayName;
+            QString uri = fileInfo.URI;
+            QString url = decodeUrl(uri);
+            QString icon = fileInfo.Icon;
 
-        setCellWidget(_row, _column, pDesktopItem);
-        setRowHeight(_row, height);
-        setColumnWidth(_column, width);
+            DesktopItem*  pDesktopItem = new DesktopItem(defaut_icon, displayName, this);
+            pDesktopItem->setUrl(url);
+            pDesktopItem->setDesktopIcon(icon);
+            pDesktopItem->setDesktopItemInfo(fileInfo);
+            pDesktopItem->resize(width, height);
+            pDesktopItem->setIsInAppGroup(true);
+
+            setCellWidget(_row, _column, pDesktopItem);
+            setRowHeight(_row, height);
+            setColumnWidth(_column, width);
+        }
     }
 }
 

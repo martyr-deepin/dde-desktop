@@ -61,7 +61,8 @@ SOURCES += main.cpp \
     views/global.cpp \
     views/appgroupbox.cpp \
     views/apptablewidget.cpp \
-    views/appgroupiconframe.cpp
+    views/appgroupiconframe.cpp \
+    dbusinterface/trashjob_interface.cpp
 
 
 HEADERS  += \
@@ -92,7 +93,8 @@ HEADERS  += \
     dbusinterface/createfilefromtemplatejob_interface.h \
     views/appgroupbox.h \
     views/apptablewidget.h \
-    views/appgroupiconframe.h
+    views/appgroupiconframe.h \
+    dbusinterface/trashjob_interface.h
 
 
 RESOURCES += \

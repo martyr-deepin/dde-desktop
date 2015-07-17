@@ -9,6 +9,7 @@
 #include "dbusinterface/createdirjob_interface.h"
 #include "dbusinterface/createfilejob_interface.h"
 #include "dbusinterface/createfilefromtemplatejob_interface.h"
+#include "dbusinterface/trashjob_interface.h"
 
 #include "dbusinterface/dbustype.h"
 #include "views/signalmanager.h"
@@ -24,6 +25,9 @@
 
 #define DesktopDaemon_service "com.deepin.dde.daemon.Desktop"
 #define DesktopDaemon_path "/com/deepin/dde/daemon/Desktop"
+
+
+typedef QSharedPointer<FileMonitorInstanceInterface> FileMonitorInstanceInterfacePointer;
 
 class DBusController : public QObject
 {
@@ -68,6 +72,7 @@ signals:
 
 public slots:
     void desktopFileChanged(const QString &url, const QString &in1, uint event);
+    void appGroupFileChanged(const QString &url, const QString &in1, uint event);
     void asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
     void asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
 
@@ -81,22 +86,41 @@ public slots:
     void createFileFromTemplateFinished(QString filename);
     void sortByKey(QString key);
 
-    void requestCreatingAppGroup(QStringList urls);
+    void connectTrashSignal();
+    void disconnectTrashSignal();
+    void trashJobExcute(QStringList files);
+    void trashJobExcuteFinished();
+    void trashJobAbort();
+    void trashJobAbortFinished();
+    void onTrashingFile(QString file);
+    void onDeletingFile(QString file);
+    void onProcessAmount(qlonglong progress, ushort info);
 
-    void getAppGroupItems(QString group_url);
+    void requestCreatingAppGroup(QStringList urls);
+    void monitorAppGroup(QString group_url);
+    void getAppGroupItemsByUrl(QString group_url);
+    void createAppGroup(QString group_url, QStringList urls);
+    void mergeIntoAppGroup(QStringList urls, QString group_url);
+
+    void unMonitorDirByID(uint id);
+    void unMonitorDirByUrl(QString group_url);
+    void unMonitor();
 
 private:
     DBusController(QObject *parent = 0);
     ~DBusController();
-    MonitorManagerInterface* m_monitorManagerInterface;
-    FileMonitorInstanceInterface* m_desktopMonitorInterface;
-    FileInfoInterface* m_fileInfoInterface;
-    DesktopDaemonInterface* m_desktopDaemonInterface;
-    FileOperationsInterface* m_fileOperationsInterface;
+    MonitorManagerInterface* m_monitorManagerInterface = NULL;
+    FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;
+    QMap<QString, FileMonitorInstanceInterfacePointer> m_appGroupMonitorInterfacePointers;
+    FileInfoInterface* m_fileInfoInterface = NULL;
+    DesktopDaemonInterface* m_desktopDaemonInterface = NULL;
+    FileOperationsInterface* m_fileOperationsInterface = NULL;
 
-    CreateDirJobInterface* m_createDirJobInterface;
-    CreateFileJobInterface* m_createFileJobInterface;
-    CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface;
+    CreateDirJobInterface* m_createDirJobInterface = NULL;
+    CreateFileJobInterface* m_createFileJobInterface = NULL;
+    CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface = NULL;
+
+    TrashJobInterface* m_trashJobInterface = NULL;
 
     DesktopItemInfoMap m_desktopItemInfoMap;
     QMap<QString, DesktopItemInfoMap> m_appGroups;

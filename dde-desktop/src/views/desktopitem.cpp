@@ -4,7 +4,7 @@
 #include "global.h"
 #include "controllers/dbuscontroller.h"
 #include "appgroupiconframe.h"
-
+#include "gridmanager.h"
 
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
@@ -246,6 +246,17 @@ void DesktopItem::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void DesktopItem::moveEvent(QMoveEvent *event){
+    QPoint oldPos = event->oldPos();
+    QPoint pos = event->pos();
+
+    GridItemPointer pOldGridItem = gridManager->getItemByPos(oldPos);
+    GridItemPointer pNewGridItem = gridManager->getItemByPos(pos);
+    if (!pOldGridItem.isNull()){
+        pOldGridItem->setDesktopItem(false);
+    }
+    if (!pNewGridItem.isNull()){
+        pNewGridItem->setDesktopItem(true);
+    }
     QFrame::moveEvent(event);
 }
 
@@ -258,6 +269,8 @@ void DesktopItem::leaveEvent(QEvent *event){
     setHover(false);
     QFrame::leaveEvent(event);
 }
+
+
 
 DesktopItem::~DesktopItem()
 {

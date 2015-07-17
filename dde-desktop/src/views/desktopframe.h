@@ -48,6 +48,8 @@ public:
     bool isMultiCheckedByMouse();
     bool isAllAppCheckedItems();
 
+    QPoint getAppGroupDestinationPos();
+
 signals:
     void lastCheckedDesktopItemChanged(DesktopItemPointer pItem);
     void checkedDesktopItemsAdded(DesktopItemPointer pItem);
@@ -64,6 +66,8 @@ public slots:
     void setMultiCheckedByMouse(bool flag);
     void checkAllDesktopItems();
 
+    void setAppGroupDestinationPos(QPoint pos);
+
 protected:
     void focusInEvent(QFocusEvent* event);
     void focusOutEvent(QFocusEvent* event);
@@ -79,6 +83,8 @@ protected:
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
+
+    void closeEvent(QCloseEvent* event);
 
 private:
     QPoint m_pressedEventPos;
@@ -107,6 +113,8 @@ private:
     DesktopItemPointer m_lastCheckedDesktopItem; // last checked item
 
     DesktopItemPointer m_destinationDesktopItem = DesktopItemPointer(); /*desktop item which will change to be app group*/
+    QPoint m_appGroupDestinationPos = QPoint(-1, -1);
+
     QList<DesktopItemPointer> m_checkedDesktopItems;
 
 };

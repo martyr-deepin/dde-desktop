@@ -44,9 +44,17 @@ signals:
     /*desktop menu*/
     void sortByKey(QString key);
 
-    /*update desktop icon*/
+    /*trash files*/
+    void trashingAboutToExcuted(QStringList files);
+    void trashingAboutToAborted();
+    void trashingFileChanged(QString file);
+    void deletingFileChanged(QString file);
+    void processAmountChanged(qlonglong progress, ushort info);
+
+    /*update app group desktop icon*/
     void destinationAppGroupTryCreated(DesktopItemPointer& pItem);
     void requestCreatingAppGroup(QStringList urls);
+    void requestMergeIntoAppGroup(QStringList urls, QString group_url);
 
     void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
     void appGounpItemsChanged(QString group_url, DesktopItemInfoMap& appItems);
@@ -59,8 +67,6 @@ signals:
     /*monitor desktop folder*/
     void itemCreated(const DesktopItemInfo& fileInfo);
     void itemDeleted(QString url);
-
-    void appGounpCreated(QString url);
 
     void itemShoudBeMoved(QString url);
     void itemMoved(DesktopItemInfo& fileInfo);

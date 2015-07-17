@@ -1,6 +1,7 @@
 #include "desktopitemmanager.h"
 #include "global.h"
 #include "controllers/dbuscontroller.h"
+#include "desktopframe.h"
 
 
 DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
@@ -141,10 +142,15 @@ void DesktopItemManager::addItems(DesktopItemInfoMap &desktopInfoMap){
     }
 }
 
-void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap &appItems){
+void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap &appItemInfos){
     QString key = decodeUrl(group_url);
     if (m_pItems.contains(key)){
-        m_pItems.value(key)->setAppGroupItems(appItems);
+        m_pItems.value(key)->setAppGroupItems(appItemInfos);
+        updateAppGroupDetail(m_pItems.value(key));
+        if (static_cast<DesktopFrame*>(this->parent())->getAppGroupDestinationPos() != QPoint(-1, -1)){
+            m_pItems.value(key)->move(static_cast<DesktopFrame*>(this->parent())->getAppGroupDestinationPos());
+            static_cast<DesktopFrame*>(this->parent())->setAppGroupDestinationPos(QPoint(-1, -1));
+        }
     }
 }
 
@@ -199,10 +205,6 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
     m_list_pItems.append(pDesktopItem);
 
-    if (isAppGroup(fileInfo.URI)){
-        emit signalManager->appGounpCreated(fileInfo.URI);
-    }
-
     if (!pDesktopItem.isNull()){
         GridItemPointer pGridItem = gridManager->getBlankItem();
         if (!pGridItem.isNull()){
@@ -249,6 +251,7 @@ void DesktopItemManager::deleteItem(QString url){
         DesktopItemPointer pItem = m_pItems.value(_url);
 
         GridItemPointer pGridItem = gridManager->getItemByPos(pItem->pos());
+
         if (!pGridItem.isNull()){
             pGridItem->setDesktopItem(false);
         }
@@ -371,6 +374,15 @@ void DesktopItemManager::showAppGroupDetail(DesktopItemPointer &pItem, QPoint po
     m_appGroupBox->showDetailByDesktopItem(pItem);
 }
 
+void DesktopItemManager::updateAppGroupDetail(DesktopItemPointer pItem){
+    if (m_appGroupBox){
+        if (m_appGroupBox->isVisible()){
+            closeAppGroupDetail();
+            m_appGroupBox = new AppGroupBox(m_parentWindow);
+            m_appGroupBox->showDetailByDesktopItem(pItem);
+        }
+    }
+}
 
 void DesktopItemManager::closeAppGroupDetail(QPoint pos){
     if (m_appGroupBox){
@@ -392,20 +404,6 @@ void DesktopItemManager::closeAppGroupDetail(){
         m_appGroupBox->close();
         m_appGroupBox = NULL;
     }
-}
-
-QList<int> DesktopItemManager::getColumnRowByCount(int count){
-    int i = qFloor(qSqrt((double)count));
-    int j = 0;
-    if (count % i > 0){
-        j = count / i + 1;
-    }else{
-        j = count / i;
-    }
-    QList<int> ret;
-    ret.append(qMax(i, j));
-    ret.append(qMin(i, j));
-    return ret;
 }
 
 DesktopItemManager::~DesktopItemManager()

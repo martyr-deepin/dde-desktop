@@ -123,7 +123,7 @@ void DesktopFrame::setMultiCheckedByMouse(bool flag){
 bool DesktopFrame::isAllAppCheckedItems(){
     bool flag = true;
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-        flag = flag && pItem->isChecked();
+        flag = flag && isApp(pItem->getUrl()) && pItem->isChecked();
     }
     return flag;
 }
@@ -212,6 +212,14 @@ QList<DesktopItemPointer> DesktopFrame::getCheckedDesktopItems(){
     return m_checkedDesktopItems;
 }
 
+QPoint DesktopFrame::getAppGroupDestinationPos(){
+    return m_appGroupDestinationPos;
+}
+
+void DesktopFrame::setAppGroupDestinationPos(QPoint pos){
+    m_appGroupDestinationPos = pos;
+}
+
 void DesktopFrame::focusInEvent(QFocusEvent *event){
     m_isSelectable = true;
     m_selectRect = QRect(0, 0, 0, 0);
@@ -247,7 +255,10 @@ void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
         if (pItem->geometry().contains(event->pos())){
             if (isAllAppCheckedItems() && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
                 m_destinationDesktopItem = pItem;
+                m_appGroupDestinationPos = pItem->pos();
                 pItem->changeToBeAppGroupIcon();
+            }else if (isAllAppCheckedItems() && isAppGroup(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
+                m_destinationDesktopItem = pItem;
             }
             pItem->setHover(true);
         }else{
@@ -281,12 +292,17 @@ void DesktopFrame::dropEvent(QDropEvent *event){
     if (!m_destinationDesktopItem.isNull()){
         if (m_destinationDesktopItem->geometry().contains(event->pos())){
             QStringList urls;
-            urls.append(m_destinationDesktopItem->getUrl());
+            if (isApp(m_destinationDesktopItem->getUrl())){
+                urls.append(m_destinationDesktopItem->getUrl());
+            }
             foreach (DesktopItemPointer pCheckedItem, m_checkedDesktopItems) {
                 urls.append(pCheckedItem->getUrl());
             }
-            if (isAllAppCheckedItems()){
+            if (isAllAppCheckedItems() && isApp(m_destinationDesktopItem->getUrl())){
                 emit signalManager->requestCreatingAppGroup(urls);
+                m_destinationDesktopItem.clear();
+            }else if (isAllAppCheckedItems() && isAppGroup(m_destinationDesktopItem->getUrl())){
+                emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
                 m_destinationDesktopItem.clear();
             }
         }
@@ -343,8 +359,12 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
                 unCheckCheckedItems();
                 checkRaiseItem(pTopDesktopItem);
                 emit signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
+                if(isAppGroup(pTopDesktopItem->getUrl())){
+                    emit signalManager->appGounpDetailClosed();
+                }
             }
         }
+
     }
     TranslucentFrame::mousePressEvent(event);
 }
@@ -598,6 +618,13 @@ void DesktopFrame::keyReleaseEvent(QKeyEvent *event){
         m_ctrlPressed = !m_ctrlPressed;
     }
     TranslucentFrame::keyReleaseEvent(event);
+}
+
+
+void DesktopFrame::closeEvent(QCloseEvent *event){
+    DBusController::instance()->unMonitor();
+    qDebug() << "closeEvent";
+    event->accept();
 }
 
 DesktopFrame::~DesktopFrame()
