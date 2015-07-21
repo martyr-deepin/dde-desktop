@@ -25,7 +25,7 @@ QPixmap AppGroupIconFrame::getPixmap(QStringList icons){
             label->setObjectName("IconLabel");
             label->setFixedSize(48, 48);
             if (icons.count() > i *2 + j){
-                label->setPixmap(QPixmap(icons.at(i*2 + j)).scaled(48, 48));
+                label->setPixmap(QPixmap(icons.at(i*2 + j)));
             }
             layout->addWidget(label, i, j);
         }

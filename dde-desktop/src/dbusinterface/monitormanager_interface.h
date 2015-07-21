@@ -8,8 +8,8 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#ifndef MONITORMANAGER_INTERFACE_H_1436348950
-#define MONITORMANAGER_INTERFACE_H_1436348950
+#ifndef MONITORMANAGER_INTERFACE_H_1437362975
+#define MONITORMANAGER_INTERFACE_H_1437362975
 
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
@@ -83,6 +83,26 @@ public:
     inline uint fileMonitorFlagsWatchMounts() const
     { return qvariant_cast< uint >(property("FileMonitorFlagsWatchMounts")); }
 
+    Q_PROPERTY(uint FsNotifyAttributeChanged READ fsNotifyAttributeChanged)
+    inline uint fsNotifyAttributeChanged() const
+    { return qvariant_cast< uint >(property("FsNotifyAttributeChanged")); }
+
+    Q_PROPERTY(uint FsNotifyCreated READ fsNotifyCreated)
+    inline uint fsNotifyCreated() const
+    { return qvariant_cast< uint >(property("FsNotifyCreated")); }
+
+    Q_PROPERTY(uint FsNotifyDeleted READ fsNotifyDeleted)
+    inline uint fsNotifyDeleted() const
+    { return qvariant_cast< uint >(property("FsNotifyDeleted")); }
+
+    Q_PROPERTY(uint FsNotifyModified READ fsNotifyModified)
+    inline uint fsNotifyModified() const
+    { return qvariant_cast< uint >(property("FsNotifyModified")); }
+
+    Q_PROPERTY(uint FsNotifyRename READ fsNotifyRename)
+    inline uint fsNotifyRename() const
+    { return qvariant_cast< uint >(property("FsNotifyRename")); }
+
 public Q_SLOTS: // METHODS
     inline QDBusPendingReply<QString, QDBusObjectPath, QString> Monitor(const QString &in0, uint in1)
     {
@@ -107,6 +127,31 @@ public Q_SLOTS: // METHODS
         QList<QVariant> argumentList;
         argumentList << QVariant::fromValue(in0);
         return asyncCallWithArgumentList(QStringLiteral("Unmonitor"), argumentList);
+    }
+
+    inline QDBusPendingReply<> Unwatcher(uint in0)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(in0);
+        return asyncCallWithArgumentList(QStringLiteral("Unwatcher"), argumentList);
+    }
+
+    inline QDBusPendingReply<QString, QDBusObjectPath, QString> Watch(const QString &in0)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(in0);
+        return asyncCallWithArgumentList(QStringLiteral("Watch"), argumentList);
+    }
+    inline QDBusReply<QString> Watch(const QString &in0, QDBusObjectPath &out1, QString &out2)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(in0);
+        QDBusMessage reply = callWithArgumentList(QDBus::Block, QStringLiteral("Watch"), argumentList);
+        if (reply.type() == QDBusMessage::ReplyMessage && reply.arguments().count() == 3) {
+            out1 = qdbus_cast<QDBusObjectPath>(reply.arguments().at(1));
+            out2 = qdbus_cast<QString>(reply.arguments().at(2));
+        }
+        return reply;
     }
 
 Q_SIGNALS: // SIGNALS

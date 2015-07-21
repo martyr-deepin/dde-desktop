@@ -44,12 +44,35 @@ signals:
     /*desktop menu*/
     void sortByKey(QString key);
 
+    /*double open file*/
+    void openFile(DesktopItemInfo info);
+
     /*trash files*/
+    void trashEmptyChanged(bool flag);
     void trashingAboutToExcute(QStringList files); /*used for keyboard delete/ shift delete*/
     void trashingAboutToAborted();
     void trashingFileChanged(QString file);
     void deletingFileChanged(QString file);
     void processAmountChanged(qlonglong progress, ushort info);
+
+    /*cut files*/
+    void filesCuted(QStringList urls);
+    void cancelFilesCuted(QStringList urls);
+
+    /*paste files*/
+    void moveFilesExcuted(QStringList files, QString destination);
+    void moveJobAboutToAbort();
+    void movingFileChaned(QString file);
+    void movingProcessAmountChanged(qlonglong progress, ushort info);
+
+    /*copy files*/
+    void copyFilesExcuted(QStringList files, QString destination);
+    void copyJobAboutToAbort();
+    void copyingFileChaned(QString file);
+    void copyingProcessAmountChanged(qlonglong progress, ushort info);
+
+    /*update desktop icon like computer trash....*/
+    void desktoItemIconUpdated(QString url, QString iconUl, uint size);
 
     /*update app group desktop icon*/
     void destinationAppGroupTryCreated(DesktopItemPointer& pItem);

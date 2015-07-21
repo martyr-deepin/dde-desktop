@@ -3,6 +3,7 @@
 
 #include "widgets/elidelabel.h"
 #include "dbusinterface/dbustype.h"
+#include "gridmanager.h"
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
@@ -34,6 +35,7 @@ public:
     QString getUrl();
     bool isChecked();
     bool isHover();
+    bool isCuted();
     QString gridKey();
     DesktopItemInfo getDesktopItemInfo();
     QMap<QString, DesktopItemInfo> getAppGroupItems();
@@ -46,6 +48,7 @@ signals:
     void checkedChanged(bool checked);
 
 public slots:
+    void updateSizeByGridSize(SizeType type);
     void setIsInAppGroup(bool flag);
     void setDesktopIcon(QString icon);
     void setDesktopIcon(QPixmap& icon);
@@ -53,6 +56,8 @@ public slots:
     void setDesktopName(QString name);
     void setChecked(bool checked);
     void setHover(bool hover);
+    void setCuted();
+    void cancelCuted();
     void setHoverObjectName(QString name);
     void setUrl(QString url);
     void setDesktopItemInfo(DesktopItemInfo desktopItemInfo);
@@ -69,6 +74,7 @@ protected:
 
 private:
     QLabel* iconLabel;
+    bool m_isCuted = false;
     ElidedLabel* nameLabel;
     QPixmap m_desktopIcon;
     QString m_desktopName = "";
@@ -80,6 +86,7 @@ private:
     QString m_hoverObjectName = "Hover";
     DesktopItemInfo m_desktopItemInfo;
     QMap<QString, DesktopItemInfo> m_appGounpItems;
+    QSettings m_settings;
 };
 
 #endif // DESKTOPITEM_H

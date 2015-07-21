@@ -30,26 +30,31 @@ public:
     QString getDesktopDisplayName(const DesktopItemInfo& desktopItemInfo);
     static QString decodeUrl(QString url);
 
+    bool isAppGroupBoxShowed();
+
 signals:
 
 public slots:
     void addItems(DesktopItemInfoMap& desktopInfoMap);
     void addItem(const DesktopItemInfo& fileInfo, int index);
     void addItem(const DesktopItemInfo& fileInfo);
+    void updateDesktopItemIcon(QString url, QString iconUl, uint size);
     void updateAppGounpItem(QString group_url, DesktopItemInfoMap& appItems);
     void showAppGroupDetail(DesktopItemPointer& pItem, QPoint pos);
     void updateAppGroupDetail(DesktopItemPointer pItem);
     void closeAppGroupDetail(QPoint pos);
     void closeAppGroupDetail();
     void deleteItem(QString url);
+    void cutItems(QStringList urls);
+    void cancelCutedItems(QStringList urls);
     void saveItems();
     void changeSizeByGrid();
     void sortedByFlags(QDir::SortFlag flag);
     void sortedByKey(QString key);
     void resort();
 
-    void setShoudByMovedItem(DesktopItemPointer pItem);
-    void setShoudByMovedItemByUrl(QString url);
+    void setShoudBeMovedItem(DesktopItemPointer pItem);
+    void setShoudBeMovedItemByUrl(QString url);
     void renameDesktopItem(DesktopItemInfo& desktopItemInfo);
 
 private:

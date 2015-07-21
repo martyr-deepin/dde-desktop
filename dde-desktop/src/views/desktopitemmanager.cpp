@@ -19,7 +19,7 @@ DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
 }
 
 void DesktopItemManager::initComputerItem(){
-    QString url = "computer://";
+    QString url = ComputerUrl;
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
     m_pComputerItem  = DesktopItemPointer::create(defaut_icon, this->tr("Computer"), m_parentWindow);
@@ -44,7 +44,7 @@ void DesktopItemManager::initComputerItem(){
 }
 
 void DesktopItemManager::initTrashItem(){
-    QString url = "trash://";
+    QString url = TrashUrl;
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
     m_pTrashItem  = DesktopItemPointer::create(defaut_icon, this->tr("Trash"), m_parentWindow);
@@ -69,8 +69,8 @@ void DesktopItemManager::initTrashItem(){
 
 
 void DesktopItemManager::initConnect(){
-    connect(signalManager, SIGNAL(desktopItemsSaved()),
-            this, SLOT(saveItems()));
+    connect(signalManager, SIGNAL(desktoItemIconUpdated(QString,QString,uint)),
+            this, SLOT(updateDesktopItemIcon(QString,QString,uint)));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)),
             this, SLOT(sortedByFlags(QDir::SortFlag)));
     connect(signalManager, SIGNAL(sortByKey(QString)),
@@ -93,9 +93,14 @@ void DesktopItemManager::initConnect(){
             this, SLOT(deleteItem(QString)));
 
     connect(signalManager, SIGNAL(itemShoudBeMoved(QString)),
-            this, SLOT(setShoudByMovedItemByUrl(QString)));
+            this, SLOT(setShoudBeMovedItemByUrl(QString)));
     connect(signalManager, SIGNAL(itemMoved(DesktopItemInfo&)),
             this, SLOT(renameDesktopItem(DesktopItemInfo&)));
+
+    connect(signalManager, SIGNAL(filesCuted(QStringList)),
+            this, SLOT(cutItems(QStringList)));
+    connect(signalManager, SIGNAL(cancelFilesCuted(QStringList)),
+            this, SLOT(cancelCutedItems(QStringList)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
@@ -123,16 +128,16 @@ DesktopItemPointer DesktopItemManager::getShoudBeMovedItem(){
     return m_shoudbeMovedItem;
 }
 
-void DesktopItemManager::setShoudByMovedItem(DesktopItemPointer pItem){
+void DesktopItemManager::setShoudBeMovedItem(DesktopItemPointer pItem){
     m_shoudbeMovedItem = pItem;
 }
 
-void DesktopItemManager::setShoudByMovedItemByUrl(QString url){
+void DesktopItemManager::setShoudBeMovedItemByUrl(QString url){
     QString key = decodeUrl(url);
     if (m_pItems.contains(key)){
-        setShoudByMovedItem(m_pItems.value(key));
+        setShoudBeMovedItem(m_pItems.value(key));
     }else{
-        setShoudByMovedItem(DesktopItemPointer());
+        setShoudBeMovedItem(DesktopItemPointer());
     }
 }
 
@@ -218,6 +223,12 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
     }
 }
 
+void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uint size){
+    if (m_pItems.contains(url)){
+        m_pItems.value(url)->setDesktopIcon(iconUrl);
+    }
+}
+
 
 void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
     if (!m_shoudbeMovedItem.isNull()){
@@ -244,6 +255,29 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
     }
 }
 
+void DesktopItemManager::cutItems(QStringList urls){
+    foreach (DesktopItemPointer pItem, m_list_pItems) {
+        if (pItem->isCuted()){
+            pItem->cancelCuted();
+        }
+    }
+    foreach (QString url, urls) {
+        if (m_pItems.contains(url)){
+            m_pItems.value(url)->setCuted();
+        }
+    }
+}
+
+void DesktopItemManager::cancelCutedItems(QStringList urls){
+    foreach (DesktopItemPointer pItem, m_list_pItems) {
+        if (pItem->isCuted()){
+            pItem->cancelCuted();
+        }
+    }
+    qDebug() << "cancel cuted";
+    qApp->clipboard()->clear();
+}
+
 void DesktopItemManager::deleteItem(QString url){
     QString _url = decodeUrl(url);
 
@@ -263,6 +297,7 @@ void DesktopItemManager::deleteItem(QString url){
         pItem->close();
     }
 }
+
 
 void DesktopItemManager::saveItems(){
     m_settings.beginGroup("DesktopItems");
@@ -289,7 +324,6 @@ void DesktopItemManager::changeSizeByGrid(){
             pGridItem->setDesktopItem(true);
         }
     }
-    emit signalManager->desktopItemsSaved();
 }
 
 DesktopItemPointer DesktopItemManager::getItemByPos(QPoint pos){
@@ -387,15 +421,8 @@ void DesktopItemManager::updateAppGroupDetail(DesktopItemPointer pItem){
 void DesktopItemManager::closeAppGroupDetail(QPoint pos){
     if (m_appGroupBox){
         DesktopItemPointer pItem = getItemByPos(pos);
-        if(!pItem.isNull()){
-            if (pItem->getUrl() != m_appGroupBox->property("url").toString()){
-                m_appGroupBox->close();
-                m_appGroupBox = NULL;
-            }
-        }else{
-            m_appGroupBox->close();
-            m_appGroupBox = NULL;
-        }
+        m_appGroupBox->close();
+        m_appGroupBox = NULL;
     }
 }
 
@@ -404,6 +431,13 @@ void DesktopItemManager::closeAppGroupDetail(){
         m_appGroupBox->close();
         m_appGroupBox = NULL;
     }
+}
+
+bool DesktopItemManager::isAppGroupBoxShowed(){
+    if (m_appGroupBox){
+        return m_appGroupBox->isVisible();
+    }
+    return false;
 }
 
 DesktopItemManager::~DesktopItemManager()

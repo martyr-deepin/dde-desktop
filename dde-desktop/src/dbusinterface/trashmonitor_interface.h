@@ -28,7 +28,7 @@ class TrashMonitorInterface: public QDBusAbstractInterface
     Q_OBJECT
 public:
     static inline const char *staticInterfaceName()
-    { return "com.deepin.filemanager.Backend.TrashMonitor"; }
+    { return "com.deepin.filemanager.Backend.Monitor.TrashMonitor"; }
 
 public:
     TrashMonitorInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);

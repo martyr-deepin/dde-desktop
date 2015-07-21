@@ -15,9 +15,8 @@
 #define RichDirPrefix ".deepin_rich_dir_"
 #define AppSuffix ".desktop"
 
-#define ComputerIcon "computer"
-#define UserTrash "user-trash"
-#define UserTrashFull "user-trash-full"
+#define ComputerUrl "computer://"
+#define TrashUrl "trash://"
 
 QString decodeUrl(QString url);
 bool isAppGroup(QString url);

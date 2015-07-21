@@ -2,6 +2,9 @@
 #define DBUSCONTROLLER_H
 
 #include "dbusinterface/monitormanager_interface.h"
+#include "dbusinterface/clipboard_interface.h"
+#include "dbusinterface/watcherinstance_interface.h"
+#include "dbusinterface/trashmonitor_interface.h"
 #include "dbusinterface/filemonitorInstance_interface.h"
 #include "dbusinterface/fileInfo_interface.h"
 #include "dbusinterface/desktopdaemon_interface.h"
@@ -11,21 +14,25 @@
 #include "dbusinterface/createfilefromtemplatejob_interface.h"
 #include "dbusinterface/trashjob_interface.h"
 
+
 #include "dbusinterface/dbustype.h"
 #include "views/signalmanager.h"
-#include <QObject>
-#include <QtDBus/QtDBus>
+#include <QtCore>
+#include <QtDBus>
 
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
 #define FileMonitor_path "/com/deepin/filemanager/Backend/MonitorManager"
 #define FileOperations_path "/com/deepin/filemanager/Backend/Operations"
+#define TrashMonitor_path "/com/deepin/filemanager/Backend/Monitor/TrashMonitor"
+#define Clipboard_path "/com/deepin/filemanager/Backend/Clipboard"
 
 #define FileInfo_service "com.deepin.filemanager.Backend.FileInfo"
-#define FileInfo_path "com/deepin/filemanager/Backend/FileInfo"
+#define FileInfo_path "/com/deepin/filemanager/Backend/FileInfo"
 
 #define DesktopDaemon_service "com.deepin.dde.daemon.Desktop"
 #define DesktopDaemon_path "/com/deepin/dde/daemon/Desktop"
 
+#define Watcher_service "com.deepin.filemanager.Backend.Watcher"
 
 typedef QSharedPointer<FileMonitorInstanceInterface> FileMonitorInstanceInterfacePointer;
 
@@ -55,7 +62,13 @@ public:
     static DBusController* instance();
     void initConnect();
     void monitorDesktop();
-    void getDesktopItems();
+    void watchDesktop();
+    void requestDesktopItems();
+    void requestIconByUrl(QString scheme, uint size);
+
+    FileOperationsInterface* getFileOperationsInterface();
+    FileInfoInterface* getFileInfoInterface();
+
     QMap<QString, DesktopItemInfoMap> getAppGroups();
 
     DesktopItemInfoMap getDesktopItemInfoMap();
@@ -72,12 +85,15 @@ signals:
 
 public slots:
     void desktopFileChanged(const QString &url, const QString &in1, uint event);
+    void watchFileChanged(QString url, uint event);
+
     void appGroupFileChanged(const QString &url, const QString &in1, uint event);
     void asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
     void asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
 
     void openFiles(QStringList files, IntList intFlags);
 
+    /*create file*/
     void createDirectory();
     void createDirectoryFinished(QString dirName);
     void createFile();
@@ -86,31 +102,28 @@ public slots:
     void createFileFromTemplateFinished(QString filename);
     void sortByKey(QString key);
 
-    void connectTrashSignal();
-    void disconnectTrashSignal();
-    void trashJobExcute(QStringList files);
-    void trashJobExcuteFinished();
-    void trashJobAbort();
-    void trashJobAbortFinished();
-    void onTrashingFile(QString file);
-    void onDeletingFile(QString file);
-    void onProcessAmount(qlonglong progress, ushort info);
-
+    /*app group*/
     void requestCreatingAppGroup(QStringList urls);
     void monitorAppGroup(QString group_url);
     void getAppGroupItemsByUrl(QString group_url);
     void createAppGroup(QString group_url, QStringList urls);
     void mergeIntoAppGroup(QStringList urls, QString group_url);
 
+    /*unmonitor file*/
     void unMonitorDirByID(uint id);
     void unMonitorDirByUrl(QString group_url);
     void unMonitor();
+
+    /*paste files*/
+    void pasteFiles(QString action, QStringList files, QString destination);
 
 private:
     DBusController(QObject *parent = 0);
     ~DBusController();
     MonitorManagerInterface* m_monitorManagerInterface = NULL;
     FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;
+    ClipboardInterface* m_clipboardInterface = NULL;
+    WatcherInstanceInterface* m_watchInstanceInterface = NULL;
     QMap<QString, FileMonitorInstanceInterfacePointer> m_appGroupMonitorInterfacePointers;
     FileInfoInterface* m_fileInfoInterface = NULL;
     DesktopDaemonInterface* m_desktopDaemonInterface = NULL;
@@ -120,12 +133,11 @@ private:
     CreateFileJobInterface* m_createFileJobInterface = NULL;
     CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface = NULL;
 
-    TrashJobInterface* m_trashJobInterface = NULL;
-
     DesktopItemInfoMap m_desktopItemInfoMap;
     QMap<QString, DesktopItemInfoMap> m_appGroups;
 
     QString m_itemShoudBeMoved;
+
     static DBusController* m_instance;
     Q_DISABLE_COPY(DBusController)
 

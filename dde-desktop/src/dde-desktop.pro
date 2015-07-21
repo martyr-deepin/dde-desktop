@@ -62,7 +62,14 @@ SOURCES += main.cpp \
     views/appgroupbox.cpp \
     views/apptablewidget.cpp \
     views/appgroupiconframe.cpp \
-    dbusinterface/trashjob_interface.cpp
+    dbusinterface/trashjob_interface.cpp \
+    dbusinterface/watcherinstance_interface.cpp \
+    dbusinterface/clipboard_interface.cpp \
+    dbusinterface/movejob_interface.cpp \
+    controllers/movejobcontroller.cpp \
+    controllers/trashjobcontroller.cpp \
+    controllers/copyjobcontroller.cpp \
+    dbusinterface/copyjob_interface.cpp
 
 
 HEADERS  += \
@@ -94,7 +101,14 @@ HEADERS  += \
     views/appgroupbox.h \
     views/apptablewidget.h \
     views/appgroupiconframe.h \
-    dbusinterface/trashjob_interface.h
+    dbusinterface/trashjob_interface.h \
+    dbusinterface/watcherinstance_interface.h \
+    dbusinterface/clipboard_interface.h \
+    dbusinterface/movejob_interface.h \
+    controllers/movejobcontroller.h \
+    controllers/trashjobcontroller.h \
+    controllers/copyjobcontroller.h \
+    dbusinterface/copyjob_interface.h
 
 
 RESOURCES += \

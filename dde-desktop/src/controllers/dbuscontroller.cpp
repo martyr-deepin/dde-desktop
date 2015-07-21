@@ -11,9 +11,14 @@ DBusController::DBusController(QObject *parent) : QObject(parent)
     m_fileInfoInterface = new FileInfoInterface(FileInfo_service, FileInfo_path, bus, this);
     m_desktopDaemonInterface = new DesktopDaemonInterface(DesktopDaemon_service, DesktopDaemon_path, bus, this);
     m_fileOperationsInterface = new FileOperationsInterface(FileMonitor_service, FileOperations_path, bus, this);
-    getDesktopItems();
-    getAppGroups();
+    m_clipboardInterface = new ClipboardInterface(FileMonitor_service, Clipboard_path, bus, this);
+
+    requestDesktopItems();
+    requestIconByUrl(ComputerUrl, 48);
+    requestIconByUrl(TrashUrl, 48);
     monitorDesktop();
+
+//    watchDesktop();
     initConnect();
 }
 
@@ -41,13 +46,13 @@ void DBusController::initConnect(){
     connect(m_desktopDaemonInterface, SIGNAL(AppGroupCreated(QString,QStringList)),
             this, SLOT(createAppGroup(QString,QStringList)));
 
+    connect(m_desktopDaemonInterface, SIGNAL(ItemCut(QStringList)),
+            signalManager, SIGNAL(filesCuted(QStringList)));
     connect(m_desktopDaemonInterface, SIGNAL(RequestDelete(QStringList)),
-            this, SLOT(trashJobExcute(QStringList)));
+            signalManager, SIGNAL(trashingAboutToExcute(QStringList)));
 
-    connect(signalManager, SIGNAL(trashingAboutToExcute(QStringList)),
-            this, SLOT(trashJobExcute(QStringList)));
-    connect(signalManager, SIGNAL(trashingAboutToAborted()),
-            this, SLOT(trashJobAbort()));
+    connect(m_clipboardInterface, SIGNAL(RequestPaste(QString,QStringList,QString)),
+            this, SLOT(pasteFiles(QString,QStringList,QString)));
 
     connect(signalManager, SIGNAL(requestCreatingAppGroup(QStringList)),
             this, SLOT(requestCreatingAppGroup(QStringList)));
@@ -66,6 +71,7 @@ void DBusController::monitorDesktop(){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
         m_desktopMonitorInterface = new FileMonitorInstanceInterface(service, path, QDBusConnection::sessionBus(), this);
+        m_desktopMonitorInterface->SetRateLimit(100);
         connect(m_desktopMonitorInterface, SIGNAL(Changed(QString,QString,uint)), this, SLOT(desktopFileChanged(QString,QString,uint)));
 
     }else{
@@ -73,6 +79,19 @@ void DBusController::monitorDesktop(){
     }
 }
 
+
+void DBusController::watchDesktop(){
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_monitorManagerInterface->Watch(desktopLocation);
+    reply.waitForFinished();
+    if (!reply.isError()){
+        QString service = reply.argumentAt(0).toString();
+        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
+        m_watchInstanceInterface = new WatcherInstanceInterface(service, path, QDBusConnection::sessionBus(), this);
+        connect(m_watchInstanceInterface, SIGNAL(Changed(QString,uint)), this, SLOT(watchFileChanged(QString,uint)));
+    }else{
+        qDebug() << reply.error().message();
+    }
+}
 
 void DBusController::monitorAppGroup(QString group_url){
     if (!m_appGroupMonitorInterfacePointers.contains(group_url)){
@@ -91,7 +110,7 @@ void DBusController::monitorAppGroup(QString group_url){
     }
 }
 
-void DBusController::getDesktopItems(){
+void DBusController::requestDesktopItems(){
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
     reply.waitForFinished();
     if (!reply.isError()){
@@ -111,8 +130,27 @@ void DBusController::getDesktopItems(){
     }
 }
 
+void DBusController::requestIconByUrl(QString scheme, uint size){
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(scheme, size);
+    reply.waitForFinished();
+    if (!reply.isError()){
+        QString iconUrl = reply.argumentAt(0).toString();
+        emit signalManager->desktoItemIconUpdated(scheme, iconUrl, size);
+    }else{
+        qDebug() << reply.error().message();
+    }
+}
+
 QMap<QString, DesktopItemInfoMap> DBusController::getAppGroups(){
     return m_appGroups;
+}
+
+FileOperationsInterface* DBusController::getFileOperationsInterface(){
+    return m_fileOperationsInterface;
+}
+
+FileInfoInterface* DBusController::getFileInfoInterface(){
+    return m_fileInfoInterface;
 }
 
 void DBusController::getAppGroupItemsByUrl(QString group_url){
@@ -207,6 +245,11 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
 }
 
 
+void DBusController::watchFileChanged(QString url, uint event){
+    qDebug() << url << event << "watchFile";
+}
+
+
 void DBusController::desktopFileChanged(const QString &url, const QString &in1, uint event){
     qDebug() << url << in1 << "desktop file changed!!!!!!!!!!";
     switch (event) {
@@ -240,8 +283,7 @@ void DBusController::desktopFileChanged(const QString &url, const QString &in1, 
         qDebug() << "file event unmounted";
         break;
     case G_FILE_MONITOR_EVENT_MOVED:
-        qDebug() << "file event moved";
-
+        qDebug() << "file event moved" << in1 << "========";
         if (in1.length() == 0){
             m_itemShoudBeMoved = url;
             emit signalManager->itemShoudBeMoved(url);
@@ -319,11 +361,20 @@ void DBusController::removeDesktopItemInfoByUrl(QString url){
 }
 
 void DBusController::openFiles(QStringList files, IntList intFlags){
+    qDebug() << files << intFlags;
     foreach (QString file, files) {
         QString key = QString(QUrl(file.toLocal8Bit()).toEncoded());
         if (m_desktopItemInfoMap.contains(key)){
+            int index = files.indexOf(file);
             DesktopItemInfo desktopItemInfo = m_desktopItemInfoMap.value(key);
-//            m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, )
+            qDebug() << desktopItemInfo.URI << "open";
+            QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, 0);
+            reply.waitForFinished();
+            if (!reply.isError()){
+
+            }else{
+                qDebug() << reply.error().message();
+            }
         }
     }
 }
@@ -450,68 +501,24 @@ void DBusController::unMonitor(){
     }
 }
 
-void DBusController::trashJobExcute(QStringList files){
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_fileOperationsInterface->NewTrashJob(files, false, "", "", "");
-    reply.waitForFinished();
-    if (!reply.isError()){
-        QString service = reply.argumentAt(0).toString();
-        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        m_trashJobInterface = new TrashJobInterface(service, path, QDBusConnection::sessionBus(), this);
-        m_trashJobInterface->Execute();
-    }else{
-        qDebug() << reply.error().message();
+
+void DBusController::pasteFiles(QString action, QStringList files, QString destination){
+    if (action == "cut"){
+        bool isFilesFromDesktop = true;
+        foreach (QString fpath, files) {
+            QString url = fpath.replace("file://", "");
+            QFileInfo f(url);
+            bool flag = (f.absolutePath() == destination);
+            isFilesFromDesktop = isFilesFromDesktop && flag;
+        }
+        if (isFilesFromDesktop){
+            emit signalManager->cancelFilesCuted(files);
+        }else{
+            emit signalManager->moveFilesExcuted(files, destination);
+        }
+    }else if (action == "copy"){
+        emit signalManager->copyFilesExcuted(files, destination);
     }
-}
-
-void DBusController::connectTrashSignal(){
-    if (m_trashJobInterface){
-        connect(m_trashJobInterface, SIGNAL(Done()), this, SLOT(deleteFilesFinished()));
-        connect(m_trashJobInterface, SIGNAL(Aborted()), this, SLOT(trashJobAbortFinished()));
-        connect(m_trashJobInterface, SIGNAL(Trashing(QString)), this, SLOT(onTrashingFile(QString)));
-        connect(m_trashJobInterface, SIGNAL(Deleting(QString)), this, SLOT(onDeletingFile(QString)));
-        connect(m_trashJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)), this, SLOT(onProcessAmount(qlonglong,ushort)));
-    }
-}
-
-void DBusController::disconnectTrashSignal(){
-    if (m_trashJobInterface){
-        disconnect(m_trashJobInterface, SIGNAL(Done()), this, SLOT(trashJobAbortFinished()));
-        disconnect(m_trashJobInterface, SIGNAL(Aborted()), this, SLOT(trashJobAbortFinished()));
-        disconnect(m_trashJobInterface, SIGNAL(Trashing(QString)), this, SLOT(onTrashingFile(QString)));
-        disconnect(m_trashJobInterface, SIGNAL(Deleting(QString)), this, SLOT(onDeletingFile(QString)));
-        disconnect(m_trashJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)), this, SLOT(onProcessAmount(qlonglong,ushort)));
-    }
-}
-
-void DBusController::trashJobExcuteFinished(){
-    disconnectTrashSignal();
-    m_trashJobInterface = NULL;
-
-    qDebug() << "trash files deleted";
-}
-
-
-void DBusController::trashJobAbort(){
-    if (m_trashJobInterface){
-        m_trashJobInterface->Abort();
-    }
-}
-
-void DBusController::trashJobAbortFinished(){
-    disconnectTrashSignal();
-    m_trashJobInterface = NULL;
-}
-
-void DBusController::onTrashingFile(QString file){
-    emit signalManager->trashingFileChanged(file);
-}
-
-void DBusController::onDeletingFile(QString file){
-    emit signalManager->deletingFileChanged(file);
-}
-
-void DBusController::onProcessAmount(qlonglong progress, ushort info){
-    emit signalManager->processAmountChanged(progress, info);
 }
 
 

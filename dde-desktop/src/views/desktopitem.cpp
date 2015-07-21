@@ -4,7 +4,6 @@
 #include "global.h"
 #include "controllers/dbuscontroller.h"
 #include "appgroupiconframe.h"
-#include "gridmanager.h"
 
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
@@ -74,10 +73,30 @@ void DesktopItem::initUI(){
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     setLayout(mainLayout);
+
+//    setWindowOpacity(0.5);
+
 }
 
 void DesktopItem::initConnect(){
+    connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(updateSizeByGridSize(SizeType)));
+}
 
+
+void DesktopItem::updateSizeByGridSize(SizeType type){
+    switch (type) {
+    case SizeType::Small:
+        iconLabel->setFixedSize(16, 16);
+        break;
+    case SizeType::Middle:
+        iconLabel->setFixedSize(48, 48);
+        break;
+    case SizeType::Large:
+        iconLabel->setFixedSize(96, 96);
+        break;
+    default:
+        break;
+    }
 }
 
 
@@ -219,9 +238,29 @@ void DesktopItem::setChecked(bool checked){
         m_checked = checked;
         m_hover = false;
         setStyleSheet(qApp->styleSheet());
-
         emit checkedChanged(checked);
      }
+}
+
+
+void DesktopItem::setCuted(){
+    if (!m_isCuted){
+        QGraphicsOpacityEffect *effect = new QGraphicsOpacityEffect;
+        effect->setOpacity(0.5);
+        setGraphicsEffect(effect);
+    }
+    m_isCuted = true;
+}
+
+void DesktopItem::cancelCuted(){
+    if (m_isCuted){
+        static_cast<QGraphicsOpacityEffect*>(graphicsEffect())->setOpacity(1);
+    }
+    m_isCuted = false;
+}
+
+bool DesktopItem::isCuted(){
+    return m_isCuted;
 }
 
 
@@ -257,6 +296,13 @@ void DesktopItem::moveEvent(QMoveEvent *event){
     if (!pNewGridItem.isNull()){
         pNewGridItem->setDesktopItem(true);
     }
+
+    m_settings.beginGroup("DesktopItems");
+    if (m_url.length() > 0){
+        m_settings.setValue(getUrl(), pos);
+    }
+    m_settings.endGroup();
+
     QFrame::moveEvent(event);
 }
 

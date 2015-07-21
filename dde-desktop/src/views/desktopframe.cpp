@@ -330,7 +330,6 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 
 
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
-    emit signalManager->appGounpDetailClosed(event->pos());
     m_isDragStarted = false;
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
@@ -498,14 +497,22 @@ QPixmap DesktopFrame::getCheckedPixmap(){
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     clearFocus();
     update();
-
     if (event->button() == Qt::LeftButton && !m_ctrlPressed){
         DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
-        if (!pTopDesktopItem.isNull()){
-            if (isAppGroup(pTopDesktopItem->getUrl())){
-                unCheckCheckedItems();
-                emit pTopDesktopItem->setHover(true);
-                emit signalManager->appGounpDetailShowed(pTopDesktopItem, event->pos());
+        if (m_desktopItemManager->isAppGroupBoxShowed()){
+            emit signalManager->appGounpDetailClosed(event->pos());
+            if (!pTopDesktopItem.isNull()){
+                if (isAppGroup(pTopDesktopItem->getUrl())){
+                    pTopDesktopItem->setChecked(true);
+                }
+            }
+        }else{
+            if (!pTopDesktopItem.isNull()){
+                if (isAppGroup(pTopDesktopItem->getUrl())){
+                    unCheckCheckedItems();
+                    emit pTopDesktopItem->setHover(true);
+                    emit signalManager->appGounpDetailShowed(pTopDesktopItem, event->pos());
+                }
             }
         }
     }
@@ -529,29 +536,40 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
     TranslucentFrame::mouseMoveEvent(event);
 }
 
+
+void DesktopFrame::mouseDoubleClickEvent(QMouseEvent *event){
+    DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(event->pos());
+    if (!pTopDesktopItem.isNull()){
+        unCheckCheckedItems();
+        checkRaiseItem(pTopDesktopItem);
+        emit signalManager->openFile(pTopDesktopItem->getDesktopItemInfo());
+    }
+    TranslucentFrame::mouseDoubleClickEvent(event);
+}
+
 void DesktopFrame::paintEvent(QPaintEvent *event){
     Q_UNUSED(event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (m_isGridBackgoundOn){
-        int rowCount = gridManager->getRowCount();
-        int columnCount = gridManager->getColumnCount();
-        foreach (GridListPointer gridlist, m_gridItems) {
-            foreach (GridItemPointer pGridItem, *gridlist) {
-                int row = pGridItem->getRow();
-                int column = pGridItem->getColumn();
-                int _c = 255 * (row + column * rowCount) / (columnCount * rowCount);
-                if (_c >= 255){
-                    _c = 255;
-                }
-                QColor color(_c, _c, _c, 100);
-                painter.fillRect(pGridItem->getRect(), color);
-            }
-        }
-    }
+//    if (m_isGridBackgoundOn){
+//        int rowCount = gridManager->getRowCount();
+//        int columnCount = gridManager->getColumnCount();
+//        foreach (GridListPointer gridlist, m_gridItems) {
+//            foreach (GridItemPointer pGridItem, *gridlist) {
+//                int row = pGridItem->getRow();
+//                int column = pGridItem->getColumn();
+//                int _c = 255 * (row + column * rowCount) / (columnCount * rowCount);
+//                if (_c >= 255){
+//                    _c = 255;
+//                }
+//                QColor color(_c, _c, _c, 100);
+//                painter.fillRect(pGridItem->getRect(), color);
+//            }
+//        }
+//    }
     if (m_isSelectable){
-        QColor color(0, 0, 0, 90);
+        QColor color(255, 255, 255, 60);
         painter.fillRect(m_selectRect, color);
     }
     TranslucentFrame::paintEvent(event);

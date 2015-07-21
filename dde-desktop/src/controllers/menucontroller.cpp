@@ -38,11 +38,27 @@ void MenuController::showMenuByDesktopItem(QString url, QPoint pos){
 }
 
 void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos){
-    QStringList urlList;
+    QStringList urls;
     if (!pItem.isNull()) {
-        urlList = QStringList(pItem->getUrl());
+        urls = QStringList(pItem->getUrl());
     }
-    QString menucontent = createMenuContent(urlList);
+    showMenuByUrls(urls, pos);
+}
+
+
+void MenuController::showMenuByDesktopItem(const QList<DesktopItemPointer> &pCheckItems,
+                                           const DesktopItemPointer &pItem, QPoint pos){
+    qDebug() << pCheckItems << pItem << pos;
+    QStringList urls;
+    foreach (DesktopItemPointer pItem, pCheckItems) {
+        urls.append(pItem->getUrl());
+    }
+    showMenuByUrls(urls, pos);
+}
+
+
+void MenuController::showMenuByUrls(QStringList urls, QPoint pos){
+    QString menucontent = createMenuContent(urls);
     QString menucontentfinal = JsonToQString(pos, menucontent);
     QString menucreatepath = registerMenu();
     if (menucreatepath.length() > 0){
@@ -50,12 +66,6 @@ void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos)
     }else{
         qDebug() << "register menu fail!";
     }
-}
-
-
-void MenuController::showMenuByDesktopItem(const QList<DesktopItemPointer> &pCheckItems,
-                                           const DesktopItemPointer &pItem, QPoint pos){
-    qDebug() << pCheckItems << pItem << pos;
 }
 
 QString MenuController::createMenuContent(QStringList createmenupath) {

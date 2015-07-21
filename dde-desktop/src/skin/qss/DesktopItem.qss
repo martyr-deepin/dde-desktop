@@ -52,6 +52,12 @@ QFrame#Checked{
     color:white
 }
 
+QFrame#Cut{
+    background-color: rgba(0, 0, 0, 0.35);
+    border: none;
+    color:white
+}
+
 
 QFrame#DragChecked{
     background-color: rgba(0, 0, 0, 0);
