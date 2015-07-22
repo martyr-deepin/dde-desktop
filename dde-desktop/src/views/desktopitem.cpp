@@ -100,7 +100,7 @@ void DesktopItem::updateSizeByGridSize(SizeType type){
 }
 
 
-DesktopItemInfo DesktopItem::getDesktopItemInfo(){
+DesktopItemInfo& DesktopItem::getDesktopItemInfo(){
     return m_desktopItemInfo;
 }
 

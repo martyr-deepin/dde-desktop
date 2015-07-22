@@ -37,6 +37,9 @@ DBusController* DBusController::instance(){
 void DBusController::initConnect(){
     connect(m_desktopDaemonInterface, SIGNAL(RequestOpen(QStringList,IntList)),
             this, SLOT(openFiles(QStringList, IntList)));
+    connect(signalManager, SIGNAL(openFiles(DesktopItemInfo,QList<DesktopItemInfo>)),
+            this, SLOT(openFiles(DesktopItemInfo,QList<DesktopItemInfo>)));
+    connect(signalManager, SIGNAL(openFile(DesktopItemInfo)), this, SLOT(openFile(DesktopItemInfo)));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateDirectory()), this, SLOT(createDirectory()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFile()), this, SLOT(createFile()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFileFromTemplate(QString)),
@@ -362,22 +365,53 @@ void DBusController::removeDesktopItemInfoByUrl(QString url){
 
 void DBusController::openFiles(QStringList files, IntList intFlags){
     qDebug() << files << intFlags;
-    foreach (QString file, files) {
-        QString key = QString(QUrl(file.toLocal8Bit()).toEncoded());
-        if (m_desktopItemInfoMap.contains(key)){
-            int index = files.indexOf(file);
-            DesktopItemInfo desktopItemInfo = m_desktopItemInfoMap.value(key);
-            qDebug() << desktopItemInfo.URI << "open";
-            QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, 0);
-            reply.waitForFinished();
-            if (!reply.isError()){
 
-            }else{
-                qDebug() << reply.error().message();
+    foreach (QString file, files) {
+        int index = files.indexOf(file);
+        if (intFlags.at(index) == 0){ //RequestOpenPolicyOpen = 0
+            QString key = QString(QUrl(file.toLocal8Bit()).toEncoded());
+            if (m_desktopItemInfoMap.contains(key)){
+                DesktopItemInfo desktopItemInfo = m_desktopItemInfoMap.value(key);
+                qDebug() << desktopItemInfo.URI << "open";
+                QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, 0);
+                reply.waitForFinished();
+                if (!reply.isError()){
+
+                }else{
+                    qDebug() << reply.error().message();
+                }
             }
+        }else{ //RequestOpenPolicyOpen = 1
+
         }
     }
 }
+
+void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QList<DesktopItemInfo> desktopItemInfos){
+    QStringList urls;
+    foreach (DesktopItemInfo info, desktopItemInfos){
+        urls.append(info.URI);
+    }
+    QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(destinationDesktopItemInfo.URI, urls, destinationDesktopItemInfo.CanExecute, 0);
+    reply.waitForFinished();
+    if (!reply.isError()){
+
+    }else{
+        qDebug() << reply.error().message();
+    }
+}
+
+void DBusController::openFile(DesktopItemInfo desktopItemInfo){
+    //TODO query RequestOpenPolicyOpen or RequestOpenPolicyOpen
+    QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, 0);
+    reply.waitForFinished();
+    if (!reply.isError()){
+
+    }else{
+        qDebug() << reply.error().message();
+    }
+}
+
 
 void DBusController::createDirectory(){
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_fileOperationsInterface->NewCreateDirectoryJob(desktopLocation, "", "", "", "");

@@ -267,6 +267,12 @@ void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
                 pItem->changeToBeAppGroupIcon();
             }else if (isAllAppCheckedItems() && isAppGroup(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
                 m_destinationDesktopItem = pItem;
+            }else if (isApp(pItem->getUrl())){
+                m_destinationDesktopItem = pItem;
+            }else if (isTrash(pItem->getUrl())){
+                m_destinationDesktopItem = pItem;
+            }else if (isFolder(pItem->getUrl())){
+                m_destinationDesktopItem = pItem;
             }
             pItem->setHover(true);
         }else{
@@ -300,19 +306,25 @@ void DesktopFrame::dropEvent(QDropEvent *event){
     if (!m_destinationDesktopItem.isNull()){
         if (m_destinationDesktopItem->geometry().contains(event->pos())){
             QStringList urls;
-            if (isApp(m_destinationDesktopItem->getUrl())){
-                urls.append(m_destinationDesktopItem->getUrl());
-            }
+            QList<DesktopItemInfo> dropDesktopItemInfos;
             foreach (DesktopItemPointer pCheckedItem, m_checkedDesktopItems) {
                 urls.append(pCheckedItem->getUrl());
+                dropDesktopItemInfos.append(pCheckedItem->getDesktopItemInfo());
             }
             if (isAllAppCheckedItems() && isApp(m_destinationDesktopItem->getUrl())){
+                urls.append(m_destinationDesktopItem->getUrl());
                 emit signalManager->requestCreatingAppGroup(urls);
-                m_destinationDesktopItem.clear();
             }else if (isAllAppCheckedItems() && isAppGroup(m_destinationDesktopItem->getUrl())){
+                urls.append(m_destinationDesktopItem->getUrl());
                 emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
-                m_destinationDesktopItem.clear();
+            }else if (isApp(m_destinationDesktopItem->getUrl())){
+                emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), dropDesktopItemInfos);
+            }else if (isTrash(m_destinationDesktopItem->getUrl())){
+                emit signalManager->trashingAboutToExcute(urls);
+            }else if (isFolder(m_destinationDesktopItem->getUrl())){
+                emit signalManager->moveFilesExcuted(urls, m_destinationDesktopItem->getUrl());
             }
+            m_destinationDesktopItem.clear();
         }
     }
 
@@ -542,7 +554,9 @@ void DesktopFrame::mouseDoubleClickEvent(QMouseEvent *event){
     if (!pTopDesktopItem.isNull()){
         unCheckCheckedItems();
         checkRaiseItem(pTopDesktopItem);
-        emit signalManager->openFile(pTopDesktopItem->getDesktopItemInfo());
+        if (!isAppGroup(pTopDesktopItem->getUrl())){
+            emit signalManager->openFile(pTopDesktopItem->getDesktopItemInfo());
+        }
     }
     TranslucentFrame::mouseDoubleClickEvent(event);
 }

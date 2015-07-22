@@ -46,6 +46,8 @@ signals:
 
     /*double open file*/
     void openFile(DesktopItemInfo info);
+    /*drop open files*/
+    void openFiles(DesktopItemInfo destinationDesktopItemInfo, QList<DesktopItemInfo> desktopItemInfos);
 
     /*trash files*/
     void trashEmptyChanged(bool flag);

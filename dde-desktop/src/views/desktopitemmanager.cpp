@@ -25,6 +25,7 @@ void DesktopItemManager::initComputerItem(){
     m_pComputerItem  = DesktopItemPointer::create(defaut_icon, this->tr("Computer"), m_parentWindow);
     m_pComputerItem->setUrl(url);
     m_pComputerItem->resize(width, height);
+    m_pComputerItem->getDesktopItemInfo().URI = url;
 
     GridItemPointer pGridItem = gridManager->getItems().at(0)->at(0);
     QRect rect = pGridItem->getRect();
@@ -50,6 +51,7 @@ void DesktopItemManager::initTrashItem(){
     m_pTrashItem  = DesktopItemPointer::create(defaut_icon, this->tr("Trash"), m_parentWindow);
     m_pTrashItem->setUrl(url);
     m_pTrashItem->resize(width, height);
+    m_pTrashItem->getDesktopItemInfo().URI = url;
 
     GridItemPointer pGridItem = gridManager->getItems().at(0)->at(1);
     QRect rect = pGridItem->getRect();

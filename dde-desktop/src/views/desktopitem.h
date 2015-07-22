@@ -37,7 +37,7 @@ public:
     bool isHover();
     bool isCuted();
     QString gridKey();
-    DesktopItemInfo getDesktopItemInfo();
+    DesktopItemInfo& getDesktopItemInfo();
     QMap<QString, DesktopItemInfo> getAppGroupItems();
 
 signals:
