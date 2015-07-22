@@ -27,6 +27,7 @@ void DesktopApp::initConnect(){
 
 void DesktopApp::show(){
     m_desktopFrame->show();
+    m_desktopFrame->move(100, 400);
 }
 
 void DesktopApp::loadSettings(){

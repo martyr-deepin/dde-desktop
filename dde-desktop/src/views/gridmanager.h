@@ -26,6 +26,7 @@ public:
     int getRowCount();
     int getItemWidth();
     int getItemHeight();
+    int getPageCount();
     bool isRectInGrid(QRect rect);
     GridItemPointer getBlankItem();
     GridItemPointer getItemByPos(QPoint pos);
@@ -49,6 +50,7 @@ signals:
 
 public slots:
     void clearDeskopItemsStatus();
+    void setPageCount(int count);
 
 private:
     int m_width = 0;
@@ -65,6 +67,7 @@ private:
     int m_bottomMargin = 10;
     int m_columnCount = 0;
     int m_rowCount = 0;
+    int m_pageCount = 4;
     static GridManager* m_instance;
     DoubleGridItemPointerList m_list_items;
     QMap<QString, GridItemPointer> m_map_items;

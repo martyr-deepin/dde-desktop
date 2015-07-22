@@ -103,6 +103,7 @@ private:
     bool m_isDragStarted;
     bool m_isGridBackgoundOn = false;
 
+    int m_currentPage = 0;
     SizeType m_sizeType;
 
     QSharedPointer<DesktopItemManager> m_desktopItemManager;

@@ -28,6 +28,14 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     initItems();
     initConnect();
     qApp->setStyleSheet(getQssFromFile(":/skin/qss/DesktopItem.qss"));
+
+//    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
+//    int desktopWidth = availableGeometry.width();
+//    int desktopHeight = availableGeometry.height();
+//    QRect r(0, 0, gridManager->getPageCount()  * desktopWidth, desktopHeight);
+//    setGeometry(r);
+//    move(100, 100);
+    qDebug() << pos();
 }
 
 void DesktopFrame::initItems(){
@@ -598,6 +606,26 @@ void DesktopFrame::keyPressEvent(QKeyEvent *event){
 
     if (event->key() == Qt::Key_Escape){
         close();
+    }else if (event->key() == Qt::Key_PageUp){
+        if (m_currentPage > 0){
+            m_currentPage--;
+            const QRect availableGeometry = QApplication::desktop()->availableGeometry();
+            int desktopWidth = availableGeometry.width();
+            int currentX = x() + desktopWidth;
+            move(currentX, y());
+            qDebug() << currentX << "pageUp";
+        }
+
+    }else if (event->key() == Qt::Key_PageDown){
+        if (m_currentPage < gridManager->getPageCount()){
+            m_currentPage++;
+            const QRect availableGeometry = QApplication::desktop()->availableGeometry();
+            int desktopWidth = availableGeometry.width();
+            int currentX = x() - desktopWidth;
+            move(currentX, y());
+            qDebug() << currentX << "pageDown";
+        }
+
     }else if (event->key() == Qt::Key_1){
         emit signalManager->gridSizeTypeChanged(SizeType::Small);
     }else if (event->key() == Qt::Key_2){

@@ -71,6 +71,7 @@ void DesktopItemManager::initTrashItem(){
 
 
 void DesktopItemManager::initConnect(){
+    connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(desktoItemIconUpdated(QString,QString,uint)),
             this, SLOT(updateDesktopItemIcon(QString,QString,uint)));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)),
@@ -215,9 +216,9 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
     if (!pDesktopItem.isNull()){
         GridItemPointer pGridItem = gridManager->getBlankItem();
         if (!pGridItem.isNull()){
+            qDebug() << pGridItem->getRow() << pGridItem->getColumn() << pGridItem->hasDesktopItem();
             pDesktopItem->move(pGridItem->getPos());
             pGridItem->setDesktopItem(true);
-
             m_settings.beginGroup("DesktopItems");
             m_settings.setValue(pDesktopItem->getUrl(), pDesktopItem->pos());
             m_settings.endGroup();
@@ -298,10 +299,13 @@ void DesktopItemManager::deleteItem(QString url){
         m_pItems.remove(url);
         pItem->close();
     }
+
+    emit signalManager->desktopItemsSaved();
 }
 
 
 void DesktopItemManager::saveItems(){
+    m_settings.clear();
     m_settings.beginGroup("DesktopItems");
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         m_settings.setValue(pItem->getUrl(), pItem->pos());
@@ -343,6 +347,7 @@ QList<DesktopItemPointer> DesktopItemManager::getItems(){
 
 void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     gridManager->clearDeskopItemsStatus();
+    m_settings.clear();
     QDir desktopDir(desktopLocation);
     QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::Hidden, flag);
     m_list_pItems.clear();
@@ -358,13 +363,13 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
         m_list_pItems.append(pDesktopItem);
     }
 
-    foreach (DesktopItemPointer pItem, m_list_pItems) {
-        int i = m_list_pItems.indexOf(pItem) / row;
-        int j = m_list_pItems.indexOf(pItem) % row;
-        GridItemPointer pGridItem = gridManager->getItems().at(i)->at(j);
+    for (int i = 0; i< m_list_pItems.length() ; i++){
+        int pColumn = i / row;
+        int pRow = i % row;
+        GridItemPointer pGridItem = gridManager->getItems().at(pColumn)->at(pRow);
         if (!pGridItem.isNull()){
             QRect rect = pGridItem->getRect();
-            pItem->move(rect.topLeft());
+            m_list_pItems.at(i)->move(rect.topLeft());
             pGridItem->setDesktopItem(true);
         }
     }

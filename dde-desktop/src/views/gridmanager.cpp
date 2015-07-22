@@ -41,6 +41,14 @@ int GridManager::getItemHeight(){
     return m_itemHeight;
 }
 
+int GridManager::getPageCount(){
+    return m_pageCount;
+}
+
+void GridManager::setPageCount(int count){
+    m_pageCount = count;
+}
+
 QMap<QString, GridItemPointer> GridManager::getMapItems(){
     return m_map_items;
 }
@@ -98,6 +106,7 @@ GridItemPointer GridManager::getBlankItem(){
         for (int row = 0; row < m_rowCount; row++){
             GridItemPointer pItem = m_list_items.at(column)->at(row);
             if (!pItem->hasDesktopItem()){
+                qDebug() << row << column << "/////////////";
                 return pItem;
             }
         }
@@ -268,7 +277,7 @@ DoubleGridItemPointerList GridManager::getItemsByType(SizeType type){
 
 DoubleGridItemPointerList GridManager::getSmallItems(){
     const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int desktopWidth = availableGeometry.width();
+    int desktopWidth = availableGeometry.width() * m_pageCount;
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 10, 10);
@@ -277,7 +286,7 @@ DoubleGridItemPointerList GridManager::getSmallItems(){
 
 DoubleGridItemPointerList GridManager::getMiddleItems(){
     const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int desktopWidth = availableGeometry.width();
+    int desktopWidth = availableGeometry.width() * m_pageCount;
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 10, 10);
@@ -286,7 +295,7 @@ DoubleGridItemPointerList GridManager::getMiddleItems(){
 
 DoubleGridItemPointerList GridManager::getLargeItems(){
     const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int desktopWidth = availableGeometry.width();
+    int desktopWidth = availableGeometry.width() * m_pageCount;
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 10, 10);

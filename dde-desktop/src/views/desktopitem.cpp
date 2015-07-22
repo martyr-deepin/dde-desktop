@@ -285,18 +285,7 @@ void DesktopItem::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void DesktopItem::moveEvent(QMoveEvent *event){
-    QPoint oldPos = event->oldPos();
     QPoint pos = event->pos();
-
-    GridItemPointer pOldGridItem = gridManager->getItemByPos(oldPos);
-    GridItemPointer pNewGridItem = gridManager->getItemByPos(pos);
-    if (!pOldGridItem.isNull()){
-        pOldGridItem->setDesktopItem(false);
-    }
-    if (!pNewGridItem.isNull()){
-        pNewGridItem->setDesktopItem(true);
-    }
-
     m_settings.beginGroup("DesktopItems");
     if (m_url.length() > 0){
         m_settings.setValue(getUrl(), pos);
