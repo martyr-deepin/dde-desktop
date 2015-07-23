@@ -2,7 +2,7 @@
 #define DESKTOPAPP_H
 
 #include <QtCore>
-#include "views/desktopframe.h"
+#include "views/desktopbox.h"
 #include "controllers/appcontroller.h"
 
 class DesktopApp : public QObject
@@ -13,7 +13,6 @@ public:
     ~DesktopApp();
 
     void initConnect();
-
 
 signals:
 
@@ -28,7 +27,7 @@ public slots:
     void show();
 
 private:
-    DesktopFrame* m_desktopFrame;
+    DesktopBox* m_desktopBox;
     AppController* m_appController;
 };
 

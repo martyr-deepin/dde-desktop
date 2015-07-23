@@ -15,6 +15,7 @@ public:
 signals:
 
 public slots:
+
 };
 
 #endif // TRANSLUCENTFRAME_H

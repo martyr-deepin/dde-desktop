@@ -21,6 +21,7 @@
 QString decodeUrl(QString url);
 bool isAppGroup(QString url);
 bool isApp(QString url);
+bool isAllApp(QStringList urls);
 bool isComputer(QString url);
 bool isTrash(QString url);
 bool isFolder(QString url);

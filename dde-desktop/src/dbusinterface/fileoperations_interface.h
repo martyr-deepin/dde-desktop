@@ -196,17 +196,17 @@ public Q_SLOTS: // METHODS
         return reply;
     }
 
-    inline QDBusPendingReply<QString, QDBusObjectPath, QString> NewGetLaunchAppJob(const QString &in0, bool in1)
+    inline QDBusPendingReply<QString, QDBusObjectPath, QString> NewGetDefaultLaunchAppJob(const QString &in0, bool in1)
     {
         QList<QVariant> argumentList;
         argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1);
-        return asyncCallWithArgumentList(QStringLiteral("NewGetLaunchAppJob"), argumentList);
+        return asyncCallWithArgumentList(QStringLiteral("NewGetDefaultLaunchAppJob"), argumentList);
     }
-    inline QDBusReply<QString> NewGetLaunchAppJob(const QString &in0, bool in1, QDBusObjectPath &out1, QString &out2)
+    inline QDBusReply<QString> NewGetDefaultLaunchAppJob(const QString &in0, bool in1, QDBusObjectPath &out1, QString &out2)
     {
         QList<QVariant> argumentList;
         argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1);
-        QDBusMessage reply = callWithArgumentList(QDBus::Block, QStringLiteral("NewGetLaunchAppJob"), argumentList);
+        QDBusMessage reply = callWithArgumentList(QDBus::Block, QStringLiteral("NewGetDefaultLaunchAppJob"), argumentList);
         if (reply.type() == QDBusMessage::ReplyMessage && reply.arguments().count() == 3) {
             out1 = qdbus_cast<QDBusObjectPath>(reply.arguments().at(1));
             out2 = qdbus_cast<QString>(reply.arguments().at(2));
@@ -320,17 +320,17 @@ public Q_SLOTS: // METHODS
         return reply;
     }
 
-    inline QDBusPendingReply<QString, QDBusObjectPath, QString> NewSetLaunchAppJob(const QString &in0, const QString &in1)
+    inline QDBusPendingReply<QString, QDBusObjectPath, QString> NewSetDefaultLaunchAppJob(const QString &in0, const QString &in1)
     {
         QList<QVariant> argumentList;
         argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1);
-        return asyncCallWithArgumentList(QStringLiteral("NewSetLaunchAppJob"), argumentList);
+        return asyncCallWithArgumentList(QStringLiteral("NewSetDefaultLaunchAppJob"), argumentList);
     }
-    inline QDBusReply<QString> NewSetLaunchAppJob(const QString &in0, const QString &in1, QDBusObjectPath &out1, QString &out2)
+    inline QDBusReply<QString> NewSetDefaultLaunchAppJob(const QString &in0, const QString &in1, QDBusObjectPath &out1, QString &out2)
     {
         QList<QVariant> argumentList;
         argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1);
-        QDBusMessage reply = callWithArgumentList(QDBus::Block, QStringLiteral("NewSetLaunchAppJob"), argumentList);
+        QDBusMessage reply = callWithArgumentList(QDBus::Block, QStringLiteral("NewSetDefaultLaunchAppJob"), argumentList);
         if (reply.type() == QDBusMessage::ReplyMessage && reply.arguments().count() == 3) {
             out1 = qdbus_cast<QDBusObjectPath>(reply.arguments().at(1));
             out2 = qdbus_cast<QString>(reply.arguments().at(2));

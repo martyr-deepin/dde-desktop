@@ -8,7 +8,7 @@ DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
     qApp->setOrganizationDomain("linuxdeepin.org");
     qApp->setApplicationName("dde-desktop");
 
-    m_desktopFrame = new DesktopFrame;
+    m_desktopBox = new DesktopBox;
     m_appController = new AppController;
 
 
@@ -26,8 +26,7 @@ void DesktopApp::initConnect(){
 }
 
 void DesktopApp::show(){
-    m_desktopFrame->show();
-    m_desktopFrame->move(100, 400);
+    m_desktopBox->show();
 }
 
 void DesktopApp::loadSettings(){
@@ -37,9 +36,9 @@ void DesktopApp::loadSettings(){
 void DesktopApp::saveSettings(){
     QSettings settings;
     settings.beginGroup("Desktop");
-    settings.setValue("isGridOn", m_desktopFrame->isGridOn());
-    settings.setValue("sizeType", m_desktopFrame->getSizeType());
-    settings.setValue("sortFlag", m_desktopFrame->getTopDesktopItemManager()->getSortFlag());
+    settings.setValue("isGridOn", m_desktopBox->getDesktopFrame()->isGridOn());
+    settings.setValue("sizeType", m_desktopBox->getDesktopFrame()->getSizeType());
+    settings.setValue("sortFlag", m_desktopBox->getDesktopFrame()->getTopDesktopItemManager()->getSortFlag());
     settings.endGroup();
 }
 

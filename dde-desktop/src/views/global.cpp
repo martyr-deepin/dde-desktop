@@ -22,6 +22,21 @@ bool isApp(QString url){
     return false;
 }
 
+bool isAllApp(QStringList urls){
+    if (urls.length() > 0){
+        bool ret = true;
+        foreach (QString url, urls) {
+            ret = ret && isApp(url);
+            if (!ret){
+                return false;
+            }
+        }
+        return ret;
+    }else{
+        return false;
+    }
+}
+
 bool isComputer(QString url){
     if (url == ComputerUrl){
         return true;

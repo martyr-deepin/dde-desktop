@@ -1,10 +1,11 @@
 #include "gridmanager.h"
+#include "global.h"
 
 GridManager* GridManager::m_instance = NULL;
 
 GridManager::GridManager(QObject *parent) : QObject(parent)
 {
-
+    initConnect();
 }
 
 GridManager* GridManager::instance()
@@ -19,6 +20,11 @@ GridManager* GridManager::instance()
 }
 
 
+void GridManager::initConnect(){
+    connect(signalManager, SIGNAL(pageCountChanged(int)),
+            this, SLOT(updateGridByPageCount(int)));
+}
+
 void GridManager::clearDeskopItemsStatus(){
     foreach (GridItemPointer pItem, m_map_items.values()) {
         pItem->setDesktopItem(false);
@@ -32,6 +38,17 @@ int GridManager::getRowCount(){
 int GridManager::getColumnCount(){
     return m_columnCount;
 }
+
+int GridManager::getDesktopColumnCount(){
+    int desktopWidth = qApp->desktop()->availableGeometry().width();
+    return (desktopWidth - m_leftMargin - m_rightMargin) / (m_itemWidth + m_xMinimumSpacing);
+}
+
+int GridManager::getDesktopRowCount(){
+    int desktopHeight = qApp->desktop()->availableGeometry().height();
+    return (desktopHeight - m_topMargin - m_bottomMargin) / (m_itemHeight + m_yMinimumSpacing);
+}
+
 
 int GridManager::getItemWidth(){
     return m_itemWidth;
@@ -62,6 +79,10 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
                                                  const int xMinimumSpacing, const int yMinimumSpacing,
                                                  const int leftMargin, const int topMargin,
                                                  const int rightMargin, const int bottomMargin){
+    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
+    int desktopWidth = availableGeometry.width();
+    int desktopHeight = availableGeometry.height();
+
     m_list_items.clear();
     m_map_items.clear();
     m_width = width;
@@ -75,27 +96,32 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
     m_rightMargin = rightMargin;
     m_bottomMargin = bottomMargin;
 
-    m_columnCount = (m_width - m_leftMargin - m_rightMargin) / (m_itemWidth + m_xMinimumSpacing);
-    m_rowCount = (m_height - m_topMargin - m_bottomMargin) / (m_itemHeight + m_yMinimumSpacing);
+    int desktopColumn = getDesktopColumnCount();
+    int desktopRow = getDesktopRowCount();
 
-    m_xSpacing = (m_width - m_leftMargin - m_rightMargin - m_itemWidth * m_columnCount)/ (m_columnCount - 1);
-    m_ySpacing = (m_height - m_topMargin - m_bottomMargin - m_itemHeight * m_rowCount) / (m_rowCount - 1);
+    m_columnCount = desktopColumn * width / desktopWidth;
+    m_rowCount = desktopRow * height / desktopHeight;
 
-    int x=m_leftMargin;
-    int y=m_topMargin;
-
-    for (int i=0; i< m_columnCount; i++){
-        x = m_itemWidth * i  + m_xSpacing * i + m_leftMargin;
+    m_xSpacing = (desktopWidth - m_leftMargin - m_rightMargin - m_itemWidth * desktopColumn)/ (desktopColumn - 1);
+    m_ySpacing = (desktopHeight - m_topMargin - m_bottomMargin - m_itemHeight * desktopRow) / (desktopRow - 1);
+    int x = m_leftMargin;
+    for (int i=0; i<= m_columnCount; i++){
+        if (i>0 && i % desktopColumn == 0){
+            x = i / desktopColumn * desktopWidth + m_leftMargin;
+        }
         GridListPointer _gridlist = GridListPointer::create();
         m_list_items.append(_gridlist);
         for (int j=0; j< m_rowCount; j++){
-            y = m_itemHeight * j + m_ySpacing * j  + m_topMargin;
+            int y = (m_itemHeight + m_ySpacing) * j + m_topMargin;
             QRect rect = QRect(x, y, m_itemWidth, m_itemHeight);
+            qDebug() << rect << m_columnCount << m_rowCount;
             GridItemPointer item = GridItemPointer::create(j, i, rect);
             QString key = QString("%1-%2").arg(QString::number(x), QString::number(y));
             m_map_items.insert(key, item);
             _gridlist->append(item);
         }
+        x =  x + m_itemWidth  + m_xSpacing;
+
     }
     clearDeskopItemsStatus();
     return m_list_items;
@@ -272,6 +298,14 @@ DoubleGridItemPointerList GridManager::getItemsByType(SizeType type){
     }else{
         return getMiddleItems();
     }
+    m_sizeType = type;
+}
+
+
+void GridManager::updateGridByPageCount(int count){
+    qDebug() << "GridManager update";
+    setPageCount(count);
+    getItemsByType(m_sizeType);
 }
 
 
@@ -280,7 +314,7 @@ DoubleGridItemPointerList GridManager::getSmallItems(){
     int desktopWidth = availableGeometry.width() * m_pageCount;
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
-    ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 10, 10);
+    ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 
@@ -289,7 +323,7 @@ DoubleGridItemPointerList GridManager::getMiddleItems(){
     int desktopWidth = availableGeometry.width() * m_pageCount;
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
-    ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 10, 10);
+    ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 
@@ -298,7 +332,7 @@ DoubleGridItemPointerList GridManager::getLargeItems(){
     int desktopWidth = availableGeometry.width() * m_pageCount;
     int desktopHeight = availableGeometry.height();
     DoubleGridItemPointerList ret;
-    ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 10, 10);
+    ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 

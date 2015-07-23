@@ -54,7 +54,7 @@ void TrashJobController::trashJobExcute(QStringList files){
 
 void TrashJobController::connectTrashSignal(){
     if (m_trashJobInterface){
-        connect(m_trashJobInterface, SIGNAL(Done()), this, SLOT(deleteFilesFinished()));
+        connect(m_trashJobInterface, SIGNAL(Done()), this, SLOT(trashJobExcuteFinished()));
         connect(m_trashJobInterface, SIGNAL(Aborted()), this, SLOT(trashJobAbortFinished()));
         connect(m_trashJobInterface, SIGNAL(Trashing(QString)), this, SLOT(onTrashingFile(QString)));
         connect(m_trashJobInterface, SIGNAL(Deleting(QString)), this, SLOT(onDeletingFile(QString)));

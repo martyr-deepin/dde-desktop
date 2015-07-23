@@ -17,6 +17,7 @@ signals:
 
     void desktopItemsSaved();
 
+    void pageCountChanged(int count);
     void gridModeChanged(bool mode); /*true: grid on; false: grid off*/
     void gridOnResorted(); /*sort desktop item when grid on */
 
@@ -48,6 +49,7 @@ signals:
     void openFile(DesktopItemInfo info);
     /*drop open files*/
     void openFiles(DesktopItemInfo destinationDesktopItemInfo, QList<DesktopItemInfo> desktopItemInfos);
+    void openFiles(DesktopItemInfo destinationDesktopItemInfo, QStringList urls);
 
     /*trash files*/
     void trashEmptyChanged(bool flag);

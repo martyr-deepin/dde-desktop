@@ -39,6 +39,8 @@ void DBusController::initConnect(){
             this, SLOT(openFiles(QStringList, IntList)));
     connect(signalManager, SIGNAL(openFiles(DesktopItemInfo,QList<DesktopItemInfo>)),
             this, SLOT(openFiles(DesktopItemInfo,QList<DesktopItemInfo>)));
+    connect(signalManager, SIGNAL(openFiles(DesktopItemInfo,QStringList)),
+            this, SLOT(openFiles(DesktopItemInfo,QStringList)));
     connect(signalManager, SIGNAL(openFile(DesktopItemInfo)), this, SLOT(openFile(DesktopItemInfo)));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateDirectory()), this, SLOT(createDirectory()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFile()), this, SLOT(createFile()));
@@ -392,6 +394,11 @@ void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QList
     foreach (DesktopItemInfo info, desktopItemInfos){
         urls.append(info.URI);
     }
+    openFiles(destinationDesktopItemInfo, urls);
+}
+
+
+void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QStringList urls){
     QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(destinationDesktopItemInfo.URI, urls, destinationDesktopItemInfo.CanExecute, 0);
     reply.waitForFinished();
     if (!reply.isError()){
@@ -550,6 +557,7 @@ void DBusController::pasteFiles(QString action, QStringList files, QString desti
         }else{
             emit signalManager->moveFilesExcuted(files, destination);
         }
+        qApp->clipboard()->clear();
     }else if (action == "copy"){
         emit signalManager->copyFilesExcuted(files, destination);
     }

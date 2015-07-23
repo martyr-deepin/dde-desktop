@@ -1,6 +1,7 @@
 #include "apptablewidget.h"
 #include "global.h"
 #include "widgets/util.h"
+#include <typeinfo>
 
 AppTableWidget::AppTableWidget(QWidget *parent) : QTableWidget(parent)
 {
@@ -17,11 +18,18 @@ void AppTableWidget::init(){
     setAttribute(Qt::WA_TranslucentBackground);
     horizontalHeader()->hide();
     verticalHeader()->hide();
+    setEditTriggers(NoEditTriggers);
+    setDragDropMode(DragOnly);
+    setAcceptDrops(true);
+    setDragEnabled(true);
 //    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 //    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setShowGrid(false);
 
     setStyleSheet(getQssFromFile(":/skin/qss/Tablewidget.qss"));
+
+    connect(this, SIGNAL(cellClicked(int,int)), this, SLOT(handleCellClicked(int,int)));
+    connect(this, SIGNAL(cellPressed(int,int)), this, SLOT(handleCellPressed(int,int)));
 }
 
 void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
@@ -64,6 +72,25 @@ void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
     }
 }
 
+void AppTableWidget::handleCellClicked(int row, int column){
+    DesktopItem* pItem = dynamic_cast<DesktopItem*>(cellWidget(row, column));
+    if (pItem == NULL){
+        qDebug() << "handleCellClicked no desktop item";
+    }else{
+        emit signalManager->openFile(pItem->getDesktopItemInfo());
+    }
+}
+
+
+void AppTableWidget::handleCellPressed(int row, int column){
+    DesktopItem* pItem = dynamic_cast<DesktopItem*>(cellWidget(row, column));
+    if (pItem == NULL){
+        qDebug() << "handleCellPressed no desktop item";
+    }else{
+        m_dragItem = pItem;
+    }
+}
+
 QList<int> AppTableWidget::getColumnRowByCount(int count){
 //    int width = gridManager->getItemWidth();
 //    int height = gridManager->getItemHeight();
@@ -92,6 +119,89 @@ QList<int> AppTableWidget::getColumnRowByCount(int count){
     ret.append(row);
 
     return ret;
+}
+
+void AppTableWidget::startDrag(DesktopItemInfo &info){
+//    QByteArray itemData;
+//    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+    QList<QUrl> urls;
+    urls.append(QUrl(info.URI));
+    QMimeData* mimeData = new QMimeData;
+//    mimeData->setData("application/x-dnditemdata", itemData);
+    mimeData->setUrls(urls);
+
+    QPixmap dragPixmap = getDragPixmap();
+    QDrag* pDrag = new QDrag(this);
+    pDrag->setMimeData(mimeData);
+    pDrag->setPixmap(dragPixmap);
+    pDrag->setHotSpot(QCursor::pos());
+    Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
+     if (action == Qt::MoveAction){
+        qDebug() << "app group item drag move======";
+     }else{
+        qDebug() << "app group item drag copy======";
+     }
+}
+
+QPixmap AppTableWidget::getDragPixmap(){
+    QFrame* F = new QFrame(this);
+    F->setAttribute(Qt::WA_DeleteOnClose);
+    F->setObjectName("DesktopFrame");
+    F->setGeometry(qApp->desktop()->availableGeometry());
+
+    DesktopItem* item = new DesktopItem(m_dragItem->getDesktopItemInfo().Icon,
+                                       m_dragItem->getDesktopName(), F);
+    item->resize(m_dragItem->size());
+    item->move(mapToGlobal(m_dragItem->pos()));
+    item->setObjectName("DragChecked");
+
+    F->setStyleSheet(qApp->styleSheet());
+    QPixmap ret = F->grab();
+    F->close();
+    return ret;
+}
+
+
+void AppTableWidget::mouseMoveEvent(QMouseEvent *event){
+    if (m_dragItem){
+        startDrag(m_dragItem->getDesktopItemInfo());
+    }
+}
+
+void AppTableWidget::dragEnterEvent(QDragEnterEvent *event){
+    qDebug() << "app group enter" << event->pos();
+//    m_dragLeave = false;
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")){
+        if (event->source() == this){
+            event->setDropAction(Qt::MoveAction);
+            event->accept();
+        }else{
+            qDebug() << event->mimeData();
+            event->ignore();
+        }
+    }else{
+        event->ignore();
+    }
+}
+
+
+void AppTableWidget::dragMoveEvent(QDragMoveEvent *event){
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")){
+        if (event->source() == this){
+             event->setDropAction(Qt::MoveAction);
+             event->accept();
+        }else{
+            event->ignore();;//eptProposedAction();
+        }
+    }else{
+        event->ignore();
+    }
+}
+
+void AppTableWidget::dragLeaveEvent(QDragLeaveEvent *event){
+    //    m_dragLeave = true;
+    qDebug() << "app group leave" << event;
+    event->ignore();
 }
 
 AppTableWidget::~AppTableWidget()

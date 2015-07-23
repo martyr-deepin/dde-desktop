@@ -69,7 +69,8 @@ SOURCES += main.cpp \
     controllers/movejobcontroller.cpp \
     controllers/trashjobcontroller.cpp \
     controllers/copyjobcontroller.cpp \
-    dbusinterface/copyjob_interface.cpp
+    dbusinterface/copyjob_interface.cpp \
+    views/desktopbox.cpp
 
 
 HEADERS  += \
@@ -108,7 +109,8 @@ HEADERS  += \
     controllers/movejobcontroller.h \
     controllers/trashjobcontroller.h \
     controllers/copyjobcontroller.h \
-    dbusinterface/copyjob_interface.h
+    dbusinterface/copyjob_interface.h \
+    views/desktopbox.h
 
 
 RESOURCES += \

@@ -92,6 +92,7 @@ public slots:
     void asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
 
     void openFiles(QStringList files, IntList intFlags);
+    void openFiles(DesktopItemInfo destinationDesktopItemInfo, QStringList urls);
     void openFiles(DesktopItemInfo destinationDesktopItemInfo, QList<DesktopItemInfo> desktopItemInfos);
     void openFile(DesktopItemInfo desktopItemInfo);
 

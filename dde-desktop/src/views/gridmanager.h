@@ -21,9 +21,12 @@ public:
     ~GridManager();
 
     static GridManager* instance();
+    void initConnect();
 
     int getColumnCount();
     int getRowCount();
+    int getDesktopRowCount();
+    int getDesktopColumnCount();
     int getItemWidth();
     int getItemHeight();
     int getPageCount();
@@ -51,6 +54,7 @@ signals:
 public slots:
     void clearDeskopItemsStatus();
     void setPageCount(int count);
+    void updateGridByPageCount(int count);
 
 private:
     int m_width = 0;
@@ -67,7 +71,8 @@ private:
     int m_bottomMargin = 10;
     int m_columnCount = 0;
     int m_rowCount = 0;
-    int m_pageCount = 4;
+    int m_pageCount = 1;
+    SizeType m_sizeType;
     static GridManager* m_instance;
     DoubleGridItemPointerList m_list_items;
     QMap<QString, GridItemPointer> m_map_items;

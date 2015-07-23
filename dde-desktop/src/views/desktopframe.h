@@ -13,7 +13,7 @@
 #include <QtGui>
 #include <QtWidgets>
 
-class DesktopFrame : public TranslucentFrame
+class DesktopFrame : public QFrame
 {
     Q_OBJECT
 
@@ -44,6 +44,7 @@ public:
 
     SizeType getSizeType();
     bool isGridOn();
+    bool isCtrlPressed();
 
     bool isMultiCheckedByMouse();
     bool isAllAppCheckedItems();
@@ -59,6 +60,8 @@ signals:
     void multiCheckedByMouseChanged(bool flag);
 
 public slots:
+    void setCtrlPressed(bool pressed);
+    void resizeByPageCount(int pageCount);
     void changeGridBySizeType(SizeType type);
     void changeGridMode(bool mode);
     void setLastCheckedDesktopItem(DesktopItemPointer pItem);
@@ -67,7 +70,6 @@ public slots:
     void removeCheckedDesktopItem(DesktopItemPointer pItem);
     void setMultiCheckedByMouse(bool flag);
     void checkAllDesktopItems();
-
     void setAppGroupDestinationPos(QPoint pos);
 
 protected:
@@ -83,11 +85,7 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent* event);
     void dropEvent(QDropEvent* event);
 
-    void keyPressEvent(QKeyEvent* event);
-    void keyReleaseEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
-
-    void closeEvent(QCloseEvent* event);
 
 private:
     QPoint m_pressedEventPos;
@@ -101,9 +99,8 @@ private:
     bool m_dragLeave;
 
     bool m_isDragStarted;
-    bool m_isGridBackgoundOn = false;
+    bool m_isGridBackgoundOn = true;
 
-    int m_currentPage = 0;
     SizeType m_sizeType;
 
     QSharedPointer<DesktopItemManager> m_desktopItemManager;

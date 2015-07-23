@@ -3,10 +3,11 @@
 #include "global.h"
 
 DesktopFrame::DesktopFrame(QWidget *parent)
-    : TranslucentFrame(parent)
+    : QFrame(parent)
 {
+    setObjectName("DesktopFrame");
     setAcceptDrops(true);
-
+    setFocus();
 
     QSettings settings;
     settings.beginGroup("Desktop");
@@ -27,15 +28,10 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 
     initItems();
     initConnect();
-    qApp->setStyleSheet(getQssFromFile(":/skin/qss/DesktopItem.qss"));
 
-//    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-//    int desktopWidth = availableGeometry.width();
-//    int desktopHeight = availableGeometry.height();
-//    QRect r(0, 0, gridManager->getPageCount()  * desktopWidth, desktopHeight);
-//    setGeometry(r);
-//    move(100, 100);
-    qDebug() << pos();
+    setGeometry(qApp->desktop()->availableGeometry());
+    m_desktopItemManager->checkPageCount();
+    qApp->setStyleSheet(getQssFromFile(":/skin/qss/DesktopItem.qss"));
 }
 
 void DesktopFrame::initItems(){
@@ -45,6 +41,8 @@ void DesktopFrame::initItems(){
 }
 
 void DesktopFrame::initConnect(){
+    connect(signalManager, SIGNAL(pageCountChanged(int)),
+            this, SLOT(resizeByPageCount(int)));
     connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)),
             this, SLOT(changeGridBySizeType(SizeType)));
     connect(signalManager, SIGNAL(gridModeChanged(bool)),
@@ -71,6 +69,14 @@ bool DesktopFrame::isGridOn(){
     return m_isGridOn;
 }
 
+bool DesktopFrame::isCtrlPressed(){
+    return m_ctrlPressed;
+}
+
+void DesktopFrame::setCtrlPressed(bool pressed){
+    m_ctrlPressed = pressed;
+}
+
 void DesktopFrame::changeGridBySizeType(SizeType type){
     m_gridItems = gridManager->getItemsByType(type);
     m_mapItems = gridManager->getMapItems();
@@ -85,6 +91,15 @@ void DesktopFrame::changeGridMode(bool mode){
         gridManager->clearDeskopItemsStatus();
         emit signalManager->gridOnResorted();
     }
+}
+
+void DesktopFrame::resizeByPageCount(int pageCount){
+    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
+    int desktopWidth = availableGeometry.width();
+    int desktopHeight = availableGeometry.height();
+    QRect r(0, 0, pageCount  * desktopWidth, desktopHeight);
+    setGeometry(r);
+    update();
 }
 
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
@@ -239,115 +254,180 @@ QStringList DesktopFrame::getCheckedFiles(){
 void DesktopFrame::focusInEvent(QFocusEvent *event){
     m_isSelectable = true;
     m_selectRect = QRect(0, 0, 0, 0);
-    TranslucentFrame::focusInEvent(event);
+    QFrame::focusInEvent(event);
 }
 
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
     m_isSelectable = false;
     m_selectRect = QRect(0, 0, 0, 0);
-    TranslucentFrame::focusOutEvent(event);
+    QFrame::focusOutEvent(event);
 }
 
 
 void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
-    qDebug() << "enter";
+    qDebug() << "enter" << event->pos();
     m_dragLeave = false;
-    if (event->mimeData()->hasFormat("application/x-dnditemdata")){
-        if (event->source() == this){
-            event->setDropAction(Qt::MoveAction);
-            event->accept();
-        }else{
-            event->ignore();
-        }
+
+    if (event->source() == this){
+        qDebug() << "dragEnterEvent event come from self"<< event->pos();
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
     }else{
-        event->ignore();
+        qDebug() << "dragEnterEvent event come from outside"<< event->pos();
+        event->acceptProposedAction();
     }
 }
 
 
 void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
-    foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
-        if (pItem->geometry().contains(event->pos())){
-            if (isAllAppCheckedItems() && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
-                m_destinationDesktopItem = pItem;
-                m_appGroupDestinationPos = pItem->pos();
-                pItem->changeToBeAppGroupIcon();
-            }else if (isAllAppCheckedItems() && isAppGroup(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
-                m_destinationDesktopItem = pItem;
-            }else if (isApp(pItem->getUrl())){
-                m_destinationDesktopItem = pItem;
-            }else if (isTrash(pItem->getUrl())){
-                m_destinationDesktopItem = pItem;
-            }else if (isFolder(pItem->getUrl())){
-                m_destinationDesktopItem = pItem;
-            }
-            pItem->setHover(true);
-        }else{
-            pItem->setHover(false);
-            if (pItem == m_destinationDesktopItem){
-                pItem->changeBacktoNormal();
-            }
-        }
-    }
-
     m_dragMovePos = event->pos();
-
-    if (event->mimeData()->hasFormat("application/x-dnditemdata")){
-        if (event->source() == this){
-            event->setDropAction(Qt::MoveAction);
-            event->accept();
-        }else{
-            event->ignore();
+    if (event->source() == this){
+        foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
+            if (pItem->geometry().contains(event->pos())){
+                if (isAllAppCheckedItems() && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
+//                    m_destinationDesktopItem = pItem;
+                    m_appGroupDestinationPos = pItem->pos();
+                    pItem->changeToBeAppGroupIcon();
+                }else if (isAllAppCheckedItems() && isAppGroup(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
+                    m_destinationDesktopItem = pItem;
+                }else if (isApp(pItem->getUrl())){
+                    m_destinationDesktopItem = pItem;
+                }else if (isTrash(pItem->getUrl())){
+                    m_destinationDesktopItem = pItem;
+                }else if (isFolder(pItem->getUrl())){
+                    m_destinationDesktopItem = pItem;
+                }
+                pItem->setHover(true);
+            }else{
+                pItem->setHover(false);
+                if (pItem == m_destinationDesktopItem){
+                    pItem->changeBacktoNormal();
+                }
+            }
         }
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
     }else{
-        event->ignore();
+        if (event->mimeData()->hasUrls()){
+            QStringList urls;
+            foreach (QUrl url, event->mimeData()->urls()) {
+                urls.append(url.toString());
+            }
+            foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
+                if (pItem->geometry().contains(event->pos())){
+                    if (isAllApp(urls) && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
+//                        m_destinationDesktopItem = pItem;
+                        m_appGroupDestinationPos = pItem->pos();
+                        pItem->changeToBeAppGroupIcon();
+                    }else if (isAllApp(urls) && isAppGroup(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
+                        m_destinationDesktopItem = pItem;
+                    }else if (isApp(pItem->getUrl())){
+                        m_destinationDesktopItem = pItem;
+                    }else if (isTrash(pItem->getUrl())){
+                        m_destinationDesktopItem = pItem;
+                    }else if (isFolder(pItem->getUrl())){
+                        m_destinationDesktopItem = pItem;
+                    }
+                    pItem->setHover(true);
+                }else{
+                    pItem->setHover(false);
+                    if (pItem == m_destinationDesktopItem){
+                        pItem->changeBacktoNormal();
+                    }
+                }
+            }
+        }
+        event->acceptProposedAction();
     }
 }
 
 void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
     m_dragLeave = true;
     event->accept();
+    qDebug() << "dragLeaveEvent come from outside";
 }
 
 void DesktopFrame::dropEvent(QDropEvent *event){
+    if (event->source() == this){
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
+    }else{
+        event->acceptProposedAction();
+    }
+
+    bool flag = true;
+    foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
+        if (pItem->geometry().contains(event->pos())){
+            flag = flag && false;
+            break;
+        }else{
+            flag = flag && true;
+        }
+    }
+    if (flag){
+        m_destinationDesktopItem.clear();
+    }
+
     if (!m_destinationDesktopItem.isNull()){
         if (m_destinationDesktopItem->geometry().contains(event->pos())){
             QStringList urls;
-            QList<DesktopItemInfo> dropDesktopItemInfos;
-            foreach (DesktopItemPointer pCheckedItem, m_checkedDesktopItems) {
-                urls.append(pCheckedItem->getUrl());
-                dropDesktopItemInfos.append(pCheckedItem->getDesktopItemInfo());
-            }
-            if (isAllAppCheckedItems() && isApp(m_destinationDesktopItem->getUrl())){
-                urls.append(m_destinationDesktopItem->getUrl());
-                emit signalManager->requestCreatingAppGroup(urls);
-            }else if (isAllAppCheckedItems() && isAppGroup(m_destinationDesktopItem->getUrl())){
-                urls.append(m_destinationDesktopItem->getUrl());
-                emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
-            }else if (isApp(m_destinationDesktopItem->getUrl())){
-                emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), dropDesktopItemInfos);
-            }else if (isTrash(m_destinationDesktopItem->getUrl())){
-                emit signalManager->trashingAboutToExcute(urls);
-            }else if (isFolder(m_destinationDesktopItem->getUrl())){
-                emit signalManager->moveFilesExcuted(urls, m_destinationDesktopItem->getUrl());
-            }
-            m_destinationDesktopItem.clear();
-        }
-    }
+            if (event->source() == this){
+                qDebug() << "dropEvent come from self" << event->pos();
+                QList<DesktopItemInfo> dropDesktopItemInfos;
+                foreach (DesktopItemPointer pCheckedItem, m_checkedDesktopItems) {
+                    urls.append(pCheckedItem->getUrl());
+                    dropDesktopItemInfos.append(pCheckedItem->getDesktopItemInfo());
+                }
+                if (isAllAppCheckedItems() && isApp(m_destinationDesktopItem->getUrl())){
+                    urls.append(m_destinationDesktopItem->getUrl());
+                    emit signalManager->requestCreatingAppGroup(urls);
+                }else if (isAllAppCheckedItems() && isAppGroup(m_destinationDesktopItem->getUrl())){
+                    urls.append(m_destinationDesktopItem->getUrl());
+                    emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
+                }else if (isApp(m_destinationDesktopItem->getUrl())){
+                    emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), dropDesktopItemInfos);
+                }else if (isTrash(m_destinationDesktopItem->getUrl())){
+                    emit signalManager->trashingAboutToExcute(urls);
+                }else if (isFolder(m_destinationDesktopItem->getUrl())){
+                    emit signalManager->moveFilesExcuted(urls, m_destinationDesktopItem->getUrl());
+                }
+            }else{
+                qDebug() << "dropEvent come from outside" << event->pos();
+                if (event->mimeData()->hasUrls()){
+                    foreach (QUrl url, event->mimeData()->urls()) {
+                        urls.append(url.toString());
+                    }
 
-    if (event->mimeData()->hasFormat("application/x-dnditemdata")){
-        if (event->source() == this){    
-             event->setDropAction(Qt::MoveAction);
-             event->accept();
-        }else{
-            event->accept();//eptProposedAction();
+                    if (isAllApp(urls) && isApp(m_destinationDesktopItem->getUrl())){
+                        urls.append(m_destinationDesktopItem->getUrl());
+                        emit signalManager->requestCreatingAppGroup(urls);
+                    }else if (isAllApp(urls) && isAppGroup(m_destinationDesktopItem->getUrl())){
+                        urls.append(m_destinationDesktopItem->getUrl());
+                        emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
+                    }else if (isApp(m_destinationDesktopItem->getUrl())){
+                        emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), urls);
+                    }else if (isTrash(m_destinationDesktopItem->getUrl())){
+                        emit signalManager->trashingAboutToExcute(urls);
+                    }else if (isFolder(m_destinationDesktopItem->getUrl())){
+                        emit signalManager->moveFilesExcuted(urls, m_destinationDesktopItem->getUrl());
+                    }
+                }
+            }
         }
     }else{
-        event->ignore();
+        qDebug() << "dropEvent no destination";
+        if (event->mimeData()->hasUrls()){
+            QStringList urls;
+            foreach (QUrl url, event->mimeData()->urls()) {
+                urls.append(url.toString());
+            }
+            qDebug() << "move to desktop" << urls;
+            emit signalManager->moveFilesExcuted(urls, desktopLocation);
+        }
     }
+    m_destinationDesktopItem.clear();
 }
-
 
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
     m_isDragStarted = false;
@@ -378,14 +458,14 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
     }else if (event->button() == Qt::RightButton){
         if (pTopDesktopItem.isNull()){
             unCheckCheckedItems();
-            emit signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
+            emit signalManager->contextMenuShowed(pTopDesktopItem, mapToGlobal(m_pressedEventPos));
         }else{
             if (m_checkedDesktopItems.contains(pTopDesktopItem) && m_checkedDesktopItems.count() > 1){
-                emit signalManager->contextMenuShowed(m_checkedDesktopItems, pTopDesktopItem, m_pressedEventPos);
+                emit signalManager->contextMenuShowed(m_checkedDesktopItems, pTopDesktopItem, mapToGlobal(m_pressedEventPos));
             }else{
                 unCheckCheckedItems();
                 checkRaiseItem(pTopDesktopItem);
-                emit signalManager->contextMenuShowed(pTopDesktopItem, m_pressedEventPos);
+                emit signalManager->contextMenuShowed(pTopDesktopItem, mapToGlobal(m_pressedEventPos));
                 if(isAppGroup(pTopDesktopItem->getUrl())){
                     emit signalManager->appGounpDetailClosed();
                 }
@@ -393,15 +473,11 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
         }
 
     }
-    TranslucentFrame::mousePressEvent(event);
+    QFrame::mousePressEvent(event);
 }
 
 void DesktopFrame::startDrag(){
-    QByteArray itemData;
-    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
     QMimeData* mimeData = new QMimeData;
-    mimeData->setData("application/x-dnditemdata", itemData);
-
     QPixmap dragPixmap = getCheckedPixmap();
 
     if (m_checkedDesktopItems.length() > 0){
@@ -414,7 +490,7 @@ void DesktopFrame::startDrag(){
 
             if (!m_isGridOn){
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-                    QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
+                    QPoint newPos = pItem->pos() + mapFromGlobal(QCursor::pos()) - m_pressedEventPos;
                     pItem->move(newPos);
                     m_desktopItemManager->getItems().removeOne(pItem);
                 }
@@ -423,7 +499,7 @@ void DesktopFrame::startDrag(){
                     pItem->raise();
                 }
             }else{
-                DesktopItemPointer pUnderMouseDesktopItem  = getTopDesktopItemByPos(QCursor::pos()); //鼠标位置是否存在DesktopItem
+                DesktopItemPointer pUnderMouseDesktopItem  = getTopDesktopItemByPos(mapFromGlobal(QCursor::pos())); //鼠标位置是否存在DesktopItem
                 if (m_checkedDesktopItems.contains(pUnderMouseDesktopItem)){
                     pUnderMouseDesktopItem = DesktopItemPointer(); //置空鼠标当前位置的DesktopItem
                 }
@@ -439,7 +515,7 @@ void DesktopFrame::startDrag(){
 
                     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {//清空gridItem状态, 如果超出桌面范围, 设置相应gridItem无法容纳desktopitem
                         gridManager->getItemByPos(pItem->pos())->setDesktopItem(false);
-                        QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
+                        QPoint newPos = pItem->pos() + mapFromGlobal(QCursor::pos()) - m_pressedEventPos;
 
                         QRect rect = pItem->geometry();
                         rect.moveTo(newPos);
@@ -454,7 +530,7 @@ void DesktopFrame::startDrag(){
                     }
 
                     foreach (DesktopItemPointer pItem, insideDesktopItems) { //填充空位
-                        QPoint newPos = pItem->geometry().center() + QCursor::pos() - m_pressedEventPos;
+                        QPoint newPos = pItem->geometry().center() + mapFromGlobal(QCursor::pos()) - m_pressedEventPos;
                         GridItemPointer newGridItem = gridManager->getBlankItemByPos(newPos);
                         if (!newGridItem.isNull()){
                             QPoint pos = newGridItem->getPos();
@@ -466,7 +542,7 @@ void DesktopFrame::startDrag(){
                     }
 
                     foreach (DesktopItemPointer pItem, occupiedDesktopItems) { // 为位置被占据的desktopitem寻找可安放的girditem
-                        QPoint newPos = pItem->pos() + QCursor::pos() - m_pressedEventPos;
+                        QPoint newPos = pItem->pos() + mapFromGlobal(QCursor::pos()) - m_pressedEventPos;
                         GridItemPointer newGridItem = gridManager->getProperItemByPos(newPos);
                         if (!newGridItem.isNull()){
                             QPoint pos = newGridItem->getPos();
@@ -491,7 +567,7 @@ void DesktopFrame::startDrag(){
                 }
             }
         }
-        mimeData->deleteLater();
+//        mimeData->deleteLater();
         pDrag->deleteLater();
 
     }
@@ -499,17 +575,20 @@ void DesktopFrame::startDrag(){
 
 
 QPixmap DesktopFrame::getCheckedPixmap(){
-    TranslucentFrame* F = new TranslucentFrame(this);
-    F->resize(size());
+    QFrame* F = new QFrame(this);
+    F->setAttribute(Qt::WA_DeleteOnClose);
+    F->setObjectName("DesktopFrame");
+    F->setGeometry(qApp->desktop()->availableGeometry());
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
         DesktopItem* item = new DesktopItem(pItem->getDesktopIcon(),
                                        pItem->getDesktopName(), F);
         item->resize(pItem->size());
-        item->move(pItem->pos());
+        item->move(mapToGlobal(pItem->pos()));
         item->setObjectName("DragChecked");
     }
     F->setStyleSheet(qApp->styleSheet());
-    QPixmap ret = F->grab();
+    QRect viewRect(0, 0, qApp->desktop()->availableGeometry().width(), height());
+    QPixmap ret = F->grab(viewRect);
     F->close();
     return ret;
 }
@@ -536,7 +615,7 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
             }
         }
     }
-    TranslucentFrame::mouseReleaseEvent(event);
+    QFrame::mouseReleaseEvent(event);
 }
 
 void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
@@ -553,7 +632,7 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
         update();
         checkDesktopItemsByRect(m_selectRect);
     }
-    TranslucentFrame::mouseMoveEvent(event);
+    QFrame::mouseMoveEvent(event);
 }
 
 
@@ -566,7 +645,7 @@ void DesktopFrame::mouseDoubleClickEvent(QMouseEvent *event){
             emit signalManager->openFile(pTopDesktopItem->getDesktopItemInfo());
         }
     }
-    TranslucentFrame::mouseDoubleClickEvent(event);
+    QFrame::mouseDoubleClickEvent(event);
 }
 
 void DesktopFrame::paintEvent(QPaintEvent *event){
@@ -574,129 +653,29 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-//    if (m_isGridBackgoundOn){
-//        int rowCount = gridManager->getRowCount();
-//        int columnCount = gridManager->getColumnCount();
-//        foreach (GridListPointer gridlist, m_gridItems) {
-//            foreach (GridItemPointer pGridItem, *gridlist) {
-//                int row = pGridItem->getRow();
-//                int column = pGridItem->getColumn();
-//                int _c = 255 * (row + column * rowCount) / (columnCount * rowCount);
-//                if (_c >= 255){
-//                    _c = 255;
-//                }
-//                QColor color(_c, _c, _c, 100);
-//                painter.fillRect(pGridItem->getRect(), color);
-//            }
-//        }
-//    }
+    if (m_isGridBackgoundOn){
+        int rowCount = gridManager->getRowCount();
+        int columnCount = gridManager->getColumnCount();
+        foreach (GridListPointer gridlist, gridManager->getItems()) {
+            foreach (GridItemPointer pGridItem, *gridlist) {
+                int row = pGridItem->getRow();
+                int column = pGridItem->getColumn();
+                int _c = 255 * (row + column * rowCount) / (columnCount * rowCount);
+                if (_c >= 255){
+                    _c = 255;
+                }
+                QColor color(_c, _c, _c, 100);
+                painter.fillRect(pGridItem->getRect(), color);
+            }
+        }
+    }
     if (m_isSelectable){
         QColor color(255, 255, 255, 60);
         painter.fillRect(m_selectRect, color);
     }
-    TranslucentFrame::paintEvent(event);
+    QFrame::paintEvent(event);
 }
 
-
-void DesktopFrame::keyPressEvent(QKeyEvent *event){
-
-    if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_Control){
-        m_ctrlPressed = !m_ctrlPressed;
-    }
-
-    if (event->key() == Qt::Key_Escape){
-        close();
-    }else if (event->key() == Qt::Key_PageUp){
-        if (m_currentPage > 0){
-            m_currentPage--;
-            const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-            int desktopWidth = availableGeometry.width();
-            int currentX = x() + desktopWidth;
-            move(currentX, y());
-            qDebug() << currentX << "pageUp";
-        }
-
-    }else if (event->key() == Qt::Key_PageDown){
-        if (m_currentPage < gridManager->getPageCount()){
-            m_currentPage++;
-            const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-            int desktopWidth = availableGeometry.width();
-            int currentX = x() - desktopWidth;
-            move(currentX, y());
-            qDebug() << currentX << "pageDown";
-        }
-
-    }else if (event->key() == Qt::Key_1){
-        emit signalManager->gridSizeTypeChanged(SizeType::Small);
-    }else if (event->key() == Qt::Key_2){
-        emit signalManager->gridSizeTypeChanged(SizeType::Middle);
-    }else if (event->key() == Qt::Key_3){
-        emit signalManager->gridSizeTypeChanged(SizeType::Large);
-    }else if (event->key() == Qt::Key_4){
-        emit signalManager->sortedModeChanged(QDir::Name);
-    }else if (event->key() == Qt::Key_5){
-        emit signalManager->sortedModeChanged(QDir::Size);
-    }else if (event->key() == Qt::Key_6){
-        emit signalManager->sortedModeChanged(QDir::Type);
-    }else if (event->key() == Qt::Key_7){
-        emit signalManager->sortedModeChanged(QDir::Time);
-    }else if (event->key() == Qt::Key_F1){
-        emit signalManager->gridModeChanged(!m_isGridOn);
-    }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_A){
-        emit signalManager->keyCtrlAPressed();
-    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Delete){
-        emit signalManager->trashingAboutToExcute(getCheckedFiles());
-    }
-    else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
-        if (m_isGridOn){
-            emit signalManager->keyUpPressed();
-        }
-    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Down){
-        if (m_isGridOn){
-            emit signalManager->keyDownPressed();
-        }
-    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Left){
-        if (m_isGridOn){
-            emit signalManager->keyLeftPressed();
-        }
-    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Right){
-        if (m_isGridOn){
-            emit signalManager->keyRightPressed();
-        }
-    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Left){
-        if (m_isGridOn){
-            emit signalManager->keyShiftLeftPressed();
-        }
-    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Right){
-        if (m_isGridOn){
-            emit signalManager->keyShiftRightPressed();
-        }
-    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Up){
-        if (m_isGridOn){
-            emit signalManager->keyShiftUpPressed();
-        }
-    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Down){
-        if (m_isGridOn){
-            emit signalManager->keyShiftDownPressed();
-        }
-    }
-
-    TranslucentFrame::keyPressEvent(event);
-}
-
-void DesktopFrame::keyReleaseEvent(QKeyEvent *event){
-    if (event->modifiers() != Qt::ControlModifier && event->key() == Qt::Key_Control){
-        m_ctrlPressed = !m_ctrlPressed;
-    }
-    TranslucentFrame::keyReleaseEvent(event);
-}
-
-
-void DesktopFrame::closeEvent(QCloseEvent *event){
-    DBusController::instance()->unMonitor();
-    qDebug() << "closeEvent";
-    event->accept();
-}
 
 DesktopFrame::~DesktopFrame()
 {

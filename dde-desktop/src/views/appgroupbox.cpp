@@ -31,12 +31,14 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
         if (bottomHeight > groupHeight){
             setArrorDirection(ArrowRectangle::ArrowTop);
             setContent(tableWidget);
-            showAtTop(pItem->pos().x() + width / 2, pItem->pos().y() + height);
+            QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2, pItem->pos().y() + height));
+            showAtTop(point.x() % desktopWidth, point.y());
         }else{
             if (groupHeight < topHeight){
                 setArrorDirection(ArrowRectangle::ArrowBottom);
                 setContent(tableWidget);
-                showAtBottom(pItem->pos().x() + width / 2, pItem->pos().y());
+                QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2, pItem->pos().y()));
+                showAtBottom(point.x() % desktopWidth, point.y());
             }else{
                 if (topHeight / height * height > bottomHeight / height * height){
                     setArrorDirection(ArrowRectangle::ArrowBottom);
@@ -49,7 +51,8 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
                     }
 
                     setContent(tableWidget);
-                    showAtBottom(pItem->pos().x() + width / 2, pItem->pos().y());
+                    QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2, pItem->pos().y()));
+                    showAtBottom(point.x() % desktopWidth, point.y());
                 }else{
                     setArrorDirection(ArrowRectangle::ArrowTop);
                     tableWidget->setFixedHeight(bottomHeight / height * height);
@@ -59,7 +62,8 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
                         tableWidget->setFixedWidth(desktopWidth / width * width + 5);
                     }
                     setContent(tableWidget);
-                    showAtTop(pItem->pos().x() + width / 2, pItem->pos().y() + height);
+                    QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2, pItem->pos().y() + height));
+                    showAtTop(point.x() % desktopWidth, point.y());
                 }
             }
         }
