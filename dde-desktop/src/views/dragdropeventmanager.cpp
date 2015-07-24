@@ -72,7 +72,6 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
         }
         if (!m_destinationDesktopItem.isNull()){
             bool isCanMoved = !urls.contains(decodeUrl(m_destinationDesktopItem->getDesktopItemInfo().URI));
-            qDebug() << urls << m_destinationDesktopItem->getDesktopItemInfo().URI << isCanMoved;
             if (isCanMoved){
                 if (isAllApp(urls) && isApp(m_destinationDesktopItem->getUrl())){
                     urls.append(m_destinationDesktopItem->getUrl());

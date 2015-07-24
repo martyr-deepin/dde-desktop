@@ -108,6 +108,7 @@ void DesktopBox::closeEvent(QCloseEvent *event){
 
 DesktopBox::~DesktopBox()
 {
-
+    DBusController::instance()->unMonitor();
+    qDebug() << "~DesktopBox";
 }
 

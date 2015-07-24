@@ -100,7 +100,7 @@ private:
     bool m_dragLeave;
 
     bool m_isDragStarted;
-    bool m_isGridBackgoundOn = true;
+    bool m_isGridBackgoundOn = false;
 
     SizeType m_sizeType;
 
