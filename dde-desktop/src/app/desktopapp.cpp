@@ -38,7 +38,7 @@ void DesktopApp::saveSettings(){
     settings.beginGroup("Desktop");
     settings.setValue("isGridOn", m_desktopBox->getDesktopFrame()->isGridOn());
     settings.setValue("sizeType", m_desktopBox->getDesktopFrame()->getSizeType());
-    settings.setValue("sortFlag", m_desktopBox->getDesktopFrame()->getTopDesktopItemManager()->getSortFlag());
+    settings.setValue("sortFlag", m_desktopBox->getDesktopFrame()->getDesktopItemManager()->getSortFlag());
     settings.endGroup();
 }
 

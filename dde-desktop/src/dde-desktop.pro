@@ -70,7 +70,8 @@ SOURCES += main.cpp \
     controllers/trashjobcontroller.cpp \
     controllers/copyjobcontroller.cpp \
     dbusinterface/copyjob_interface.cpp \
-    views/desktopbox.cpp
+    views/desktopbox.cpp \
+    views/dragdropeventmanager.cpp
 
 
 HEADERS  += \
@@ -110,7 +111,8 @@ HEADERS  += \
     controllers/trashjobcontroller.h \
     controllers/copyjobcontroller.h \
     dbusinterface/copyjob_interface.h \
-    views/desktopbox.h
+    views/desktopbox.h \
+    views/dragdropeventmanager.h
 
 
 RESOURCES += \

@@ -21,6 +21,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_sizeType = static_cast<SizeType>(sizeType);
     m_desktopItemManager = QSharedPointer<DesktopItemManager>::create(this);
     m_keyEventManager = QSharedPointer<KeyEventManager>::create(this);
+    m_dragDropEventManager = QSharedPointer<DragDropEventManager>::create(this);
 
     m_TopDesktopItem = DesktopItemPointer();
     m_lastPressedCheckDesktopItem = DesktopItemPointer();
@@ -57,7 +58,7 @@ void DesktopFrame::initConnect(){
     connect(this, SIGNAL(multiCheckedByMouseChanged(bool)), this, SLOT(setMultiCheckedByMouse(bool)));
 }
 
-QSharedPointer<DesktopItemManager> DesktopFrame::getTopDesktopItemManager(){
+QSharedPointer<DesktopItemManager> DesktopFrame::getDesktopItemManager(){
     return m_desktopItemManager;
 }
 
@@ -282,64 +283,7 @@ void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
 
 void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
     m_dragMovePos = event->pos();
-    if (event->source() == this){
-        foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
-            if (pItem->geometry().contains(event->pos())){
-                if (isAllAppCheckedItems() && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
-//                    m_destinationDesktopItem = pItem;
-                    m_appGroupDestinationPos = pItem->pos();
-                    pItem->changeToBeAppGroupIcon();
-                }else if (isAllAppCheckedItems() && isAppGroup(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
-                    m_destinationDesktopItem = pItem;
-                }else if (isApp(pItem->getUrl())){
-                    m_destinationDesktopItem = pItem;
-                }else if (isTrash(pItem->getUrl())){
-                    m_destinationDesktopItem = pItem;
-                }else if (isFolder(pItem->getUrl())){
-                    m_destinationDesktopItem = pItem;
-                }
-                pItem->setHover(true);
-            }else{
-                pItem->setHover(false);
-                if (pItem == m_destinationDesktopItem){
-                    pItem->changeBacktoNormal();
-                }
-            }
-        }
-        event->setDropAction(Qt::MoveAction);
-        event->accept();
-    }else{
-        if (event->mimeData()->hasUrls()){
-            QStringList urls;
-            foreach (QUrl url, event->mimeData()->urls()) {
-                urls.append(url.toString());
-            }
-            foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
-                if (pItem->geometry().contains(event->pos())){
-                    if (isAllApp(urls) && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
-//                        m_destinationDesktopItem = pItem;
-                        m_appGroupDestinationPos = pItem->pos();
-                        pItem->changeToBeAppGroupIcon();
-                    }else if (isAllApp(urls) && isAppGroup(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
-                        m_destinationDesktopItem = pItem;
-                    }else if (isApp(pItem->getUrl())){
-                        m_destinationDesktopItem = pItem;
-                    }else if (isTrash(pItem->getUrl())){
-                        m_destinationDesktopItem = pItem;
-                    }else if (isFolder(pItem->getUrl())){
-                        m_destinationDesktopItem = pItem;
-                    }
-                    pItem->setHover(true);
-                }else{
-                    pItem->setHover(false);
-                    if (pItem == m_destinationDesktopItem){
-                        pItem->changeBacktoNormal();
-                    }
-                }
-            }
-        }
-        event->acceptProposedAction();
-    }
+    m_dragDropEventManager->handleDragMoveEvent(m_desktopItemManager->getItems(), event);
 }
 
 void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
@@ -349,84 +293,8 @@ void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
 }
 
 void DesktopFrame::dropEvent(QDropEvent *event){
-    if (event->source() == this){
-        event->setDropAction(Qt::MoveAction);
-        event->accept();
-    }else{
-        event->acceptProposedAction();
-    }
 
-    bool flag = true;
-    foreach(DesktopItemPointer pItem, m_desktopItemManager->getItems()){
-        if (pItem->geometry().contains(event->pos())){
-            flag = flag && false;
-            break;
-        }else{
-            flag = flag && true;
-        }
-    }
-    if (flag){
-        m_destinationDesktopItem.clear();
-    }
-
-    if (!m_destinationDesktopItem.isNull()){
-        if (m_destinationDesktopItem->geometry().contains(event->pos())){
-            QStringList urls;
-            if (event->source() == this){
-                qDebug() << "dropEvent come from self" << event->pos();
-                QList<DesktopItemInfo> dropDesktopItemInfos;
-                foreach (DesktopItemPointer pCheckedItem, m_checkedDesktopItems) {
-                    urls.append(pCheckedItem->getUrl());
-                    dropDesktopItemInfos.append(pCheckedItem->getDesktopItemInfo());
-                }
-                if (isAllAppCheckedItems() && isApp(m_destinationDesktopItem->getUrl())){
-                    urls.append(m_destinationDesktopItem->getUrl());
-                    emit signalManager->requestCreatingAppGroup(urls);
-                }else if (isAllAppCheckedItems() && isAppGroup(m_destinationDesktopItem->getUrl())){
-                    urls.append(m_destinationDesktopItem->getUrl());
-                    emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
-                }else if (isApp(m_destinationDesktopItem->getUrl())){
-                    emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), dropDesktopItemInfos);
-                }else if (isTrash(m_destinationDesktopItem->getUrl())){
-                    emit signalManager->trashingAboutToExcute(urls);
-                }else if (isFolder(m_destinationDesktopItem->getUrl())){
-                    emit signalManager->moveFilesExcuted(urls, m_destinationDesktopItem->getUrl());
-                }
-            }else{
-                qDebug() << "dropEvent come from outside" << event->pos();
-                if (event->mimeData()->hasUrls()){
-                    foreach (QUrl url, event->mimeData()->urls()) {
-                        urls.append(url.toString());
-                    }
-
-                    if (isAllApp(urls) && isApp(m_destinationDesktopItem->getUrl())){
-                        urls.append(m_destinationDesktopItem->getUrl());
-                        emit signalManager->requestCreatingAppGroup(urls);
-                    }else if (isAllApp(urls) && isAppGroup(m_destinationDesktopItem->getUrl())){
-                        urls.append(m_destinationDesktopItem->getUrl());
-                        emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
-                    }else if (isApp(m_destinationDesktopItem->getUrl())){
-                        emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), urls);
-                    }else if (isTrash(m_destinationDesktopItem->getUrl())){
-                        emit signalManager->trashingAboutToExcute(urls);
-                    }else if (isFolder(m_destinationDesktopItem->getUrl())){
-                        emit signalManager->moveFilesExcuted(urls, m_destinationDesktopItem->getUrl());
-                    }
-                }
-            }
-        }
-    }else{
-        qDebug() << "dropEvent no destination";
-        if (event->mimeData()->hasUrls()){
-            QStringList urls;
-            foreach (QUrl url, event->mimeData()->urls()) {
-                urls.append(url.toString());
-            }
-            qDebug() << "move to desktop" << urls;
-            emit signalManager->moveFilesExcuted(urls, desktopLocation);
-        }
-    }
-    m_destinationDesktopItem.clear();
+    m_dragDropEventManager->handleDropEvent(m_desktopItemManager->getItems(), event);
 }
 
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
@@ -478,6 +346,11 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
 
 void DesktopFrame::startDrag(){
     QMimeData* mimeData = new QMimeData;
+    QList<QUrl> urls;
+    foreach (DesktopItemPointer pCheckedItem, m_checkedDesktopItems) {
+        urls.append(QUrl(pCheckedItem->getDesktopItemInfo().URI));
+    }
+    mimeData->setUrls(urls);
     QPixmap dragPixmap = getCheckedPixmap();
 
     if (m_checkedDesktopItems.length() > 0){
@@ -487,7 +360,7 @@ void DesktopFrame::startDrag(){
         pDrag->setHotSpot(QCursor::pos());
         Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
-
+            qDebug() << "drop 3333333333";
             if (!m_isGridOn){
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
                     QPoint newPos = pItem->pos() + mapFromGlobal(QCursor::pos()) - m_pressedEventPos;
@@ -567,9 +440,7 @@ void DesktopFrame::startDrag(){
                 }
             }
         }
-//        mimeData->deleteLater();
         pDrag->deleteLater();
-
     }
 }
 

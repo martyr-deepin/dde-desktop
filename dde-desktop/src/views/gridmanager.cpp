@@ -114,7 +114,6 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
         for (int j=0; j< m_rowCount; j++){
             int y = (m_itemHeight + m_ySpacing) * j + m_topMargin;
             QRect rect = QRect(x, y, m_itemWidth, m_itemHeight);
-            qDebug() << rect << m_columnCount << m_rowCount;
             GridItemPointer item = GridItemPointer::create(j, i, rect);
             QString key = QString("%1-%2").arg(QString::number(x), QString::number(y));
             m_map_items.insert(key, item);

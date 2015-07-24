@@ -32,7 +32,7 @@ void KeyEventManager::onKeyUpPressed(){
         while (row > 0){
             QPoint pos = gridManager->getItems().at(column)->at(row - 1)->getPos();
             DesktopItemPointer nextCheckedDesktopItem =
-                    static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 static_cast<DesktopFrame*>(parent())->unCheckAllItems();
                 emit lastCheckedDesktopItem->setChecked(false);
@@ -56,7 +56,7 @@ void KeyEventManager::onKeyDownPressed(){
         while (row < rowCount - 1){
             QPoint pos = gridManager->getItems().at(column)->at(row + 1)->getPos();
             DesktopItemPointer nextCheckedDesktopItem =
-                    static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 static_cast<DesktopFrame*>(parent())->unCheckAllItems();
                 emit lastCheckedDesktopItem->setChecked(false);
@@ -79,7 +79,7 @@ void KeyEventManager::onKeyLeftPressed(){
         while (column > 0){
             QPoint pos = gridManager->getItems().at(column - 1)->at(row)->getPos();
             DesktopItemPointer nextCheckedDesktopItem =
-                    static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 static_cast<DesktopFrame*>(parent())->unCheckAllItems();
                 emit lastCheckedDesktopItem->setChecked(false);
@@ -103,7 +103,7 @@ void KeyEventManager::onKeyRightPressed(){
         while (column < columnCount - 1){
             QPoint pos = gridManager->getItems().at(column + 1)->at(row)->getPos();
             DesktopItemPointer nextCheckedDesktopItem =
-                    static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 static_cast<DesktopFrame*>(parent())->unCheckAllItems();
                 emit lastCheckedDesktopItem->setChecked(false);
@@ -152,7 +152,7 @@ void KeyEventManager::onKeyShiftLeftPressed(){
             index = index - 1;
             QPoint pos = gridManager->getItems().at(index)->at(row)->getPos();
             DesktopItemPointer nextCheckedDesktopItem =
-                    static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
 
                 if (nextCheckedDesktopItem->isChecked() && index > column){
@@ -190,7 +190,7 @@ void KeyEventManager::onKeyShiftRightPressed(){
         while ( index < columnCount) {
             QPoint pos = gridManager->getItems().at(index)->at(row)->getPos();
             DesktopItemPointer nextCheckedDesktopItem =
-                    static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
                 if (nextCheckedDesktopItem->isChecked() && index < column){
                     emit nextCheckedDesktopItem->setChecked(false);
@@ -234,7 +234,7 @@ void KeyEventManager::onKeyShiftUpPressed(){
             if (rowIndex < rowCount){
                 for (int i = 0; i<= column; i++){
                     QPoint pos = gridManager->getItems().at(i)->at(rowIndex)->getPos();
-                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
                     if (!pItem.isNull()){
                         if (!rowLeftItems.contains(pItem)){
                             rowLeftItems.append(pItem);
@@ -245,7 +245,7 @@ void KeyEventManager::onKeyShiftUpPressed(){
             if (rowIndex - 1 >= 0){
                 for (int i=column + 1; i < columnCount; i++){
                     QPoint pos = gridManager->getItems().at(i)->at(rowIndex - 1)->getPos();
-                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
                     if (!pItem.isNull()){
                         if (!rowRightItems.contains(pItem)){
                             rowRightItems.append(pItem);
@@ -324,7 +324,7 @@ void KeyEventManager::onKeyShiftDownPressed(){
             if (rowIndex >= 0){
                 for (int i = column + 1; i< columnCount; i++){
                     QPoint pos = gridManager->getItems().at(i)->at(rowIndex)->getPos();
-                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                    DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
                     if (!pItem.isNull()){
                         if (!rowRightItems.contains(pItem)){
                             rowRightItems.append(pItem);
@@ -335,7 +335,7 @@ void KeyEventManager::onKeyShiftDownPressed(){
 
             for (int i=0; i <= column; i++){
                 QPoint pos = gridManager->getItems().at(i)->at(rowIndex + 1)->getPos();
-                DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getTopDesktopItemManager()->getItemByPos(pos);
+                DesktopItemPointer pItem = static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
                 if (!pItem.isNull()){
                     if (!rowLeftItems.contains(pItem)){
                         rowLeftItems.append(pItem);

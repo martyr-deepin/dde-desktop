@@ -7,6 +7,7 @@
 #include "gridmanager.h"
 #include "desktopitemmanager.h"
 #include "keyeventmanager.h"
+#include "dragdropeventmanager.h"
 #include "controllers/menucontroller.h"
 
 #include <QtCore>
@@ -26,7 +27,7 @@ public:
     void initItems();
     void initConnect();
 
-    QSharedPointer<DesktopItemManager> getTopDesktopItemManager();
+    QSharedPointer<DesktopItemManager> getDesktopItemManager();
     DesktopItemPointer getTopDesktopItemByPos(QPoint pos);
 
     void unCheckAllItems();
@@ -105,6 +106,7 @@ private:
 
     QSharedPointer<DesktopItemManager> m_desktopItemManager;
     QSharedPointer<KeyEventManager> m_keyEventManager;
+    QSharedPointer<DragDropEventManager> m_dragDropEventManager;
 
     DoubleGridItemPointerList m_gridItems;
     QMap<QString, GridItemPointer> m_mapItems;
