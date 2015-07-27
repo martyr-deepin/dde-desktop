@@ -13,4 +13,5 @@ int main(int argc, char *argv[])
     LOG_INFO() << "Starting the application";
     int reslut = a.exec();
     LOG_INFO() << "exits " << a.applicationName() << reslut;
+
 }

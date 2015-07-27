@@ -5,6 +5,7 @@
 #include <RollingFileAppender.h>
 
 LogManager* LogManager::m_instance=NULL;
+LogManager::GC LogManager::gc;
 
 LogManager::LogManager(QObject *parent) : QObject(parent)
 {
@@ -48,5 +49,4 @@ void LogManager::startLog(){
 
 LogManager::~LogManager()
 {
-
 }
