@@ -1,4 +1,6 @@
 #include "movejobcontroller.h"
+#include "dbusinterface/movejob_interface.h"
+#include "dbusinterface/fileoperations_interface.h"
 #include "views/global.h"
 
 MoveJobController::MoveJobController(QObject *parent) : QObject(parent)

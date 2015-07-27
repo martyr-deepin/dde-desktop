@@ -2,12 +2,10 @@
 #define DESKTOPITEMMANAGER_H
 
 #include <QtCore>
-#include "desktopitem.h"
-#include "griditem.h"
-#include "gridmanager.h"
+#include "desktopfwd.h"
 #include "dbusinterface/dbustype.h"
-#include "widgets/arrowrectangle.h"
-#include "appgroupbox.h"
+
+class AppGroupBox;
 
 class DesktopItemManager : public QObject
 {

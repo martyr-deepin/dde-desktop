@@ -2,9 +2,7 @@
 #define KEYEVENTMANAGER_H
 
 #include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
-#include "desktopitem.h"
+#include "desktopfwd.h"
 
 
 class KeyEventManager : public QObject

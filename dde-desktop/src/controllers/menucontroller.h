@@ -3,9 +3,10 @@
 
 
 #include <QtCore>
-#include "views/desktopitem.h"
-#include "dbusinterface/menumanager_interface.h"
-#include "dbusinterface/showmenu_interface.h"
+#include "views/desktopfwd.h"
+
+class MenumanagerInterface;
+class ShowmenuInterface;
 
 #define MenuManager_service "com.deepin.menu"
 #define MenuManager_path "/com/deepin/menu"

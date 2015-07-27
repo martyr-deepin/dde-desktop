@@ -1,24 +1,23 @@
 #ifndef DBUSCONTROLLER_H
 #define DBUSCONTROLLER_H
 
-#include "dbusinterface/monitormanager_interface.h"
-#include "dbusinterface/clipboard_interface.h"
-#include "dbusinterface/watcherinstance_interface.h"
-#include "dbusinterface/trashmonitor_interface.h"
-#include "dbusinterface/filemonitorInstance_interface.h"
-#include "dbusinterface/fileInfo_interface.h"
-#include "dbusinterface/desktopdaemon_interface.h"
-#include "dbusinterface/fileoperations_interface.h"
-#include "dbusinterface/createdirjob_interface.h"
-#include "dbusinterface/createfilejob_interface.h"
-#include "dbusinterface/createfilefromtemplatejob_interface.h"
-#include "dbusinterface/trashjob_interface.h"
-
-
-#include "dbusinterface/dbustype.h"
-#include "views/signalmanager.h"
 #include <QtCore>
 #include <QtDBus>
+
+#include "dbusinterface/dbustype.h"
+
+class MonitorManagerInterface;
+class FileMonitorInstanceInterface;
+class ClipboardInterface;
+class WatcherInstanceInterface;
+class FileInfoInterface;
+class DesktopDaemonInterface;
+class FileOperationsInterface;
+class CreateDirJobInterface;
+class CreateFileJobInterface;
+class CreateFileFromTemplateJobInterface;
+class DBusController;
+
 
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
 #define FileMonitor_path "/com/deepin/filemanager/Backend/MonitorManager"

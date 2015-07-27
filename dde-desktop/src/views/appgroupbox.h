@@ -1,11 +1,8 @@
 #ifndef APPGROUPBOX_H
 #define APPGROUPBOX_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
-#include "desktopitem.h"
-#include "global.h"
+
+#include "desktopfwd.h"
 #include "widgets/arrowrectangle.h"
 
 class AppGroupBox : public ArrowRectangle

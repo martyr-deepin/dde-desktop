@@ -1,12 +1,14 @@
 #ifndef APPCONTROLLER_H
 #define APPCONTROLLER_H
 
-#include "menucontroller.h"
-#include "movejobcontroller.h"
-#include "trashjobcontroller.h"
-#include "copyjobcontroller.h"
-#include "dbuscontroller.h"
+
 #include <QObject>
+
+class MenuController;
+class TrashJobController;
+class MoveJobController;
+class CopyJobController;
+class DBusController;
 
 class AppController : public QObject
 {

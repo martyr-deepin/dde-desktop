@@ -1,5 +1,18 @@
 #include "dbuscontroller.h"
+
+#include "dbusinterface/monitormanager_interface.h"
+#include "dbusinterface/clipboard_interface.h"
+#include "dbusinterface/watcherinstance_interface.h"
+#include "dbusinterface/filemonitorInstance_interface.h"
+#include "dbusinterface/fileInfo_interface.h"
+#include "dbusinterface/desktopdaemon_interface.h"
+#include "dbusinterface/fileoperations_interface.h"
+#include "dbusinterface/createdirjob_interface.h"
+#include "dbusinterface/createfilejob_interface.h"
+#include "dbusinterface/createfilefromtemplatejob_interface.h"
+
 #include "views/global.h"
+#include "views/signalmanager.h"
 
 
 DBusController* DBusController::m_instance=NULL;

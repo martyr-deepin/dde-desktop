@@ -1,8 +1,8 @@
 #ifndef SIGNALMANAGER_H
 #define SIGNALMANAGER_H
 
-#include "desktopitem.h"
-#include "gridmanager.h"
+#include "desktopfwd.h"
+#include "desktopenums.h"
 #include "dbusinterface/dbustype.h"
 #include <QtCore>
 

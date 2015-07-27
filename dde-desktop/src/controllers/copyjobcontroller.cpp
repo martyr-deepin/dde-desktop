@@ -1,6 +1,8 @@
 #include "copyjobcontroller.h"
 #include "views/global.h"
 #include "dbuscontroller.h"
+#include "dbusinterface/copyjob_interface.h"
+#include "dbusinterface/fileoperations_interface.h"
 
 CopyJobController::CopyJobController(QObject *parent) : QObject(parent)
 {

@@ -112,7 +112,9 @@ HEADERS  += \
     controllers/copyjobcontroller.h \
     dbusinterface/copyjob_interface.h \
     views/desktopbox.h \
-    views/dragdropeventmanager.h
+    views/dragdropeventmanager.h \
+    views/desktopfwd.h \
+    views/desktopenums.h
 
 
 RESOURCES += \

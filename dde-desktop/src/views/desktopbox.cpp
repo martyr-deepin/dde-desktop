@@ -1,4 +1,5 @@
 #include "desktopbox.h"
+#include "desktopframe.h"
 #include "global.h"
 
 DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)

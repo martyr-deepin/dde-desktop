@@ -2,8 +2,7 @@
 #define DRAGDROPEVENTMANAGER_H
 
 #include <QtCore>
-#include <QtGui>
-#include "desktopitem.h"
+#include "desktopfwd.h"
 
 
 class DragDropEventManager : public QObject

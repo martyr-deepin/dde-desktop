@@ -1,9 +1,10 @@
 #ifndef COPYJOBCONTROLLER_H
 #define COPYJOBCONTROLLER_H
 
-#include "dbusinterface/copyjob_interface.h"
 #include <QtCore>
 #include <QtDBus>
+
+class CopyJobInterface;
 
 class CopyJobController : public QObject
 {

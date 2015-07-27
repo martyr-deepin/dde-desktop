@@ -2,11 +2,12 @@
 #define DESKTOPBOX_H
 
 #include "translucentframe.h"
-#include "desktopframe.h"
+
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
 
+class DesktopFrame;
 
 class DesktopBox : public TranslucentFrame
 {

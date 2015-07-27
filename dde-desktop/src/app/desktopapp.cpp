@@ -1,5 +1,9 @@
 #include "desktopapp.h"
 #include "views/global.h"
+#include "views/desktopbox.h"
+#include "views/desktopitemmanager.h"
+#include "views/desktopframe.h"
+#include "controllers/appcontroller.h"
 
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {

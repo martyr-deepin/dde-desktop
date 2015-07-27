@@ -1,4 +1,7 @@
 #include "trashjobcontroller.h"
+#include "dbusinterface/trashjob_interface.h"
+#include "dbusinterface/trashmonitor_interface.h"
+#include "dbusinterface/fileoperations_interface.h"
 #include "views/global.h"
 #include "dbuscontroller.h"
 

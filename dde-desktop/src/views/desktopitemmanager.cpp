@@ -1,4 +1,5 @@
 #include "desktopitemmanager.h"
+#include "appgroupbox.h"
 #include "global.h"
 #include "controllers/dbuscontroller.h"
 #include "desktopframe.h"

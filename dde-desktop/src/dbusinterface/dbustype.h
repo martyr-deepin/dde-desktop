@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QtDBus>
+#include "iosfwd"
 
 class  DesktopItemInfo
 {

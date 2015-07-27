@@ -1,11 +1,13 @@
 #ifndef APPTABLEWIDGET_H
 #define APPTABLEWIDGET_H
 
+#include "dbusinterface/dbustype.h"
+
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
-#include "desktopitem.h"
-#include "dbusinterface/dbustype.h"
+
+class DesktopItem;
 
 class AppTableWidget : public QTableWidget
 {

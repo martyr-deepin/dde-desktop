@@ -1,6 +1,10 @@
 #include "views/desktopframe.h"
 #include "widgets/util.h"
+#include "desktopitemmanager.h"
+#include "keyeventmanager.h"
+#include "dragdropeventmanager.h"
 #include "global.h"
+
 
 DesktopFrame::DesktopFrame(QWidget *parent)
     : QFrame(parent)

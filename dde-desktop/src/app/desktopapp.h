@@ -2,8 +2,10 @@
 #define DESKTOPAPP_H
 
 #include <QtCore>
-#include "views/desktopbox.h"
-#include "controllers/appcontroller.h"
+#include "views/gridmanager.h"
+
+class DesktopBox;
+class AppController;
 
 class DesktopApp : public QObject
 {

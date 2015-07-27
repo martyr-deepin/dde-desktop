@@ -1,18 +1,14 @@
 #ifndef DESKTOPFRAME__H
 #define DESKTOPFRAME__H
 
-#include "views/translucentframe.h"
-#include "views/griditem.h"
-#include "views/desktopitem.h"
-#include "gridmanager.h"
-#include "desktopitemmanager.h"
-#include "keyeventmanager.h"
-#include "dragdropeventmanager.h"
-#include "controllers/menucontroller.h"
-
+#include "desktopfwd.h"
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
+
+class DesktopItemManager;
+class KeyEventManager;
+class DragDropEventManager;
 
 class DesktopFrame : public QFrame
 {

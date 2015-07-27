@@ -2,14 +2,6 @@
 #define GRIDITEM_H
 
 #include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
-
-class GridItem;
-typedef QSharedPointer<GridItem> GridItemPointer;
-typedef QList<GridItemPointer> GridItemPointerList;
-typedef QSharedPointer<GridItemPointerList> GridListPointer;
-typedef QList<GridListPointer> DoubleGridItemPointerList;
 
 class GridItem : public QObject
 {

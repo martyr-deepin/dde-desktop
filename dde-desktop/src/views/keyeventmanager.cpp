@@ -1,6 +1,7 @@
+#include "desktopitemmanager.h"
 #include "keyeventmanager.h"
 #include "desktopframe.h"
-#include "desktopitem.h"
+#include "desktopfwd.h"
 #include "global.h"
 
 KeyEventManager::KeyEventManager(QWidget *parent) : QObject(parent)

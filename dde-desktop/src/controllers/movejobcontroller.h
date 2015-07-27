@@ -1,9 +1,11 @@
 #ifndef MOVEJOBCONTROLLER_H
 #define MOVEJOBCONTROLLER_H
 
-#include "dbusinterface/movejob_interface.h"
+
 #include <QtCore>
 #include <QtDBus>
+
+class MoveJobInterface;
 
 class MoveJobController : public QObject
 {

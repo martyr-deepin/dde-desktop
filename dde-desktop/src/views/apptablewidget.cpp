@@ -1,4 +1,5 @@
 #include "apptablewidget.h"
+#include "desktopitem.h"
 #include "global.h"
 #include "widgets/util.h"
 #include <typeinfo>

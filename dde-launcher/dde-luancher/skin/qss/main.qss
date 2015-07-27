@@ -1,0 +1,77 @@
+QFrame#LauncherFrame{
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(33, 50, 70, 255), stop:0.5 rgba(70, 255, 255, 255), stop:1 rgba(255, 255, 255, 255));
+}
+
+QFrame#DesktopItem {
+    background-color: rgba(0, 0, 0, 0);
+/*    border: 2px solid rgba(255, 255, 255, 100);
+    border-radius: 4px;*/
+    color:white
+}
+QLabel#Icon {
+    background-color: rgba(0, 0, 0, 0);
+/*    border: 1px solid rgba(255, 255, 255, 255);
+    border-radius: 4px;*/
+    color:white
+}
+QLabel#Name {
+    background-color: rgba(0, 0, 0, 0);
+/*    border: 2px solid rgba(255, 255, 255, 255);
+    border-radius: 4px;
+*/    color:white
+}
+
+QFrame#Border{
+    background-color: transparent;
+    border: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 4px;
+    color:white
+}
+
+QFrame#Normal{
+    background-color: rgba(0, 0, 0, 0);
+    border: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 4px;
+    color:white
+}
+
+QFrame#Hover{
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    color:white
+}
+
+QFrame#AppGroupHover{
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    color:white
+}
+
+QFrame#Checked{
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+    color:white
+}
+
+QFrame#Cut{
+    background-color: rgba(0, 0, 0, 0.35);
+    border: none;
+    color:white
+}
+
+
+QFrame#DragChecked{
+    background-color: rgba(0, 0, 0, 0);
+    border: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 4px;
+    color:white
+}
+
+QLineEdit {
+    background-color: rgba(0, 0, 0, 0);
+    color:white;
+    border: None
+}

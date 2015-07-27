@@ -1,5 +1,6 @@
 #include "appgroupbox.h"
 #include "apptablewidget.h"
+#include "global.h"
 
 AppGroupBox::AppGroupBox(QWidget *parent) : ArrowRectangle(parent)
 {

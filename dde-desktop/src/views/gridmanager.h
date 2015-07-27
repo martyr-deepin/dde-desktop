@@ -1,16 +1,9 @@
 #ifndef GRIDMANAGER_H
 #define GRIDMANAGER_H
 
-#include "griditem.h"
+#include "desktopfwd.h"
+#include "desktopenums.h"
 #include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
-
-enum SizeType {
-    Small,
-    Middle,
-    Large
-};
 
 class GridManager : public QObject
 {
@@ -19,6 +12,7 @@ class GridManager : public QObject
 public:
     explicit GridManager(QObject *parent = 0);
     ~GridManager();
+
 
     static GridManager* instance();
     void initConnect();

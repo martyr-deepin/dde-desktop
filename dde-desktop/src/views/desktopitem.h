@@ -1,15 +1,15 @@
 #ifndef DESKTOPITEM_H
 #define DESKTOPITEM_H
 
-#include "widgets/elidelabel.h"
 #include "dbusinterface/dbustype.h"
-#include "gridmanager.h"
+#include "desktopenums.h"
+
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
 
-class DesktopItem;
-typedef QSharedPointer<DesktopItem> DesktopItemPointer;
+
+class ElidedLabel;
 
 class DesktopItem : public QFrame
 {

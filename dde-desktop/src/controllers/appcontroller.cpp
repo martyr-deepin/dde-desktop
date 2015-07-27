@@ -1,5 +1,11 @@
 #include "appcontroller.h"
+#include "menucontroller.h"
+#include "movejobcontroller.h"
+#include "trashjobcontroller.h"
+#include "copyjobcontroller.h"
+#include "dbuscontroller.h"
 #include "views/global.h"
+
 
 AppController::AppController(QObject *parent) : QObject(parent)
 {

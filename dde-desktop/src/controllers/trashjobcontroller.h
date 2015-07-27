@@ -1,10 +1,11 @@
 #ifndef TRASHJOBCONTROLLER_H
 #define TRASHJOBCONTROLLER_H
 
-#include "dbusinterface/trashjob_interface.h"
-#include "dbusinterface/trashmonitor_interface.h"
 #include <QtCore>
 #include <QtDBus>
+
+class TrashMonitorInterface;
+class TrashJobInterface;
 
 class TrashJobController : public QObject
 {

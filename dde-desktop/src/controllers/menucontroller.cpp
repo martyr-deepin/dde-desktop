@@ -1,4 +1,7 @@
 #include "menucontroller.h"
+#include "dbusinterface/menumanager_interface.h"
+#include "dbusinterface/showmenu_interface.h"
+#include "dbusinterface/desktopdaemon_interface.h"
 #include "views/global.h"
 #include "dbuscontroller.h"
 
