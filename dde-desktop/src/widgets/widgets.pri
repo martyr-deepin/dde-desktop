@@ -7,3 +7,4 @@ SOURCES += \
     $$PWD/elidelabel.cpp \
     $$PWD/util.cpp \
     $$PWD/arrowrectangle.cpp
+

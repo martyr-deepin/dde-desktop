@@ -12,3 +12,7 @@ QString getQssFromFile(QString filename)
     return qss;
 }
 
+QString joinPath(const QString& path, const QString& fileName){
+    QString separator(QDir::separator());
+    return QString("%1%2%3").arg(path, separator, fileName);
+}

@@ -218,7 +218,7 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
     if (!pDesktopItem.isNull()){
         GridItemPointer pGridItem = gridManager->getBlankItem();
         if (!pGridItem.isNull()){
-            qDebug() << pGridItem->getRow() << pGridItem->getColumn() << pGridItem->hasDesktopItem();
+            LOG_INFO() << pGridItem->getRow() << pGridItem->getColumn() << pGridItem->hasDesktopItem();
             pDesktopItem->move(pGridItem->getPos());
             pGridItem->setDesktopItem(true);
             m_settings.beginGroup("DesktopItems");
@@ -236,7 +236,7 @@ void DesktopItemManager::checkPageCount(){
     if (count % (rowCount * columnCount) > 0 && pageCount > 1){
         if (m_pagecount != pageCount){
             emit signalManager->pageCountChanged(pageCount);
-            qDebug() << pageCount << "pageCount" << "/////////////";
+            LOG_INFO() << pageCount << "pageCount" << "/////////////";
             m_pagecount = pageCount;
         }
     }
@@ -297,7 +297,7 @@ void DesktopItemManager::cancelCutedItems(QStringList urls){
             pItem->cancelCuted();
         }
     }
-    qDebug() << "cancel cuted";
+    LOG_INFO() << "cancel cuted";
 }
 
 void DesktopItemManager::deleteItem(QString url){
@@ -388,7 +388,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
         GridItemPointer pGridItem = gridManager->getItems().at(pColumn)->at(pRow);
         if (!pGridItem.isNull()){
             QRect rect = pGridItem->getRect();
-            qDebug() << pRow << pColumn <<  rect << pGridItem->hasDesktopItem();
+            LOG_INFO() << pRow << pColumn <<  rect << pGridItem->hasDesktopItem();
             m_list_pItems.at(i)->move(rect.topLeft());
             pGridItem->setDesktopItem(true);
         }

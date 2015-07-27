@@ -16,17 +16,18 @@ void MoveJobController::initConnect(){
 
 
 void MoveJobController::moveFiles(QStringList files, QString destination){
+    LOG_INFO() << files << destination;
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = DBusController::instance()->getFileOperationsInterface()->NewMoveJob(files, destination, "",  0, "",  "", "");
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        qDebug() << "move files" << files << path;
+        LOG_INFO() << "move files" << files << path;
         m_moveJobInterface = new MoveJobInterface(service, path, QDBusConnection::sessionBus(), this);
         connectMoveJobSignal();
         m_moveJobInterface->Execute();
     }else{
-        qDebug() << reply.error().message();
+        LOG_ERROR() << reply.error().message();
     }
 }
 
@@ -55,7 +56,7 @@ void MoveJobController::disconnectMoveJobSignal(){
 void MoveJobController::moveJobExcuteFinished(){
     disconnectMoveJobSignal();
     m_moveJobInterface = NULL;
-    qDebug() << "move job finished";
+    LOG_INFO() << "move job finished";
 }
 
 void MoveJobController::moveJobAbort(){
@@ -67,7 +68,7 @@ void MoveJobController::moveJobAbort(){
 void MoveJobController::moveJobAbortFinished(){
     disconnectMoveJobSignal();
     m_moveJobInterface = NULL;
-    qDebug() << "move job aborted";
+    LOG_INFO() << "move job aborted";
 }
 
 

@@ -76,7 +76,7 @@ void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
 void AppTableWidget::handleCellClicked(int row, int column){
     DesktopItem* pItem = dynamic_cast<DesktopItem*>(cellWidget(row, column));
     if (pItem == NULL){
-        qDebug() << "handleCellClicked no desktop item";
+        LOG_INFO() << "handleCellClicked no desktop item";
     }else{
         emit signalManager->openFile(pItem->getDesktopItemInfo());
     }
@@ -86,7 +86,7 @@ void AppTableWidget::handleCellClicked(int row, int column){
 void AppTableWidget::handleCellPressed(int row, int column){
     DesktopItem* pItem = dynamic_cast<DesktopItem*>(cellWidget(row, column));
     if (pItem == NULL){
-        qDebug() << "handleCellPressed no desktop item";
+        LOG_INFO() << "handleCellPressed no desktop item";
     }else{
         m_dragItem = pItem;
     }
@@ -138,9 +138,9 @@ void AppTableWidget::startDrag(DesktopItemInfo &info){
     pDrag->setHotSpot(QCursor::pos());
     Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
      if (action == Qt::MoveAction){
-        qDebug() << "app group item drag move======";
+        LOG_INFO() << "app group item drag move======";
      }else{
-        qDebug() << "app group item drag copy======";
+        LOG_INFO() << "app group item drag copy======";
      }
 }
 
@@ -170,14 +170,14 @@ void AppTableWidget::mouseMoveEvent(QMouseEvent *event){
 }
 
 void AppTableWidget::dragEnterEvent(QDragEnterEvent *event){
-    qDebug() << "app group enter" << event->pos();
+    LOG_INFO() << "app group enter" << event->pos();
 //    m_dragLeave = false;
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
         if (event->source() == this){
             event->setDropAction(Qt::MoveAction);
             event->accept();
         }else{
-            qDebug() << event->mimeData();
+            LOG_INFO() << event->mimeData();
             event->ignore();
         }
     }else{
@@ -201,7 +201,7 @@ void AppTableWidget::dragMoveEvent(QDragMoveEvent *event){
 
 void AppTableWidget::dragLeaveEvent(QDragLeaveEvent *event){
     //    m_dragLeave = true;
-    qDebug() << "app group leave" << event;
+    LOG_INFO() << "app group leave" << event;
     event->ignore();
 }
 

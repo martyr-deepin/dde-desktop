@@ -12,6 +12,7 @@ TARGET = dde-desktop
 TEMPLATE = app
 
 include(./widgets/widgets.pri)
+include(./cutelogger/cutelogger.pri)
 
 # build dir
 BuildDir =build_$$QT_VERSION
@@ -71,7 +72,8 @@ SOURCES += main.cpp \
     controllers/copyjobcontroller.cpp \
     dbusinterface/copyjob_interface.cpp \
     views/desktopbox.cpp \
-    views/dragdropeventmanager.cpp
+    views/dragdropeventmanager.cpp \
+    app/logmanager.cpp
 
 
 HEADERS  += \
@@ -114,7 +116,8 @@ HEADERS  += \
     views/desktopbox.h \
     views/dragdropeventmanager.h \
     views/desktopfwd.h \
-    views/desktopenums.h
+    views/desktopenums.h \
+    app/logmanager.h
 
 
 RESOURCES += \
@@ -125,4 +128,5 @@ DISTFILES += \
     dbusinterface/filemonitor.xml \
     dbusinterface/fileoperations.xml \
     dbusinterface/fileoperationsflags.xml \
-    dbusinterface/trashmonitor.xml
+    dbusinterface/trashmonitor.xml \
+

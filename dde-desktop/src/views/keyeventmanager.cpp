@@ -256,7 +256,7 @@ void KeyEventManager::onKeyShiftUpPressed(){
             }
 
             rowItems = rowLeftItems + rowRightItems;
-//            qDebug() << rowIndex << rowLeftItems.count() << rowRightItems.count();
+//            LOG_INFO() << rowIndex << rowLeftItems.count() << rowRightItems.count();
             if (rowItems.count() > 0){
                 foreach (DesktopItemPointer _pItem, rowItems) {
                     isRowChecked = isRowChecked && _pItem->isChecked();
@@ -298,7 +298,7 @@ void KeyEventManager::onKeyShiftUpPressed(){
     }
 
 //    if (!m_lastCheckedByKeyboard.isNull()){
-//        qDebug() << m_lastCheckedByKeyboard->getDesktopName();
+//        LOG_INFO() << m_lastCheckedByKeyboard->getDesktopName();
 //    }
 }
 
@@ -383,7 +383,7 @@ void KeyEventManager::onKeyShiftDownPressed(){
     }
 
 //    if (!m_lastCheckedByKeyboard.isNull()){
-//        qDebug() << m_lastCheckedByKeyboard->getDesktopName();
+//        LOG_INFO() << m_lastCheckedByKeyboard->getDesktopName();
 //    }
 }
 

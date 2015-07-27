@@ -88,7 +88,11 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
                 }
             }
         }else{
-            emit signalManager->moveFilesExcuted(urls, desktopLocation);
+            if (event->source() != m_parent){
+                emit signalManager->moveFilesExcuted(urls, desktopLocation);
+            }/*else{
+                LOG_INFO() << "move desktop item";
+            }*/
         }
 
     }

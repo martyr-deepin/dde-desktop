@@ -271,15 +271,15 @@ void DesktopFrame::focusOutEvent(QFocusEvent *event){
 
 
 void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
-    qDebug() << "enter" << event->pos();
+    LOG_INFO() << "enter" << event->pos();
     m_dragLeave = false;
 
     if (event->source() == this){
-        qDebug() << "dragEnterEvent event come from self"<< event->pos();
+        LOG_INFO() << "dragEnterEvent event come from self"<< event->pos();
         event->setDropAction(Qt::MoveAction);
         event->accept();
     }else{
-        qDebug() << "dragEnterEvent event come from outside"<< event->pos();
+        LOG_INFO() << "dragEnterEvent event come from outside"<< event->pos();
         event->acceptProposedAction();
     }
 }
@@ -293,7 +293,7 @@ void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
 void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
     m_dragLeave = true;
     event->accept();
-    qDebug() << "dragLeaveEvent come from outside";
+    LOG_INFO() << "dragLeaveEvent come from outside";
 }
 
 void DesktopFrame::dropEvent(QDropEvent *event){
@@ -364,7 +364,7 @@ void DesktopFrame::startDrag(){
         pDrag->setHotSpot(QCursor::pos());
         Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
-            qDebug() << "drop 3333333333";
+            LOG_INFO() << "drop 3333333333";
             if (!m_isGridOn){
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
                     QPoint newPos = pItem->pos() + mapFromGlobal(QCursor::pos()) - m_pressedEventPos;

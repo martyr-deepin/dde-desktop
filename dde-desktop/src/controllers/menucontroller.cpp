@@ -36,7 +36,7 @@ void MenuController::showMenuByDesktopItem(QString url, QPoint pos){
     if (menucreatepath.length() > 0){
         showMenu(menucreatepath, menucontentfinal);
     }else{
-        qDebug() << "register menu fail!";
+        LOG_ERROR() << "register menu fail!";
     }
 }
 
@@ -51,7 +51,7 @@ void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos)
 
 void MenuController::showMenuByDesktopItem(const QList<DesktopItemPointer> &pCheckItems,
                                            const DesktopItemPointer &pItem, QPoint pos){
-    qDebug() << pCheckItems << pItem << pos;
+    LOG_INFO() << pCheckItems << pItem << pos;
     QStringList urls;
     foreach (DesktopItemPointer pItem, pCheckItems) {
         urls.append(pItem->getUrl());
@@ -67,7 +67,7 @@ void MenuController::showMenuByUrls(QStringList urls, QPoint pos){
     if (menucreatepath.length() > 0){
         showMenu(menucreatepath, menucontentfinal);
     }else{
-        qDebug() << "register menu fail!";
+        LOG_ERROR() << "register menu fail!";
     }
 }
 

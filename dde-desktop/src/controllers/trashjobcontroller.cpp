@@ -31,7 +31,7 @@ void TrashJobController::monitorTrash(){
             m_isTrashEmpty = false;
         }
     }else{
-        qDebug() << reply.error().message();
+        LOG_ERROR() << reply.error().message();
     }
     connect(m_trashMonitorInterface, SIGNAL(ItemCountChanged(uint)), this, SLOT(updateTrashIconByCount(uint)));
 }
@@ -51,7 +51,7 @@ void TrashJobController::trashJobExcute(QStringList files){
         connectTrashSignal();
         m_trashJobInterface->Execute();
     }else{
-        qDebug() << reply.error().message();
+        LOG_ERROR() << reply.error().message();
     }
 }
 
@@ -79,7 +79,7 @@ void TrashJobController::trashJobExcuteFinished(){
     disconnectTrashSignal();
     m_trashJobInterface = NULL;
 
-    qDebug() << "trash files deleted";
+    LOG_INFO() << "trash files deleted";
 }
 
 

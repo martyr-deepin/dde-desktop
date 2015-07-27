@@ -2,6 +2,7 @@
 #define GLOBAL_H
 
 #include <QtCore>
+#include <Logger.h>
 #include "gridmanager.h"
 #include "signalmanager.h"
 #include "controllers/dbuscontroller.h"

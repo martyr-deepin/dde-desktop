@@ -22,12 +22,12 @@ void CopyJobController::copyFiles(QStringList files, QString destination){
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        qDebug() << "copy files" << files << path;
+        LOG_INFO() << "copy files" << files << path;
         m_copyJobInterface = new CopyJobInterface(service, path, QDBusConnection::sessionBus(), this);
         connectCopyJobSignal();
         m_copyJobInterface->Execute();
     }else{
-        qDebug() << reply.error().message();
+        LOG_ERROR() << reply.error().message();
     }
 }
 
@@ -57,7 +57,7 @@ void CopyJobController::disconnectCopyJobSignal(){
 void CopyJobController::copyJobExcuteFinished(QString file){
     disconnectCopyJobSignal();
     m_copyJobInterface = NULL;
-    qDebug() << "copy job finished" << file;
+    LOG_INFO() << "copy job finished" << file;
 }
 
 void CopyJobController::copyJobAbort(){
@@ -69,7 +69,7 @@ void CopyJobController::copyJobAbort(){
 void CopyJobController::copyJobAbortFinished(){
     disconnectCopyJobSignal();
     m_copyJobInterface = NULL;
-    qDebug() << "copy job aborted";
+    LOG_INFO() << "copy job aborted";
 }
 
 
