@@ -102,14 +102,14 @@ void DesktopBox::keyReleaseEvent(QKeyEvent *event){
 }
 
 void DesktopBox::closeEvent(QCloseEvent *event){
-    DBusController::instance()->unMonitor();
+    dbusController->unMonitor();
     LOG_INFO() << "closeEvent";
     event->accept();
 }
 
 DesktopBox::~DesktopBox()
 {
-    DBusController::instance()->unMonitor();
+    dbusController->unMonitor();
     LOG_INFO() << "~DesktopBox";
 }
 

@@ -15,10 +15,12 @@
 #include "views/signalmanager.h"
 
 
-DBusController* DBusController::m_instance=NULL;
-
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
+    qDebug() << "DBusController";
+}
+
+void DBusController::init(){
     QDBusConnection bus = QDBusConnection::sessionBus();
     m_monitorManagerInterface = new MonitorManagerInterface(FileMonitor_service, FileMonitor_path, bus, this);
     m_fileInfoInterface = new FileInfoInterface(FileInfo_service, FileInfo_path, bus, this);
@@ -34,18 +36,6 @@ DBusController::DBusController(QObject *parent) : QObject(parent)
 //    watchDesktop();
     initConnect();
 }
-
-
-DBusController* DBusController::instance(){
-    static QMutex mutex;
-    if (!m_instance) {
-        QMutexLocker locker(&mutex);
-        if (!m_instance)
-            m_instance = new DBusController;
-    }
-    return m_instance;
-}
-
 
 void DBusController::initConnect(){
     connect(m_desktopDaemonInterface, SIGNAL(RequestOpen(QStringList,IntList)),
@@ -129,6 +119,7 @@ void DBusController::monitorAppGroup(QString group_url){
 }
 
 void DBusController::requestDesktopItems(){
+    LOG_INFO() << "requestDesktopItems";
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
     reply.waitForFinished();
     if (!reply.isError()){

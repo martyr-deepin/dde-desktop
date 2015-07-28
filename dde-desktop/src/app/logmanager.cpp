@@ -4,10 +4,7 @@
 #include <ConsoleAppender.h>
 #include <RollingFileAppender.h>
 
-LogManager* LogManager::m_instance=NULL;
-LogManager::GC LogManager::gc;
-
-LogManager::LogManager(QObject *parent) : QObject(parent)
+LogManager::LogManager()
 {
     m_format = "%{time}{dd-MM-yyyy, HH:mm} [%{type:-7}] [%{file:-25} %{line}] %{message}\n";
 }
@@ -31,22 +28,7 @@ void LogManager::initRollingFileAppender(){
     logger->registerAppender(m_rollingFileAppender);
 }
 
-LogManager* LogManager::instance(){
-    static QMutex mutex;
-    if (!m_instance) {
-        QMutexLocker locker(&mutex);
-        if (!m_instance)
-            m_instance = new LogManager;
-    }
-    return m_instance;
-}
-
-
-void LogManager::startLog(){
-    logger->registerAppender(m_consoleAppender);
-    logger->registerAppender(m_rollingFileAppender);
-}
-
 LogManager::~LogManager()
 {
+    qDebug() << "LogManager destory";
 }

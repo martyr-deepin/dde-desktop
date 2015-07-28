@@ -17,7 +17,7 @@ void CopyJobController::initConnect(){
 }
 
 void CopyJobController::copyFiles(QStringList files, QString destination){
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = DBusController::instance()->getFileOperationsInterface()->NewCopyJob(files, destination, "",  0, "",  "", "");
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewCopyJob(files, destination, "",  0, "",  "", "");
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();

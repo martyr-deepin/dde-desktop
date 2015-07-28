@@ -285,6 +285,7 @@ void DesktopItem::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void DesktopItem::moveEvent(QMoveEvent *event){
+
     QPoint pos = event->pos();
     m_settings.beginGroup("DesktopItems");
     if (m_url.length() > 0){

@@ -17,7 +17,7 @@ void MoveJobController::initConnect(){
 
 void MoveJobController::moveFiles(QStringList files, QString destination){
     LOG_INFO() << files << destination;
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = DBusController::instance()->getFileOperationsInterface()->NewMoveJob(files, destination, "",  0, "",  "", "");
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewMoveJob(files, destination, "",  0, "",  "", "");
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();

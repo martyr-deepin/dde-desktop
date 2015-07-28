@@ -42,7 +42,7 @@ void TrashJobController::setTrashEmptyFlag(bool flag){
 }
 
 void TrashJobController::trashJobExcute(QStringList files){
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = DBusController::instance()->getFileOperationsInterface()->NewTrashJob(files, false, "", "", "");
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewTrashJob(files, false, "", "", "");
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();
@@ -109,12 +109,12 @@ void TrashJobController::onProcessAmount(qlonglong progress, ushort info){
 void TrashJobController::updateTrashIconByCount(uint count){
     if (count == 0){
         if (!m_isTrashEmpty){
-            DBusController::instance()->requestIconByUrl(TrashUrl, 48);
+            dbusController->requestIconByUrl(TrashUrl, 48);
         }
         m_isTrashEmpty = true;
     }else{
         if (m_isTrashEmpty){
-            DBusController::instance()->requestIconByUrl(TrashUrl, 48);
+            dbusController->requestIconByUrl(TrashUrl, 48);
         }
         m_isTrashEmpty = false;
     }

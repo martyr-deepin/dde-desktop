@@ -58,7 +58,9 @@ class DBusController : public QObject
     };
 
 public:
-    static DBusController* instance();
+    DBusController(QObject *parent = 0);
+    ~DBusController();
+    void init();
     void initConnect();
     void monitorDesktop();
     void watchDesktop();
@@ -120,8 +122,6 @@ public slots:
     void pasteFiles(QString action, QStringList files, QString destination);
 
 private:
-    DBusController(QObject *parent = 0);
-    ~DBusController();
     MonitorManagerInterface* m_monitorManagerInterface = NULL;
     FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;
     ClipboardInterface* m_clipboardInterface = NULL;
@@ -140,7 +140,6 @@ private:
 
     QString m_itemShoudBeMoved;
 
-    static DBusController* m_instance;
     Q_DISABLE_COPY(DBusController)
 
 };

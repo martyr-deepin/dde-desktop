@@ -72,7 +72,7 @@ void MenuController::showMenuByUrls(QStringList urls, QPoint pos){
 }
 
 QString MenuController::createMenuContent(QStringList createmenupath) {
-    QDBusPendingReply<QString> menu_content_reply = DBusController::instance()->getDesktopDaemonInterface()->GenMenuContent(createmenupath);
+    QDBusPendingReply<QString> menu_content_reply = dbusController->getDesktopDaemonInterface()->GenMenuContent(createmenupath);
     menu_content_reply.waitForFinished();
     if (!menu_content_reply.isError()){
         QString menu_content = menu_content_reply.argumentAt(0).toString();
@@ -107,10 +107,10 @@ void MenuController::showMenu(const QString showmenu_path, QString menucontent) 
     m_showmenuInterface = new ShowmenuInterface(MenuManager_service, showmenu_path, QDBusConnection::sessionBus(), this);
     m_showmenuInterface->ShowMenu(menucontent);
     connect(m_showmenuInterface, SIGNAL(ItemInvoked(QString, bool)),this, SLOT(menuItemInvoked(QString,bool)));
-    connect(m_showmenuInterface, SIGNAL(MenuUnregistered()), DBusController::instance()->getDesktopDaemonInterface(), SLOT(DestroyMenu()));
+    connect(m_showmenuInterface, SIGNAL(MenuUnregistered()), dbusController->getDesktopDaemonInterface(), SLOT(DestroyMenu()));
 }
 
 void MenuController::menuItemInvoked(QString itemId, bool flag){
     Q_UNUSED(flag)
-    DBusController::instance()->getDesktopDaemonInterface()->HandleSelectedMenuItem(itemId);
+    dbusController->getDesktopDaemonInterface()->HandleSelectedMenuItem(itemId);
 }

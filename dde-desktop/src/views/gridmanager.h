@@ -67,9 +67,9 @@ private:
     int m_rowCount = 0;
     int m_pageCount = 1;
     SizeType m_sizeType;
-    static GridManager* m_instance;
     DoubleGridItemPointerList m_list_items;
     QMap<QString, GridItemPointer> m_map_items;
+    Q_DISABLE_COPY(GridManager)
 };
 
 #endif // GRIDMANAGER_H

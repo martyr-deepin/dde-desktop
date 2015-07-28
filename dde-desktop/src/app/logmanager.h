@@ -6,42 +6,26 @@
 class ConsoleAppender;
 class RollingFileAppender;
 
-class LogManager : public QObject
+class LogManager
 {
-    Q_OBJECT
 public:
-    static LogManager* instance();
+    explicit LogManager();
+    ~LogManager();
     void initConsoleAppender();
     void initRollingFileAppender();
-    void startLog();
 
 signals:
 
 public slots:
 
 private:
-    explicit LogManager(QObject *parent = 0);
-    ~LogManager();
-    static LogManager* m_instance;
-    Q_DISABLE_COPY(LogManager)
     QString m_format;
     QString m_logPath;
     ConsoleAppender* m_consoleAppender;
     RollingFileAppender* m_rollingFileAppender;
 
-    class GC
-        {
-        public :
-            ~GC()
-            {
-                if (m_instance != NULL )
-                {
-                    delete m_instance;
-                    m_instance = NULL ;
-                }
-            }
-        };
-    static GC gc;
+    LogManager(const LogManager &);
+    LogManager & operator = (const LogManager &);
 };
 
 #endif // LOGMANAGER_H

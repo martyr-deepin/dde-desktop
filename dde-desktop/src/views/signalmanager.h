@@ -11,7 +11,8 @@ class SignalManager: public QObject
 {
     Q_OBJECT
 public:
-    static SignalManager* instance();
+    explicit SignalManager(){}
+    ~SignalManager(){}
 
 signals:
 
@@ -99,9 +100,6 @@ signals:
     void itemMoved(DesktopItemInfo& fileInfo);
 
 private:
-    SignalManager();
-    ~SignalManager();
-    static SignalManager* m_instance;
     Q_DISABLE_COPY(SignalManager)
 };
 

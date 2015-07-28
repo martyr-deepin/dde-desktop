@@ -177,7 +177,6 @@ DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInf
     pDesktopItem->setDesktopIcon(icon);
     pDesktopItem->setDesktopItemInfo(fileInfo);
     pDesktopItem->resize(width, height);
-    pDesktopItem->show();
     return pDesktopItem;
 }
 
@@ -188,22 +187,24 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo, int index){
     checkPageCount();
     if (!pDesktopItem.isNull()){
         int row = gridManager->getRowCount();
-        m_settings.beginGroup("DesktopItems");
+        QSettings setting;
+        setting.beginGroup("DesktopItems");
         int _column = (index + 2) /  row;
         int _row = (index + 2) % row;
         GridItemPointer pGridItem = gridManager->getItems().at(_column)->at(_row);
         if (!pGridItem.isNull()){
             QRect rect = pGridItem->getRect();
             QPoint pos = rect.topLeft();
-            pos = m_settings.value(pDesktopItem->getUrl(), pos).toPoint();
+            QString key = pDesktopItem->getUrl();
+            pos = setting.value(key, pos).toPoint();
             pDesktopItem->move(pos);
-
+            pDesktopItem->show();
             pGridItem = gridManager->getItemByPos(pos);
             if (!pGridItem.isNull()){
                 pGridItem->setDesktopItem(true);
             }
         }
-        m_settings.endGroup();
+        setting.endGroup();
     }
 }
 
@@ -219,6 +220,7 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
         if (!pGridItem.isNull()){
             LOG_INFO() << pGridItem->getRow() << pGridItem->getColumn() << pGridItem->hasDesktopItem();
             pDesktopItem->move(pGridItem->getPos());
+            pDesktopItem->show();
             pGridItem->setDesktopItem(true);
             m_settings.beginGroup("DesktopItems");
             m_settings.setValue(pDesktopItem->getUrl(), pDesktopItem->pos());
@@ -327,6 +329,7 @@ void DesktopItemManager::saveItems(){
     m_settings.beginGroup("DesktopItems");
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         m_settings.setValue(pItem->getUrl(), pItem->pos());
+//        qDebug() << pItem->getUrl() << m_settings.value("comtuter://///sddssdd//sasa//assa").toPoint();
     }
     m_settings.endGroup();
 }

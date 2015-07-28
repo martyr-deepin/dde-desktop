@@ -41,7 +41,6 @@ SOURCES += main.cpp \
     views/translucentframe.cpp \
     views/desktopitem.cpp \
     views/gridmanager.cpp \
-    views/signalmanager.cpp \
     controllers/menucontroller.cpp \
     controllers/appcontroller.cpp \
     app/desktopapp.cpp \
@@ -122,7 +121,8 @@ HEADERS  += \
     views/desktopenums.h \
     app/logmanager.h \
     app/xcb_misc.h \
-    app/daemon.h
+    app/daemon.h \
+    app/define.h
 
 
 RESOURCES += \
@@ -135,3 +135,5 @@ DISTFILES += \
     dbusinterface/fileoperationsflags.xml \
     dbusinterface/trashmonitor.xml \
 
+target.path = /home/djf/bin
+INSTALLS += target

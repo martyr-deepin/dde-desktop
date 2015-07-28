@@ -1,22 +1,11 @@
 #include "gridmanager.h"
 #include "global.h"
 
-GridManager* GridManager::m_instance = NULL;
 
 GridManager::GridManager(QObject *parent) : QObject(parent)
 {
+    qDebug() << "GridManager";
     initConnect();
-}
-
-GridManager* GridManager::instance()
-{
-    static QMutex mutex;
-    if (!m_instance) {
-        QMutexLocker locker(&mutex);
-        if (!m_instance)
-            m_instance = new GridManager;
-    }
-    return m_instance;
 }
 
 

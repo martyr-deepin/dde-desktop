@@ -1,19 +1,18 @@
 #include "app/desktopapp.h"
-#include "app/logmanager.h"
-#include "app/daemon.h"
-#include <Logger.h>
+#include "widgets/singleton.h"
+#include "app/define.h"
+#include "views/global.h"
 #include <QApplication>
+
 
 int main(int argc, char *argv[])
 {
-    daemonize();
+    debug_daemon_off();
     QApplication a(argc, argv);
-    DesktopApp* w = new DesktopApp;
-    w->show();
-    LogManager::instance()->initConsoleAppender();
-    LogManager::instance()->initRollingFileAppender();
+    Singleton<DesktopApp>::instance()->show();
+    dbusController->init();
+    debug_log_console_on();
     LOG_INFO() << "Starting the application";
     int reslut = a.exec();
     LOG_INFO() << "exits " << a.applicationName() << reslut;
-
 }

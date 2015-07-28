@@ -1,15 +1,17 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+
 #include <QtCore>
 #include <Logger.h>
+#include "widgets/singleton.h"
 #include "gridmanager.h"
 #include "signalmanager.h"
 #include "controllers/dbuscontroller.h"
 
-#define gridManager  GridManager::instance()
-#define signalManager  SignalManager::instance()
-#define dbusController DBusController::instance()
+#define gridManager  Singleton<GridManager>::instance()
+#define signalManager  Singleton<SignalManager>::instance()
+#define dbusController Singleton<DBusController>::instance()
 #define desktopLocation QStandardPaths::standardLocations(QStandardPaths::StandardLocation::DesktopLocation).at(0)
 
 #define defaut_icon ":/skin/images/QFramer.png"
