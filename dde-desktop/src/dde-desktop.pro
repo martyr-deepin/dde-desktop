@@ -73,7 +73,8 @@ SOURCES += main.cpp \
     dbusinterface/copyjob_interface.cpp \
     views/desktopbox.cpp \
     views/dragdropeventmanager.cpp \
-    app/logmanager.cpp
+    app/logmanager.cpp \
+    app/daemondesktop.cpp
 
 
 HEADERS  += \
@@ -117,7 +118,8 @@ HEADERS  += \
     views/dragdropeventmanager.h \
     views/desktopfwd.h \
     views/desktopenums.h \
-    app/logmanager.h
+    app/logmanager.h \
+    app/daemondesktop.h
 
 
 RESOURCES += \

@@ -1,10 +1,12 @@
 #include "app/desktopapp.h"
 #include "app/logmanager.h"
+#include "app/daemondesktop.h"
 #include <Logger.h>
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
+    daemonize();
     QApplication a(argc, argv);
     DesktopApp* w = new DesktopApp;
     w->show();
