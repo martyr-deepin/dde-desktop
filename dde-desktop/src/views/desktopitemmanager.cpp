@@ -4,7 +4,6 @@
 #include "controllers/dbuscontroller.h"
 #include "desktopframe.h"
 
-
 DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
 
     m_parentWindow = static_cast<QWidget*>(this->parent());

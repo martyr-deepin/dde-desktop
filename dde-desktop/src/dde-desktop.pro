@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui dbus
+QT       += core gui dbus x11extras
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,7 +31,8 @@ CONFIG(debug, debug|release) {
     UI_DIR = $$PWD/$$BuildDir/release/.ui
 }
 
-CONFIG+=c++11
+PKGCONFIG += x11 xcb xcb-ewmh
+CONFIG += c++11 link_pkgconfig
 
 
 SOURCES += main.cpp \
@@ -74,7 +75,8 @@ SOURCES += main.cpp \
     views/desktopbox.cpp \
     views/dragdropeventmanager.cpp \
     app/logmanager.cpp \
-    app/daemondesktop.cpp
+    app/xcb_misc.cpp \
+    app/daemon.cpp
 
 
 HEADERS  += \
@@ -119,7 +121,8 @@ HEADERS  += \
     views/desktopfwd.h \
     views/desktopenums.h \
     app/logmanager.h \
-    app/daemondesktop.h
+    app/xcb_misc.h \
+    app/daemon.h
 
 
 RESOURCES += \

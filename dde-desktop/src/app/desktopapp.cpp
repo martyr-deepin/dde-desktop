@@ -15,6 +15,11 @@ DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
     m_desktopBox = new DesktopBox;
     m_appController = new AppController;
 
+//    XcbMisc::instance()->set_strut_partial(m_desktopBox->winId(),
+//                                           XcbMisc::OrientationTop,
+//                                           m_desktopBox->height(),
+//                                           m_desktopBox->x(),
+//                                           m_desktopBox->x() + m_desktopBox->width());
 
 //    loadSettings();
 

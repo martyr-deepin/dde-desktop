@@ -1,4 +1,5 @@
 #include "views/translucentframe.h"
+#include "app/xcb_misc.h"
 
 TranslucentFrame::TranslucentFrame(QWidget *parent) : QFrame(parent)
 {
@@ -7,6 +8,8 @@ TranslucentFrame::TranslucentFrame(QWidget *parent) : QFrame(parent)
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnBottomHint);
     setWindowState(Qt::WindowMaximized);
     setGeometry(qApp->desktop()->availableGeometry());
+    XcbMisc::instance()->set_window_type(winId(),
+                                         XcbMisc::Desktop);
 }
 
 TranslucentFrame::~TranslucentFrame()

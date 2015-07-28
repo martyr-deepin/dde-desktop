@@ -1,4 +1,4 @@
-#include "daemondesktop.h"
+#include "daemon.h"
 
 void log_message(const char *filename,const char *message)
 {
@@ -27,20 +27,20 @@ void daemonize()
     int i,lfp;
     char str[10];
     if(getppid()==1) {
-        printf("already a daemon");
+//        printf("already a daemon");
         return; /* already a daemon */
     }
     i=fork();
     if (i<0) {
-        printf("fork a daemon error");
+//        printf("fork a daemon error");
         exit(1); /* fork error */
     };
     if (i>0) {
-        printf("parent exits\n");
+//        printf("parent exits\n");
         exit(0); /* parent exits */
     }
     /* child (daemon) continues */
-    printf("child (daemon) continues\n");
+//    printf("child (daemon) continues\n");
     setsid(); /* obtain a new process group */
     for (i=getdtablesize();i>=0;--i) close(i); /* close all descriptors */
     i=open("/dev/null",O_RDWR); dup(i); dup(i); /* handle standart I/O */

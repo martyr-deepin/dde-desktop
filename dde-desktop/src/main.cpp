@@ -1,6 +1,6 @@
 #include "app/desktopapp.h"
 #include "app/logmanager.h"
-#include "app/daemondesktop.h"
+#include "app/daemon.h"
 #include <Logger.h>
 #include <QApplication>
 
