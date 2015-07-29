@@ -74,6 +74,6 @@ void DesktopApp::saveSortFlag(QDir::SortFlag flag){
 
 DesktopApp::~DesktopApp()
 {
-    qDebug() << "destroyed desktop app";
+
 }
 

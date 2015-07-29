@@ -17,7 +17,7 @@
 
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
-    qDebug() << "DBusController";
+
 }
 
 void DBusController::init(){
@@ -119,7 +119,6 @@ void DBusController::monitorAppGroup(QString group_url){
 }
 
 void DBusController::requestDesktopItems(){
-    LOG_INFO() << "requestDesktopItems";
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
     reply.waitForFinished();
     if (!reply.isError()){

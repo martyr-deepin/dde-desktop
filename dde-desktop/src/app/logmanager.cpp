@@ -30,5 +30,5 @@ void LogManager::initRollingFileAppender(){
 
 LogManager::~LogManager()
 {
-    qDebug() << "LogManager destory";
+
 }

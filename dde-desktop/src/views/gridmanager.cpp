@@ -4,7 +4,6 @@
 
 GridManager::GridManager(QObject *parent) : QObject(parent)
 {
-    qDebug() << "GridManager";
     initConnect();
 }
 
