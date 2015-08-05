@@ -75,7 +75,9 @@ SOURCES += main.cpp \
     views/dragdropeventmanager.cpp \
     app/logmanager.cpp \
     app/xcb_misc.cpp \
-    app/daemon.cpp
+    app/daemon.cpp \
+    filemonitor/filemonitorwoker.cpp \
+    filemonitor/filemonitor.cpp
 
 
 HEADERS  += \
@@ -122,7 +124,9 @@ HEADERS  += \
     app/logmanager.h \
     app/xcb_misc.h \
     app/daemon.h \
-    app/define.h
+    app/define.h \
+    filemonitor/filemonitorwoker.h \
+    filemonitor/filemonitor.h
 
 
 RESOURCES += \

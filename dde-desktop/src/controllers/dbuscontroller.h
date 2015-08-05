@@ -16,7 +16,7 @@ class FileOperationsInterface;
 class CreateDirJobInterface;
 class CreateFileJobInterface;
 class CreateFileFromTemplateJobInterface;
-class DBusController;
+class FileMonitor;
 
 
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
@@ -34,6 +34,7 @@ class DBusController;
 #define Watcher_service "com.deepin.filemanager.Backend.Watcher"
 
 typedef QSharedPointer<FileMonitorInstanceInterface> FileMonitorInstanceInterfacePointer;
+
 
 class DBusController : public QObject
 {
@@ -62,8 +63,8 @@ public:
     ~DBusController();
     void init();
     void initConnect();
-    void monitorDesktop();
-    void watchDesktop();
+//    void monitorDesktop();
+//    void watchDesktop();
     void requestDesktopItems();
     void requestIconByUrl(QString scheme, uint size);
 
@@ -85,10 +86,12 @@ public:
 signals:
 
 public slots:
-    void desktopFileChanged(const QString &url, const QString &in1, uint event);
-    void watchFileChanged(QString url, uint event);
+    void handleFileCreated(const QString& path);
+    void handleFileDeleted(const QString& path);
+    void handleFileMovedIn(const QString& path);
+    void handleFileMovedOut(const QString& path);
+    void handleFileRenamed(const QString& oldPath, const QString& newPath);
 
-    void appGroupFileChanged(const QString &url, const QString &in1, uint event);
     void asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
     void asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
 
@@ -108,24 +111,24 @@ public slots:
 
     /*app group*/
     void requestCreatingAppGroup(QStringList urls);
-    void monitorAppGroup(QString group_url);
     void getAppGroupItemsByUrl(QString group_url);
     void createAppGroup(QString group_url, QStringList urls);
     void mergeIntoAppGroup(QStringList urls, QString group_url);
 
-    /*unmonitor file*/
-    void unMonitorDirByID(uint id);
-    void unMonitorDirByUrl(QString group_url);
-    void unMonitor();
+//    /*unmonitor file*/
+//    void unMonitorDirByID(uint id);
+//    void unMonitorDirByUrl(QString group_url);
+//    void unMonitor();
 
     /*paste files*/
     void pasteFiles(QString action, QStringList files, QString destination);
 
 private:
-    MonitorManagerInterface* m_monitorManagerInterface = NULL;
+    FileMonitor* m_fileMonitor = NULL;
+//    MonitorManagerInterface* m_monitorManagerInterface = NULL;
     FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;
     ClipboardInterface* m_clipboardInterface = NULL;
-    WatcherInstanceInterface* m_watchInstanceInterface = NULL;
+//    WatcherInstanceInterface* m_watchInstanceInterface = NULL;
     QMap<QString, FileMonitorInstanceInterfacePointer> m_appGroupMonitorInterfacePointers;
     FileInfoInterface* m_fileInfoInterface = NULL;
     DesktopDaemonInterface* m_desktopDaemonInterface = NULL;

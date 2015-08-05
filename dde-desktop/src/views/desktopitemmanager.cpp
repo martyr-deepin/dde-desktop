@@ -136,10 +136,11 @@ void DesktopItemManager::setShoudBeMovedItem(DesktopItemPointer pItem){
 }
 
 void DesktopItemManager::setShoudBeMovedItemByUrl(QString url){
-    QString key = decodeUrl(url);
+    QString key = formatURl(url);
     if (m_pItems.contains(key)){
         setShoudBeMovedItem(m_pItems.value(key));
     }else{
+        LOG_ERROR() << "Invalid key" << key;
         setShoudBeMovedItem(DesktopItemPointer());
     }
 }
@@ -151,7 +152,7 @@ void DesktopItemManager::addItems(DesktopItemInfoMap &desktopInfoMap){
 }
 
 void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap &appItemInfos){
-    QString key = decodeUrl(group_url);
+    QString key = formatURl(group_url);
     if (m_pItems.contains(key)){
         m_pItems.value(key)->setAppGroupItems(appItemInfos);
         updateAppGroupDetail(m_pItems.value(key));
@@ -159,6 +160,8 @@ void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMa
             m_pItems.value(key)->move(static_cast<DesktopFrame*>(this->parent())->getAppGroupDestinationPos());
             static_cast<DesktopFrame*>(this->parent())->setAppGroupDestinationPos(QPoint(-1, -1));
         }
+    }else{
+        LOG_ERROR() << "Invalid key" << key;
     }
 }
 
@@ -181,7 +184,9 @@ DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInf
 }
 
 void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo, int index){
+
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
+    LOG_INFO() << "add Item" << pDesktopItem->getUrl();
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
     m_list_pItems.append(pDesktopItem);
     checkPageCount();
@@ -211,6 +216,7 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo, int index){
 
 void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
+    LOG_INFO() << "add Item" << pDesktopItem->getUrl();
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
     m_list_pItems.append(pDesktopItem);
     checkPageCount();
@@ -302,8 +308,12 @@ void DesktopItemManager::cancelCutedItems(QStringList urls){
 }
 
 void DesktopItemManager::deleteItem(QString url){
+    if (!url.startsWith("file://")){
+        url = "file://" + url;
+    }
     QString _url = decodeUrl(url);
 
+    LOG_INFO() << "deleteItem" << _url << m_pItems.contains(_url);
     if (m_pItems.contains(_url)){
         DesktopItemPointer pItem = m_pItems.value(_url);
 
@@ -328,8 +338,9 @@ void DesktopItemManager::saveItems(){
     m_settings.clear();
     m_settings.beginGroup("DesktopItems");
     foreach (DesktopItemPointer pItem, m_list_pItems) {
-        m_settings.setValue(pItem->getUrl(), pItem->pos());
-//        qDebug() << pItem->getUrl() << m_settings.value("comtuter://///sddssdd//sasa//assa").toPoint();
+        if (!pItem.isNull()){
+            m_settings.setValue(pItem->getUrl(), pItem->pos());
+        }
     }
     m_settings.endGroup();
 }
@@ -380,19 +391,25 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
         QString url = "file://" + decodeUrl(fileInfo.absoluteFilePath());
-        DesktopItemPointer  pDesktopItem = m_pItems.value(url);
-        m_list_pItems.append(pDesktopItem);
+        if (m_pItems.contains(url)){
+            DesktopItemPointer  pDesktopItem = m_pItems.value(url);
+            m_list_pItems.append(pDesktopItem);
+        }else{
+            LOG_ERROR() << url;
+        }
     }
-
+    LOG_INFO() << m_list_pItems.length();
     for (int i = 0; i< m_list_pItems.length() ; i++){
         int pColumn = i / row;
         int pRow = i % row;
         GridItemPointer pGridItem = gridManager->getItems().at(pColumn)->at(pRow);
         if (!pGridItem.isNull()){
             QRect rect = pGridItem->getRect();
-            LOG_INFO() << pRow << pColumn <<  rect << pGridItem->hasDesktopItem();
-            m_list_pItems.at(i)->move(rect.topLeft());
-            pGridItem->setDesktopItem(true);
+//            LOG_INFO() << pRow << pColumn <<  rect << pGridItem->hasDesktopItem();
+            if (!m_list_pItems.at(i).isNull()){
+                m_list_pItems.at(i)->move(rect.topLeft());
+                 pGridItem->setDesktopItem(true);
+            }
         }
     }
     emit signalManager->desktopItemsSaved();

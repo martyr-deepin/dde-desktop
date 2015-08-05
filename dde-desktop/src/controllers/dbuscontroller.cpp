@@ -13,7 +13,8 @@
 
 #include "views/global.h"
 #include "views/signalmanager.h"
-
+#include "filemonitor/filemonitor.h"
+#include "widgets/util.h"
 
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
@@ -22,7 +23,6 @@ DBusController::DBusController(QObject *parent) : QObject(parent)
 
 void DBusController::init(){
     QDBusConnection bus = QDBusConnection::sessionBus();
-    m_monitorManagerInterface = new MonitorManagerInterface(FileMonitor_service, FileMonitor_path, bus, this);
     m_fileInfoInterface = new FileInfoInterface(FileInfo_service, FileInfo_path, bus, this);
     m_desktopDaemonInterface = new DesktopDaemonInterface(DesktopDaemon_service, DesktopDaemon_path, bus, this);
     m_fileOperationsInterface = new FileOperationsInterface(FileMonitor_service, FileOperations_path, bus, this);
@@ -31,9 +31,8 @@ void DBusController::init(){
     requestDesktopItems();
     requestIconByUrl(ComputerUrl, 48);
     requestIconByUrl(TrashUrl, 48);
-    monitorDesktop();
 
-//    watchDesktop();
+    m_fileMonitor = new FileMonitor(this);
     initConnect();
 }
 
@@ -66,56 +65,16 @@ void DBusController::initConnect(){
             this, SLOT(requestCreatingAppGroup(QStringList)));
     connect(signalManager, SIGNAL(requestMergeIntoAppGroup(QStringList,QString)),
             this, SLOT(mergeIntoAppGroup(QStringList,QString)));
+
+    connect(m_fileMonitor, SIGNAL(fileCreated(QString)), this, SLOT(handleFileCreated(QString)));
+    connect(m_fileMonitor, SIGNAL(fileDeleted(QString)), this, SLOT(handleFileDeleted(QString)));
+    connect(m_fileMonitor, SIGNAL(fileMovedIn(QString)), this, SLOT(handleFileMovedIn(QString)));
+    connect(m_fileMonitor, SIGNAL(fileMovedOut(QString)), this, SLOT(handleFileMovedOut(QString)));
+    connect(m_fileMonitor, SIGNAL(fileRenamed(QString,QString)), this, SLOT(handleFileRenamed(QString,QString)));
 }
 
 DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
     return m_desktopDaemonInterface;
-}
-
-void DBusController::monitorDesktop(){
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_monitorManagerInterface->Monitor(desktopLocation, G_FILE_MONITOR_SEND_MOVED);
-    reply.waitForFinished();
-    if (!reply.isError()){
-        QString service = reply.argumentAt(0).toString();
-        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        m_desktopMonitorInterface = new FileMonitorInstanceInterface(service, path, QDBusConnection::sessionBus(), this);
-        m_desktopMonitorInterface->SetRateLimit(100);
-        connect(m_desktopMonitorInterface, SIGNAL(Changed(QString,QString,uint)), this, SLOT(desktopFileChanged(QString,QString,uint)));
-
-    }else{
-        LOG_ERROR() << reply.error().message();
-    }
-}
-
-
-void DBusController::watchDesktop(){
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_monitorManagerInterface->Watch(desktopLocation);
-    reply.waitForFinished();
-    if (!reply.isError()){
-        QString service = reply.argumentAt(0).toString();
-        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        m_watchInstanceInterface = new WatcherInstanceInterface(service, path, QDBusConnection::sessionBus(), this);
-        connect(m_watchInstanceInterface, SIGNAL(Changed(QString,uint)), this, SLOT(watchFileChanged(QString,uint)));
-    }else{
-        LOG_ERROR() << reply.error().message();
-    }
-}
-
-void DBusController::monitorAppGroup(QString group_url){
-    if (!m_appGroupMonitorInterfacePointers.contains(group_url)){
-        QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_monitorManagerInterface->Monitor(group_url, G_FILE_MONITOR_SEND_MOVED);
-        reply.waitForFinished();
-        if (!reply.isError()){
-            QString service = reply.argumentAt(0).toString();
-            QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-            FileMonitorInstanceInterfacePointer interface = FileMonitorInstanceInterfacePointer::create(service, path, QDBusConnection::sessionBus(), this);
-            interface->setProperty("group_url", group_url);
-            m_appGroupMonitorInterfacePointers.insert(group_url, interface);
-            connect(interface.data(), SIGNAL(Changed(QString,QString,uint)), this, SLOT(appGroupFileChanged(QString,QString,uint)));
-        }else{
-            LOG_ERROR() << reply.error().message();
-        }
-    }
 }
 
 void DBusController::requestDesktopItems(){
@@ -129,7 +88,6 @@ void DBusController::requestDesktopItems(){
         foreach (QString url, desktopItems.keys()) {
             if (isAppGroup(decodeUrl(url))){
                 getAppGroupItemsByUrl(url);
-                monitorAppGroup(url);
             }
         }
 
@@ -163,14 +121,13 @@ FileInfoInterface* DBusController::getFileInfoInterface(){
 
 void DBusController::getAppGroupItemsByUrl(QString group_url){
     QString _group_url = group_url;
-    QString group_dir = decodeUrl(_group_url.replace("file://", ""));
+    QString group_dir = decodeUrl(_group_url.replace(FilePrefix, ""));
     QDir groupDir(group_dir);
     QFileInfoList fileInfoList  = groupDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
     if (groupDir.exists()){
         if (fileInfoList.count() == 0){
             bool flag = groupDir.removeRecursively();
-            LOG_INFO() << decodeUrl(group_url) << "delete" << flag;
-            unMonitorDirByUrl(group_url);
+            LOG_INFO() << decodeUrl(group_url) << "delete removeRecursively" << flag;
         }else if (fileInfoList.count() == 1){
             LOG_INFO() << fileInfoList.at(0).filePath() << "only one .desktop file in app group";
             QFile f(fileInfoList.at(0).filePath());
@@ -178,15 +135,15 @@ void DBusController::getAppGroupItemsByUrl(QString group_url){
             f.rename(newFileName);
             QDir(fileInfoList.at(0).absoluteDir()).removeRecursively();
             emit signalManager->appGounpDetailClosed();
-            unMonitorDirByUrl(group_url);
         }else{
-
+             LOG_INFO() << "update app group icon==============1";
             QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetAppGroupItems(group_url);
             reply.waitForFinished();
             if (!reply.isError()){
                 DesktopItemInfoMap desktopItemInfos = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
 
                 if (desktopItemInfos.count() > 1){
+                    LOG_INFO() << "update app group icon==============2" << desktopItemInfos.keys();
                     emit signalManager->appGounpItemsChanged(group_url, desktopItemInfos);
                     m_appGroups.insert(group_url, desktopItemInfos);
                 }else{
@@ -196,6 +153,8 @@ void DBusController::getAppGroupItemsByUrl(QString group_url){
                 LOG_ERROR() << reply.error().message();
             }
         }
+    }else{
+        LOG_ERROR() << "App Group Dir isn't exists" << groupDir;
     }
 }
 
@@ -239,11 +198,11 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
         emit signalManager->itemCreated(desktopItemInfo);
+        LOG_INFO() << "asyncCreateDesktopItemByUrlFinished" << "11111111111";
         updateDesktopItemInfoMap(desktopItemInfo);
 
         if (isAppGroup(desktopItemInfo.URI)){
             getAppGroupItemsByUrl(desktopItemInfo.URI);
-            monitorAppGroup(desktopItemInfo.URI);
         }
 
     } else {
@@ -253,97 +212,79 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
 }
 
 
-void DBusController::watchFileChanged(QString url, uint event){
-    LOG_INFO() << url << event << "watchFile";
-}
-
-
-void DBusController::desktopFileChanged(const QString &url, const QString &in1, uint event){
-    LOG_INFO() << url << in1 << "desktop file changed!!!!!!!!!!";
-    switch (event) {
-    case G_FILE_MONITOR_EVENT_CHANGED:
-        LOG_INFO() << "file content changed";
-        break;
-    case G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
-        LOG_INFO() << "file event changed over";
-        break;
-    case G_FILE_MONITOR_EVENT_DELETED:
-        LOG_INFO() << "file deleted";
-        removeDesktopItemInfoByUrl(url);
-        emit signalManager->itemDeleted(url);
-
-        if (isAppGroup(url)){
-            getAppGroupItemsByUrl(url);
-            emit signalManager->appGounpDetailClosed();
-        }
-        break;
-    case G_FILE_MONITOR_EVENT_CREATED:
-        asyncCreateDesktopItemByUrl(url);
-        LOG_INFO() << "file created";
-        break;
-    case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
-        LOG_INFO() << "file attribute changed";
-        break;
-    case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
-        LOG_INFO() << "file pre unmount";
-        break;
-    case G_FILE_MONITOR_EVENT_UNMOUNTED:
-        LOG_INFO() << "file event unmounted";
-        break;
-    case G_FILE_MONITOR_EVENT_MOVED:
-        LOG_INFO() << "file event moved" << in1 << "========";
-        if (in1.length() == 0){
-            m_itemShoudBeMoved = url;
-            emit signalManager->itemShoudBeMoved(url);
-            asyncRenameDesktopItemByUrl(in1);
-        }else{
-            removeDesktopItemInfoByUrl(url);
-            emit signalManager->itemDeleted(url);
-        }
-        break;
-    default:
-        break;
-    }
-}
-
-void DBusController::appGroupFileChanged(const QString &url, const QString &in1, uint event){
-    QString group_url = sender()->property("group_url").toString();
-    switch (event) {
-    case G_FILE_MONITOR_EVENT_CHANGED:
-        LOG_INFO() << "app group file content changed";
-        break;
-    case G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
-        LOG_INFO() << "app group file event changed over";
-        break;
-    case G_FILE_MONITOR_EVENT_DELETED:
-        LOG_INFO() << "app group file deleted";
-        getAppGroupItemsByUrl(group_url);
-        break;
-    case G_FILE_MONITOR_EVENT_CREATED:
-        LOG_INFO() << "app group file created";
-        if(isApp(url)){
-            getAppGroupItemsByUrl(group_url);
+void DBusController::handleFileCreated(const QString &path){
+    LOG_INFO() << "handleFileCreated" << path;
+    QFileInfo f(path);
+    if (isDesktop(f.path())){
+        LOG_INFO() << "create file in desktop" << path;
+        asyncCreateDesktopItemByUrl(path);
+    }else{
+        if(isApp(path)){
+            LOG_INFO() << "create file in app group" << path;
+            getAppGroupItemsByUrl(f.path());
         }else{
             LOG_INFO() << "*******" << "created invalid file(not .desktop file)"<< "*********";
         }
-        break;
-    case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
-        LOG_INFO() << "app group file attribute changed";
-        break;
-    case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
-        LOG_INFO() << "app group file pre unmount";
-        break;
-    case G_FILE_MONITOR_EVENT_UNMOUNTED:
-        LOG_INFO() << "app group file event unmounted";
-        break;
-    case G_FILE_MONITOR_EVENT_MOVED:
-        if (QUrl(decodeUrl(QFileInfo(in1).path())).path() == desktopLocation){
-            asyncCreateDesktopItemByUrl(in1); /*if app group has only one desktop file, move item to desktop and delete app group*/
+    }
+}
+
+void DBusController::handleFileDeleted(const QString &path){
+    LOG_INFO() << "handleFileDeleted" << path;
+    QFileInfo f(path);
+    if (isDesktop(f.path())){
+        LOG_INFO() << "delete desktop file:" << path;
+        removeDesktopItemInfoByUrl(path);
+        emit signalManager->itemDeleted(path);
+        if (isAppGroup(path)){
+            getAppGroupItemsByUrl(path);
+            emit signalManager->appGounpDetailClosed();
         }
-        getAppGroupItemsByUrl(group_url);
-        break;
-    default:
-        break;
+    }else if (isAppGroup(path)){
+        removeDesktopItemInfoByUrl(path);
+        emit signalManager->itemDeleted(path);
+        LOG_INFO() << "delete desktop app group folder:" << path;
+        getAppGroupItemsByUrl(f.path());
+    }
+}
+
+
+void DBusController::handleFileMovedIn(const QString &path){
+    LOG_INFO() << "handleFileMovedIn";
+    QFileInfo f(path);
+    if (isDesktop(f.path())){
+        LOG_INFO() << "move file in desktop" << path;
+        asyncCreateDesktopItemByUrl(path);
+    }else if (isAppGroup(f.path())){
+        LOG_INFO() << "move file in App Group" << path;
+       getAppGroupItemsByUrl(f.path());
+   }
+}
+
+
+void DBusController::handleFileMovedOut(const QString &path){
+    LOG_INFO() << "handleFileMovedOut";
+    QFileInfo f(path);
+    if (isDesktop(f.path())){
+        LOG_INFO() << "move file out desktop" << path;
+        removeDesktopItemInfoByUrl(path);
+        emit signalManager->itemDeleted(path);
+    }else if (isAppGroup(f.path())){
+         LOG_INFO() << "move file out App Group" << path;
+        getAppGroupItemsByUrl(f.path());
+    }
+}
+
+
+void DBusController::handleFileRenamed(const QString &oldPath, const QString &newPath){
+    QFileInfo oldFileInfo(oldPath);
+    QFileInfo newFileInfo(newPath);
+    if (isDesktop(oldFileInfo.path()) && isDesktop(newFileInfo.path())){
+        LOG_INFO() << "desktop file renamed";
+        m_itemShoudBeMoved = oldPath;
+        emit signalManager->itemShoudBeMoved(oldPath);
+        asyncRenameDesktopItemByUrl(newPath);
+    }else if (isAppGroup(oldFileInfo.path()) && isAppGroup(newFileInfo.path())){
+        LOG_INFO() << "renamed file move in app group";
     }
 }
 
@@ -520,31 +461,6 @@ void DBusController::mergeIntoAppGroup(QStringList urls, QString group_url){
         LOG_ERROR() << reply.error().message();
     }
 }
-
-void DBusController::unMonitorDirByID(uint id){
-    LOG_INFO() << "unMonitorDirByID:" << id;
-    QDBusPendingReply<> reply = m_monitorManagerInterface->Unmonitor(id);
-    reply.waitForFinished();
-    if (!reply.isError()){
-
-    }else{
-        LOG_ERROR() << reply.error().message();
-    }
-}
-
-void DBusController::unMonitorDirByUrl(QString group_url){
-    if (m_appGroupMonitorInterfacePointers.contains(group_url)){
-       unMonitorDirByID(m_appGroupMonitorInterfacePointers.value(group_url)->iD());
-    }
-}
-
-void DBusController::unMonitor(){
-    unMonitorDirByID(m_desktopMonitorInterface->iD());
-    foreach (FileMonitorInstanceInterfacePointer p, m_appGroupMonitorInterfacePointers.values()) {
-        unMonitorDirByID(p->iD());
-    }
-}
-
 
 void DBusController::pasteFiles(QString action, QStringList files, QString destination){
     if (action == "cut"){

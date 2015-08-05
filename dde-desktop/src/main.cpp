@@ -9,7 +9,9 @@ int main(int argc, char *argv[])
 {
     debug_daemon_off();
     QApplication a(argc, argv);
-    Singleton<DesktopApp>::instance()->show();
+
+    DesktopApp desktop;
+    desktop.show();
     dbusController->init();
     debug_log_console_on();
     LOG_INFO() << "Starting the application";
