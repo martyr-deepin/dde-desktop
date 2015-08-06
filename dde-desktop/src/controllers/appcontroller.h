@@ -8,6 +8,7 @@ class MenuController;
 class TrashJobController;
 class MoveJobController;
 class CopyJobController;
+class RenameJobController;
 
 class AppController : public QObject
 {
@@ -29,6 +30,7 @@ private:
     TrashJobController* m_trashJobController;
     MoveJobController* m_moveJobController;
     CopyJobController* m_copyJobController;
+    RenameJobController* m_renameJobController;
 };
 
 #endif // APPCONTROLLER_H

@@ -86,7 +86,7 @@ void DesktopFrame::changeGridBySizeType(SizeType type){
     m_gridItems = gridManager->getItemsByType(type);
     m_mapItems = gridManager->getMapItems();
     m_sizeType = type;
-    m_desktopItemManager->changeSizeByGrid();
+    m_desktopItemManager->changeSizeByGrid(type);
     update();
 }
 
@@ -172,10 +172,21 @@ void DesktopFrame::checkAllDesktopItems(){
 }
 
 void DesktopFrame::unCheckCheckedItems(){
+    QList<DesktopItemPointer> pItems;
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-        pItem->setChecked(false);
+        if (pItem->isEditing()){
+            pItem->setChecked(true);
+            pItem->showSimpWrapName();
+            emit signalManager->renameFinished();
+            pItem->setEdited(false);
+            pItems.append(pItem);
+
+        }else{
+            pItem->setChecked(false);
+        }
     }
     m_checkedDesktopItems.clear();
+    m_checkedDesktopItems.append(pItems);
 }
 
 

@@ -8,6 +8,7 @@
 #include <QtWidgets>
 
 class DesktopFrame;
+class GrowingTextEdit;
 
 class DesktopBox : public TranslucentFrame
 {
@@ -21,6 +22,8 @@ public:
 signals:
 
 public slots:
+    void handleRename();
+    void renameFinished();
 
 protected:
     void keyPressEvent(QKeyEvent* event);
@@ -28,6 +31,7 @@ protected:
     void closeEvent(QCloseEvent* event);
 
 private:
+    GrowingTextEdit* m_textEdit;
     int m_currentPage = 0;
     DesktopFrame* m_desktopFrame;
 };

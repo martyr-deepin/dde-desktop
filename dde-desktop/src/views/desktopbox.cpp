@@ -1,14 +1,52 @@
 #include "desktopbox.h"
 #include "desktopframe.h"
 #include "global.h"
+#include "widgets/growingtextedit.h"
+#include "widgets/elidelabel.h"
+#include "desktopitem.h"
+
 
 DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 {
     m_desktopFrame = new DesktopFrame(this);
+
+    m_textEdit = new GrowingTextEdit(this);
+    m_textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_textEdit->setObjectName("Rename");
+    m_textEdit->hide();
+
+    connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
 }
 
 DesktopFrame* DesktopBox::getDesktopFrame(){
     return m_desktopFrame;
+}
+
+void DesktopBox::handleRename(){
+    if (!m_desktopFrame->getLastPressedCheckedDesktopItem().isNull() &&\
+            m_desktopFrame->getCheckedDesktopItems().length() == 1){
+        DesktopItemPointer pItem = m_desktopFrame->getLastPressedCheckedDesktopItem();
+        pItem->setEdited(true);
+        if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
+            return;
+        }
+        pItem->showFullWrapName();
+        m_textEdit->setFocus();
+        m_textEdit->move(pItem->mapToGlobal(pItem->getNameLabel()->pos()));
+        m_textEdit->resize(pItem->getNameLabel()->size());
+        m_textEdit->setFont(pItem->getNameLabel()->font());
+        m_textEdit->setText(pItem->getNameLabel()->fullText());
+        m_textEdit->show();
+        pItem->setChecked(false);
+        LOG_INFO() << "=================";
+    }
+}
+
+void DesktopBox::renameFinished(){
+    LOG_INFO() <<  m_textEdit->toPlainText();
+    DesktopItemPointer pItem = m_desktopFrame->getLastPressedCheckedDesktopItem();
+    emit signalManager->renameJobCreated(pItem->getUrl(), m_textEdit->toPlainText());
+    m_textEdit->hide();
 }
 
 void DesktopBox::keyPressEvent(QKeyEvent *event){
@@ -88,6 +126,8 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         if (m_isGridOn){
             emit signalManager->keyShiftDownPressed();
         }
+    }if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_F2){
+        handleRename();
     }
 
     TranslucentFrame::keyPressEvent(event);
@@ -100,6 +140,7 @@ void DesktopBox::keyReleaseEvent(QKeyEvent *event){
     }
     TranslucentFrame::keyReleaseEvent(event);
 }
+
 
 void DesktopBox::closeEvent(QCloseEvent *event){
     LOG_INFO() << "closeEvent";

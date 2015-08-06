@@ -99,6 +99,10 @@ signals:
     void itemShoudBeMoved(QString url);
     void itemMoved(DesktopItemInfo& fileInfo);
 
+    /*F2 renamed*/
+    void renameStarted();
+    void renameFinished();
+    void renameJobCreated(QString url, QString newName);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

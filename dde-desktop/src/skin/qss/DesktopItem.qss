@@ -21,6 +21,10 @@ QLabel#Name {
 */    color:white
 }
 
+QTextEdit#Rename{
+    border:1px solid black;
+}
+
 QFrame#Border{
     background-color: transparent;
     border: 2px solid rgba(0, 0, 0, 0);

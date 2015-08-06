@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include "desktopfwd.h"
+#include "desktopenums.h"
 #include "dbusinterface/dbustype.h"
 
 class AppGroupBox;
@@ -49,7 +50,7 @@ public slots:
     void cutItems(QStringList urls);
     void cancelCutedItems(QStringList urls);
     void saveItems();
-    void changeSizeByGrid();
+    void changeSizeByGrid(SizeType type);
     void sortedByFlags(QDir::SortFlag flag);
     void sortedByKey(QString key);
     void resort();

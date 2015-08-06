@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
 {
     debug_daemon_off();
     QApplication a(argc, argv);
-
     DesktopApp desktop;
     desktop.show();
     dbusController->init();

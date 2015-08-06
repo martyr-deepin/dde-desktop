@@ -104,6 +104,8 @@ void DesktopItemManager::initConnect(){
             this, SLOT(cutItems(QStringList)));
     connect(signalManager, SIGNAL(cancelFilesCuted(QStringList)),
             this, SLOT(cancelCutedItems(QStringList)));
+
+//    connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(changeSizeByGrid(SizeType)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
@@ -313,7 +315,7 @@ void DesktopItemManager::deleteItem(QString url){
     }
     QString _url = decodeUrl(url);
 
-    LOG_INFO() << "deleteItem" << _url << m_pItems.contains(_url);
+    LOG_INFO() << "deleteItem" << _url << m_pItems.contains(_url) << m_pItems.value(_url);
     if (m_pItems.contains(_url)){
         DesktopItemPointer pItem = m_pItems.value(_url);
 
@@ -346,13 +348,14 @@ void DesktopItemManager::saveItems(){
 }
 
 
-void DesktopItemManager::changeSizeByGrid(){
+void DesktopItemManager::changeSizeByGrid(SizeType type){
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
     int row = gridManager->getRowCount();
 
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         pItem->resize(width, height);
+        pItem->updateSizeByGridSize(type);
         int i = m_list_pItems.indexOf(pItem) / row;
         int j = m_list_pItems.indexOf(pItem) % row;
         GridItemPointer pGridItem = gridManager->getItems().at(i)->at(j);

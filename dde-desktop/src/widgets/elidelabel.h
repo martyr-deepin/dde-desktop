@@ -16,15 +16,22 @@ public:
     void setTextLimitShrink(const QString &text, int width);
     void setTextLimitExpand(const QString &text);
     QString fullText() const;
+    QString getFullWrapText();
+    QString getSimpWrapText();
+    QStringList getTexts();
 
+public:
+    void elideText();
+    void showSimpleWrapText();
+    void showFullWrapText();
 protected:
     void resizeEvent(QResizeEvent * event);
 
 private:
-    void elideText();
-
-private:
     QString m_fullText;
+    QString m_fullWrapText;
+    QString m_simpleWrapText;
+    QStringList m_texts;
 };
 
 #endif // ELIDELABEL_H

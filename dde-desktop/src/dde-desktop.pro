@@ -77,7 +77,9 @@ SOURCES += main.cpp \
     app/xcb_misc.cpp \
     app/daemon.cpp \
     filemonitor/filemonitorwoker.cpp \
-    filemonitor/filemonitor.cpp
+    filemonitor/filemonitor.cpp \
+    dbusinterface/renamejob_interface.cpp \
+    controllers/renamejobcontroller.cpp
 
 
 HEADERS  += \
@@ -126,7 +128,9 @@ HEADERS  += \
     app/daemon.h \
     app/define.h \
     filemonitor/filemonitorwoker.h \
-    filemonitor/filemonitor.h
+    filemonitor/filemonitor.h \
+    dbusinterface/renamejob_interface.h \
+    controllers/renamejobcontroller.h
 
 
 RESOURCES += \

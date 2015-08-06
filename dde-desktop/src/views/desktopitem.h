@@ -25,6 +25,7 @@ public:
     explicit DesktopItem(QString url, QString icon, QString name, QWidget *parent = 0);
     ~DesktopItem();
 
+    void init();
     void initUI();
     void initConnect();
 
@@ -36,9 +37,11 @@ public:
     bool isChecked();
     bool isHover();
     bool isCuted();
+    bool isEditing();
     QString gridKey();
     DesktopItemInfo& getDesktopItemInfo();
     QMap<QString, DesktopItemInfo> getAppGroupItems();
+    ElidedLabel* getNameLabel();
 
 signals:
     void desktopIconChanged(QString icon);
@@ -58,12 +61,17 @@ public slots:
     void setHover(bool hover);
     void setCuted();
     void cancelCuted();
+    void setEdited(bool flag);
     void setHoverObjectName(QString name);
     void setUrl(QString url);
     void setDesktopItemInfo(DesktopItemInfo desktopItemInfo);
     void setAppGroupItems(QMap<QString, DesktopItemInfo> items);
     void changeToBeAppGroupIcon();
     void changeBacktoNormal();
+    void showFullWrapName();
+    void showSimpWrapName();
+//    void handleTextChanged();
+//    void handleNameChanged();
 
 protected:
     void mousePressEvent(QMouseEvent* event);
@@ -71,18 +79,20 @@ protected:
     void moveEvent(QMoveEvent* event);
     void enterEvent(QEvent* event);
     void leaveEvent(QEvent* event);
+//    void keyPressEvent(QKeyEvent* event);
 
 private:
-    QLabel* iconLabel;
-    bool m_isCuted = false;
-    ElidedLabel* nameLabel;
+    QLabel* m_iconLabel;
+    ElidedLabel* m_nameLabel;
     QPixmap m_desktopIcon;
     QString m_desktopName = "";
     QString m_url;
+    bool m_isCuted = false;
     bool m_isInAppGroup = false;
     bool m_mouseRightRelease = false;
     bool m_checked = false;
     bool m_hover = false;
+    bool m_isEditing = false;
     QString m_hoverObjectName = "Hover";
     DesktopItemInfo m_desktopItemInfo;
     QMap<QString, DesktopItemInfo> m_appGounpItems;
