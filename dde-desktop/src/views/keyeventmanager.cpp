@@ -35,7 +35,7 @@ void KeyEventManager::onKeyUpPressed(){
             DesktopItemPointer nextCheckedDesktopItem =
                     static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
-                static_cast<DesktopFrame*>(parent())->unCheckAllItems();
+                static_cast<DesktopFrame*>(parent())->unCheckCheckedItems();
                 emit lastCheckedDesktopItem->setChecked(false);
                 emit nextCheckedDesktopItem->setChecked(true);
                 emit static_cast<DesktopFrame*>(parent())->lastCheckedDesktopItemChanged(nextCheckedDesktopItem);
@@ -59,7 +59,7 @@ void KeyEventManager::onKeyDownPressed(){
             DesktopItemPointer nextCheckedDesktopItem =
                     static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
-                static_cast<DesktopFrame*>(parent())->unCheckAllItems();
+                static_cast<DesktopFrame*>(parent())->unCheckCheckedItems();
                 emit lastCheckedDesktopItem->setChecked(false);
                 emit nextCheckedDesktopItem->setChecked(true);
                 emit static_cast<DesktopFrame*>(parent())->lastCheckedDesktopItemChanged(nextCheckedDesktopItem);
@@ -82,7 +82,7 @@ void KeyEventManager::onKeyLeftPressed(){
             DesktopItemPointer nextCheckedDesktopItem =
                     static_cast<DesktopFrame*>(parent())->getDesktopItemManager()->getItemByPos(pos);
             if(!nextCheckedDesktopItem.isNull()){
-                static_cast<DesktopFrame*>(parent())->unCheckAllItems();
+                static_cast<DesktopFrame*>(parent())->unCheckCheckedItems();
                 emit lastCheckedDesktopItem->setChecked(false);
                 emit nextCheckedDesktopItem->setChecked(true);
                 emit static_cast<DesktopFrame*>(parent())->lastCheckedDesktopItemChanged(nextCheckedDesktopItem);

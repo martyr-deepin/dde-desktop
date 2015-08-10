@@ -23,11 +23,12 @@ DesktopFrame* DesktopBox::getDesktopFrame(){
 }
 
 void DesktopBox::handleRename(){
-    if (!m_desktopFrame->getLastPressedCheckedDesktopItem().isNull() &&\
+    if (!m_desktopFrame->getLastCheckedDesktopItem().isNull() &&\
             m_desktopFrame->getCheckedDesktopItems().length() == 1){
         LOG_INFO() << "handleRename start";
-        DesktopItemPointer pItem = m_desktopFrame->getLastPressedCheckedDesktopItem();
+        DesktopItemPointer pItem = m_desktopFrame->getLastCheckedDesktopItem();
         if (!pItem.isNull()){
+            LOG_INFO() << "handleRename start" << pItem->getUrl();
             pItem->setEdited(true);
             if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
                 return;
@@ -127,6 +128,7 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
             emit signalManager->keyShiftDownPressed();
         }
     }if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_F2){
+        LOG_INFO() << "==========";
         handleRename();
     }
 

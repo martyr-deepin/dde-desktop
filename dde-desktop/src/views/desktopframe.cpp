@@ -123,7 +123,7 @@ void DesktopFrame::checkDesktopItemsByRect(QRect rect){
         if (rect.intersects(pItem->geometry())){
             if (!pItem->isChecked()){
                 pItem->setChecked(true);
-                m_lastCheckedDesktopItem = pItem;
+                emit lastCheckedDesktopItemChanged(pItem);
                 addCheckedDesktopItem(pItem);
             }
         }else{
