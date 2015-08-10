@@ -1,5 +1,6 @@
 #include "desktopitem.h"
 #include "widgets/elidelabel.h"
+#include "widgets/growingelidetextedit.h"
 #include "widgets/util.h"
 #include "global.h"
 #include "controllers/dbuscontroller.h"
@@ -54,40 +55,50 @@ void DesktopItem::initUI(){
     m_iconLabel = new QLabel;
     m_iconLabel->setObjectName("Icon");
     m_iconLabel->setScaledContents(true);
-    m_nameLabel = new ElidedLabel;
-    m_nameLabel->setObjectName("Name");
 
+    m_textedit = new GrowingElideTextEdit(this);
+    m_textedit->setObjectName("GrowingElideTextEdit");
     m_iconLabel->setFixedSize(48, 48);
-    m_nameLabel->setFixedWidth(100 - 4);
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_iconLabel, 0, Qt::AlignHCenter);
-    mainLayout->addWidget(m_nameLabel, 0, Qt::AlignHCenter);
-    mainLayout->setSpacing(0);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->addWidget(m_textedit, 0, Qt::AlignHCenter);
+    mainLayout->setSpacing(5);
+    mainLayout->setContentsMargins(0, 5, 0, 5);
     setLayout(mainLayout);
 }
 
 void DesktopItem::initConnect(){
-
+    connect(m_textedit, SIGNAL(heightChanged(int)), this, SLOT(updateHeight(int)));
+    connect(m_textedit, SIGNAL(renamedFinished()), signalManager, SIGNAL(renameFinished()));
 }
 
-ElidedLabel* DesktopItem::getNameLabel(){
-    return m_nameLabel;
+void DesktopItem::updateHeight(int textHeight){
+    m_textedit->setFixedHeight(textHeight);
+    int h = m_iconLabel->height() + textHeight;
+    if (h > 100){
+        setFixedHeight(h + 15);
+    }else{
+        setFixedHeight(100);
+    }
+}
+
+GrowingElideTextEdit* DesktopItem::getTextEdit(){
+    return m_textedit;
 }
 
 void DesktopItem::updateSizeByGridSize(SizeType type){
     switch (type) {
     case SizeType::Small:
         m_iconLabel->setFixedSize(16, 16);
-        m_nameLabel->setFixedWidth(width() - 4);
+
         break;
     case SizeType::Middle:
         m_iconLabel->setFixedSize(48, 48);
-        m_nameLabel->setFixedWidth(width() - 4);
+
         break;
     case SizeType::Large:
         m_iconLabel->setFixedSize(96, 96);
-        m_nameLabel->setFixedWidth(width() - 4);
+
         break;
     default:
         break;
@@ -112,7 +123,12 @@ QString DesktopItem::getDesktopName(){
 void DesktopItem::setDesktopName(QString name){
     m_desktopName = name;
     emit desktopNameChanged(name);
-    m_nameLabel->setFullText(name);
+    m_textedit->setFullText(name);
+    if (m_textedit->getTexts().length()  == 1){
+        m_textedit->setFixedHeight(26);
+    }else{
+        m_textedit->setFixedHeight(44);
+    }
 }
 
 QPixmap DesktopItem::getDesktopIcon(){
@@ -223,12 +239,13 @@ bool DesktopItem::isChecked(){
     return m_checked;
 }
 
-void DesktopItem::setChecked(bool checked){
+void DesktopItem::setChecked(bool checked, bool isExpanded){
      if (m_checked != checked){
         if (checked){
             setObjectName(QString("Checked"));
-            showFullWrapName();
-            setFocus();
+            if (isShowSimpleMode() && isExpanded){
+                 showFullWrapName();
+            }
         }else{
             setObjectName(QString("Normal"));
             if (!isEditing()){
@@ -240,6 +257,11 @@ void DesktopItem::setChecked(bool checked){
         setStyleSheet(qApp->styleSheet());
         emit checkedChanged(checked);
      }
+}
+
+
+void DesktopItem::setAllChecked(bool flag){
+    m_isAllChecked = flag;
 }
 
 
@@ -268,20 +290,16 @@ QString DesktopItem::gridKey(){
     return QString("%1-%2").arg(QString::number(pos().x()), QString::number(pos()   .y()));
 }
 
+bool DesktopItem::isShowSimpleMode(){
+    return m_textedit->isSimpleWrapMode();
+}
+
 void DesktopItem::showFullWrapName(){
-    if (m_nameLabel->getTexts().length() > 2){
-        int oldHeight = m_nameLabel->height();
-        m_nameLabel->showFullWrapText();
-        setFixedHeight(height() + m_nameLabel->height() - oldHeight);
-    }
+    m_textedit->showFullWrapText();
 }
 
 void DesktopItem::showSimpWrapName(){
-    if (m_nameLabel->getTexts().length() > 2){
-        int oldHeight = m_nameLabel->height();
-        m_nameLabel->showSimpleWrapText();
-        setFixedHeight(height() - oldHeight + m_nameLabel->height());
-    }
+    m_textedit->showSimpleElideText();
 }
 
 void DesktopItem::mousePressEvent(QMouseEvent *event){
@@ -297,7 +315,12 @@ void DesktopItem::mouseReleaseEvent(QMouseEvent *event){
     if (event->button() == Qt::RightButton){
         m_mouseRightRelease = true;
     }
-    emit signalManager->renameFinished();
+
+    if (m_isEditing){
+        showSimpWrapName();
+        emit signalManager->renameFinished();
+    }
+
     QFrame::mouseReleaseEvent(event);
 }
 
@@ -323,23 +346,6 @@ void DesktopItem::leaveEvent(QEvent *event){
     QFrame::leaveEvent(event);
 }
 
-//void DesktopItem::keyPressEvent(QKeyEvent *event){
-//    if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_F2){
-//        if (m_url == ComputerUrl || m_url == TrashUrl){
-//            return;
-//        }
-//        showFullWrapName();
-//        m_textEdit->setFocus();
-//        m_textEdit->move(mapToGlobal(m_nameLabel->pos()));
-//        m_textEdit->resize(m_nameLabel->size());
-//        m_textEdit->setFont(m_nameLabel->font());
-//        m_textEdit->setText(m_nameLabel->getFullWrapText());
-//        m_textEdit->raise();
-//        m_textEdit->show();
-//        setChecked(false);
-//    }
-//}
-
 bool DesktopItem::isEditing(){
     return m_isEditing;
 }
@@ -348,13 +354,6 @@ void DesktopItem::setEdited(bool flag){
     m_isEditing = flag;
 }
 
-//void DesktopItem::handleNameChanged(){
-//    if (m_textEdit->toPlainText() == m_nameLabel->getFullWrapText()){
-//        m_textEdit->hide();
-//    }else{
-//        m_textEdit->hide();
-//    }
-//}
 
 DesktopItem::~DesktopItem()
 {

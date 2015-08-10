@@ -376,6 +376,13 @@ DesktopItemPointer DesktopItemManager::getItemByPos(QPoint pos){
     return DesktopItemPointer();
 }
 
+DesktopItemPointer DesktopItemManager::getItemByUrl(QString url){
+    if (m_pItems.contains(url)){
+        return m_pItems.value(url);
+    }
+    return DesktopItemPointer();
+}
+
 QList<DesktopItemPointer> DesktopItemManager::getItems(){
     return m_list_pItems;
 }

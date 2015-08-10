@@ -16,9 +16,9 @@ QLabel#Icon {
 }
 QLabel#Name {
     background-color: rgba(0, 0, 0, 0);
-/*    border: 2px solid rgba(255, 255, 255, 255);
+    border: 1px solid rgba(255, 255, 255, 255);
     border-radius: 4px;
-*/    color:white
+    color:white
 }
 
 QTextEdit#Rename{

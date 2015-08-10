@@ -10,6 +10,7 @@
 
 
 class ElidedLabel;
+class GrowingElideTextEdit;
 
 class DesktopItem : public QFrame
 {
@@ -38,10 +39,11 @@ public:
     bool isHover();
     bool isCuted();
     bool isEditing();
+    bool isShowSimpleMode();
     QString gridKey();
     DesktopItemInfo& getDesktopItemInfo();
     QMap<QString, DesktopItemInfo> getAppGroupItems();
-    ElidedLabel* getNameLabel();
+    GrowingElideTextEdit* getTextEdit();
 
 signals:
     void desktopIconChanged(QString icon);
@@ -57,11 +59,12 @@ public slots:
     void setDesktopIcon(QPixmap& icon);
     void updateAppGroupIcon();
     void setDesktopName(QString name);
-    void setChecked(bool checked);
+    void setChecked(bool checked, bool isExpanded=false);
     void setHover(bool hover);
     void setCuted();
     void cancelCuted();
     void setEdited(bool flag);
+    void setAllChecked(bool flag);
     void setHoverObjectName(QString name);
     void setUrl(QString url);
     void setDesktopItemInfo(DesktopItemInfo desktopItemInfo);
@@ -70,8 +73,7 @@ public slots:
     void changeBacktoNormal();
     void showFullWrapName();
     void showSimpWrapName();
-//    void handleTextChanged();
-//    void handleNameChanged();
+    void updateHeight(int textHeight);
 
 protected:
     void mousePressEvent(QMouseEvent* event);
@@ -79,11 +81,10 @@ protected:
     void moveEvent(QMoveEvent* event);
     void enterEvent(QEvent* event);
     void leaveEvent(QEvent* event);
-//    void keyPressEvent(QKeyEvent* event);
 
 private:
     QLabel* m_iconLabel;
-    ElidedLabel* m_nameLabel;
+    GrowingElideTextEdit* m_textedit;
     QPixmap m_desktopIcon;
     QString m_desktopName = "";
     QString m_url;
@@ -93,6 +94,7 @@ private:
     bool m_checked = false;
     bool m_hover = false;
     bool m_isEditing = false;
+    bool m_isAllChecked = false;
     QString m_hoverObjectName = "Hover";
     DesktopItemInfo m_desktopItemInfo;
     QMap<QString, DesktopItemInfo> m_appGounpItems;

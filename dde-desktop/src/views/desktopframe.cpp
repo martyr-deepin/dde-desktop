@@ -1,5 +1,6 @@
 #include "views/desktopframe.h"
 #include "widgets/util.h"
+#include "widgets/growingelidetextedit.h"
 #include "desktopitemmanager.h"
 #include "keyeventmanager.h"
 #include "dragdropeventmanager.h"
@@ -121,7 +122,9 @@ void DesktopFrame::checkDesktopItemsByRect(QRect rect){
     foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         if (rect.intersects(pItem->geometry())){
             if (!pItem->isChecked()){
-                emit lastCheckedDesktopItemChanged(pItem);
+                pItem->setChecked(true);
+                m_lastCheckedDesktopItem = pItem;
+                addCheckedDesktopItem(pItem);
             }
         }else{
             if (pItem->isChecked()){
@@ -176,11 +179,9 @@ void DesktopFrame::unCheckCheckedItems(){
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
         if (pItem->isEditing()){
             pItem->setChecked(true);
-            pItem->showSimpWrapName();
-            emit signalManager->renameFinished();
+            pItem->getTextEdit()->tryRenamed();
             pItem->setEdited(false);
             pItems.append(pItem);
-
         }else{
             pItem->setChecked(false);
         }
@@ -204,7 +205,6 @@ void DesktopFrame::unCheckItem(DesktopItemPointer &pItem){
 void DesktopFrame::checkRaiseItem(DesktopItemPointer& pItem){
     if (!pItem.isNull()){
         emit lastCheckedDesktopItemChanged(pItem);
-        setLastPressedCheckedDesktopItem(pItem);
         m_multiCheckedByMouse = false;
         pItem->raise();
 
@@ -221,7 +221,7 @@ DesktopItemPointer DesktopFrame::getLastPressedCheckedDesktopItem(){
 
 void DesktopFrame::setLastPressedCheckedDesktopItem(DesktopItemPointer pItem){
     m_lastPressedCheckDesktopItem = pItem;
-    lastCheckedDesktopItemChanged(pItem);
+    emit lastCheckedDesktopItemChanged(pItem);
 }
 
 DesktopItemPointer DesktopFrame::getLastCheckedDesktopItem(){
@@ -229,9 +229,11 @@ DesktopItemPointer DesktopFrame::getLastCheckedDesktopItem(){
 }
 
 void DesktopFrame::setLastCheckedDesktopItem(DesktopItemPointer pItem){
-    pItem->setChecked(true);
-    m_lastCheckedDesktopItem = pItem;
-    addCheckedDesktopItem(pItem);
+    if (!pItem.isNull()){
+        pItem->setChecked(true, true);
+        m_lastCheckedDesktopItem = pItem;
+        addCheckedDesktopItem(pItem);
+    }
 }
 
 void DesktopFrame::addCheckedDesktopItem(DesktopItemPointer pItem){
@@ -468,7 +470,15 @@ QPixmap DesktopFrame::getCheckedPixmap(){
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
         DesktopItem* item = new DesktopItem(pItem->getDesktopIcon(),
                                        pItem->getDesktopName(), F);
+        bool flag = pItem->isShowSimpleMode();
+        pItem->showSimpWrapName();
         item->resize(pItem->size());
+        item->showSimpWrapName();
+        if (flag){
+            pItem->showSimpWrapName();
+        }else{
+            pItem->showFullWrapName();
+        }
         item->move(mapToGlobal(pItem->pos()));
         item->setObjectName("DragChecked");
     }

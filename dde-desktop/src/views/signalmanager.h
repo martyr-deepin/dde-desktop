@@ -103,6 +103,9 @@ signals:
     void renameStarted();
     void renameFinished();
     void renameJobCreated(QString url, QString newName);
+
+    /*context menu renamed*/
+    void requestRenamed(QString url);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

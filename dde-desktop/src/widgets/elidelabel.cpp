@@ -23,6 +23,11 @@ void ElidedLabel::setFullText(const QString &text)
     m_fullText = text;
     this->setText(text);
     elideText();
+    if (m_simpleWrapMode){
+        showSimpleWrapText();
+    }else{
+        showFullWrapText();
+    }
 }
 
 void ElidedLabel::setTextLimitShrink(const QString &text, int width)
@@ -56,6 +61,7 @@ QStringList ElidedLabel::getTexts(){
 
 void ElidedLabel::resizeEvent(QResizeEvent *event)
 {
+    qDebug() << "resizeEvent";
     elideText();
     QLabel::resizeEvent(event);
 }
@@ -98,25 +104,38 @@ void ElidedLabel::elideText()
     m_texts = texts;
     m_fullWrapText = fullWrapText;
     m_simpleWrapText = simpleWrapText;
-    if (fm.width(this->text()) != this->width()) {
-        showSimpleWrapText();
-        if (text() != m_fullText) {
-            this->setToolTip(m_fullText.left(1024));
-        } else {
-            this->setToolTip("");
-        }
-    }
+}
+
+bool ElidedLabel::isSimpleWrapMode(){
+    return m_simpleWrapMode;
+}
+
+void ElidedLabel::setSimpleMode(bool flag){
+    m_simpleWrapMode = flag;
 }
 
 void ElidedLabel::showSimpleWrapText(){
+    qDebug() << "elidedlabel showSimpleWrapText start ";
+    m_simpleWrapMode = true;
     QFontMetrics fm = fontMetrics();
-    setFixedHeight(fm.lineSpacing() * 2);
+    if (m_texts.length() == 1){
+        setFixedHeight(fm.lineSpacing());
+    }else{
+        setFixedHeight(fm.lineSpacing() * 2);
+        qDebug() << fm.lineSpacing() * 2<< "=========" << height();
+    }
+    qDebug() << "showSimpleWrapText" << height();
     setText(m_simpleWrapText);
+
+    qDebug() << "elidedlabel showSimpleWrapText end ";
 }
 
 
 void ElidedLabel::showFullWrapText(){
+    qDebug() << "elidedlabel showFullWrapText start ";
+    m_simpleWrapMode = false;
     QFontMetrics fm = fontMetrics();
-    setFixedHeight(fm.lineSpacing() * m_texts.length());
+    setFixedHeight(fm.lineSpacing() * m_texts.length() + m_texts.length() * 2);
     setText(m_fullWrapText);
+    qDebug() << "elidedlabel showFullWrapText end";
 }

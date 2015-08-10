@@ -21,6 +21,7 @@ public:
     void initConnect();
 
     DesktopItemPointer getItemByPos(QPoint pos);
+    DesktopItemPointer getItemByUrl(QString url);
     DesktopItemPointer getShoudBeMovedItem();
     DesktopItemPointer createItem(const DesktopItemInfo& fileInfo);
     QList<DesktopItemPointer> getItems();

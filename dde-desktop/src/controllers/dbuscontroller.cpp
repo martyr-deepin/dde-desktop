@@ -55,6 +55,7 @@ void DBusController::initConnect(){
 
     connect(m_desktopDaemonInterface, SIGNAL(ItemCut(QStringList)),
             signalManager, SIGNAL(filesCuted(QStringList)));
+    connect(m_desktopDaemonInterface, SIGNAL(RequestRename(QString)), signalManager, SIGNAL(requestRenamed(QString)));
     connect(m_desktopDaemonInterface, SIGNAL(RequestDelete(QStringList)),
             signalManager, SIGNAL(trashingAboutToExcute(QStringList)));
 

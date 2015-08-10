@@ -3,19 +3,19 @@
 #include "global.h"
 #include "widgets/growingtextedit.h"
 #include "widgets/elidelabel.h"
+#include "widgets/growingelidetextedit.h"
+#include "desktopitemmanager.h"
 #include "desktopitem.h"
+
 
 
 DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 {
     m_desktopFrame = new DesktopFrame(this);
 
-    m_textEdit = new GrowingTextEdit(this);
-    m_textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_textEdit->setObjectName("Rename");
-    m_textEdit->hide();
 
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
+    connect(signalManager, SIGNAL(requestRenamed(QString)), this, SLOT(handleRename()));
 }
 
 DesktopFrame* DesktopBox::getDesktopFrame(){
@@ -25,29 +25,29 @@ DesktopFrame* DesktopBox::getDesktopFrame(){
 void DesktopBox::handleRename(){
     if (!m_desktopFrame->getLastPressedCheckedDesktopItem().isNull() &&\
             m_desktopFrame->getCheckedDesktopItems().length() == 1){
+        LOG_INFO() << "handleRename start";
         DesktopItemPointer pItem = m_desktopFrame->getLastPressedCheckedDesktopItem();
-        pItem->setEdited(true);
-        if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
-            return;
+        if (!pItem.isNull()){
+            pItem->setEdited(true);
+            if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
+                return;
+            }
+            pItem->setChecked(false);
+            pItem->getTextEdit()->showEditing();
+            pItem->getTextEdit()->setFocus();
         }
-        pItem->showFullWrapName();
-        m_textEdit->setFocus();
-        m_textEdit->move(pItem->mapToGlobal(pItem->getNameLabel()->pos()));
-        m_textEdit->resize(pItem->getNameLabel()->size());
-        m_textEdit->setFont(pItem->getNameLabel()->font());
-        m_textEdit->setText(pItem->getNameLabel()->fullText());
-        m_textEdit->show();
-        pItem->setChecked(false);
-        LOG_INFO() << "=================";
     }
 }
 
 void DesktopBox::renameFinished(){
-    LOG_INFO() <<  m_textEdit->toPlainText();
     DesktopItemPointer pItem = m_desktopFrame->getLastPressedCheckedDesktopItem();
-    emit signalManager->renameJobCreated(pItem->getUrl(), m_textEdit->toPlainText());
-    m_textEdit->hide();
+    if (!pItem.isNull()){
+        emit signalManager->renameJobCreated(pItem->getUrl(), pItem->getTextEdit()->toPlainText());
+        pItem->getTextEdit()->showText();
+    }
 }
+
+
 
 void DesktopBox::keyPressEvent(QKeyEvent *event){
     bool m_isGridOn = m_desktopFrame->isGridOn();
@@ -56,7 +56,7 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         m_desktopFrame->setCtrlPressed(!m_desktopFrame->isCtrlPressed());
     }
 
-    if (event->key() == Qt::Key_Escape){
+    if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Escape){
         close();
     }else if (event->key() == Qt::Key_PageUp){
         if (m_currentPage > 0){
