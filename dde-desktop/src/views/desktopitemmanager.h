@@ -23,11 +23,11 @@ public:
     DesktopItemPointer getItemByPos(QPoint pos);
     DesktopItemPointer getItemByUrl(QString url);
     DesktopItemPointer getShoudBeMovedItem();
-    DesktopItemPointer createItem(const DesktopItemInfo& fileInfo);
+    DesktopItemPointer createItem(DesktopItemInfo& fileInfo);
     QList<DesktopItemPointer> getItems();
 
     QDir::SortFlag getSortFlag();
-    QString getDesktopDisplayName(const DesktopItemInfo& desktopItemInfo);
+    QString getDesktopDisplayName(DesktopItemInfo& desktopItemInfo);
     static QString decodeUrl(QString url);
 
     bool isAppGroupBoxShowed();
@@ -39,8 +39,8 @@ signals:
 
 public slots:
     void addItems(DesktopItemInfoMap& desktopInfoMap);
-    void addItem(const DesktopItemInfo& fileInfo, int index);
-    void addItem(const DesktopItemInfo& fileInfo);
+    void addItem(DesktopItemInfo fileInfo, int index);
+    void addItem(DesktopItemInfo fileInfo);
     void updateDesktopItemIcon(QString url, QString iconUl, uint size);
     void updateAppGounpItem(QString group_url, DesktopItemInfoMap& appItems);
     void showAppGroupDetail(DesktopItemPointer& pItem, QPoint pos);

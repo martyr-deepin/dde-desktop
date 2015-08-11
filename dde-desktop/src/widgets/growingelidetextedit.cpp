@@ -7,6 +7,7 @@ GrowingElideTextEdit::GrowingElideTextEdit(QWidget *parent) : QTextEdit(parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     showReadOnly();
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
 }
 
 void GrowingElideTextEdit::setText(const QString &text){
@@ -45,7 +46,8 @@ void GrowingElideTextEdit::elideText(){
     QString fullWrapText;
     QString simpleWrapText;
     QFontMetrics fm = this->fontMetrics();
-    int fmWidth = width() - 20;
+    int fmWidth = width() - 10;
+    qDebug() << fmWidth << "============";
     int i = 0, start = 0;
 
     if (fm.width(m_fullText) < fmWidth){
@@ -80,7 +82,12 @@ void GrowingElideTextEdit::elideText(){
 }
 
 void GrowingElideTextEdit::showSimpleElideText(){
-    setText(m_simpleWrapText);
+    qDebug() << "showSimpleElideText" << m_simpleWrapText << m_texts << m_texts.length();
+    if (m_texts.length() <= 2){
+        setText(m_fullText);
+    }else if (m_texts.length() > 2){
+        setText(m_simpleWrapText);
+    }
     m_simpleWrapMode = true;
 }
 
@@ -101,7 +108,7 @@ void GrowingElideTextEdit::tryRenamed(){
         showText();
     }else{
         if (toPlainText() != m_fullText){
-            emit renamedFinished();
+            emit renameFinished();
         }else{
             showText();
         }
@@ -130,9 +137,11 @@ void GrowingElideTextEdit::showReadOnly(){
 void GrowingElideTextEdit::showEditing(){
     setReadOnly(false);
     setTextInteractionFlags(Qt::TextEditorInteraction);
+    selectAll();
     setStyleSheet("\
                   background-color:rgba(0, 0, 0, 0);\
                   border:1px solid black;\
+                  color: white;\
               ");
 }
 
@@ -143,6 +152,7 @@ void GrowingElideTextEdit::keyPressEvent(QKeyEvent *event){
         return;
     }else if ((event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Return)
               || (event->modifiers() == Qt::KeypadModifier && event->key() == Qt::Key_Enter)){
+        qDebug() << "Key_Return" << "Key_Enter";
         tryRenamed();
         return;
     }

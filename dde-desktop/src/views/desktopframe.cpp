@@ -328,6 +328,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
             if (m_ctrlPressed){
                 if (!pTopDesktopItem->isChecked()){
                     checkRaiseItem(pTopDesktopItem);
+                    setLastPressedCheckedDesktopItem(pTopDesktopItem);
                 }else{
                     unCheckItem(pTopDesktopItem);
                 }
@@ -335,6 +336,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
                 if (!pTopDesktopItem->isChecked()){
                     unCheckCheckedItems();
                     checkRaiseItem(pTopDesktopItem);
+                    setLastPressedCheckedDesktopItem(pTopDesktopItem);
                 }
             }
             m_isDragStarted = true;
@@ -350,6 +352,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
             }else{
                 unCheckCheckedItems();
                 checkRaiseItem(pTopDesktopItem);
+                setLastPressedCheckedDesktopItem(pTopDesktopItem);
                 emit signalManager->contextMenuShowed(pTopDesktopItem, mapToGlobal(m_pressedEventPos));
                 if(isAppGroup(pTopDesktopItem->getUrl())){
                     emit signalManager->appGounpDetailClosed();

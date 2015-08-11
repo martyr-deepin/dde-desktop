@@ -117,7 +117,7 @@ QString DesktopItemManager::decodeUrl(QString url){
     return QUrl(url).toString();
 }
 
-QString DesktopItemManager::getDesktopDisplayName(const DesktopItemInfo &desktopItemInfo){
+QString DesktopItemManager::getDesktopDisplayName(DesktopItemInfo &desktopItemInfo){
     QString desktopDisplayName;
     QString displayName = desktopItemInfo.DisplayName;
     if (displayName.startsWith(RichDirPrefix)){
@@ -167,7 +167,7 @@ void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMa
     }
 }
 
-DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInfo){
+DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
 
@@ -185,7 +185,7 @@ DesktopItemPointer DesktopItemManager::createItem(const DesktopItemInfo &fileInf
     return pDesktopItem;
 }
 
-void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo, int index){
+void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
 
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     LOG_INFO() << "add Item" << pDesktopItem->getUrl();
@@ -216,7 +216,7 @@ void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo, int index){
 }
 
 
-void DesktopItemManager::addItem(const DesktopItemInfo& fileInfo){
+void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     LOG_INFO() << "add Item" << pDesktopItem->getUrl();
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);

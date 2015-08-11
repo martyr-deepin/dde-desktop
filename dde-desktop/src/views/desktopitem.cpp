@@ -56,29 +56,32 @@ void DesktopItem::initUI(){
     m_iconLabel->setObjectName("Icon");
     m_iconLabel->setScaledContents(true);
 
-    m_textedit = new GrowingElideTextEdit(this);
+    m_textedit = new GrowingElideTextEdit();
     m_textedit->setObjectName("GrowingElideTextEdit");
+    m_textedit->setFixedWidth(100 - 10);
     m_iconLabel->setFixedSize(48, 48);
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_iconLabel, 0, Qt::AlignHCenter);
     mainLayout->addWidget(m_textedit, 0, Qt::AlignHCenter);
-    mainLayout->setSpacing(5);
-    mainLayout->setContentsMargins(0, 5, 0, 5);
+    mainLayout->setSpacing(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     setLayout(mainLayout);
 }
 
 void DesktopItem::initConnect(){
     connect(m_textedit, SIGNAL(heightChanged(int)), this, SLOT(updateHeight(int)));
-    connect(m_textedit, SIGNAL(renamedFinished()), signalManager, SIGNAL(renameFinished()));
+    connect(m_textedit, SIGNAL(renameFinished()), signalManager, SIGNAL(renameFinished()));
 }
 
 void DesktopItem::updateHeight(int textHeight){
-    m_textedit->setFixedHeight(textHeight);
+
     int h = m_iconLabel->height() + textHeight;
     if (h > 100){
         setFixedHeight(h + 15);
+        m_textedit->setFixedHeight(textHeight);
     }else{
         setFixedHeight(100);
+        m_textedit->setFixedHeight(textHeight);
     }
 }
 
@@ -90,28 +93,27 @@ void DesktopItem::updateSizeByGridSize(SizeType type){
     switch (type) {
     case SizeType::Small:
         m_iconLabel->setFixedSize(16, 16);
-
+        m_textedit->setFixedWidth(72 - 10);
         break;
     case SizeType::Middle:
         m_iconLabel->setFixedSize(48, 48);
-
+        m_textedit->setFixedWidth(100 - 10);
         break;
     case SizeType::Large:
         m_iconLabel->setFixedSize(96, 96);
-
+        m_textedit->setFixedWidth(140 - 10);
         break;
     default:
         break;
     }
 }
 
-
 DesktopItemInfo& DesktopItem::getDesktopItemInfo(){
     return m_desktopItemInfo;
 }
 
 
-void DesktopItem::setDesktopItemInfo(DesktopItemInfo desktopItemInfo){
+void DesktopItem::setDesktopItemInfo(DesktopItemInfo& desktopItemInfo){
     m_desktopItemInfo = desktopItemInfo;
 }
 
@@ -240,6 +242,7 @@ bool DesktopItem::isChecked(){
 }
 
 void DesktopItem::setChecked(bool checked, bool isExpanded){
+    qDebug() << "======setChecked===========/////////";
      if (m_checked != checked){
         if (checked){
             setObjectName(QString("Checked"));
@@ -249,6 +252,7 @@ void DesktopItem::setChecked(bool checked, bool isExpanded){
         }else{
             setObjectName(QString("Normal"));
             if (!isEditing()){
+                qDebug() << "=================/////////";
                 showSimpWrapName();
             }
         }
@@ -318,7 +322,7 @@ void DesktopItem::mouseReleaseEvent(QMouseEvent *event){
 
     if (m_isEditing){
         showSimpWrapName();
-        emit signalManager->renameFinished();
+        m_textedit->tryRenamed();
     }
 
     QFrame::mouseReleaseEvent(event);

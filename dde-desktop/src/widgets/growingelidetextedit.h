@@ -21,7 +21,7 @@ public:
 
 signals:
     void heightChanged(int height);
-    void renamedFinished();
+    void renameFinished();
 
 public slots:
     void showSimpleElideText();

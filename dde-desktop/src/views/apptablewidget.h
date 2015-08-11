@@ -18,7 +18,7 @@ public:
     ~AppTableWidget();
 
     void init();
-    void startDrag(DesktopItemInfo& info);
+    void startDrag(const DesktopItemInfo& info);
     QPixmap getDragPixmap();
     QList<int> getColumnRowByCount(int count);
 

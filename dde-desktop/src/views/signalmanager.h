@@ -93,7 +93,7 @@ signals:
     void appGounpDetailClosed();
 
     /*monitor desktop folder*/
-    void itemCreated(const DesktopItemInfo& fileInfo);
+    void itemCreated(DesktopItemInfo fileInfo);
     void itemDeleted(QString url);
 
     void itemShoudBeMoved(QString url);

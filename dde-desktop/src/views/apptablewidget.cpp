@@ -31,6 +31,7 @@ void AppTableWidget::init(){
 
     connect(this, SIGNAL(cellClicked(int,int)), this, SLOT(handleCellClicked(int,int)));
     connect(this, SIGNAL(cellPressed(int,int)), this, SLOT(handleCellPressed(int,int)));
+    LOG_INFO() << "App Group init finished";
 }
 
 void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
@@ -60,6 +61,7 @@ void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
             QString icon = fileInfo.Icon;
 
             DesktopItem*  pDesktopItem = new DesktopItem(defaut_icon, displayName, this);
+            pDesktopItem->setFocusPolicy(Qt::NoFocus);
             pDesktopItem->setUrl(url);
             pDesktopItem->setDesktopIcon(icon);
             pDesktopItem->setDesktopItemInfo(fileInfo);
@@ -74,6 +76,7 @@ void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
 }
 
 void AppTableWidget::handleCellClicked(int row, int column){
+    qDebug() << row << column << "handleCellClicked";
     DesktopItem* pItem = dynamic_cast<DesktopItem*>(cellWidget(row, column));
     if (pItem == NULL){
         LOG_INFO() << "handleCellClicked no desktop item";
@@ -84,13 +87,16 @@ void AppTableWidget::handleCellClicked(int row, int column){
 
 
 void AppTableWidget::handleCellPressed(int row, int column){
-    DesktopItem* pItem = dynamic_cast<DesktopItem*>(cellWidget(row, column));
+    qDebug() << row << column << "handleCellPressed";
+    DesktopItem* pItem = reinterpret_cast<DesktopItem*>(cellWidget(row, column));
     if (pItem == NULL){
         LOG_INFO() << "handleCellPressed no desktop item";
     }else{
+        LOG_INFO() << "handleCellPressed drag desktop item" << pItem;
         m_dragItem = pItem;
     }
 }
+
 
 QList<int> AppTableWidget::getColumnRowByCount(int count){
 //    int width = gridManager->getItemWidth();
@@ -122,10 +128,11 @@ QList<int> AppTableWidget::getColumnRowByCount(int count){
     return ret;
 }
 
-void AppTableWidget::startDrag(DesktopItemInfo &info){
+void AppTableWidget::startDrag(const DesktopItemInfo &info){
 //    QByteArray itemData;
 //    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
     QList<QUrl> urls;
+    qDebug() << info.URI;
     urls.append(QUrl(info.URI));
     QMimeData* mimeData = new QMimeData;
 //    mimeData->setData("application/x-dnditemdata", itemData);
@@ -165,6 +172,7 @@ QPixmap AppTableWidget::getDragPixmap(){
 
 void AppTableWidget::mouseMoveEvent(QMouseEvent *event){
     if (m_dragItem){
+        qDebug() << "mouseMoveEvent getDesktopItemInfo" << m_dragItem->getDesktopItemInfo().BaseName;
         startDrag(m_dragItem->getDesktopItemInfo());
     }
 }

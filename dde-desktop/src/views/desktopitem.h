@@ -67,7 +67,7 @@ public slots:
     void setAllChecked(bool flag);
     void setHoverObjectName(QString name);
     void setUrl(QString url);
-    void setDesktopItemInfo(DesktopItemInfo desktopItemInfo);
+    void setDesktopItemInfo(DesktopItemInfo& desktopItemInfo);
     void setAppGroupItems(QMap<QString, DesktopItemInfo> items);
     void changeToBeAppGroupIcon();
     void changeBacktoNormal();

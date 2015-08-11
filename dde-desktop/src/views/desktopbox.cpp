@@ -29,21 +29,30 @@ void DesktopBox::handleRename(){
         DesktopItemPointer pItem = m_desktopFrame->getLastCheckedDesktopItem();
         if (!pItem.isNull()){
             LOG_INFO() << "handleRename start" << pItem->getUrl();
-            pItem->setEdited(true);
-            if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
-                return;
+            if (!pItem->isShowSimpleMode()){
+                pItem->setEdited(true);
+                if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
+                    return;
+                }
+                pItem->setChecked(false);
+                pItem->getTextEdit()->showEditing();
+                pItem->getTextEdit()->setFocus();
             }
-            pItem->setChecked(false);
-            pItem->getTextEdit()->showEditing();
-            pItem->getTextEdit()->setFocus();
         }
     }
 }
 
 void DesktopBox::renameFinished(){
-    DesktopItemPointer pItem = m_desktopFrame->getLastPressedCheckedDesktopItem();
+    DesktopItemPointer pItem = m_desktopFrame->getLastCheckedDesktopItem();
     if (!pItem.isNull()){
-        emit signalManager->renameJobCreated(pItem->getUrl(), pItem->getTextEdit()->toPlainText());
+        QString  fileName;
+        LOG_INFO() << isAppGroup(pItem->getUrl()) << QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
+        if (isAppGroup(pItem->getUrl())){
+            fileName = QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
+        }else{
+            fileName = pItem->getTextEdit()->toPlainText();
+        }
+        emit signalManager->renameJobCreated(pItem->getUrl(), fileName);
         pItem->getTextEdit()->showText();
     }
 }
