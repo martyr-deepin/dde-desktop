@@ -3,7 +3,7 @@
 #include "app/define.h"
 #include "views/global.h"
 #include <QApplication>
-
+#include "dialogs/cleartrashdialog.h"
 
 int main(int argc, char *argv[])
 {

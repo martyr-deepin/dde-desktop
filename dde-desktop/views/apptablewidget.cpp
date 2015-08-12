@@ -27,7 +27,7 @@ void AppTableWidget::init(){
 //    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setShowGrid(false);
 
-    setStyleSheet(getQssFromFile(":/skin/qss/Tablewidget.qss"));
+    setStyleSheet(getQssFromFile(":/qss/skin/qss/Tablewidget.qss"));
 
     connect(this, SIGNAL(cellClicked(int,int)), this, SLOT(handleCellClicked(int,int)));
     connect(this, SIGNAL(cellPressed(int,int)), this, SLOT(handleCellPressed(int,int)));

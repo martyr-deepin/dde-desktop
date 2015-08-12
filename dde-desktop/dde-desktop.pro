@@ -13,23 +13,8 @@ TEMPLATE = app
 
 include(./widgets/widgets.pri)
 include(./cutelogger/cutelogger.pri)
+include(./dialogs/dialogs.pri)
 
-# build dir
-BuildDir =build_$$QT_VERSION
-
-CONFIG(debug, debug|release) {
-    DESTDIR = $$PWD/$$BuildDir/debug
-    OBJECTS_DIR = $$PWD/$$BuildDir/debug/.obj
-    MOC_DIR = $$PWD/$$BuildDir/debug/.moc
-    RCC_DIR = $$PWD/$$BuildDir/debug/.rcc
-    UI_DIR = $$PWD/$$BuildDir/debug/.ui
-} else {
-    DESTDIR = $$PWD/$$BuildDir/release
-    OBJECTS_DIR = $$PWD/$$BuildDir/release/.obj
-    MOC_DIR = $$PWD/$$BuildDir/release/.moc
-    RCC_DIR = $$PWD/$$BuildDir/release/.rcc
-    UI_DIR = $$PWD/$$BuildDir/release/.ui
-}
 
 PKGCONFIG += x11 xcb xcb-ewmh
 CONFIG += c++11 link_pkgconfig
@@ -134,7 +119,8 @@ HEADERS  += \
 
 
 RESOURCES += \
-    skin.qrc
+    skin.qrc \
+    dialogs.qrc
 
 DISTFILES += \
     dbusinterface/filelistjob.xml \
@@ -143,5 +129,5 @@ DISTFILES += \
     dbusinterface/fileoperationsflags.xml \
     dbusinterface/trashmonitor.xml \
 
-target.path = /home/djf/bin
+target.path = /usr/bin/
 INSTALLS += target

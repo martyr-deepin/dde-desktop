@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/qss">
+        <file>skin/qss/DesktopItem.qss</file>
+        <file>skin/qss/Tablewidget.qss</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>skin/images/default.png</file>
+    </qresource>
+</RCC>

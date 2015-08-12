@@ -14,7 +14,7 @@
 #define dbusController Singleton<DBusController>::instance()
 #define desktopLocation QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0)
 
-#define defaut_icon ":/skin/images/QFramer.png"
+#define defaut_icon ":/images/skin/images/default.png"
 #define RichDirPrefix ".deepin_rich_dir_"
 #define AppSuffix ".desktop"
 

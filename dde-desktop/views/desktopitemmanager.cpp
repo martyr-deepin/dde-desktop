@@ -258,6 +258,7 @@ int DesktopItemManager::getPageCount(){
 void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uint size){
     if (m_pItems.contains(url)){
         m_pItems.value(url)->setDesktopIcon(iconUrl);
+        LOG_INFO() << iconUrl;
     }
 }
 
