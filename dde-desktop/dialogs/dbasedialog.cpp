@@ -171,7 +171,12 @@ void DBaseDialog::handleButtonsClicked(int id){
     if (m_buttonKeys.length() > index){
         QString key = m_buttonKeys.at(index);
         emit buttonClicked(key);
+        emit buttonClicked(index);
     }
+}
+
+void DBaseDialog::handleKeyEnter(){
+
 }
 
 void DBaseDialog::closeEvent(QCloseEvent *event){
@@ -179,6 +184,7 @@ void DBaseDialog::closeEvent(QCloseEvent *event){
     DMovabelDialog::closeEvent(event);
     emit closed();
 }
+
 
 DBaseDialog::~DBaseDialog()
 {

@@ -59,8 +59,12 @@ void DBusController::initConnect(){
     connect(m_desktopDaemonInterface, SIGNAL(RequestDelete(QStringList)),
             signalManager, SIGNAL(trashingAboutToExcute(QStringList)));
 
+    connect(m_desktopDaemonInterface, SIGNAL(RequestEmptyTrash()), signalManager, SIGNAL(requestEmptyTrash()));
+
     connect(m_clipboardInterface, SIGNAL(RequestPaste(QString,QStringList,QString)),
             this, SLOT(pasteFiles(QString,QStringList,QString)));
+
+
 
     connect(signalManager, SIGNAL(requestCreatingAppGroup(QStringList)),
             this, SLOT(requestCreatingAppGroup(QStringList)));

@@ -32,6 +32,7 @@ signals:
     void aboutToClose();
     void closed();
     void buttonClicked(QString key);
+    void buttonClicked(int index);
 
 public slots:
    void setIcon(const QString& icon);
@@ -40,6 +41,7 @@ public slots:
    void setButtons(const QStringList& buttons);
    void setButtonTexts(const QStringList& buttonTexts);
    void handleButtonsClicked(int id);
+   void handleKeyEnter();
    QVBoxLayout* getMessageLayout();
 
 protected:

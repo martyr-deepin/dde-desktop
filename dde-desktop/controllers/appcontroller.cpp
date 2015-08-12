@@ -4,6 +4,7 @@
 #include "trashjobcontroller.h"
 #include "copyjobcontroller.h"
 #include "renamejobcontroller.h"
+#include "deletejobcontroller.h"
 #include "dbuscontroller.h"
 #include "views/global.h"
 
@@ -15,6 +16,7 @@ AppController::AppController(QObject *parent) : QObject(parent)
     m_moveJobController = new MoveJobController;
     m_copyJobController = new CopyJobController;
     m_renameJobController = new RenameJobController;
+    m_deleteJobController = new DeleteJobController;
 }
 
 void AppController::initConnect(){

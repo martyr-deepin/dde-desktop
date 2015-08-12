@@ -56,6 +56,7 @@ void CopyJobController::disconnectCopyJobSignal(){
 
 void CopyJobController::copyJobExcuteFinished(QString file){
     disconnectCopyJobSignal();
+    m_copyJobInterface->deleteLater();
     m_copyJobInterface = NULL;
     LOG_INFO() << "copy job finished" << file;
 }
@@ -68,6 +69,7 @@ void CopyJobController::copyJobAbort(){
 
 void CopyJobController::copyJobAbortFinished(){
     disconnectCopyJobSignal();
+    m_copyJobInterface->deleteLater();
     m_copyJobInterface = NULL;
     LOG_INFO() << "copy job aborted";
 }

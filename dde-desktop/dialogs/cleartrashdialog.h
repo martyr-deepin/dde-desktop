@@ -13,6 +13,7 @@ public:
 signals:
 
 public slots:
+    void handleKeyEnter();
 };
 
 #endif // CLEARTRASHDIALOG_H

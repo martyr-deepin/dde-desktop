@@ -29,6 +29,7 @@ void RenameJobController::rename(QString url, QString newName){
 
 void RenameJobController::renameJobExcuteFinished(QString name){
     disconnect(m_renameJobInterface, SIGNAL(Done(QString)), this, SLOT(renameJobExcuteFinished(QString)));
+    m_renameJobInterface->deleteLater();
     m_renameJobInterface = NULL;
     LOG_INFO() << "rename job finished" << name;
 }

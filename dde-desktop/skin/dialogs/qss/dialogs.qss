@@ -24,8 +24,7 @@ QPushButton#ActionButton{
     border-left: none;
     border-bottom: none;
     color: white;
-    padding-bottom: 5px;
-    padding-top: 5px;
+    text-align: center;
 }
 
 QPushButton#ActionButton:hover{

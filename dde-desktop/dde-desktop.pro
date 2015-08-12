@@ -64,7 +64,10 @@ SOURCES += main.cpp \
     filemonitor/filemonitorwoker.cpp \
     filemonitor/filemonitor.cpp \
     dbusinterface/renamejob_interface.cpp \
-    controllers/renamejobcontroller.cpp
+    controllers/renamejobcontroller.cpp \
+    dbusinterface/emptytrashjob_interface.cpp \
+    controllers/deletejobcontroller.cpp \
+    dbusinterface/deletejob_interface.cpp
 
 
 HEADERS  += \
@@ -115,7 +118,10 @@ HEADERS  += \
     filemonitor/filemonitorwoker.h \
     filemonitor/filemonitor.h \
     dbusinterface/renamejob_interface.h \
-    controllers/renamejobcontroller.h
+    controllers/renamejobcontroller.h \
+    dbusinterface/emptytrashjob_interface.h \
+    controllers/deletejobcontroller.h \
+    dbusinterface/deletejob_interface.h
 
 
 RESOURCES += \
@@ -128,6 +134,7 @@ DISTFILES += \
     dbusinterface/fileoperations.xml \
     dbusinterface/fileoperationsflags.xml \
     dbusinterface/trashmonitor.xml \
+    dbusinterface/emptytrashjob.xml
 
 target.path = /usr/bin/
 INSTALLS += target

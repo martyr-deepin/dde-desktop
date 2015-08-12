@@ -2,8 +2,10 @@
 #include "dbusinterface/trashjob_interface.h"
 #include "dbusinterface/trashmonitor_interface.h"
 #include "dbusinterface/fileoperations_interface.h"
+#include "dbusinterface/emptytrashjob_interface.h"
 #include "views/global.h"
 #include "dbuscontroller.h"
+#include "dialogs/cleartrashdialog.h"
 
 TrashJobController::TrashJobController(QObject *parent) : QObject(parent)
 {
@@ -18,6 +20,8 @@ void TrashJobController::initConnect(){
             this, SLOT(trashJobExcute(QStringList)));
     connect(signalManager, SIGNAL(trashingAboutToAborted()),
             this, SLOT(trashJobAbort()));
+
+    connect(signalManager, SIGNAL(requestEmptyTrash()), this, SLOT(confirmDelete()));
 }
 
 void TrashJobController::monitorTrash(){
@@ -41,7 +45,7 @@ void TrashJobController::setTrashEmptyFlag(bool flag){
     m_isTrashEmpty = flag;
 }
 
-void TrashJobController::trashJobExcute(QStringList files){
+void TrashJobController::trashJobExcute(const QStringList &files){
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewTrashJob(files, false, "", "", "");
     reply.waitForFinished();
     if (!reply.isError()){
@@ -77,6 +81,7 @@ void TrashJobController::disconnectTrashSignal(){
 
 void TrashJobController::trashJobExcuteFinished(){
     disconnectTrashSignal();
+    m_trashJobInterface->deleteLater();
     m_trashJobInterface = NULL;
 
     LOG_INFO() << "trash files deleted";
@@ -91,6 +96,7 @@ void TrashJobController::trashJobAbort(){
 
 void TrashJobController::trashJobAbortFinished(){
     disconnectTrashSignal();
+    m_trashJobInterface->deleteLater();
     m_trashJobInterface = NULL;
 }
 
@@ -118,6 +124,63 @@ void TrashJobController::updateTrashIconByCount(uint count){
         }
         m_isTrashEmpty = false;
     }
+}
+
+
+void TrashJobController::confirmDelete(){
+    QDBusPendingReply<uint> reply = m_trashMonitorInterface->ItemCount();
+    reply.waitForFinished();
+    if (!reply.isError()){
+        uint count = reply.argumentAt(0).toUInt();
+        if (count == 0){
+             LOG_ERROR() << "count read error";
+        }else{
+             showDialogByCount(count);
+        }
+    }else{
+        LOG_ERROR() << reply.error().message();
+    }
+}
+
+void TrashJobController::showDialogByCount(int count){
+    QString message = tr("Are you sure to clear %1 items in trash?").arg(QString::number(count));
+    ClearTrashDialog d;
+    d.setMessage(message);
+    connect(&d, SIGNAL(buttonClicked(int)), this, SLOT(handleTrashAction(int)));
+    d.exec();
+}
+
+void TrashJobController::handleTrashAction(int index){
+    switch (index) {
+    case 0:
+        return;
+        break;
+    case 1:
+        createEmptyTrashJob();
+        break;
+    default:
+        break;
+    }
+}
+
+void TrashJobController::createEmptyTrashJob(){
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewEmptyTrashJob(false, "", "", "");
+    reply.waitForFinished();
+    if (!reply.isError()){
+        QString service = reply.argumentAt(0).toString();
+        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
+        m_emptyTrashJobInterface = new EmptyTrashJobInterface(service, path, QDBusConnection::sessionBus(), this);
+        connect(m_emptyTrashJobInterface, SIGNAL(Done()), this, SLOT(emptyTrashJobExcuteFinished()));
+        m_emptyTrashJobInterface->Execute();
+    }else{
+        LOG_ERROR() << reply.error().message();
+    }
+}
+
+void TrashJobController::emptyTrashJobExcuteFinished(){
+    disconnect(m_emptyTrashJobInterface, SIGNAL(Done()), this, SLOT(emptyTrashJobExcuteFinished()));
+    m_trashJobInterface->deleteLater();
+    m_trashJobInterface = NULL;
 }
 
 TrashJobController::~TrashJobController()

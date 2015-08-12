@@ -60,15 +60,23 @@ signals:
     void deletingFileChanged(QString file);
     void processAmountChanged(qlonglong progress, ushort info);
 
+    void requestEmptyTrash();
+
     /*cut files*/
     void filesCuted(QStringList urls);
     void cancelFilesCuted(QStringList urls);
 
     /*paste files*/
-    void moveFilesExcuted(QStringList files, QString destination);
+    void moveFilesExcuted(const QStringList& files, QString destination);
     void moveJobAboutToAbort();
     void movingFileChaned(QString file);
     void movingProcessAmountChanged(qlonglong progress, ushort info);
+
+    /*delete files*/
+    void deleteFilesExcuted(const QStringList& files);
+    void deleteJobAboutToAbort();
+    void deletingFileChaned(QString file);
+    void deletingProcessAmountChanged(qlonglong progress, ushort info);
 
     /*copy files*/
     void copyFilesExcuted(QStringList files, QString destination);

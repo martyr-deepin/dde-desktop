@@ -12,6 +12,11 @@ ClearTrashDialog::ClearTrashDialog(QWidget *parent):
     QStringList buttons;
     buttons << "Cancel" << "Clear";
     initUI(icon, message, tipMessage, buttons, buttons);
+    moveCenter();
+}
+
+void ClearTrashDialog::handleKeyEnter(){
+    handleButtonsClicked(1);
 }
 
 ClearTrashDialog::~ClearTrashDialog()

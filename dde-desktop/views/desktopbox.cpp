@@ -104,6 +104,9 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         emit signalManager->keyCtrlAPressed();
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Delete){
         emit signalManager->trashingAboutToExcute(m_desktopFrame->getCheckedFiles());
+    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Delete){
+        LOG_INFO() << m_desktopFrame->getCheckedFiles() << "shift delete";
+        emit signalManager->deleteFilesExcuted(m_desktopFrame->getCheckedFiles());
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
         if (m_isGridOn){
             emit signalManager->keyUpPressed();

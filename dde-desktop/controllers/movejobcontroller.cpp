@@ -55,6 +55,7 @@ void MoveJobController::disconnectMoveJobSignal(){
 
 void MoveJobController::moveJobExcuteFinished(){
     disconnectMoveJobSignal();
+    m_moveJobInterface->deleteLater();
     m_moveJobInterface = NULL;
     LOG_INFO() << "move job finished";
 }
@@ -67,6 +68,7 @@ void MoveJobController::moveJobAbort(){
 
 void MoveJobController::moveJobAbortFinished(){
     disconnectMoveJobSignal();
+    m_moveJobInterface->deleteLater();
     m_moveJobInterface = NULL;
     LOG_INFO() << "move job aborted";
 }

@@ -15,6 +15,7 @@ public:
 
 public slots:
     void setMovableHeight(int height);
+    void moveCenter();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
