@@ -1,4 +1,8 @@
 #include "confirmdeletedialog.h"
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QButtonGroup>
+#include <QPushButton>
 
 ConfirmDeleteDialog::ConfirmDeleteDialog(QWidget *parent) : DBaseDialog(parent)
 {
@@ -9,6 +13,7 @@ ConfirmDeleteDialog::ConfirmDeleteDialog(QWidget *parent) : DBaseDialog(parent)
     buttons << "Cancel" << "Ok";
     initUI(icon, message, tipMessage, buttons, buttons);
     moveCenter();
+    getButtonsGroup()->button(1)->setFocus();
 }
 
 void ConfirmDeleteDialog::handleKeyEnter(){

@@ -8,8 +8,8 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#ifndef COPYJOB_INTERFACE_H_1437468994
-#define COPYJOB_INTERFACE_H_1437468994
+#ifndef COPYJOB_INTERFACE_H_1439450320
+#define COPYJOB_INTERFACE_H_1439450320
 
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
@@ -52,7 +52,7 @@ Q_SIGNALS: // SIGNALS
     void Aborted();
     void Copying(const QString &in0);
     void Done(const QString &in0);
-    void ProcessedAmount(qulonglong in0, ushort in1);
+    void ProcessedAmount(qlonglong in0, ushort in1);
 };
 
 #endif

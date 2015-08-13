@@ -36,8 +36,8 @@ void MoveJobController::connectMoveJobSignal(){
         connect(m_moveJobInterface, SIGNAL(Done()), this, SLOT(moveJobExcuteFinished()));
         connect(m_moveJobInterface, SIGNAL(Aborted()), this, SLOT(moveJobAbortFinished()));
         connect(m_moveJobInterface, SIGNAL(Moving(QString)), this, SLOT(onMovingFile(QString)));
-        connect(m_moveJobInterface, SIGNAL(ProcessedAmount(qulonglong,ushort)),
-                this, SLOT(onMovingProcessAmount(qulonglong,ushort)));
+        connect(m_moveJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
+                this, SLOT(onMovingProcessAmount(qlonglong,ushort)));
     }
 }
 
@@ -47,8 +47,8 @@ void MoveJobController::disconnectMoveJobSignal(){
         disconnect(m_moveJobInterface, SIGNAL(Done()), this, SLOT(moveJobExcuteFinished()));
         disconnect(m_moveJobInterface, SIGNAL(Aborted()), this, SLOT(moveJobAbortFinished()));
         disconnect(m_moveJobInterface, SIGNAL(Moving(QString)), this, SLOT(onMovingFile(QString)));
-        disconnect(m_moveJobInterface, SIGNAL(ProcessedAmount(qulonglong,ushort)),
-                this, SLOT(onMovingProcessAmount(qulonglong,ushort)));
+        disconnect(m_moveJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
+                this, SLOT(onMovingProcessAmount(qlonglong,ushort)));
     }
 }
 
@@ -76,10 +76,12 @@ void MoveJobController::moveJobAbortFinished(){
 
 void MoveJobController::onMovingFile(QString file){
     emit signalManager->movingFileChaned(file);
+    LOG_INFO() << "onMovingFile" << file;
 }
 
-void MoveJobController::onMovingProcessAmount(qulonglong progress, ushort info){
+void MoveJobController::onMovingProcessAmount(qlonglong progress, ushort info){
     emit signalManager->movingProcessAmountChanged(progress, info);
+    LOG_INFO() << "onMovingProcessAmount" << progress << info;
 }
 
 MoveJobController::~MoveJobController()

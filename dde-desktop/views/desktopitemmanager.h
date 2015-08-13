@@ -38,6 +38,7 @@ public:
 signals:
 
 public slots:
+    void unCheckedItem(QString url);
     void addItems(DesktopItemInfoMap& desktopInfoMap);
     void addItem(DesktopItemInfo fileInfo, int index);
     void addItem(DesktopItemInfo fileInfo);

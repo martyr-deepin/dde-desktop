@@ -71,6 +71,7 @@ void DesktopItemManager::initTrashItem(){
 
 
 void DesktopItemManager::initConnect(){
+    connect(signalManager, SIGNAL(unCheckedItem(QString)), this, SLOT(unCheckedItem(QString)));
     connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(desktoItemIconUpdated(QString,QString,uint)),
             this, SLOT(updateDesktopItemIcon(QString,QString,uint)));
@@ -105,7 +106,6 @@ void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(cancelFilesCuted(QStringList)),
             this, SLOT(cancelCutedItems(QStringList)));
 
-//    connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(changeSizeByGrid(SizeType)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
@@ -115,6 +115,13 @@ void DesktopItemManager::loadDesktopItems(){
 
 QString DesktopItemManager::decodeUrl(QString url){
     return QUrl(url).toString();
+}
+
+void DesktopItemManager::unCheckedItem(QString url){
+    DesktopItemPointer pItem = getItemByUrl(url);
+    if (!pItem.isNull()){
+        pItem->setChecked(false);
+    }
 }
 
 QString DesktopItemManager::getDesktopDisplayName(DesktopItemInfo &desktopItemInfo){

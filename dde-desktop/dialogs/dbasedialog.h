@@ -27,6 +27,7 @@ public:
     QString getTipMessage();
     QStringList getButtons();
     QStringList getButtonTexts();
+    QButtonGroup* getButtonsGroup();
 
 signals:
     void aboutToClose();
@@ -46,6 +47,7 @@ public slots:
 
 protected:
    void closeEvent(QCloseEvent* event);
+   void resizeEvent(QResizeEvent* event);
 
 private:
     QString m_icon;
@@ -55,13 +57,14 @@ private:
     QStringList m_buttonTexts;
     int m_defaultWidth = 380;
     int m_defaultHeight = 120;
-    QPushButton* m_closeButton;
+
     QLabel* m_iconLabel;
     QLabel* m_messageLabel;
     QLabel* m_tipMessageLabel;
     QButtonGroup* m_buttonGroup;
 
     QVBoxLayout* m_messageLayout;
+    int m_messageLabelMaxWidth;
 };
 
 #endif // DBASEDIALOG_H

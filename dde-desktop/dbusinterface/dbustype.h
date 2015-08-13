@@ -14,6 +14,7 @@ public:
     QString URI;
     QString MIME;
     QString Icon;
+    QString thumbnail;
     qlonglong Size;
     ushort FileType;
     bool IsBackup;

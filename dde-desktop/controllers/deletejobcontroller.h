@@ -27,7 +27,7 @@ public slots:
     void deleteJobAbort();
     void deleteJobAbortFinished();
     void onDeletingFile(QString file);
-    void onDeletingProcessAmount(qulonglong progress, ushort info);
+    void onDeletingProcessAmount(qlonglong progress, ushort info);
 
     void confimDelete(const QStringList& files);
     void handleDeleteAction(int index);

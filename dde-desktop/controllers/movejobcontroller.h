@@ -26,7 +26,7 @@ public slots:
     void moveJobAbort();
     void moveJobAbortFinished();
     void onMovingFile(QString file);
-    void onMovingProcessAmount(qulonglong progress, ushort info);
+    void onMovingProcessAmount(qlonglong progress, ushort info);
 
 private:
     MoveJobInterface* m_moveJobInterface = NULL;

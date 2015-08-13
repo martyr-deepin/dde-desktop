@@ -25,6 +25,9 @@ signals:
     void gridSizeTypeChanged(SizeType type);
     void sortedModeChanged(QDir::SortFlag flag);
 
+    /*uncheck dekstop item by uyl*/
+    void unCheckedItem(QString url);
+
     /*keyboard signal*/
     void keyUpPressed();
     void keyDownPressed();
@@ -114,6 +117,7 @@ signals:
 
     /*context menu renamed*/
     void requestRenamed(QString url);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

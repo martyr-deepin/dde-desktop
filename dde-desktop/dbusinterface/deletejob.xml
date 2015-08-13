@@ -5,7 +5,7 @@
         <method name="Execute"></method>
         <signal name="Done"></signal>
         <signal name="ProcessedAmount">
-            <arg type="t"></arg>
+            <arg type="x"></arg>
             <arg type="q"></arg>
         </signal>
         <signal name="Deleting">

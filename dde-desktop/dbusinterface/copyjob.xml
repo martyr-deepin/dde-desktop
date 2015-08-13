@@ -7,7 +7,7 @@
             <arg type="s"></arg>
         </signal>
         <signal name="ProcessedAmount">
-            <arg type="t"></arg>
+            <arg type="x"></arg>
             <arg type="q"></arg>
         </signal>
         <signal name="Copying">

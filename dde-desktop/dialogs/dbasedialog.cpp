@@ -8,11 +8,14 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QCloseEvent>
+#include <QApplication>
+#include <QDesktopWidget>
 
 
 DBaseDialog::DBaseDialog(QWidget *parent):DMovabelDialog(parent)
 {
-    setAttribute(Qt::WA_TranslucentBackground);
+    m_messageLabelMaxWidth = qApp->desktop()->availableGeometry().width() / 2 -
+            100 - 2 * getCloseButton()->width();
 }
 
 void DBaseDialog::initUI(const QString &icon,
@@ -44,14 +47,13 @@ void DBaseDialog::initUI(const QString &icon,
     m_buttonGroup = new QButtonGroup;
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     foreach (QString label, m_buttonKeys) {
+        int index = m_buttonKeys.indexOf(label);
         QPushButton* button = new QPushButton(label);
         button->setObjectName("ActionButton");
         button->setAttribute(Qt::WA_NoMousePropagation);
         button->setFixedHeight(28);
-        m_buttonGroup->addButton(button);
+        m_buttonGroup->addButton(button, index);
         buttonLayout->addWidget(button);
-
-        int index = m_buttonKeys.indexOf(label);
         if (index < m_buttonKeys.length() - 1){
             QLabel* label = new QLabel;
             label->setObjectName("VLine");
@@ -72,12 +74,11 @@ void DBaseDialog::initUI(const QString &icon,
     m_messageLayout->addWidget(m_messageLabel);
     m_messageLayout->addWidget(m_tipMessageLabel);
     m_messageLayout->addStretch();
-    m_messageLayout->setContentsMargins(5, 22, 0, 0);
+    m_messageLayout->setContentsMargins(5, getCloseButton()->height(), getCloseButton()->width(), 0);
 
     QHBoxLayout* topLayout = new QHBoxLayout;
     topLayout->addLayout(iconLayout);
     topLayout->addLayout(m_messageLayout);
-
 
     QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->addLayout(topLayout);
@@ -91,25 +92,19 @@ void DBaseDialog::initUI(const QString &icon,
     contentlayout->setContentsMargins(5, 5, 5, 5);
     setLayout(contentlayout);
 
-    m_closeButton = new QPushButton(this);
-    m_closeButton->setObjectName("CloseButton");
-    m_closeButton->setFixedSize(25, 25);
-    m_closeButton->setAttribute(Qt::WA_NoMousePropagation);
-
-    setFixedSize(m_defaultWidth, m_defaultHeight);
-    m_closeButton->move(width() - m_closeButton->width() - 4, 4);
-
+    resize(m_defaultWidth, m_defaultHeight);
     setStyleSheet(getQssFromFile(":/qss/skin/dialogs/qss/dialogs.qss"));
-
     initConnect();
 }
 
 
 void DBaseDialog::initConnect(){
-    connect(m_closeButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(m_buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(handleButtonsClicked(int)));
 }
 
+QButtonGroup* DBaseDialog::getButtonsGroup(){
+    return m_buttonGroup;
+}
 
 QVBoxLayout* DBaseDialog::getMessageLayout(){
     return m_messageLayout;
@@ -130,7 +125,15 @@ QString DBaseDialog::getMessage(){
 
 void DBaseDialog::setMessage(const QString &message){
     m_message = message;
-    m_messageLabel->setText(m_message);
+
+    QFontMetrics fm = fontMetrics();
+    if (fm.width(m_message) > m_messageLabelMaxWidth){
+        QString text = fm.elidedText(m_message, Qt::ElideRight, m_messageLabelMaxWidth);
+        m_messageLabel->setText(text);
+    }else{
+        m_messageLabel->setText(m_message);
+    }
+    m_messageLabel->resize(fm.width(m_messageLabel->text()), height());
 }
 
 QString DBaseDialog::getTipMessage(){
@@ -139,7 +142,15 @@ QString DBaseDialog::getTipMessage(){
 
 void DBaseDialog::setTipMessage(const QString &tipMessage){
     m_tipMessage = tipMessage;
-    m_tipMessageLabel->setText(m_tipMessage);
+
+    QFontMetrics fm = fontMetrics();
+    if (fm.width(m_tipMessage) > m_messageLabelMaxWidth){
+        QString text = fm.elidedText(m_tipMessage, Qt::ElideRight, m_messageLabelMaxWidth);
+        m_tipMessageLabel->setText(text);
+    }else{
+        m_tipMessageLabel->setText(m_tipMessage);
+    }
+    m_tipMessageLabel->resize(fm.width(m_messageLabel->text()), height());
 }
 
 QStringList DBaseDialog::getButtons(){
@@ -185,6 +196,10 @@ void DBaseDialog::closeEvent(QCloseEvent *event){
     emit closed();
 }
 
+
+void DBaseDialog::resizeEvent(QResizeEvent *event){
+    DMovabelDialog::resizeEvent(event);
+}
 
 DBaseDialog::~DBaseDialog()
 {

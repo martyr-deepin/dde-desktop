@@ -26,7 +26,7 @@ public slots:
     void copyJobAbort();
     void copyJobAbortFinished();
     void onCopyingFile(QString file);
-    void onCopyingProcessAmount(qulonglong progress, ushort info);
+    void onCopyingProcessAmount(qlonglong progress, ushort info);
 
 private:
     CopyJobInterface* m_copyJobInterface;

@@ -34,7 +34,7 @@ QPushButton#ActionButton:hover{
 
 QPushButton#ActionButton:pressed{
     background-color: transparent;
-    color: green;
+    color: #01bdff;
 }
 
 QLabel#VLine{

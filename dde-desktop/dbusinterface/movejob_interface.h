@@ -8,8 +8,8 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#ifndef MOVEJOB_INTERFACE_H_1437460613
-#define MOVEJOB_INTERFACE_H_1437460613
+#ifndef MOVEJOB_INTERFACE_H_1439450296
+#define MOVEJOB_INTERFACE_H_1439450296
 
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
@@ -52,7 +52,7 @@ Q_SIGNALS: // SIGNALS
     void Aborted();
     void Done();
     void Moving(const QString &in0);
-    void ProcessedAmount(qulonglong in0, ushort in1);
+    void ProcessedAmount(qlonglong in0, ushort in1);
 };
 
 #endif

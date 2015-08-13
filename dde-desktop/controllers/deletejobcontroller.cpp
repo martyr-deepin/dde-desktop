@@ -18,12 +18,22 @@ void DeleteJobController::initConnect(){
 
 void DeleteJobController::confimDelete(const QStringList &files){
     m_deletefiles = files;
+    m_deletefiles.removeOne(ComputerUrl);
+    m_deletefiles.removeOne(TrashUrl);
+
+    emit signalManager->unCheckedItem(ComputerUrl);
+    emit signalManager->unCheckedItem(TrashUrl);
+
+    if (m_deletefiles.length() == 0){
+        return;
+    }
+
     ConfirmDeleteDialog d;
     QString message;
     if (files.length() == 1){
-        message = tr("Are you sure to delete  ") + QFileInfo(files.at(0)).fileName();
+        message = tr("Are you sure to delete  ") + QFileInfo(m_deletefiles.at(0)).fileName();
     }else{
-        message = tr("Are you sure to delete these ") +  QString::number(files.length()) + " items";
+        message = tr("Are you sure to delete these ") +  QString::number(m_deletefiles.length()) + " items";
     }
     d.setMessage(message);
     connect(&d, SIGNAL(buttonClicked(int)), this, SLOT(handleDeleteAction(int)));
@@ -66,8 +76,8 @@ void DeleteJobController::connectDeleteJobSignal(){
         connect(m_deleteJobInterface, SIGNAL(Done()), this, SLOT(deleteJobExcuteFinished()));
         connect(m_deleteJobInterface, SIGNAL(Aborted()), this, SLOT(deleteJobAbortFinished()));
         connect(m_deleteJobInterface, SIGNAL(Deleting(QString)), this, SLOT(onDeletingFile(QString)));
-        connect(m_deleteJobInterface, SIGNAL(ProcessedAmount(qulonglong,ushort)),
-                this, SLOT(onDeletingProcessAmount(qulonglong,ushort)));
+        connect(m_deleteJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
+                this, SLOT(onDeletingProcessAmount(qlonglong,ushort)));
     }
 }
 
@@ -77,8 +87,8 @@ void DeleteJobController::disconnectDeleteJobSignal(){
         disconnect(m_deleteJobInterface, SIGNAL(Done()), this, SLOT(deleteJobExcuteFinished()));
         disconnect(m_deleteJobInterface, SIGNAL(Aborted()), this, SLOT(deleteJobAbortFinished()));
         disconnect(m_deleteJobInterface, SIGNAL(Deleting(QString)), this, SLOT(onDeletingFile(QString)));
-        disconnect(m_deleteJobInterface, SIGNAL(ProcessedAmount(qulonglong,ushort)),
-                this, SLOT(onDeletingProcessAmount(qulonglong,ushort)));
+        disconnect(m_deleteJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
+                this, SLOT(onDeletingProcessAmount(qlonglong,ushort)));
     }
 }
 
@@ -107,10 +117,12 @@ void DeleteJobController::deleteJobAbortFinished(){
 
 void DeleteJobController::onDeletingFile(QString file){
     emit signalManager->deletingFileChaned(file);
+    LOG_INFO() << "onDeletingFile" << file;
 }
 
-void DeleteJobController::onDeletingProcessAmount(qulonglong progress, ushort info){
+void DeleteJobController::onDeletingProcessAmount(qlonglong progress, ushort info){
     emit signalManager->deletingProcessAmountChanged(progress, info);
+    LOG_INFO() << "onDeletingProcessAmount" << progress << info;
 }
 
 DeleteJobController::~DeleteJobController()

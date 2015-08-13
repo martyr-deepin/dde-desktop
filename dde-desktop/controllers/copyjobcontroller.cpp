@@ -37,8 +37,8 @@ void CopyJobController::connectCopyJobSignal(){
         connect(m_copyJobInterface, SIGNAL(Done(QString)), this, SLOT(copyJobExcuteFinished(QString)));
         connect(m_copyJobInterface, SIGNAL(Aborted()), this, SLOT(copyJobAbortFinished()));
         connect(m_copyJobInterface, SIGNAL(Copying(QString)), this, SLOT(onCopyingFile(QString)));
-        connect(m_copyJobInterface, SIGNAL(ProcessedAmount(qulonglong,ushort)),
-                this, SLOT(onCopyingProcessAmount(qulonglong,ushort)));
+        connect(m_copyJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
+                this, SLOT(onCopyingProcessAmount(qlonglong,ushort)));
     }
 }
 
@@ -48,8 +48,8 @@ void CopyJobController::disconnectCopyJobSignal(){
         disconnect(m_copyJobInterface, SIGNAL(Done(QString)), this, SLOT(copyJobExcuteFinished(QString)));
         disconnect(m_copyJobInterface, SIGNAL(Aborted()), this, SLOT(copyJobAbortFinished()));
         disconnect(m_copyJobInterface, SIGNAL(Copying(QString)), this, SLOT(onCopyingFile(QString)));
-        disconnect(m_copyJobInterface, SIGNAL(ProcessedAmount(qulonglong,ushort)),
-                this, SLOT(onCopyingProcessAmount(qulonglong,ushort)));
+        disconnect(m_copyJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
+                this, SLOT(onCopyingProcessAmount(qlonglong,ushort)));
     }
 }
 
@@ -77,10 +77,13 @@ void CopyJobController::copyJobAbortFinished(){
 
 void CopyJobController::onCopyingFile(QString file){
     emit signalManager->copyingFileChaned(file);
+    LOG_INFO() << "onCopyingFile" << file;
 }
 
-void CopyJobController::onCopyingProcessAmount(qulonglong progress, ushort info){
+void CopyJobController::onCopyingProcessAmount(qlonglong progress, ushort info){
+    LOG_INFO() << "onCopyingProcessAmount" << progress << info;
     emit signalManager->copyingProcessAmountChanged(progress, info);
+
 }
 
 

@@ -87,7 +87,17 @@ void DBusController::requestDesktopItems(){
     reply.waitForFinished();
     if (!reply.isError()){
         DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
+        /*ToDo desktop daemon settings judge*/
+        for(int i=0; i < desktopItems.count(); i++){
+            QString key = desktopItems.keys().at(i);
+            DesktopItemInfo info = desktopItems.values().at(i);
+            if (info.thumbnail.length() > 0){
+                info.Icon = info.thumbnail;
+            }
+            desktopItems.insert(key, info);
+        }
         emit signalManager->desktopItemsChanged(desktopItems);
+
         m_desktopItemInfoMap = desktopItems;
 
         foreach (QString url, desktopItems.keys()) {
@@ -202,6 +212,10 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
     QDBusPendingReply<DesktopItemInfo> reply = *call;
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
+        /*ToDo desktop daemon settings judge*/
+        if (desktopItemInfo.thumbnail.length() > 0){
+            desktopItemInfo.Icon = desktopItemInfo.thumbnail;
+        }
         emit signalManager->itemCreated(desktopItemInfo);
         LOG_INFO() << "asyncCreateDesktopItemByUrlFinished" << "11111111111";
         updateDesktopItemInfoMap(desktopItemInfo);

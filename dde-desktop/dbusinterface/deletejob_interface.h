@@ -8,8 +8,8 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#ifndef DELETEJOB_INTERFACE_H_1439382578
-#define DELETEJOB_INTERFACE_H_1439382578
+#ifndef DELETEJOB_INTERFACE_H_1439450306
+#define DELETEJOB_INTERFACE_H_1439450306
 
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
@@ -52,7 +52,7 @@ Q_SIGNALS: // SIGNALS
     void Aborted();
     void Deleting(const QString &in0);
     void Done();
-    void ProcessedAmount(qulonglong in0, ushort in1);
+    void ProcessedAmount(qlonglong in0, ushort in1);
 };
 
 #endif

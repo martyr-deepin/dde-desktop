@@ -2,16 +2,29 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QPushButton>
+#include <QResizeEvent>
+
 
 DMovabelDialog::DMovabelDialog(QWidget *parent):QDialog(parent)
 {
     setWindowFlags(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+    m_closeButton = new QPushButton(this);
+    m_closeButton->setObjectName("CloseButton");
+    m_closeButton->setFixedSize(25, 25);
+    m_closeButton->setAttribute(Qt::WA_NoMousePropagation);
+    connect(m_closeButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 
 void DMovabelDialog::setMovableHeight(int height){
     m_movableHeight = height;
 }
 
+
+QPushButton* DMovabelDialog::getCloseButton(){
+    return m_closeButton;
+}
 
 void DMovabelDialog::moveCenter(){
     QRect qr = frameGeometry();
@@ -40,6 +53,12 @@ void DMovabelDialog::mouseMoveEvent(QMouseEvent *event)
     QDialog::mouseMoveEvent(event);
 }
 
+void DMovabelDialog::resizeEvent(QResizeEvent *event){
+    m_closeButton->move(width() - m_closeButton->width() - 4, 4);
+    m_closeButton->raise();
+    moveCenter();
+    QDialog::resizeEvent(event);
+}
 
 DMovabelDialog::~DMovabelDialog()
 {

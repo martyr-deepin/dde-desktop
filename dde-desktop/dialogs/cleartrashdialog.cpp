@@ -1,6 +1,8 @@
 #include "cleartrashdialog.h"
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QButtonGroup>
+#include <QPushButton>
 
 ClearTrashDialog::ClearTrashDialog(QWidget *parent):
     DBaseDialog(parent)
@@ -13,6 +15,7 @@ ClearTrashDialog::ClearTrashDialog(QWidget *parent):
     buttons << "Cancel" << "Clear";
     initUI(icon, message, tipMessage, buttons, buttons);
     moveCenter();
+    getButtonsGroup()->button(1)->setFocus();
 }
 
 void ClearTrashDialog::handleKeyEnter(){
