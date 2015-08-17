@@ -1,6 +1,6 @@
 #include "menucontroller.h"
 #include "dbusinterface/menumanager_interface.h"
-#include "dbusinterface/showmenu_interface.h"
+#include "dbusinterface/menu_interface.h"
 #include "dbusinterface/desktopdaemon_interface.h"
 #include "views/global.h"
 #include "dbuscontroller.h"
@@ -8,7 +8,7 @@
 MenuController::MenuController(QObject *parent) : QObject(parent)
 {
     m_menuManagerInterface = new MenumanagerInterface(MenuManager_service, MenuManager_path, QDBusConnection::sessionBus(), this);
-    m_showmenuInterface = NULL;
+    m_menuInterface = NULL;
     initConnect();
 }
 
@@ -90,6 +90,7 @@ QString MenuController::JsonToQString(QPoint pos, QString menucontent) {
         {"isDockMenu", false},
         {"menuJsonContent", menucontent}
     };
+    qDebug() << menucontent;
     return QString(QJsonDocument(menuObj).toJson());
 }
 
@@ -104,10 +105,11 @@ QString MenuController::registerMenu() {
 }
 
 void MenuController::showMenu(const QString showmenu_path, QString menucontent) {
-    m_showmenuInterface = new ShowmenuInterface(MenuManager_service, showmenu_path, QDBusConnection::sessionBus(), this);
-    m_showmenuInterface->ShowMenu(menucontent);
-    connect(m_showmenuInterface, SIGNAL(ItemInvoked(QString, bool)),this, SLOT(menuItemInvoked(QString,bool)));
-    connect(m_showmenuInterface, SIGNAL(MenuUnregistered()), dbusController->getDesktopDaemonInterface(), SLOT(DestroyMenu()));
+    m_menuInterface = new MenuInterface(MenuManager_service, showmenu_path, QDBusConnection::sessionBus(), this);
+    m_menuInterface->ShowMenu(menucontent);
+    connect(m_menuInterface, SIGNAL(ItemInvoked(QString, bool)),this, SLOT(menuItemInvoked(QString,bool)));
+    connect(m_menuInterface, SIGNAL(MenuUnregistered()), dbusController->getDesktopDaemonInterface(), SLOT(DestroyMenu()));
+    connect(m_menuInterface, SIGNAL(MenuUnregistered()), m_menuInterface, SLOT(deleteLater()));
 }
 
 void MenuController::menuItemInvoked(QString itemId, bool flag){

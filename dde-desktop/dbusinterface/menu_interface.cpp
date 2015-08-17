@@ -9,18 +9,18 @@
  * before re-generating it.
  */
 
-#include "showmenu_interface.h"
+#include "menu_interface.h"
 
 /*
  * Implementation of interface class ShowmenuInterface
  */
 
-ShowmenuInterface::ShowmenuInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent)
+MenuInterface::MenuInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent)
     : QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent)
 {
 }
 
-ShowmenuInterface::~ShowmenuInterface()
+MenuInterface::~MenuInterface()
 {
 }
 

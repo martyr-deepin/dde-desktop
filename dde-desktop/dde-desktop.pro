@@ -37,7 +37,6 @@ SOURCES += main.cpp \
     dbusinterface/monitormanager_interface.cpp \
     views/keyeventmanager.cpp\
     dbusinterface/menumanager_interface.cpp \
-    dbusinterface/showmenu_interface.cpp \
     dbusinterface/desktopdaemon_interface.cpp \
     dbusinterface/fileInfo_interface.cpp \
     dbusinterface/fileoperations_interface.cpp \
@@ -67,7 +66,8 @@ SOURCES += main.cpp \
     controllers/renamejobcontroller.cpp \
     dbusinterface/emptytrashjob_interface.cpp \
     controllers/deletejobcontroller.cpp \
-    dbusinterface/deletejob_interface.cpp
+    dbusinterface/deletejob_interface.cpp \
+    dbusinterface/menu_interface.cpp
 
 
 HEADERS  += \
@@ -89,7 +89,6 @@ HEADERS  += \
     dbusinterface/monitormanager_interface.h \
     views/keyeventmanager.h\
     dbusinterface/menumanager_interface.h \
-    dbusinterface/showmenu_interface.h \
     dbusinterface/desktopdaemon_interface.h \
     dbusinterface/fileInfo_interface.h \
     dbusinterface/fileoperations_interface.h \
@@ -121,7 +120,8 @@ HEADERS  += \
     controllers/renamejobcontroller.h \
     dbusinterface/emptytrashjob_interface.h \
     controllers/deletejobcontroller.h \
-    dbusinterface/deletejob_interface.h
+    dbusinterface/deletejob_interface.h \
+    dbusinterface/menu_interface.h
 
 
 RESOURCES += \

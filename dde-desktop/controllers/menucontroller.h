@@ -6,7 +6,7 @@
 #include "views/desktopfwd.h"
 
 class MenumanagerInterface;
-class ShowmenuInterface;
+class MenuInterface;
 
 #define MenuManager_service "com.deepin.menu"
 #define MenuManager_path "/com/deepin/menu"
@@ -32,7 +32,7 @@ public slots:
 
 private:
     MenumanagerInterface* m_menuManagerInterface;
-    ShowmenuInterface* m_showmenuInterface;
+    MenuInterface* m_menuInterface;
 
     QString createMenuContent(QStringList createmenupath);
     QString registerMenu();

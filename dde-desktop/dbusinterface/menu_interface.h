@@ -8,8 +8,8 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#ifndef SHOWMENU_INTERFACE_H_1436341908
-#define SHOWMENU_INTERFACE_H_1436341908
+#ifndef MENU_INTERFACE_H_1436341908
+#define MENU_INTERFACE_H_1436341908
 
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
@@ -23,7 +23,7 @@
 /*
  * Proxy class for interface com.deepin.menu.Menu
  */
-class ShowmenuInterface: public QDBusAbstractInterface
+class MenuInterface: public QDBusAbstractInterface
 {
     Q_OBJECT
 public:
@@ -31,9 +31,9 @@ public:
     { return "com.deepin.menu.Menu"; }
 
 public:
-    ShowmenuInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);
+    MenuInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);
 
-    ~ShowmenuInterface();
+    ~MenuInterface();
 
 public Q_SLOTS: // METHODS
     inline QDBusPendingReply<> SetItemActivity(const QString &itemId, bool isActive)

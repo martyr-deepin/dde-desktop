@@ -67,9 +67,9 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
                                                  const int xMinimumSpacing, const int yMinimumSpacing,
                                                  const int leftMargin, const int topMargin,
                                                  const int rightMargin, const int bottomMargin){
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int desktopWidth = availableGeometry.width();
-    int desktopHeight = availableGeometry.height();
+    const QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    int desktopWidth = screenGeometry.width();
+    int desktopHeight = screenGeometry.height() - 70;
 
     m_list_items.clear();
     m_map_items.clear();
@@ -297,27 +297,27 @@ void GridManager::updateGridByPageCount(int count){
 
 
 DoubleGridItemPointerList GridManager::getSmallItems(){
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int desktopWidth = availableGeometry.width() * m_pageCount;
-    int desktopHeight = availableGeometry.height();
+    const QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    int desktopWidth = screenGeometry.width() * m_pageCount;
+    int desktopHeight = screenGeometry.height() - 70;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 
 DoubleGridItemPointerList GridManager::getMiddleItems(){
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int desktopWidth = availableGeometry.width() * m_pageCount;
-    int desktopHeight = availableGeometry.height();
+    const QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    int desktopWidth = screenGeometry.width() * m_pageCount;
+    int desktopHeight = screenGeometry.height() - 70;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 
 DoubleGridItemPointerList GridManager::getLargeItems(){
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int desktopWidth = availableGeometry.width() * m_pageCount;
-    int desktopHeight = availableGeometry.height();
+    const QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    int desktopWidth = screenGeometry.width() * m_pageCount;
+    int desktopHeight = screenGeometry.height() - 70;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 0, 10);
     return ret;
