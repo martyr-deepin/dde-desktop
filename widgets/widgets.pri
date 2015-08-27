@@ -4,12 +4,14 @@ HEADERS += \
     $$PWD/arrowrectangle.h \
     $$PWD/singleton.h \
     $$PWD/growingtextedit.h \
-    $$PWD/growingelidetextedit.h
+    $$PWD/growingelidetextedit.h \
+    $$PWD/themeappicon.h
 
 SOURCES += \
     $$PWD/elidelabel.cpp \
     $$PWD/util.cpp \
     $$PWD/arrowrectangle.cpp \
     $$PWD/growingtextedit.cpp \
-    $$PWD/growingelidetextedit.cpp
+    $$PWD/growingelidetextedit.cpp \
+    $$PWD/themeappicon.cpp
 

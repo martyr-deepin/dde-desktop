@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui dbus x11extras
+QT       += core gui widgets svg dbus x11extras
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,7 +16,7 @@ include(./cutelogger/cutelogger.pri)
 include(./dialogs/dialogs.pri)
 
 
-PKGCONFIG += x11 xcb xcb-ewmh
+PKGCONFIG += x11 gtk+-2.0 xcb xcb-ewmh
 CONFIG += c++11 link_pkgconfig
 
 

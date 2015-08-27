@@ -83,14 +83,12 @@ QString MenuController::createMenuContent(QStringList createmenupath) {
 }
 
 QString MenuController::JsonToQString(QPoint pos, QString menucontent) {
-    QJsonObject menuObj
-    {
-        {"x", pos.x()},
-        {"y", pos.y()},
-        {"isDockMenu", false},
-        {"menuJsonContent", menucontent}
-    };
-    qDebug() << menucontent;
+    QJsonObject menuObj;
+    menuObj["x"] = pos.x();
+    menuObj["y"] = pos.y();
+    menuObj["isDockMenu"] = false;
+    menuObj["menuJsonContent"] = menucontent;
+//    qDebug() << menucontent;
     return QString(QJsonDocument(menuObj).toJson());
 }
 

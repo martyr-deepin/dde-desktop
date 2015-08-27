@@ -21,6 +21,7 @@ public:
     void startDrag(const DesktopItemInfo& info);
     QPixmap getDragPixmap();
     QList<int> getColumnRowByCount(int count);
+    void setItemUnChecked();
 
 signals:
 

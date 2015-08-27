@@ -67,7 +67,9 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
     }
 
     if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Escape){
+        #if !defined(QT_NO_DEBUG)
         close();
+        #endif
     }else if (event->key() == Qt::Key_PageUp){
         if (m_currentPage > 0){
             m_currentPage--;
@@ -84,7 +86,9 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
             int currentX = m_desktopFrame->x() - desktopWidth;
             m_desktopFrame->move(currentX, m_desktopFrame->y());
         }
-    }else if (event->key() == Qt::Key_1){
+    }
+    #if !defined(QT_NO_DEBUG)
+    else if (event->key() == Qt::Key_1){
         emit signalManager->gridSizeTypeChanged(SizeType::Small);
     }else if (event->key() == Qt::Key_2){
         emit signalManager->gridSizeTypeChanged(SizeType::Middle);
@@ -100,7 +104,9 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         emit signalManager->sortedModeChanged(QDir::Time);
     }else if (event->key() == Qt::Key_F1){
         emit signalManager->gridModeChanged(!m_isGridOn);
-    }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_A){
+    }
+    #endif
+    else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_A){
         emit signalManager->keyCtrlAPressed();
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Delete){
         emit signalManager->trashingAboutToExcute(m_desktopFrame->getCheckedFiles());

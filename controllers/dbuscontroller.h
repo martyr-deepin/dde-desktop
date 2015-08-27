@@ -17,6 +17,7 @@ class CreateDirJobInterface;
 class CreateFileJobInterface;
 class CreateFileFromTemplateJobInterface;
 class FileMonitor;
+class QTimer;
 
 
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
@@ -67,6 +68,7 @@ public:
 //    void watchDesktop();
     void requestDesktopItems();
     void requestIconByUrl(QString scheme, uint size);
+    void requestThumbnail(QString scheme, uint size);
 
     FileOperationsInterface* getFileOperationsInterface();
     FileInfoInterface* getFileInfoInterface();
@@ -123,6 +125,9 @@ public slots:
     /*paste files*/
     void pasteFiles(QString action, QStringList files, QString destination);
 
+    /*delay get thumbnail*/
+    void delayGetThumbnail();
+
 private:
     FileMonitor* m_fileMonitor = NULL;
 //    MonitorManagerInterface* m_monitorManagerInterface = NULL;
@@ -142,6 +147,10 @@ private:
     QMap<QString, DesktopItemInfoMap> m_appGroups;
 
     QString m_itemShoudBeMoved;
+
+    QTimer* m_thumbnailTimer;
+    QString m_currentThumbnail;
+    QStringList m_thumbnails;
 
     Q_DISABLE_COPY(DBusController)
 

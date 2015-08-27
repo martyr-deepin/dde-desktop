@@ -52,6 +52,7 @@ void DesktopItemManager::initTrashItem(){
     m_pTrashItem->setUrl(url);
     m_pTrashItem->resize(width, height);
     m_pTrashItem->getDesktopItemInfo().URI = url;
+    m_pTrashItem->getDesktopItemInfo().CanExecute = true;
 
     GridItemPointer pGridItem = gridManager->getItems().at(0)->at(1);
     QRect rect = pGridItem->getRect();
@@ -263,6 +264,8 @@ int DesktopItemManager::getPageCount(){
 }
 
 void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uint size){
+    url = decodeUrl(url);
+    qDebug() << m_pItems.contains(url) << url;
     if (m_pItems.contains(url)){
         m_pItems.value(url)->setDesktopIcon(iconUrl);
         LOG_INFO() << iconUrl;

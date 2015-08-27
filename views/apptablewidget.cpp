@@ -3,6 +3,7 @@
 #include "global.h"
 #include "widgets/util.h"
 #include <typeinfo>
+#include <QTableWidgetItem>
 
 AppTableWidget::AppTableWidget(QWidget *parent) : QTableWidget(parent)
 {
@@ -73,6 +74,7 @@ void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
             setColumnWidth(_column, width);
         }
     }
+
 }
 
 void AppTableWidget::handleCellClicked(int row, int column){
@@ -162,6 +164,7 @@ QPixmap AppTableWidget::getDragPixmap(){
     item->resize(m_dragItem->size());
     item->move(mapToGlobal(m_dragItem->pos()));
     item->setObjectName("DragChecked");
+    item->setDesktopIcon(m_dragItem->getDesktopItemInfo().Icon);
 
     F->setStyleSheet(qApp->styleSheet());
     QPixmap ret = F->grab();
@@ -211,6 +214,20 @@ void AppTableWidget::dragLeaveEvent(QDragLeaveEvent *event){
     //    m_dragLeave = true;
     LOG_INFO() << "app group leave" << event;
     event->ignore();
+}
+
+void AppTableWidget::setItemUnChecked(){
+    for(int i = 0; i< rowCount(); i++){
+        for (int j=0; j < columnCount(); j++){
+            if (item(i, j)){
+                item(i, j)->setFlags(Qt::NoItemFlags);
+            }else{
+                QTableWidgetItem* item = new QTableWidgetItem();
+                item->setFlags(Qt::NoItemFlags);
+                setItem(i, j, item);
+            }
+        }
+    }
 }
 
 AppTableWidget::~AppTableWidget()

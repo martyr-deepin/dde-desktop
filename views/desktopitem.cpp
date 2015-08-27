@@ -6,6 +6,7 @@
 #include "controllers/dbuscontroller.h"
 #include "appgroupiconframe.h"
 #include "desktopframe.h"
+#include <QSvgRenderer>
 
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
@@ -138,7 +139,17 @@ QPixmap DesktopItem::getDesktopIcon(){
 }
 
 void DesktopItem::setDesktopIcon(QString icon){
-     m_desktopIcon = QPixmap(icon);
+    if (icon.endsWith("svg")){
+        m_desktopIcon = QPixmap(m_iconLabel->size());
+        QSvgRenderer renderer(icon);
+        m_desktopIcon.fill(Qt::transparent);
+        QPainter painter;
+        painter.begin(&m_desktopIcon);
+        renderer.render(&painter);
+        painter.end();
+    }else{
+        m_desktopIcon = QPixmap(icon);
+    }
      emit desktopIconChanged(icon);
      m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size()));
 }

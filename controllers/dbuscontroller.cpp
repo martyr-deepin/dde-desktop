@@ -34,6 +34,10 @@ void DBusController::init(){
 
     m_fileMonitor = new FileMonitor(this);
     initConnect();
+
+    m_thumbnailTimer = new QTimer;
+    m_thumbnailTimer->setInterval(500);
+    connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
 }
 
 void DBusController::initConnect(){
@@ -91,6 +95,7 @@ void DBusController::requestDesktopItems(){
         for(int i=0; i < desktopItems.count(); i++){
             QString key = desktopItems.keys().at(i);
             DesktopItemInfo info = desktopItems.values().at(i);
+            qDebug() << info.BaseName << info.Icon << info.thumbnail;
             if (info.thumbnail.length() > 0){
                 info.Icon = info.thumbnail;
             }
@@ -116,6 +121,30 @@ void DBusController::requestIconByUrl(QString scheme, uint size){
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
+        emit signalManager->desktoItemIconUpdated(scheme, iconUrl, size);
+    }else{
+        LOG_ERROR() << reply.error().message();
+    }
+}
+
+void DBusController::delayGetThumbnail(){
+    foreach(QString url, m_thumbnails){
+        requestThumbnail(url, 48);
+    }
+    if (m_thumbnails.count() == 0){
+        m_thumbnailTimer->stop();
+    }
+}
+
+void DBusController::requestThumbnail(QString scheme, uint size){
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnail(scheme, size);
+    reply.waitForFinished();
+    if (!reply.isError()){
+        QString iconUrl = reply.argumentAt(0).toString();
+        qDebug() << iconUrl;
+        if (m_thumbnails.contains(scheme)){
+            m_thumbnails.removeOne(scheme);
+        }
         emit signalManager->desktoItemIconUpdated(scheme, iconUrl, size);
     }else{
         LOG_ERROR() << reply.error().message();
@@ -212,12 +241,15 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
     QDBusPendingReply<DesktopItemInfo> reply = *call;
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
+        qDebug() << desktopItemInfo.Icon << desktopItemInfo.thumbnail;
         /*ToDo desktop daemon settings judge*/
         if (desktopItemInfo.thumbnail.length() > 0){
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;
         }
+        m_thumbnails.append(desktopItemInfo.URI);
+        m_thumbnailTimer->start();
         emit signalManager->itemCreated(desktopItemInfo);
-        LOG_INFO() << "asyncCreateDesktopItemByUrlFinished" << "11111111111";
+        LOG_INFO() << "asyncCreateDesktopItemByUrlFinished" << desktopItemInfo.thumbnail <<"11111111111";
         updateDesktopItemInfoMap(desktopItemInfo);
 
         if (isAppGroup(desktopItemInfo.URI)){

@@ -541,6 +541,7 @@ void DesktopFrame::mouseDoubleClickEvent(QMouseEvent *event){
         unCheckCheckedItems();
         checkRaiseItem(pTopDesktopItem);
         if (!isAppGroup(pTopDesktopItem->getUrl())){
+            qDebug() << "mouseDoubleClickEvent" << pTopDesktopItem->getDesktopItemInfo().URI;
             emit signalManager->openFile(pTopDesktopItem->getDesktopItemInfo());
         }
     }
