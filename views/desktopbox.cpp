@@ -6,13 +6,13 @@
 #include "widgets/growingelidetextedit.h"
 #include "desktopitemmanager.h"
 #include "desktopitem.h"
-
+#include "background/backgroundlabel.h"
 
 
 DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 {
+    m_backgroundLabel = new BackgroundLabel(false, this);
     m_desktopFrame = new DesktopFrame(this);
-
 
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
     connect(signalManager, SIGNAL(requestRenamed(QString)), this, SLOT(handleRename()));

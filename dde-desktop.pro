@@ -14,9 +14,10 @@ TEMPLATE = app
 include(./widgets/widgets.pri)
 include(./cutelogger/cutelogger.pri)
 include(./dialogs/dialogs.pri)
+include(./background/background.pri)
 
 
-PKGCONFIG += x11 gtk+-2.0 xcb xcb-ewmh
+PKGCONFIG += x11 gtk+-2.0 xcb xcb-ewmh gsettings-qt
 CONFIG += c++11 link_pkgconfig
 
 

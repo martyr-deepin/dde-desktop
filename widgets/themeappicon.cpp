@@ -34,7 +34,7 @@ QPixmap ThemeAppIcon::getIconPixmap(QString iconPath, int width, int height){
     } else {
         // try to read the iconPath as a icon name.
         QString path = getThemeIconPath(iconPath);
-        if (path.endsWith("svg")) {
+        if (path.endsWith(".svg")) {
             QSvgRenderer renderer(path);
             pixmap.fill(Qt::transparent);
 

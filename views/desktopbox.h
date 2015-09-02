@@ -9,6 +9,7 @@
 
 class DesktopFrame;
 class GrowingTextEdit;
+class BackgroundLabel;
 
 class DesktopBox : public TranslucentFrame
 {
@@ -34,6 +35,7 @@ private:
     GrowingTextEdit* m_textEdit;
     int m_currentPage = 0;
     DesktopFrame* m_desktopFrame;
+    BackgroundLabel* m_backgroundLabel;
 };
 
 #endif // DESKTOPBOX_H

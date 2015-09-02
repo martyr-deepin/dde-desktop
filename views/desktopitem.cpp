@@ -139,7 +139,7 @@ QPixmap DesktopItem::getDesktopIcon(){
 }
 
 void DesktopItem::setDesktopIcon(QString icon){
-    if (icon.endsWith("svg")){
+    if (icon.endsWith(".svg")){
         m_desktopIcon = QPixmap(m_iconLabel->size());
         QSvgRenderer renderer(icon);
         m_desktopIcon.fill(Qt::transparent);
