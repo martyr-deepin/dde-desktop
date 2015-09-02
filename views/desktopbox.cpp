@@ -7,11 +7,17 @@
 #include "desktopitemmanager.h"
 #include "desktopitem.h"
 #include "background/backgroundlabel.h"
-
+#include "app/xcb_misc.h"
+#include <QApplication>
+#include <QDesktopWidget>
 
 DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 {
+    setGeometry(qApp->desktop()->screenGeometry());
     m_backgroundLabel = new BackgroundLabel(false, this);
+    XcbMisc::instance()->set_window_type(m_backgroundLabel->winId(),
+                                         XcbMisc::Desktop);
+    qDebug() << m_backgroundLabel->size();
     m_desktopFrame = new DesktopFrame(this);
 
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));

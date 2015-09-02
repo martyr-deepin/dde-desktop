@@ -35,7 +35,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     initItems();
     initConnect();
 
-    setGeometry(qApp->desktop()->availableGeometry());
+    setGeometry(qApp->desktop()->screenGeometry());
     m_desktopItemManager->checkPageCount();
     qApp->setStyleSheet(getQssFromFile(":/qss/skin/qss/DesktopItem.qss"));
 }
