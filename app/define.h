@@ -26,7 +26,7 @@ void debug_log_console_on(){
 // let startdde know that we've already started.
 void RegisterDdeSession()
 {
-    char *envName = "DDE_SESSION_PROCESS_COOKIE_ID";
+    char envName[] = "DDE_SESSION_PROCESS_COOKIE_ID";
 
     QByteArray cookie = qgetenv(envName);
     qunsetenv(envName);

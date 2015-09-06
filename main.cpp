@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     desktop.show();
     Singleton<ThemeAppIcon>::instance()->gtkInit();
     dbusController->init();
-
+    RegisterDdeSession();
     LOG_INFO() << "Starting the application";
     int reslut = a.exec();
     LOG_INFO() << "exits " << a.applicationName() << reslut;
