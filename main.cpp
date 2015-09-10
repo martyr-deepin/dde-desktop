@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     debug_log_console_on();
     DesktopApp desktop;
     desktop.show();
-    Singleton<ThemeAppIcon>::instance()->gtkInit();
+//    Singleton<ThemeAppIcon>::instance()->gtkInit();
     dbusController->init();
     RegisterDdeSession();
     LOG_INFO() << "Starting the application";

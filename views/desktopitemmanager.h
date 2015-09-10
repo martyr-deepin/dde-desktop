@@ -61,6 +61,8 @@ public slots:
     void setShoudBeMovedItemByUrl(QString url);
     void renameDesktopItem(DesktopItemInfo& desktopItemInfo);
 
+    void handleDockModeChanged(int dockMode);
+
 private:
     int m_pagecount = 0;
     QSettings m_settings;

@@ -107,6 +107,8 @@ void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(cancelFilesCuted(QStringList)),
             this, SLOT(cancelCutedItems(QStringList)));
 
+    connect(signalManager, SIGNAL(dockModeChanged(int)),
+            this, SLOT(handleDockModeChanged(int)));
 }
 
 void DesktopItemManager::loadDesktopItems(){
@@ -505,6 +507,16 @@ bool DesktopItemManager::isAppGroupBoxShowed(){
         return m_appGroupBox->isVisible();
     }
     return false;
+}
+
+void DesktopItemManager::handleDockModeChanged(int dockMode){
+    if (dockMode == 0){
+        m_pComputerItem->hide();
+        m_pTrashItem->hide();
+    }else{
+        m_pComputerItem->show();
+        m_pTrashItem->show();
+    }
 }
 
 DesktopItemManager::~DesktopItemManager()

@@ -68,7 +68,8 @@ SOURCES += main.cpp \
     dbusinterface/emptytrashjob_interface.cpp \
     controllers/deletejobcontroller.cpp \
     dbusinterface/deletejob_interface.cpp \
-    dbusinterface/menu_interface.cpp
+    dbusinterface/menu_interface.cpp \
+    dbusinterface/dbusdocksetting.cpp
 
 
 HEADERS  += \
@@ -122,7 +123,8 @@ HEADERS  += \
     dbusinterface/emptytrashjob_interface.h \
     controllers/deletejobcontroller.h \
     dbusinterface/deletejob_interface.h \
-    dbusinterface/menu_interface.h
+    dbusinterface/menu_interface.h \
+    dbusinterface/dbusdocksetting.h
 
 
 RESOURCES += \

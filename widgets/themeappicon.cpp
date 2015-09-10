@@ -17,6 +17,7 @@ ThemeAppIcon::ThemeAppIcon(QObject *parent) : QObject(parent)
 
 void ThemeAppIcon::gtkInit(){
     gtk_init(NULL, NULL);
+    gdk_error_trap_push();
 }
 
 QPixmap ThemeAppIcon::getIconPixmap(QString iconPath, int width, int height){

@@ -118,6 +118,9 @@ signals:
     /*context menu renamed*/
     void requestRenamed(QString url);
 
+    /*dock mode change*/
+    void dockModeChanged(int dockMode);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

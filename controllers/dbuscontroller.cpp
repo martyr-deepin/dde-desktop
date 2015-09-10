@@ -10,6 +10,7 @@
 #include "dbusinterface/createdirjob_interface.h"
 #include "dbusinterface/createfilejob_interface.h"
 #include "dbusinterface/createfilefromtemplatejob_interface.h"
+#include "dbusinterface/dbusdocksetting.h"
 
 #include "views/global.h"
 #include "views/signalmanager.h"
@@ -27,6 +28,7 @@ void DBusController::init(){
     m_desktopDaemonInterface = new DesktopDaemonInterface(DesktopDaemon_service, DesktopDaemon_path, bus, this);
     m_fileOperationsInterface = new FileOperationsInterface(FileMonitor_service, FileOperations_path, bus, this);
     m_clipboardInterface = new ClipboardInterface(FileMonitor_service, Clipboard_path, bus, this);
+    m_dockSettingInterface = new DBusDockSetting(this);
 
     requestDesktopItems();
     requestIconByUrl(ComputerUrl, 48);
@@ -80,6 +82,8 @@ void DBusController::initConnect(){
     connect(m_fileMonitor, SIGNAL(fileMovedIn(QString)), this, SLOT(handleFileMovedIn(QString)));
     connect(m_fileMonitor, SIGNAL(fileMovedOut(QString)), this, SLOT(handleFileMovedOut(QString)));
     connect(m_fileMonitor, SIGNAL(fileRenamed(QString,QString)), this, SLOT(handleFileRenamed(QString,QString)));
+
+    connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
 }
 
 DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
@@ -412,6 +416,7 @@ void DBusController::openFile(DesktopItemInfo desktopItemInfo){
     }else{
         LOG_ERROR() << reply.error().message();
     }
+    emit signalManager->appGounpDetailClosed();
 }
 
 

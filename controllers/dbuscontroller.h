@@ -18,6 +18,7 @@ class CreateFileJobInterface;
 class CreateFileFromTemplateJobInterface;
 class FileMonitor;
 class QTimer;
+class DBusDockSetting;
 
 
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
@@ -117,11 +118,6 @@ public slots:
     void createAppGroup(QString group_url, QStringList urls);
     void mergeIntoAppGroup(QStringList urls, QString group_url);
 
-//    /*unmonitor file*/
-//    void unMonitorDirByID(uint id);
-//    void unMonitorDirByUrl(QString group_url);
-//    void unMonitor();
-
     /*paste files*/
     void pasteFiles(QString action, QStringList files, QString destination);
 
@@ -130,10 +126,8 @@ public slots:
 
 private:
     FileMonitor* m_fileMonitor = NULL;
-//    MonitorManagerInterface* m_monitorManagerInterface = NULL;
     FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;
     ClipboardInterface* m_clipboardInterface = NULL;
-//    WatcherInstanceInterface* m_watchInstanceInterface = NULL;
     QMap<QString, FileMonitorInstanceInterfacePointer> m_appGroupMonitorInterfacePointers;
     FileInfoInterface* m_fileInfoInterface = NULL;
     DesktopDaemonInterface* m_desktopDaemonInterface = NULL;
@@ -142,6 +136,8 @@ private:
     CreateDirJobInterface* m_createDirJobInterface = NULL;
     CreateFileJobInterface* m_createFileJobInterface = NULL;
     CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface = NULL;
+
+    DBusDockSetting* m_dockSettingInterface = NULL;
 
     DesktopItemInfoMap m_desktopItemInfoMap;
     QMap<QString, DesktopItemInfoMap> m_appGroups;

@@ -113,4 +113,5 @@ void MenuController::showMenu(const QString showmenu_path, QString menucontent) 
 void MenuController::menuItemInvoked(QString itemId, bool flag){
     Q_UNUSED(flag)
     dbusController->getDesktopDaemonInterface()->HandleSelectedMenuItem(itemId);
+    emit signalManager->appGounpDetailClosed();
 }
