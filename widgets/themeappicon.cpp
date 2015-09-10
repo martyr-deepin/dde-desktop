@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <QSvgRenderer>
 #include <QPixmap>
-
+#include <QDebug>
 #undef signals
 extern "C" {
   #include <gtk/gtk.h>
@@ -71,6 +71,7 @@ QString ThemeAppIcon::getThemeIconPath(QString iconName)
 #endif
         return QString(path);
     } else {
+        qDebug() << "no info";
         return "";
     }
 }

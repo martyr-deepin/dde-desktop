@@ -5,5 +5,7 @@
     </qresource>
     <qresource prefix="/images">
         <file>skin/images/default.png</file>
+        <file>skin/images/user-trash-full.png</file>
+        <file>skin/images/computer.png</file>
     </qresource>
 </RCC>
