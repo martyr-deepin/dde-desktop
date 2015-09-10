@@ -3,6 +3,7 @@
 #include "dbuscontroller.h"
 #include "dbusinterface/copyjob_interface.h"
 #include "dbusinterface/fileoperations_interface.h"
+#include "dbusinterface/services/desktopadaptor.h"
 
 CopyJobController::CopyJobController(QObject *parent) : QObject(parent)
 {
@@ -17,7 +18,11 @@ void CopyJobController::initConnect(){
 }
 
 void CopyJobController::copyFiles(QStringList files, QString destination){
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewCopyJob(files, destination, "",  0, "",  "", "");
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewCopyJob(files, destination,
+                                                                                                                          "",  0,
+                                                                                                                          DesktopAdaptor::staticServerPath(),
+                                                                                                                          DesktopAdaptor::staticInterfacePath(),
+                                                                                                                          DesktopAdaptor::staticInterfaceName());
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();

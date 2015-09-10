@@ -39,9 +39,29 @@ public:
 };
 
 
+class ConflictInfo{
+
+public:
+    int32_t code;
+    bool applyToAll;
+    QString userData;
+
+    ConflictInfo();
+    ~ConflictInfo();
+
+    friend QDBusArgument &operator<<(QDBusArgument &argument, const ConflictInfo &obj);
+
+    friend const QDBusArgument &operator>>(const QDBusArgument &argument, ConflictInfo &obj);
+
+    static void registerMetaType();
+};
+
+
 typedef QMap<QString, DesktopItemInfo> DesktopItemInfoMap;
 Q_DECLARE_METATYPE(DesktopItemInfo)
 Q_DECLARE_METATYPE(DesktopItemInfoMap)
+
+Q_DECLARE_METATYPE(ConflictInfo)
 
 typedef QList<int> IntList;
 Q_DECLARE_METATYPE(IntList)

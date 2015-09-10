@@ -6,6 +6,7 @@
 #include "renamejobcontroller.h"
 #include "deletejobcontroller.h"
 #include "dbuscontroller.h"
+#include "fileconflictcontroller.h"
 #include "views/global.h"
 
 
@@ -17,6 +18,7 @@ AppController::AppController(QObject *parent) : QObject(parent)
     m_copyJobController = new CopyJobController;
     m_renameJobController = new RenameJobController;
     m_deleteJobController = new DeleteJobController;
+    m_fileConflictController = new FileConflictController;
 }
 
 void AppController::initConnect(){

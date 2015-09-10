@@ -10,6 +10,7 @@ class MoveJobController;
 class CopyJobController;
 class RenameJobController;
 class DeleteJobController;
+class FileConflictController;
 
 class AppController : public QObject
 {
@@ -33,6 +34,7 @@ private:
     CopyJobController* m_copyJobController;
     RenameJobController* m_renameJobController;
     DeleteJobController* m_deleteJobController;
+    FileConflictController* m_fileConflictController;
 };
 
 #endif // APPCONTROLLER_H

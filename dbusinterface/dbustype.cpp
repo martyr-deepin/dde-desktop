@@ -46,3 +46,38 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DesktopItemInfo &
     argument.endStructure();
     return argument;
 }
+
+
+ConflictInfo::ConflictInfo(){
+
+}
+
+ConflictInfo::~ConflictInfo(){
+
+}
+
+void ConflictInfo::registerMetaType()
+{
+    qRegisterMetaType<ConflictInfo>("ConflictInfo");
+    qDBusRegisterMetaType<ConflictInfo>();
+}
+
+
+QDBusArgument &operator<<(QDBusArgument &argument, const ConflictInfo &obj)
+{
+    argument.beginStructure();
+    argument << obj.code << obj.applyToAll;
+    argument << obj.userData;
+    argument.endStructure();
+    return argument;
+}
+
+
+const QDBusArgument &operator>>(const QDBusArgument &argument, ConflictInfo &obj)
+{
+    argument.beginStructure();
+    argument >> obj.code >> obj.applyToAll;
+    argument >> obj.userData;
+    argument.endStructure();
+    return argument;
+}
