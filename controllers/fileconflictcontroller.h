@@ -2,7 +2,7 @@
 #define FILECONFLICTCONTROLLER_H
 
 #include <QObject>
-#include <dbusinterface/services/desktopadaptor.h>
+#include <dbusinterface/services/conflictdaptor.h>
 #include <dbusinterface/dbustype.h>
 
 class FileConflictController : public QObject

@@ -3,19 +3,27 @@
 #include "widgets/themeappicon.h"
 #include "app/define.h"
 #include "views/global.h"
-#include <QApplication>
 #include "dialogs/cleartrashdialog.h"
+#include "dbusinterface/services/desktopadaptor.h"
+#include<iostream>
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    debug_daemon_off();
+//    debug_daemon_off();
     QApplication a(argc, argv);
-    debug_log_console_on();
-    DesktopApp desktop;
-    desktop.show();
-    dbusController->init();
-    RegisterDdeSession();
-    LOG_INFO() << "Starting the application";
-    int reslut = a.exec();
-    LOG_INFO() << "exits " << a.applicationName() << reslut;
+    QDBusConnection conn = QDBusConnection::sessionBus();
+    if(conn.registerService(DesktopAdaptor::staticServerPath())){
+        QApplication a(argc, argv);
+        debug_log_console_on();
+        DesktopApp desktop;
+        desktop.show();
+        dbusController->init();
+        RegisterDdeSession();
+        LOG_INFO() << "Starting the application";
+        int reslut = a.exec();
+        LOG_INFO() << "exits " << a.applicationName() << reslut;
+    }else{
+        LOG_INFO() << "dde-desktop is running!";
+    }
 }

@@ -70,8 +70,9 @@ SOURCES += main.cpp \
     dbusinterface/deletejob_interface.cpp \
     dbusinterface/menu_interface.cpp \
     dbusinterface/dbusdocksetting.cpp \
-    dbusinterface/services/desktopadaptor.cpp \
-    controllers/fileconflictcontroller.cpp
+    controllers/fileconflictcontroller.cpp \
+    dbusinterface/services/conflictdaptor.cpp \
+    dbusinterface/services/desktopadaptor.cpp
 
 
 HEADERS  += \
@@ -127,8 +128,9 @@ HEADERS  += \
     dbusinterface/deletejob_interface.h \
     dbusinterface/menu_interface.h \
     dbusinterface/dbusdocksetting.h \
-    dbusinterface/services/desktopadaptor.h \
-    controllers/fileconflictcontroller.h
+    controllers/fileconflictcontroller.h \
+    dbusinterface/services/conflictdaptor.h \
+    dbusinterface/services/desktopadaptor.h
 
 
 RESOURCES += \

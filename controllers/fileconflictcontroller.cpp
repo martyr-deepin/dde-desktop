@@ -9,10 +9,10 @@ FileConflictController::FileConflictController(QObject *parent) :
 }
 
 void FileConflictController::registerDBusService(){
-    new DesktopAdaptor(this);
+    new ConflictAdaptor(this);
     QDBusConnection conn = QDBusConnection::sessionBus();
-    conn.registerService(DesktopAdaptor::staticServerPath());
-    bool flag = conn.registerObject(DesktopAdaptor::staticInterfacePath(), this);
+    conn.registerService(ConflictAdaptor::staticServerPath());
+    bool flag = conn.registerObject(ConflictAdaptor::staticInterfacePath(), this);
     qDebug() << "registerDBusService"<<flag;
 }
 
@@ -45,6 +45,6 @@ ConflictInfo FileConflictController::ConflictDialog(){
 FileConflictController::~FileConflictController()
 {
     QDBusConnection conn = QDBusConnection::sessionBus();
-    conn.unregisterObject(DesktopAdaptor::staticInterfacePath());
-    conn.registerService(DesktopAdaptor::staticServerPath());
+    conn.unregisterObject(ConflictAdaptor::staticInterfacePath());
+    conn.registerService(ConflictAdaptor::staticServerPath());
 }

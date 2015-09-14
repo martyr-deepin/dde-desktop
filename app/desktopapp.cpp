@@ -4,6 +4,9 @@
 #include "views/desktopitemmanager.h"
 #include "views/desktopframe.h"
 #include "controllers/appcontroller.h"
+#include "dbusinterface/services/desktopadaptor.h"
+#include <QDBusConnection>
+
 
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
@@ -14,30 +17,22 @@ DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
     m_desktopBox = new DesktopBox;
     m_appController = new AppController;
     initConnect();
+    registerDBusService();
 }
 
 void DesktopApp::initConnect(){
     connect(signalManager, SIGNAL(gridModeChanged(bool)), this, SLOT(saveGridOn(bool)));
     connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(saveSizeType(SizeType)));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(saveSortFlag(QDir::SortFlag)));
+    connect(qApp, SIGNAL(aboutToQuit()), this, SIGNAL(closed()));
 }
 
-void DesktopApp::show(){
-    m_desktopBox->show();
+void DesktopApp::registerDBusService(){
+    new DesktopAdaptor(this);
+    QDBusConnection conn = QDBusConnection::sessionBus();
+    conn.registerObject(DesktopAdaptor::staticInterfacePath(), this);
 }
 
-void DesktopApp::loadSettings(){
-
-}
-
-void DesktopApp::saveSettings(){
-    QSettings settings;
-    settings.beginGroup("Desktop");
-    settings.setValue("isGridOn", m_desktopBox->getDesktopFrame()->isGridOn());
-    settings.setValue("sizeType", m_desktopBox->getDesktopFrame()->getSizeType());
-    settings.setValue("sortFlag", m_desktopBox->getDesktopFrame()->getDesktopItemManager()->getSortFlag());
-    settings.endGroup();
-}
 
 void DesktopApp::saveGridOn(bool mode){
     QSettings settings;
@@ -58,6 +53,33 @@ void DesktopApp::saveSortFlag(QDir::SortFlag flag){
     settings.beginGroup("Desktop");
     settings.setValue("sortFlag", flag);
     settings.endGroup();
+}
+
+void DesktopApp::show(){
+    m_desktopBox->show();
+    emit shown();
+}
+
+void DesktopApp::hide(){
+    m_desktopBox->hide();
+}
+
+void DesktopApp::toggle(){
+    if (m_desktopBox->isVisible()){
+        hide();
+    }else{
+        show();
+    }
+}
+
+void DesktopApp::exit(){
+    qApp->quit();
+}
+
+void DesktopApp::unRegisterDbusService(){
+    QDBusConnection conn = QDBusConnection::sessionBus();
+    conn.unregisterObject(DesktopAdaptor::staticInterfacePath());
+    conn.unregisterService(DesktopAdaptor::staticServerPath());
 }
 
 DesktopApp::~DesktopApp()

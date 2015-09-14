@@ -15,18 +15,25 @@ public:
     ~DesktopApp();
 
     void initConnect();
+    void registerDBusService();
 
 signals:
+    void closed();
+    void shown();
 
 public slots:
-    void loadSettings();
-    void saveSettings();
-
     void saveGridOn(bool mode);
     void saveSizeType(SizeType type);
     void saveSortFlag(QDir::SortFlag flag);
 
+    void unRegisterDbusService();
+
     void show();
+    void hide();
+    void toggle();
+    void exit();
+
+
 
 private:
     DesktopBox* m_desktopBox;

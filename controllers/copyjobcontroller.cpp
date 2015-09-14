@@ -3,7 +3,7 @@
 #include "dbuscontroller.h"
 #include "dbusinterface/copyjob_interface.h"
 #include "dbusinterface/fileoperations_interface.h"
-#include "dbusinterface/services/desktopadaptor.h"
+#include "dbusinterface/services/conflictdaptor.h"
 
 CopyJobController::CopyJobController(QObject *parent) : QObject(parent)
 {
@@ -28,9 +28,9 @@ void CopyJobController::copyFiles(QStringList files, QString destination){
                 desktopLocation,
                 "",
                 0,
-                DesktopAdaptor::staticServerPath(),
-                DesktopAdaptor::staticInterfacePath(),
-                DesktopAdaptor::staticInterfaceName()
+                ConflictAdaptor::staticServerPath(),
+                ConflictAdaptor::staticInterfacePath(),
+                ConflictAdaptor::staticInterfaceName()
                 );
 
     reply.waitForFinished();

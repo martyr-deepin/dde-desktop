@@ -25,7 +25,6 @@ DesktopAdaptor::DesktopAdaptor(QObject *parent)
     : QDBusAbstractAdaptor(parent)
 {
     // constructor
-    ConflictInfo::registerMetaType();
     setAutoRelaySignals(true);
 }
 
@@ -34,19 +33,27 @@ DesktopAdaptor::~DesktopAdaptor()
     // destructor
 }
 
-ConflictInfo DesktopAdaptor::AskSkip(const QString &in0, const QString &in1, const QString &in2, int in3)
+void DesktopAdaptor::exit()
 {
-    // handle method call com.deepin.dde.Desktop.AskSkip
-    ConflictInfo out0;
-    QMetaObject::invokeMethod(parent(), "AskSkip", Q_RETURN_ARG(ConflictInfo, out0), Q_ARG(QString, in0), Q_ARG(QString, in1), Q_ARG(QString, in2), Q_ARG(int, in3));
-    return out0;
+    // handle method call com.deepin.dde.Desktop.exit
+    QMetaObject::invokeMethod(parent(), "exit");
 }
 
-ConflictInfo DesktopAdaptor::ConflictDialog()
+void DesktopAdaptor::hide()
 {
-    // handle method call com.deepin.dde.Desktop.ConflictDialog
-    ConflictInfo out0;
-    QMetaObject::invokeMethod(parent(), "ConflictDialog", Q_RETURN_ARG(ConflictInfo, out0));
-    return out0;
+    // handle method call com.deepin.dde.Desktop.hide
+    QMetaObject::invokeMethod(parent(), "hide");
+}
+
+void DesktopAdaptor::show()
+{
+    // handle method call com.deepin.dde.Desktop.show
+    QMetaObject::invokeMethod(parent(), "show");
+}
+
+void DesktopAdaptor::toggle()
+{
+    // handle method call com.deepin.dde.Desktop.toggle
+    QMetaObject::invokeMethod(parent(), "toggle");
 }
 
