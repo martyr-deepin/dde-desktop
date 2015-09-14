@@ -32,7 +32,7 @@ class ConflictAdaptor: public QDBusAbstractAdaptor
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "com.deepin.dde.Desktop.conflict")
     Q_CLASSINFO("D-Bus Introspection", ""
-"  <interface name=\"com.deepin.dde.Desktop\">\n"
+"  <interface name=\"com.deepin.dde.Desktop.conflict\">\n"
 "    <method name=\"AskSkip\">\n"
 "      <arg direction=\"in\" type=\"s\"/>\n"
 "      <arg direction=\"in\" type=\"s\"/>\n"
