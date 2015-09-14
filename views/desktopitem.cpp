@@ -55,13 +55,14 @@ void DesktopItem::init(){
 void DesktopItem::initUI(){
     m_iconLabel = new QLabel;
     m_iconLabel->setObjectName("Icon");
-    m_iconLabel->setScaledContents(true);
+    m_iconLabel->setAlignment(Qt::AlignCenter);
+    m_iconLabel->setFixedSize(48, 48);
+    m_iconLabel->setScaledContents(false);
 
     m_textedit = new GrowingElideTextEdit();
     m_textedit->setObjectName("GrowingElideTextEdit");
     m_textedit->setFixedWidth(100 - 10);
-    m_iconLabel->setFixedSize(48, 48);
-    m_iconLabel->setScaledContents(false);
+
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_iconLabel, 0, Qt::AlignHCenter);
     mainLayout->addWidget(m_textedit, 0, Qt::AlignHCenter);
@@ -152,15 +153,15 @@ void DesktopItem::setDesktopIcon(QString icon){
         m_desktopIcon = QPixmap(icon);
     }
      emit desktopIconChanged(icon);
-//     m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size()));
-     m_iconLabel->setPixmap(m_desktopIcon);
+     m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+//     m_iconLabel->setPixmap(m_desktopIcon);
 }
 
 void DesktopItem::setDesktopIcon(QPixmap &icon){
      m_desktopIcon = icon;
      emit desktopIconChanged(icon);
-//     m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size()));
-     m_iconLabel->setPixmap(m_desktopIcon);
+     m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+//     m_iconLabel->setPixmap(m_desktopIcon);
 }
 
 

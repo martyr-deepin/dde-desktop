@@ -18,11 +18,21 @@ void CopyJobController::initConnect(){
 }
 
 void CopyJobController::copyFiles(QStringList files, QString destination){
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewCopyJob(files, destination,
-                                                                                                                          "",  0,
-                                                                                                                          DesktopAdaptor::staticServerPath(),
-                                                                                                                          DesktopAdaptor::staticInterfacePath(),
-                                                                                                                          DesktopAdaptor::staticInterfaceName());
+
+    if (files.length() == 0)
+        return;
+
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = \
+            dbusController->getFileOperationsInterface()->NewCopyJob(
+                files,
+                desktopLocation,
+                "",
+                0,
+                DesktopAdaptor::staticServerPath(),
+                DesktopAdaptor::staticInterfacePath(),
+                DesktopAdaptor::staticInterfaceName()
+                );
+
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();

@@ -56,7 +56,7 @@ public:
     static inline const char *staticInterfacePath()
     { return "/com/deepin/dde/desktop"; }
     static inline const char *staticInterfaceName()
-    { return "com.deepin.dde.desktop"; }
+    { return "com.deepin.dde.Desktop"; }
 
 public: // PROPERTIES
 public Q_SLOTS: // METHODS
