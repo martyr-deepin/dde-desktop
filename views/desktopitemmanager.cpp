@@ -165,6 +165,7 @@ void DesktopItemManager::addItems(DesktopItemInfoMap &desktopInfoMap){
 
 void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap &appItemInfos){
     QString key = formatURl(group_url);
+    qDebug() << group_url << "updateAppGounpItem" << m_pItems.contains(key);
     if (m_pItems.contains(key)){
         m_pItems.value(key)->setAppGroupItems(appItemInfos);
         updateAppGroupDetail(m_pItems.value(key));
@@ -276,6 +277,7 @@ void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uin
 
 
 void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
+    qDebug() << "renameDesktopItem" << desktopItemInfo.URI;
     if (!m_shoudbeMovedItem.isNull()){
         QString desktopDisplayName = getDesktopDisplayName(desktopItemInfo);
         m_shoudbeMovedItem->setDesktopName(desktopDisplayName);

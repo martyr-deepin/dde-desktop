@@ -225,6 +225,12 @@ void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
         emit signalManager->itemMoved(desktopItemInfo);
         updateDesktopItemInfoMap(desktopItemInfo);
+
+        if (isAppGroup(desktopItemInfo.URI)){
+            LOG_INFO() << "renamed file move in app group" << desktopItemInfo.URI;
+            getAppGroupItemsByUrl(desktopItemInfo.URI);
+        }
+
     } else {
         LOG_ERROR() << reply.error().message();
     }
@@ -333,13 +339,17 @@ void DBusController::handleFileMovedOut(const QString &path){
 void DBusController::handleFileRenamed(const QString &oldPath, const QString &newPath){
     QFileInfo oldFileInfo(oldPath);
     QFileInfo newFileInfo(newPath);
-    if (isDesktop(oldFileInfo.path()) && isDesktop(newFileInfo.path())){
+    qDebug() <<oldFileInfo.filePath() << isInDesktop(oldFileInfo.filePath()) << newFileInfo.filePath()<<isInDesktop(newFileInfo.path());
+
+    bool isAppGroupFolder = isAppGroup(oldFileInfo.filePath()) && isAppGroup(newFileInfo.filePath());
+    bool isDesktopFile = isInDesktop(oldFileInfo.filePath()) && isInDesktop(newFileInfo.filePath());
+    qDebug() << "isAppGroupFolder" << isAppGroupFolder<< "isDesktopFile" << isDesktopFile;
+
+    if (isDesktopFile){
         LOG_INFO() << "desktop file renamed";
         m_itemShoudBeMoved = oldPath;
         emit signalManager->itemShoudBeMoved(oldPath);
         asyncRenameDesktopItemByUrl(newPath);
-    }else if (isAppGroup(oldFileInfo.path()) && isAppGroup(newFileInfo.path())){
-        LOG_INFO() << "renamed file move in app group";
     }
 }
 
@@ -414,7 +424,7 @@ void DBusController::openFile(DesktopItemInfo desktopItemInfo){
     if (!reply.isError()){
 
     }else{
-        LOG_ERROR() << reply.error().message();
+        LOG_ERROR() << reply.error().message() << desktopItemInfo.URI;
     }
     emit signalManager->appGounpDetailClosed();
 }

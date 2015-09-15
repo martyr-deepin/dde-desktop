@@ -58,6 +58,7 @@ void DesktopItem::initUI(){
     m_iconLabel->setAlignment(Qt::AlignCenter);
     m_iconLabel->setFixedSize(48, 48);
     m_iconLabel->setScaledContents(false);
+    m_iconLabel->setMask(QBitmap(":/images/skin/mask.png"));
 
     m_textedit = new GrowingElideTextEdit();
     m_textedit->setObjectName("GrowingElideTextEdit");
