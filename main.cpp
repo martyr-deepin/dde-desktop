@@ -10,7 +10,6 @@
 
 int main(int argc, char *argv[])
 {
-//    debug_daemon_off();
     QApplication a(argc, argv);
     QDBusConnection conn = QDBusConnection::sessionBus();
     if(conn.registerService(DesktopAdaptor::staticServerPath())){
@@ -18,7 +17,7 @@ int main(int argc, char *argv[])
         debug_log_console_on();
         DesktopApp desktop;
         desktop.show();
-        dbusController->init();
+        dbusController->loadDesktopItems();
         RegisterDdeSession();
         LOG_INFO() << "Starting the application";
         int reslut = a.exec();

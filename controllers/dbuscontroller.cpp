@@ -19,7 +19,7 @@
 
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
-
+    init();
 }
 
 void DBusController::init(){
@@ -29,10 +29,6 @@ void DBusController::init(){
     m_fileOperationsInterface = new FileOperationsInterface(FileMonitor_service, FileOperations_path, bus, this);
     m_clipboardInterface = new ClipboardInterface(FileMonitor_service, Clipboard_path, bus, this);
     m_dockSettingInterface = new DBusDockSetting(this);
-
-    requestDesktopItems();
-    requestIconByUrl(ComputerUrl, 48);
-    requestIconByUrl(TrashUrl, 48);
 
     m_fileMonitor = new FileMonitor(this);
     initConnect();
@@ -84,6 +80,28 @@ void DBusController::initConnect(){
     connect(m_fileMonitor, SIGNAL(fileRenamed(QString,QString)), this, SLOT(handleFileRenamed(QString,QString)));
 
     connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
+}
+
+void DBusController::loadDesktopSettings(){
+
+}
+
+void DBusController::loadDesktopItems(){
+    requestDesktopItems();
+    requestIconByUrl(ComputerUrl, 48);
+    requestIconByUrl(TrashUrl, 48);
+}
+
+int DBusController::getDockMode(){
+    int mode = 0;
+    QDBusPendingReply<int> reply = m_dockSettingInterface->GetDisplayMode();
+    reply.waitForFinished();
+    if (!reply.isError()){
+        mode = reply.argumentAt(0).toInt();
+    }else{
+        LOG_ERROR() << reply.error().message();
+    }
+    return mode;
 }
 
 DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){

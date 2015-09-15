@@ -27,7 +27,7 @@ void DesktopItemManager::initComputerItem(){
     m_pComputerItem->resize(width, height);
     m_pComputerItem->getDesktopItemInfo().URI = url;
 
-    GridItemPointer pGridItem = gridManager->getItems().at(0)->at(0);
+    GridItemPointer pGridItem = gridManager->getBlankItem();
     QRect rect = pGridItem->getRect();
     QPoint pos = rect.topLeft();
 
@@ -42,6 +42,7 @@ void DesktopItemManager::initComputerItem(){
     m_pComputerItem->move(pos);
     m_pItems.insert(url, m_pComputerItem);
     m_list_pItems.append(m_pComputerItem);
+    m_pComputerItem->show();
 }
 
 void DesktopItemManager::initTrashItem(){
@@ -54,7 +55,7 @@ void DesktopItemManager::initTrashItem(){
     m_pTrashItem->getDesktopItemInfo().URI = url;
     m_pTrashItem->getDesktopItemInfo().CanExecute = true;
 
-    GridItemPointer pGridItem = gridManager->getItems().at(0)->at(1);
+    GridItemPointer pGridItem = gridManager->getBlankItem();
     QRect rect = pGridItem->getRect();
     QPoint pos = rect.topLeft();
     m_settings.beginGroup("DesktopItems");
@@ -68,6 +69,7 @@ void DesktopItemManager::initTrashItem(){
     m_pTrashItem->move(pos);
     m_pItems.insert(url, m_pTrashItem);
     m_list_pItems.append(m_pTrashItem);
+    m_pTrashItem->show();
 }
 
 
@@ -111,9 +113,27 @@ void DesktopItemManager::initConnect(){
             this, SLOT(handleDockModeChanged(int)));
 }
 
-void DesktopItemManager::loadDesktopItems(){
-    initComputerItem();
-    initTrashItem();
+void DesktopItemManager::loadComputerTrashItems(){
+    int mode = dbusController->getDockMode();
+    if (mode != 0){
+        if (!m_pItems.contains(ComputerUrl)){
+            initComputerItem();
+        }else{
+            qDebug() << "ComputerItem is existed";
+        }
+        if (!m_pItems.contains(TrashUrl)){
+            initTrashItem();
+        }else{
+            qDebug() << "TrashItem is existed";
+        }
+    }else{
+        qDebug() << "Don't show computer and trash under fashion mode";
+    }
+}
+
+void DesktopItemManager::clearComputerTrashItems(){
+    deleteItem(ComputerUrl);
+    deleteItem(TrashUrl);
 }
 
 QString DesktopItemManager::decodeUrl(QString url){
@@ -325,12 +345,15 @@ void DesktopItemManager::cancelCutedItems(QStringList urls){
 }
 
 void DesktopItemManager::deleteItem(QString url){
-    if (!url.startsWith("file://")){
-        url = "file://" + url;
+    QString _url(url);
+    if (url!=ComputerUrl && url!=TrashUrl){
+        if (!url.startsWith("file://")){
+            url = "file://" + url;
+        }
+        _url = decodeUrl(url);
     }
-    QString _url = decodeUrl(url);
 
-    LOG_INFO() << "deleteItem" << _url << m_pItems.contains(_url) << m_pItems.value(_url);
+    LOG_INFO() << "deleteItem" << url << _url << m_pItems.contains(_url) << m_pItems.value(_url);
     if (m_pItems.contains(_url)){
         DesktopItemPointer pItem = m_pItems.value(_url);
 
@@ -345,6 +368,7 @@ void DesktopItemManager::deleteItem(QString url){
         }
         m_pItems.remove(url);
         pItem->close();
+        pItem.clear();
     }
     checkPageCount();
     emit signalManager->desktopItemsSaved();
@@ -408,8 +432,11 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     QDir desktopDir(desktopLocation);
     QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::Hidden, flag);
     m_list_pItems.clear();
-    m_list_pItems.append(m_pComputerItem);
-    m_list_pItems.append(m_pTrashItem);
+    int mode = dbusController->getDockMode();
+    if (mode != 0){
+        m_list_pItems.append(m_pComputerItem);
+        m_list_pItems.append(m_pTrashItem);
+    }
 
     int row = gridManager->getRowCount();
     int size = desktopInfoList.size();
@@ -513,11 +540,11 @@ bool DesktopItemManager::isAppGroupBoxShowed(){
 
 void DesktopItemManager::handleDockModeChanged(int dockMode){
     if (dockMode == 0){
-        m_pComputerItem->hide();
-        m_pTrashItem->hide();
+        qDebug() << "clearComputerTrashItems";
+        clearComputerTrashItems();
     }else{
-        m_pComputerItem->show();
-        m_pTrashItem->show();
+        qDebug() << "loadComputerTrashItems";
+        loadComputerTrashItems();
     }
 }
 

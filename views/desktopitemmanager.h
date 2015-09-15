@@ -14,8 +14,6 @@ class DesktopItemManager : public QObject
 public:
     DesktopItemManager(QObject* parent=0);
     ~DesktopItemManager();
-
-    void loadDesktopItems();
     void initComputerItem();
     void initTrashItem();
     void initConnect();
@@ -38,6 +36,8 @@ public:
 signals:
 
 public slots:
+    void loadComputerTrashItems();
+    void clearComputerTrashItems();
     void unCheckedItem(QString url);
     void addItems(DesktopItemInfoMap& desktopInfoMap);
     void addItem(DesktopItemInfo fileInfo, int index);

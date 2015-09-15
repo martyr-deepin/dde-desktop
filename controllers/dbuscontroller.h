@@ -86,9 +86,14 @@ public:
     void updateDesktopItemInfoMap_moved(DesktopItemInfo desktopItemInfo);
     void removeDesktopItemInfoByUrl(QString url);
 
+    int getDockMode();
+
 signals:
 
 public slots:
+    void loadDesktopSettings();
+    void loadDesktopItems();
+
     void handleFileCreated(const QString& path);
     void handleFileDeleted(const QString& path);
     void handleFileMovedIn(const QString& path);

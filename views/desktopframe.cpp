@@ -43,7 +43,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 void DesktopFrame::initItems(){
     m_gridItems = gridManager->getItemsByType(m_sizeType);
     m_mapItems = gridManager->getMapItems();
-    m_desktopItemManager->loadDesktopItems();
+    m_desktopItemManager->loadComputerTrashItems();
 }
 
 void DesktopFrame::initConnect(){
@@ -88,7 +88,7 @@ void DesktopFrame::changeGridBySizeType(SizeType type){
     m_mapItems = gridManager->getMapItems();
     m_sizeType = type;
     m_desktopItemManager->changeSizeByGrid(type);
-    update();
+    repaint();
 }
 
 void DesktopFrame::changeGridMode(bool mode){
@@ -105,7 +105,7 @@ void DesktopFrame::resizeByPageCount(int pageCount){
     int desktopHeight = availableGeometry.height();
     QRect r(0, 0, pageCount  * desktopWidth, desktopHeight);
     setGeometry(r);
-    update();
+    repaint();
 }
 
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
@@ -494,7 +494,7 @@ QPixmap DesktopFrame::getCheckedPixmap(){
 
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     clearFocus();
-    update();
+    repaint();
     if (event->button() == Qt::LeftButton && !m_ctrlPressed){
         DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
         if (m_desktopItemManager->isAppGroupBoxShowed()){
@@ -528,7 +528,7 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
         int width = event->pos().x() - x;
         int height = event->pos().y() -y;
         m_selectRect = QRect(x, y , width, height);
-        update();
+        repaint();
         checkDesktopItemsByRect(m_selectRect);
     }
     QFrame::mouseMoveEvent(event);
