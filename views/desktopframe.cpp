@@ -518,10 +518,10 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
+    qDebug() << "mouseMoveEvent" << event;
     if (m_isDragStarted){
         emit signalManager->appGounpDetailClosed();
         startDrag();
-
     }else{
         int x = m_pressedEventPos.x();
         int y = m_pressedEventPos.y();

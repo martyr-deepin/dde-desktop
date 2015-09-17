@@ -7,6 +7,9 @@
 #include "appgroupiconframe.h"
 #include "desktopframe.h"
 #include <QSvgRenderer>
+#include <QImage>
+#include <QGraphicsEffect>
+
 
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
@@ -43,7 +46,6 @@ DesktopItem::DesktopItem(QString url, QString icon, QString name, QWidget *paren
 }
 
 void DesktopItem::init(){
-//    setAttribute(Qt::WA_DeleteOnClose);
     setFocusPolicy(Qt::ClickFocus);
     setObjectName("DesktopItem");
     initUI();
@@ -58,7 +60,6 @@ void DesktopItem::initUI(){
     m_iconLabel->setAlignment(Qt::AlignCenter);
     m_iconLabel->setFixedSize(48, 48);
     m_iconLabel->setScaledContents(false);
-    m_iconLabel->setMask(QBitmap(":/images/skin/mask.png"));
 
     m_textedit = new GrowingElideTextEdit();
     m_textedit->setObjectName("GrowingElideTextEdit");
@@ -70,6 +71,12 @@ void DesktopItem::initUI(){
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     setLayout(mainLayout);
+
+//    QGraphicsDropShadowEffect *coverShadow = new QGraphicsDropShadowEffect;
+//    coverShadow->setBlurRadius(6);
+//    coverShadow->setColor(QColor(0, 0, 0, 76));
+//    coverShadow->setOffset(0, 2);
+//    setGraphicsEffect(coverShadow);
 }
 
 void DesktopItem::initConnect(){
@@ -151,7 +158,12 @@ void DesktopItem::setDesktopIcon(QString icon){
         renderer.render(&painter);
         painter.end();
     }else{
-        m_desktopIcon = QPixmap(icon);
+        qDebug() << m_url;
+        if (QImage().load(deleteFilePrefix(m_url))){
+            m_desktopIcon = applyShadowToPixmap(icon);
+        }else{
+            m_desktopIcon = QPixmap(icon);
+        }
     }
      emit desktopIconChanged(icon);
      m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -374,6 +386,22 @@ void DesktopItem::setEdited(bool flag){
     m_isEditing = flag;
 }
 
+QPixmap DesktopItem::applyShadowToPixmap(const QString filename){
+    QImage source(filename);
+    QSize imageSize = source.size();
+    QRect borderRect(0, 0, imageSize.width() + 4, imageSize.height() + 4);
+    QPixmap ret(borderRect.size());
+
+    QPainter painter;
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.begin(&ret);
+    painter.fillRect(borderRect, Qt::white);
+    painter.drawImage(2, 2, source);
+    painter.end();
+
+    return ret;
+}
 
 DesktopItem::~DesktopItem()
 {

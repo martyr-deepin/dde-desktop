@@ -11,6 +11,8 @@
 
 class ElidedLabel;
 class GrowingElideTextEdit;
+class QGraphicsEffect;
+class QImage;
 
 class DesktopItem : public QFrame
 {
@@ -44,6 +46,8 @@ public:
     DesktopItemInfo& getDesktopItemInfo();
     QMap<QString, DesktopItemInfo> getAppGroupItems();
     GrowingElideTextEdit* getTextEdit();
+
+    QPixmap applyShadowToPixmap(const QString filename);
 
 signals:
     void desktopIconChanged(QString icon);
