@@ -48,6 +48,8 @@ public:
     GrowingElideTextEdit* getTextEdit();
 
     QPixmap applyShadowToPixmap(const QString filename);
+    void addImageShadow();
+    void addTextShadow();
 
 signals:
     void desktopIconChanged(QString icon);

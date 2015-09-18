@@ -7,7 +7,6 @@ GrowingElideTextEdit::GrowingElideTextEdit(QWidget *parent) : QTextEdit(parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     showReadOnly();
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
 }
 
 void GrowingElideTextEdit::setText(const QString &text){
@@ -131,6 +130,7 @@ void GrowingElideTextEdit::showReadOnly(){
                   background-color:rgba(0, 0, 0, 0);\
                   border:1px solid rgba(0, 0, 0, 0);\
                   color: white;\
+                  font-size: 12px;\
               ");
 }
 
@@ -142,6 +142,7 @@ void GrowingElideTextEdit::showEditing(){
                   background-color:rgba(0, 0, 0, 0);\
                   border:1px solid black;\
                   color: white;\
+                  font-size: 12px;\
               ");
 }
 

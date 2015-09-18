@@ -6,6 +6,8 @@
 #include "dragdropeventmanager.h"
 #include "global.h"
 
+#include <QTimer>
+
 
 DesktopFrame::DesktopFrame(QWidget *parent)
     : QFrame(parent)
@@ -31,6 +33,9 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_TopDesktopItem = DesktopItemPointer();
     m_lastPressedCheckDesktopItem = DesktopItemPointer();
     m_lastCheckedDesktopItem = DesktopItemPointer();
+
+    m_mouseMoveCheckTimer = new QTimer;
+    m_mouseMoveCheckTimer->setInterval(1);
 
     initItems();
     initConnect();
@@ -61,6 +66,8 @@ void DesktopFrame::initConnect(){
     connect(this, SIGNAL(checkedDesktopItemsRemoved(DesktopItemPointer)),
             this, SLOT(removeCheckedDesktopItem(DesktopItemPointer)));
     connect(this, SIGNAL(multiCheckedByMouseChanged(bool)), this, SLOT(setMultiCheckedByMouse(bool)));
+
+    connect(m_mouseMoveCheckTimer, SIGNAL(timeout()), this, SLOT(handleMouseMoveCheckItems()));
 }
 
 QSharedPointer<DesktopItemManager> DesktopFrame::getDesktopItemManager(){
@@ -88,7 +95,7 @@ void DesktopFrame::changeGridBySizeType(SizeType type){
     m_mapItems = gridManager->getMapItems();
     m_sizeType = type;
     m_desktopItemManager->changeSizeByGrid(type);
-    repaint();
+    update();
 }
 
 void DesktopFrame::changeGridMode(bool mode){
@@ -105,7 +112,7 @@ void DesktopFrame::resizeByPageCount(int pageCount){
     int desktopHeight = availableGeometry.height();
     QRect r(0, 0, pageCount  * desktopWidth, desktopHeight);
     setGeometry(r);
-    repaint();
+    update();
 }
 
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
@@ -494,7 +501,7 @@ QPixmap DesktopFrame::getCheckedPixmap(){
 
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     clearFocus();
-    repaint();
+    update();
     if (event->button() == Qt::LeftButton && !m_ctrlPressed){
         DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
         if (m_desktopItemManager->isAppGroupBoxShowed()){
@@ -528,10 +535,15 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
         int width = event->pos().x() - x;
         int height = event->pos().y() -y;
         m_selectRect = QRect(x, y , width, height);
-        repaint();
-        checkDesktopItemsByRect(m_selectRect);
+        update();
+        m_mouseMoveCheckTimer->start();
+//        handleMouseMoveCheckItems();
     }
     QFrame::mouseMoveEvent(event);
+}
+
+void DesktopFrame::handleMouseMoveCheckItems(){
+    checkDesktopItemsByRect(m_selectRect);
 }
 
 

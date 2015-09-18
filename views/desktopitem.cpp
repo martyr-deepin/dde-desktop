@@ -64,6 +64,7 @@ void DesktopItem::initUI(){
     m_textedit = new GrowingElideTextEdit();
     m_textedit->setObjectName("GrowingElideTextEdit");
     m_textedit->setFixedWidth(100 - 10);
+    addTextShadow();
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_iconLabel, 0, Qt::AlignHCenter);
@@ -71,12 +72,6 @@ void DesktopItem::initUI(){
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     setLayout(mainLayout);
-
-//    QGraphicsDropShadowEffect *coverShadow = new QGraphicsDropShadowEffect;
-//    coverShadow->setBlurRadius(6);
-//    coverShadow->setColor(QColor(0, 0, 0, 76));
-//    coverShadow->setOffset(0, 2);
-//    setGraphicsEffect(coverShadow);
 }
 
 void DesktopItem::initConnect(){
@@ -158,16 +153,38 @@ void DesktopItem::setDesktopIcon(QString icon){
         renderer.render(&painter);
         painter.end();
     }else{
-        qDebug() << m_url;
-        if (QImage().load(deleteFilePrefix(m_url))){
+        QMimeDatabase mimeDataBae;
+        QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(m_url));
+        qDebug() << m_url << mimeType.genericIconName() <<mimeType.comment()<< mimeType.preferredSuffix() << mimeType.suffixes();
+        if (mimeType.genericIconName() == "image-x-generic"){
             m_desktopIcon = applyShadowToPixmap(icon);
+            addImageShadow();
+        }else if (mimeType.genericIconName() == "text-x-generic" && !isDesktopAppFile(m_url)){
+            m_desktopIcon = QPixmap(icon);
+            QPixmap mask(m_iconLabel->size());
+            QSvgRenderer maskRenderer(QString(":/images/skin/images/diban.svg"));
+            mask.fill(Qt::transparent);
+            QPainter painter;
+            painter.begin(&mask);
+            maskRenderer.render(&painter);
+            painter.end();
+            m_desktopIcon.setMask(mask.scaled(m_desktopIcon.size()).mask());
+
+            QPixmap s(":/images/skin/images/textMask.png");
+            QPainter painter2;
+            painter2.begin(&s);
+            painter2.setRenderHint(QPainter::Antialiasing);
+            painter2.setRenderHint(QPainter::SmoothPixmapTransform);
+            painter2.drawPixmap(3, 4, m_desktopIcon.scaled(QSize(44, 44)));
+            painter2.end();
+            m_desktopIcon = s;
         }else{
             m_desktopIcon = QPixmap(icon);
         }
     }
-     emit desktopIconChanged(icon);
-     m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-//     m_iconLabel->setPixmap(m_desktopIcon);
+    emit desktopIconChanged(icon);
+    m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+//  m_iconLabel->setPixmap(m_desktopIcon);
 }
 
 void DesktopItem::setDesktopIcon(QPixmap &icon){
@@ -393,14 +410,30 @@ QPixmap DesktopItem::applyShadowToPixmap(const QString filename){
     QPixmap ret(borderRect.size());
 
     QPainter painter;
+    painter.begin(&ret);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    painter.begin(&ret);
     painter.fillRect(borderRect, Qt::white);
     painter.drawImage(2, 2, source);
     painter.end();
 
     return ret;
+}
+
+void DesktopItem::addImageShadow(){
+    QGraphicsDropShadowEffect *coverShadow = new QGraphicsDropShadowEffect;
+    coverShadow->setBlurRadius(6);
+    coverShadow->setColor(QColor(0, 0, 0, 76));
+    coverShadow->setOffset(0, 2);
+    m_iconLabel->setGraphicsEffect(coverShadow);
+}
+
+void DesktopItem::addTextShadow(){
+    QGraphicsDropShadowEffect *textShadow = new QGraphicsDropShadowEffect;
+    textShadow->setBlurRadius(6);
+    textShadow->setColor(QColor(0, 0, 0, 178));
+    textShadow->setOffset(1, 3);
+    m_textedit->setGraphicsEffect(textShadow);
 }
 
 DesktopItem::~DesktopItem()

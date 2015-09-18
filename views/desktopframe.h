@@ -69,6 +69,8 @@ public slots:
     void checkAllDesktopItems();
     void setAppGroupDestinationPos(QPoint pos);
 
+    void handleMouseMoveCheckItems();
+
 protected:
     void focusInEvent(QFocusEvent* event);
     void focusOutEvent(QFocusEvent* event);
@@ -115,6 +117,8 @@ private:
     QPoint m_appGroupDestinationPos = QPoint(-1, -1);
 
     QList<DesktopItemPointer> m_checkedDesktopItems;
+
+    QTimer* m_mouseMoveCheckTimer;
 
 };
 

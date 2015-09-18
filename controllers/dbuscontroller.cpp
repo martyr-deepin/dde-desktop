@@ -159,6 +159,7 @@ void DBusController::delayGetThumbnail(){
 }
 
 void DBusController::requestThumbnail(QString scheme, uint size){
+    qDebug() << scheme;
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnail(scheme, size);
     reply.waitForFinished();
     if (!reply.isError()){

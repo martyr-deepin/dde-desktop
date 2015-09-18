@@ -7,5 +7,8 @@
         <file>skin/images/default.png</file>
         <file>skin/images/user-trash-full.png</file>
         <file>skin/images/computer.png</file>
+        <file>skin/images/textMask.svg</file>
+        <file>skin/images/textMask.png</file>
+        <file>skin/images/diban.svg</file>
     </qresource>
 </RCC>
