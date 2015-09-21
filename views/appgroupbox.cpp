@@ -8,9 +8,6 @@ AppGroupBox::AppGroupBox(QWidget *parent) : ArrowRectangle(parent)
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_DeleteOnClose);
     setMargin(10);
-
-    XcbMisc::instance()->set_window_type(winId(),
-                                         XcbMisc::Desktop);
 }
 
 

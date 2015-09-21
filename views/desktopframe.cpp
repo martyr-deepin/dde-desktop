@@ -525,7 +525,6 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
-    qDebug() << "mouseMoveEvent" << event;
     if (m_isDragStarted){
         emit signalManager->appGounpDetailClosed();
         startDrag();

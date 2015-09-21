@@ -14,11 +14,10 @@
 DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 {
     setGeometry(qApp->desktop()->screenGeometry());
-    m_backgroundLabel = new BackgroundLabel(false, this);
-    XcbMisc::instance()->set_window_type(m_backgroundLabel->winId(),
-                                         XcbMisc::Desktop);
-    qDebug() << m_backgroundLabel->size();
+//    m_backgroundLabel = new BackgroundLabel(false, this);
     m_desktopFrame = new DesktopFrame(this);
+    XcbMisc::instance()->set_window_type(winId(),
+                                         XcbMisc::Desktop);
 
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
     connect(signalManager, SIGNAL(requestRenamed(QString)), this, SLOT(handleRename()));
