@@ -35,7 +35,8 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_lastCheckedDesktopItem = DesktopItemPointer();
 
     m_mouseMoveCheckTimer = new QTimer;
-    m_mouseMoveCheckTimer->setInterval(1);
+    m_mouseMoveCheckTimer->setSingleShot(true);
+    m_mouseMoveCheckTimer->setInterval(10);
 
     initItems();
     initConnect();
@@ -306,7 +307,6 @@ void DesktopFrame::focusOutEvent(QFocusEvent *event){
 
 
 void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
-    LOG_INFO() << "enter" << event->pos();
     m_dragLeave = false;
 
     if (event->source() == this){
@@ -545,7 +545,7 @@ QRect DesktopFrame::getCheckedBorderRect(){
 
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     clearFocus();
-    update();
+//    update();
     if (event->button() == Qt::LeftButton && !m_ctrlPressed){
         DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
         if (m_desktopItemManager->isAppGroupBoxShowed()){
@@ -579,8 +579,8 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
         int height = event->pos().y() -y;
         m_selectRect = QRect(x, y , width, height);
         update();
-//        m_mouseMoveCheckTimer->start();
-        handleMouseMoveCheckItems();
+        m_mouseMoveCheckTimer->start();
+//        handleMouseMoveCheckItems();
     }
     QFrame::mouseMoveEvent(event);
 }
@@ -588,7 +588,6 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
 void DesktopFrame::handleMouseMoveCheckItems(){
     checkDesktopItemsByRect(m_selectRect);
 }
-
 
 void DesktopFrame::mouseDoubleClickEvent(QMouseEvent *event){
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(event->pos());
