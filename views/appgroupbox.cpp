@@ -5,13 +5,14 @@
 
 AppGroupBox::AppGroupBox(QWidget *parent) : ArrowRectangle(parent)
 {
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::SplashScreen);
     setAttribute(Qt::WA_DeleteOnClose);
     setMargin(10);
 }
 
 
 void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
+    activateWindow();
     if (!pItem.isNull()){
         if (pItem->getAppGroupItems().count() < 2){
             return;
