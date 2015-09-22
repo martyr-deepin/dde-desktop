@@ -171,6 +171,9 @@ void DBusController::requestThumbnail(QString scheme, uint size){
         emit signalManager->desktoItemIconUpdated(scheme, iconUrl, size);
     }else{
         LOG_ERROR() << reply.error().message();
+        if (m_thumbnails.contains(scheme)){
+            m_thumbnails.removeOne(scheme);
+        }
     }
 }
 
@@ -276,7 +279,10 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;
         }
         m_thumbnails.append(desktopItemInfo.URI);
-        m_thumbnailTimer->start();
+        qDebug() << desktopItemInfo.URI << isRequestThumbnail(desktopItemInfo.URI);
+        if (isRequestThumbnail(desktopItemInfo.URI)){
+            m_thumbnailTimer->start();
+        }
         emit signalManager->itemCreated(desktopItemInfo);
         LOG_INFO() << "asyncCreateDesktopItemByUrlFinished" << desktopItemInfo.thumbnail <<"11111111111";
         updateDesktopItemInfoMap(desktopItemInfo);

@@ -174,6 +174,7 @@ QPixmap AppTableWidget::getDragPixmap(){
 
 
 void AppTableWidget::mouseMoveEvent(QMouseEvent *event){
+    Q_UNUSED(event);
     if (m_dragItem){
         qDebug() << "mouseMoveEvent getDesktopItemInfo" << m_dragItem->getDesktopItemInfo().BaseName;
         startDrag(m_dragItem->getDesktopItemInfo());

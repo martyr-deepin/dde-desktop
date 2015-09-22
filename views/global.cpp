@@ -1,4 +1,5 @@
 #include "global.h"
+#include <QMimeDatabase>
 
 QString decodeUrl(QString url){
     return QUrl(url).toString();
@@ -105,4 +106,17 @@ QString formatURl(QString url){
         key = FilePrefix + key;
     }
     return key;
+}
+
+
+bool isRequestThumbnail(QString url){
+    QMimeDatabase mimeDataBae;
+    QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(url));
+    bool isImage = mimeType.genericIconName() == "image-x-generic";
+    bool isText = mimeType.genericIconName() == "text-x-generic" && !isDesktopAppFile(url);
+    if (isImage || isText){
+        return true;
+    }else{
+        return false;
+    }
 }

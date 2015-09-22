@@ -33,8 +33,8 @@ void DesktopBox::handleRename(){
         LOG_INFO() << "handleRename start";
         DesktopItemPointer pItem = m_desktopFrame->getLastCheckedDesktopItem();
         if (!pItem.isNull()){
-            LOG_INFO() << "handleRename start" << pItem->getUrl();
-            if (!pItem->isShowSimpleMode()){
+//            LOG_INFO() << "handleRename start" << pItem->getUrl() << pItem->isShowSimpleMode();
+//            if (!pItem->isShowSimpleMode()){
                 pItem->setEdited(true);
                 if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
                     return;
@@ -42,7 +42,7 @@ void DesktopBox::handleRename(){
                 pItem->setChecked(false);
                 pItem->getTextEdit()->showEditing();
                 pItem->getTextEdit()->setFocus();
-            }
+//            }
         }
     }
 }
