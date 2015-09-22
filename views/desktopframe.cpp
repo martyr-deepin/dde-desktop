@@ -58,7 +58,9 @@ void DesktopFrame::initConnect(){
             this, SLOT(changeGridBySizeType(SizeType)));
     connect(signalManager, SIGNAL(gridModeChanged(bool)),
             this, SLOT(changeGridMode(bool)));
-    connect(signalManager, SIGNAL(keyCtrlAPressed()), this, SLOT(checkAllDesktopItems()));
+    connect(signalManager, SIGNAL(keyCtrlAPressed()), this, SLOT(handleKeyCtrlAPressed()));
+    connect(signalManager, SIGNAL(keyCtrlCPressed()), this, SLOT(handleKeyCtrlCPressed()));
+    connect(signalManager, SIGNAL(keyCtrlVPressed()), this, SLOT(handleKeyCtrlVPressed()));
     connect(this, SIGNAL(lastCheckedDesktopItemChanged(DesktopItemPointer)),
             this, SLOT(setLastCheckedDesktopItem(DesktopItemPointer)));
     connect(this, SIGNAL(checkedDesktopItemsAdded(DesktopItemPointer)),
@@ -274,6 +276,19 @@ QStringList DesktopFrame::getCheckedFiles(){
         files.append(pItem->getUrl());
     }
     return files;
+}
+
+
+void DesktopFrame::handleKeyCtrlAPressed(){
+    checkAllDesktopItems();
+}
+
+void DesktopFrame::handleKeyCtrlCPressed(){
+    emit signalManager->filesCopyed(getCheckedFiles());
+}
+
+void DesktopFrame::handleKeyCtrlVPressed(){
+    emit signalManager->pasteFilesToDesktop();
 }
 
 void DesktopFrame::focusInEvent(QFocusEvent *event){

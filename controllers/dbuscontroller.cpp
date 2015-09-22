@@ -63,10 +63,10 @@ void DBusController::initConnect(){
 
     connect(m_desktopDaemonInterface, SIGNAL(RequestEmptyTrash()), signalManager, SIGNAL(requestEmptyTrash()));
 
+    connect(signalManager, SIGNAL(filesCopyed(QStringList)), this, SLOT(copyFiles(QStringList)));
+    connect(signalManager, SIGNAL(pasteFilesToDesktop()), this, SLOT(pasteFilesToDesktop()));
     connect(m_clipboardInterface, SIGNAL(RequestPaste(QString,QStringList,QString)),
             this, SLOT(pasteFiles(QString,QStringList,QString)));
-
-
 
     connect(signalManager, SIGNAL(requestCreatingAppGroup(QStringList)),
             this, SLOT(requestCreatingAppGroup(QStringList)));
@@ -545,6 +545,14 @@ void DBusController::mergeIntoAppGroup(QStringList urls, QString group_url){
     }else{
         LOG_ERROR() << reply.error().message();
     }
+}
+
+void DBusController::copyFiles(QStringList urls){
+    m_clipboardInterface->CopyToClipboard(urls);
+}
+
+void DBusController::pasteFilesToDesktop(){
+    m_clipboardInterface->EmitPaste(desktopLocation);
 }
 
 void DBusController::pasteFiles(QString action, QStringList files, QString destination){

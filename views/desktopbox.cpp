@@ -150,9 +150,12 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         if (m_isGridOn){
             emit signalManager->keyShiftDownPressed();
         }
-    }if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_F2){
-        LOG_INFO() << "==========";
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_F2){
         handleRename();
+    }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C){
+        emit signalManager->keyCtrlCPressed();
+    }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_V){
+        emit signalManager->keyCtrlVPressed();
     }
 
     TranslucentFrame::keyPressEvent(event);

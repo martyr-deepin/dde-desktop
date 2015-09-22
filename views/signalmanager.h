@@ -40,6 +40,8 @@ signals:
     void keyShiftDownPressed();
 
     void keyCtrlAPressed();
+    void keyCtrlCPressed();
+    void keyCtrlVPressed();
 
     /*context menu signal*/
     void contextMenuShowed(QString url, QPoint pos);
@@ -65,11 +67,15 @@ signals:
 
     void requestEmptyTrash();
 
+    /*copy files*/
+    void filesCopyed(QStringList urls);
+
     /*cut files*/
     void filesCuted(QStringList urls);
     void cancelFilesCuted(QStringList urls);
 
     /*paste files*/
+    void pasteFilesToDesktop();
     void moveFilesExcuted(const QStringList& files, QString destination);
     void moveJobAboutToAbort();
     void movingFileChaned(QString file);

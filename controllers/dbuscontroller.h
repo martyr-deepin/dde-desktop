@@ -117,6 +117,9 @@ public slots:
     void createFileFromTemplateFinished(QString filename);
     void sortByKey(QString key);
 
+    /*copy files*/
+    void copyFiles(QStringList urls);
+
     /*app group*/
     void requestCreatingAppGroup(QStringList urls);
     void getAppGroupItemsByUrl(QString group_url);
@@ -124,6 +127,7 @@ public slots:
     void mergeIntoAppGroup(QStringList urls, QString group_url);
 
     /*paste files*/
+    void pasteFilesToDesktop();
     void pasteFiles(QString action, QStringList files, QString destination);
 
     /*delay get thumbnail*/

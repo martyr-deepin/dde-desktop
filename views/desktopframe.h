@@ -71,6 +71,10 @@ public slots:
 
     void handleMouseMoveCheckItems();
 
+    void handleKeyCtrlAPressed();
+    void handleKeyCtrlCPressed();
+    void handleKeyCtrlVPressed();
+
 protected:
     void focusInEvent(QFocusEvent* event);
     void focusOutEvent(QFocusEvent* event);
