@@ -399,10 +399,10 @@ void DesktopFrame::startDrag(){
         QDrag* pDrag = new QDrag(this);
         pDrag->setMimeData(mimeData);
         pDrag->setPixmap(dragPixmap);
-        pDrag->setHotSpot(QCursor::pos());
+        QRect borderRect = getCheckedBorderRect();
+        pDrag->setHotSpot(QPoint(-borderRect.x() + QCursor::pos().x(), -borderRect.y() + QCursor::pos().y() ));
         Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
         if (action == Qt::MoveAction){
-            LOG_INFO() << "drop 3333333333";
             if (!m_isGridOn){
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
                     QPoint newPos = pItem->pos() + mapFromGlobal(QCursor::pos()) - m_pressedEventPos;
@@ -511,9 +511,36 @@ QPixmap DesktopFrame::getCheckedPixmap(){
     }
     F->setStyleSheet(qApp->styleSheet());
     QRect viewRect(0, 0, qApp->desktop()->availableGeometry().width(), height());
-    QPixmap ret = F->grab(viewRect);
+    QPixmap ret = F->grab(getCheckedBorderRect());
     F->close();
+    qDebug() << "getCheckedBorderRect" << getCheckedBorderRect();
     return ret;
+}
+
+QRect DesktopFrame::getCheckedBorderRect(){
+    int minX = m_checkedDesktopItems.at(0)->pos().x();
+    int maxX = m_checkedDesktopItems.at(0)->pos().x();
+    int minY = m_checkedDesktopItems.at(0)->pos().y();
+    int maxY = m_checkedDesktopItems.at(0)->pos().y();
+    QList<int> xPoss;
+    QList<int> yPoss;
+    foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+        if (pItem->pos().x() < minX){
+            minX = pItem->pos().x();
+        }
+        if (pItem->pos().x() > maxX){
+            maxX = pItem->pos().x();
+        }
+        if (pItem->pos().y() < minY){
+            minY = pItem->pos().y();
+        }
+        if (pItem->pos().y() > maxY){
+            maxY = pItem->pos().y();
+        }
+    }
+    int w = m_checkedDesktopItems.at(0)->width();
+    int h = m_checkedDesktopItems.at(0)->height();
+    return QRect(minX, minY, maxX - minX + w, maxY - minY + h);
 }
 
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){

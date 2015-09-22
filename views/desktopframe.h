@@ -50,6 +50,8 @@ public:
 
     QPoint getAppGroupDestinationPos();
 
+    QRect getCheckedBorderRect();
+
 signals:
     void lastCheckedDesktopItemChanged(DesktopItemPointer pItem);
     void checkedDesktopItemsAdded(DesktopItemPointer pItem);
