@@ -269,7 +269,7 @@ void DesktopItem::setHover(bool hover){
         }
         m_hover = hover;
         m_checked = false;
-        setStyleSheet(qApp->styleSheet());
+        update();
     }
 
     if (m_hover!=hover){
@@ -287,7 +287,6 @@ bool DesktopItem::isChecked(){
 }
 
 void DesktopItem::setChecked(bool checked, bool isExpanded){
-    qDebug() << "======setChecked===========/////////";
      if (m_checked != checked){
         if (checked){
             setObjectName(QString("Checked"));
@@ -297,13 +296,12 @@ void DesktopItem::setChecked(bool checked, bool isExpanded){
         }else{
             setObjectName(QString("Normal"));
             if (!isEditing()){
-                qDebug() << "=================/////////";
                 showSimpWrapName();
             }
         }
         m_checked = checked;
         m_hover = false;
-        setStyleSheet(qApp->styleSheet());
+        update();
         emit checkedChanged(checked);
      }
 }
@@ -393,6 +391,26 @@ void DesktopItem::enterEvent(QEvent *event){
 void DesktopItem::leaveEvent(QEvent *event){
     setHover(false);
     QFrame::leaveEvent(event);
+}
+
+void DesktopItem::paintEvent(QPaintEvent *event){
+    if (m_checked){
+        QPainter painter(this);
+        painter.setPen(QPen(QColor(255, 255, 255, 51), 2));
+        painter.setBrush(QColor(0, 0 , 0, 76));
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        QRect r(2, 2, width() - 4, height() - 4);
+        painter.drawRoundedRect(r, 10, 10, Qt::RelativeSize);
+    }
+    if (m_hover){
+        QPainter painter(this);
+        painter.setPen(QPen(QColor(255, 255, 255, 36), 2));
+        painter.setBrush(QColor(0, 0 , 0, 36));
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        QRect r(2, 2, width() - 4, height() - 4);
+        painter.drawRoundedRect(r, 10, 10, Qt::RelativeSize);
+    }
+    QFrame::paintEvent(event);
 }
 
 bool DesktopItem::isEditing(){

@@ -87,6 +87,7 @@ protected:
     void moveEvent(QMoveEvent* event);
     void enterEvent(QEvent* event);
     void leaveEvent(QEvent* event);
+    void paintEvent(QPaintEvent* event);
 
 private:
     QLabel* m_iconLabel;

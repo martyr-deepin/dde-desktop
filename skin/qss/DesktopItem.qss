@@ -32,30 +32,9 @@ QFrame#Border{
     color:white
 }
 
-QFrame#Normal{
-    background-color: rgba(0, 0, 0, 0);
-    border: 2px solid rgba(0, 0, 0, 0);
-    border-radius: 4px;
-    color:white
-}
-
-QFrame#Hover{
-    background-color: rgba(0, 0, 0, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-    color:white
-}
-
 QFrame#AppGroupHover{
     background-color: rgba(255, 255, 255, 0.15);
     border: 2px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-    color:white
-}
-
-QFrame#Checked{
-    background-color: rgba(0, 0, 0, 0.4);
-    border: 2px solid rgba(255, 255, 255, 0.4);
     border-radius: 4px;
     color:white
 }
