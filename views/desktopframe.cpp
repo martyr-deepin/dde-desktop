@@ -480,6 +480,8 @@ QPixmap DesktopFrame::getCheckedPixmap(){
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
         DesktopItem* item = new DesktopItem(pItem->getDesktopIcon(),
                                        pItem->getDesktopName(), F);
+        if (item->getTextEdit()->graphicsEffect())
+            item->getTextEdit()->graphicsEffect()->setEnabled(false);
         bool flag = pItem->isShowSimpleMode();
         pItem->showSimpWrapName();
         item->resize(pItem->size());
@@ -535,8 +537,8 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
         int height = event->pos().y() -y;
         m_selectRect = QRect(x, y , width, height);
         update();
-        m_mouseMoveCheckTimer->start();
-//        handleMouseMoveCheckItems();
+//        m_mouseMoveCheckTimer->start();
+        handleMouseMoveCheckItems();
     }
     QFrame::mouseMoveEvent(event);
 }
