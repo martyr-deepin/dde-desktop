@@ -1,6 +1,7 @@
 #include "movejobcontroller.h"
 #include "dbusinterface/movejob_interface.h"
 #include "dbusinterface/fileoperations_interface.h"
+#include "dbusinterface/services/conflictdaptor.h"
 #include "views/global.h"
 
 MoveJobController::MoveJobController(QObject *parent) : QObject(parent)
@@ -17,7 +18,22 @@ void MoveJobController::initConnect(){
 
 void MoveJobController::moveFiles(QStringList files, QString destination){
     qDebug() << files << destination;
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewMoveJob(files, destination, "",  0, "",  "", "");
+
+    if (files.length() == 0)
+        return;
+
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = \
+            dbusController->getFileOperationsInterface()->NewMoveJob(
+                files,
+                desktopLocation,
+                "",
+                0,
+                ConflictAdaptor::staticServerPath(),
+                ConflictAdaptor::staticInterfacePath(),
+                ConflictAdaptor::staticInterfaceName()
+                );
+
+//    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewMoveJob(files, destination, "",  0, "",  "", "");
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();
