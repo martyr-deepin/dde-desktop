@@ -35,7 +35,7 @@ void TrashJobController::monitorTrash(){
             m_isTrashEmpty = false;
         }
     }else{
-        LOG_ERROR() << reply.error().message();
+        qCritical() << reply.error().message();
     }
     connect(m_trashMonitorInterface, SIGNAL(ItemCountChanged(uint)), this, SLOT(updateTrashIconByCount(uint)));
 }
@@ -55,7 +55,7 @@ void TrashJobController::trashJobExcute(const QStringList &files){
         connectTrashSignal();
         m_trashJobInterface->Execute();
     }else{
-        LOG_ERROR() << reply.error().message();
+        qCritical() << reply.error().message();
     }
 }
 
@@ -84,7 +84,7 @@ void TrashJobController::trashJobExcuteFinished(){
     m_trashJobInterface->deleteLater();
     m_trashJobInterface = NULL;
 
-    LOG_INFO() << "trash files deleted";
+    qDebug() << "trash files deleted";
 }
 
 
@@ -133,12 +133,12 @@ void TrashJobController::confirmDelete(){
     if (!reply.isError()){
         uint count = reply.argumentAt(0).toUInt();
         if (count == 0){
-             LOG_ERROR() << "count read error";
+             qCritical() << "count read error";
         }else{
              showDialogByCount(count);
         }
     }else{
-        LOG_ERROR() << reply.error().message();
+        qCritical() << reply.error().message();
     }
 }
 
@@ -173,7 +173,7 @@ void TrashJobController::createEmptyTrashJob(){
         connect(m_emptyTrashJobInterface, SIGNAL(Done()), this, SLOT(emptyTrashJobExcuteFinished()));
         m_emptyTrashJobInterface->Execute();
     }else{
-        LOG_ERROR() << reply.error().message();
+        qCritical() << reply.error().message();
     }
 }
 

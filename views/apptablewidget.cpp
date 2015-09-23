@@ -32,7 +32,7 @@ void AppTableWidget::init(){
 
     connect(this, SIGNAL(cellClicked(int,int)), this, SLOT(handleCellClicked(int,int)));
     connect(this, SIGNAL(cellPressed(int,int)), this, SLOT(handleCellPressed(int,int)));
-    LOG_INFO() << "App Group init finished";
+    qDebug() << "App Group init finished";
 }
 
 void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
@@ -81,7 +81,7 @@ void AppTableWidget::handleCellClicked(int row, int column){
     qDebug() << row << column << "handleCellClicked";
     DesktopItem* pItem = dynamic_cast<DesktopItem*>(cellWidget(row, column));
     if (pItem == NULL){
-        LOG_INFO() << "handleCellClicked no desktop item";
+        qDebug() << "handleCellClicked no desktop item";
     }else{
         emit signalManager->openFile(pItem->getDesktopItemInfo());
     }
@@ -92,9 +92,9 @@ void AppTableWidget::handleCellPressed(int row, int column){
     qDebug() << row << column << "handleCellPressed";
     DesktopItem* pItem = reinterpret_cast<DesktopItem*>(cellWidget(row, column));
     if (pItem == NULL){
-        LOG_INFO() << "handleCellPressed no desktop item";
+        qDebug() << "handleCellPressed no desktop item";
     }else{
-        LOG_INFO() << "handleCellPressed drag desktop item" << pItem;
+        qDebug() << "handleCellPressed drag desktop item" << pItem;
         m_dragItem = pItem;
     }
 }
@@ -147,9 +147,9 @@ void AppTableWidget::startDrag(const DesktopItemInfo &info){
     pDrag->setHotSpot(QCursor::pos());
     Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
      if (action == Qt::MoveAction){
-        LOG_INFO() << "app group item drag move======";
+        qDebug() << "app group item drag move======";
      }else{
-        LOG_INFO() << "app group item drag copy======";
+        qDebug() << "app group item drag copy======";
      }
 }
 
@@ -182,14 +182,14 @@ void AppTableWidget::mouseMoveEvent(QMouseEvent *event){
 }
 
 void AppTableWidget::dragEnterEvent(QDragEnterEvent *event){
-    LOG_INFO() << "app group enter" << event->pos();
+    qDebug() << "app group enter" << event->pos();
 //    m_dragLeave = false;
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
         if (event->source() == this){
             event->setDropAction(Qt::MoveAction);
             event->accept();
         }else{
-            LOG_INFO() << event->mimeData();
+            qDebug() << event->mimeData();
             event->ignore();
         }
     }else{
@@ -213,7 +213,7 @@ void AppTableWidget::dragMoveEvent(QDragMoveEvent *event){
 
 void AppTableWidget::dragLeaveEvent(QDragLeaveEvent *event){
     //    m_dragLeave = true;
-    LOG_INFO() << "app group leave" << event;
+    qDebug() << "app group leave" << event;
     event->ignore();
 }
 

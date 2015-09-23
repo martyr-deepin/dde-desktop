@@ -30,10 +30,10 @@ DesktopFrame* DesktopBox::getDesktopFrame(){
 void DesktopBox::handleRename(){
     if (!m_desktopFrame->getLastCheckedDesktopItem().isNull() &&\
             m_desktopFrame->getCheckedDesktopItems().length() == 1){
-        LOG_INFO() << "handleRename start";
+        qDebug() << "handleRename start";
         DesktopItemPointer pItem = m_desktopFrame->getLastCheckedDesktopItem();
         if (!pItem.isNull()){
-//            LOG_INFO() << "handleRename start" << pItem->getUrl() << pItem->isShowSimpleMode();
+//            qDebug() << "handleRename start" << pItem->getUrl() << pItem->isShowSimpleMode();
 //            if (!pItem->isShowSimpleMode()){
                 pItem->setEdited(true);
                 if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
@@ -51,7 +51,7 @@ void DesktopBox::renameFinished(){
     DesktopItemPointer pItem = m_desktopFrame->getLastCheckedDesktopItem();
     if (!pItem.isNull()){
         QString  fileName;
-        LOG_INFO() << isAppGroup(pItem->getUrl()) << QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
+        qDebug() << isAppGroup(pItem->getUrl()) << QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
         if (isAppGroup(pItem->getUrl())){
             fileName = QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
         }else{
@@ -116,7 +116,7 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Delete){
         emit signalManager->trashingAboutToExcute(m_desktopFrame->getCheckedFiles());
     }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Delete){
-        LOG_INFO() << m_desktopFrame->getCheckedFiles() << "shift delete";
+        qDebug() << m_desktopFrame->getCheckedFiles() << "shift delete";
         emit signalManager->deleteFilesExcuted(m_desktopFrame->getCheckedFiles());
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
         if (m_isGridOn){
@@ -171,13 +171,13 @@ void DesktopBox::keyReleaseEvent(QKeyEvent *event){
 
 
 void DesktopBox::closeEvent(QCloseEvent *event){
-    LOG_INFO() << "closeEvent";
+    qDebug() << "closeEvent";
     event->accept();
 }
 
 DesktopBox::~DesktopBox()
 {
 
-    LOG_INFO() << "~DesktopBox";
+    qDebug() << "~DesktopBox";
 }
 

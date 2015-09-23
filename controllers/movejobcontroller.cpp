@@ -16,18 +16,18 @@ void MoveJobController::initConnect(){
 
 
 void MoveJobController::moveFiles(QStringList files, QString destination){
-    LOG_INFO() << files << destination;
+    qDebug() << files << destination;
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewMoveJob(files, destination, "",  0, "",  "", "");
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        LOG_INFO() << "move files" << files << path;
+        qDebug() << "move files" << files << path;
         m_moveJobInterface = new MoveJobInterface(service, path, QDBusConnection::sessionBus(), this);
         connectMoveJobSignal();
         m_moveJobInterface->Execute();
     }else{
-        LOG_ERROR() << reply.error().message();
+        qCritical() << reply.error().message();
     }
 }
 
@@ -57,7 +57,7 @@ void MoveJobController::moveJobExcuteFinished(){
     disconnectMoveJobSignal();
     m_moveJobInterface->deleteLater();
     m_moveJobInterface = NULL;
-    LOG_INFO() << "move job finished";
+    qDebug() << "move job finished";
 }
 
 void MoveJobController::moveJobAbort(){
@@ -70,18 +70,18 @@ void MoveJobController::moveJobAbortFinished(){
     disconnectMoveJobSignal();
     m_moveJobInterface->deleteLater();
     m_moveJobInterface = NULL;
-    LOG_INFO() << "move job aborted";
+    qDebug() << "move job aborted";
 }
 
 
 void MoveJobController::onMovingFile(QString file){
     emit signalManager->movingFileChaned(file);
-    LOG_INFO() << "onMovingFile" << file;
+    qDebug() << "onMovingFile" << file;
 }
 
 void MoveJobController::onMovingProcessAmount(qlonglong progress, ushort info){
     emit signalManager->movingProcessAmountChanged(progress, info);
-    LOG_INFO() << "onMovingProcessAmount" << progress << info;
+    qDebug() << "onMovingProcessAmount" << progress << info;
 }
 
 MoveJobController::~MoveJobController()

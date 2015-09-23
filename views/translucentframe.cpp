@@ -10,5 +10,5 @@ TranslucentFrame::TranslucentFrame(QWidget *parent) : QFrame(parent)
 
 TranslucentFrame::~TranslucentFrame()
 {
-//    LOG_INFO() << "delete";
+//    qDebug() << "delete";
 }

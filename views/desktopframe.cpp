@@ -310,11 +310,11 @@ void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
     m_dragLeave = false;
 
     if (event->source() == this){
-        LOG_INFO() << "dragEnterEvent event come from self"<< event->pos();
+        qDebug() << "dragEnterEvent event come from self"<< event->pos();
         event->setDropAction(Qt::MoveAction);
         event->accept();
     }else{
-        LOG_INFO() << "dragEnterEvent event come from outside"<< event->pos();
+        qDebug() << "dragEnterEvent event come from outside"<< event->pos();
         event->acceptProposedAction();
     }
 }
@@ -328,7 +328,7 @@ void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
 void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
     m_dragLeave = true;
     event->accept();
-    LOG_INFO() << "dragLeaveEvent come from outside";
+    qDebug() << "dragLeaveEvent come from outside";
 }
 
 void DesktopFrame::dropEvent(QDropEvent *event){

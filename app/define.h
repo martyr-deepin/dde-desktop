@@ -4,7 +4,7 @@
 #include "logmanager.h"
 #include "daemon.h"
 #include "widgets/singleton.h"
-#include <Logger.h>
+#include "widgets/commandlinemanager.h"
 
 #include <QDBusInterface>
 #include <QDBusConnection>
@@ -16,11 +16,23 @@ void debug_daemon_off(){
     #endif
 }
 
-void debug_log_console_on(){
-    #if !defined(QT_NO_DEBUG)
-    Singleton<LogManager>::instance()->initConsoleAppender();
-    #endif
-    Singleton<LogManager>::instance()->initRollingFileAppender();
+void RegisterLogger(){
+    bool isSet =  CommandLineManager::instance()->isSet("logDestination");
+    QString value = CommandLineManager::instance()->value("logDestination");
+    if (isSet){
+        if (value == "stdout"){
+            Singleton<LogManager>::instance()->initConsoleAppender();
+        }else if (value == "file"){
+            Singleton<LogManager>::instance()->initRollingFileAppender();
+        }else{
+            Singleton<LogManager>::instance()->initRollingFileAppender();
+        }
+    }else{
+#if !defined(QT_NO_DEBUG)
+        Singleton<LogManager>::instance()->initConsoleAppender();
+#endif
+        Singleton<LogManager>::instance()->initRollingFileAppender();
+    }
 }
 
 // let startdde know that we've already started.

@@ -172,7 +172,7 @@ void DesktopItemManager::setShoudBeMovedItemByUrl(QString url){
     if (m_pItems.contains(key)){
         setShoudBeMovedItem(m_pItems.value(key));
     }else{
-        LOG_ERROR() << "Invalid key" << key;
+        qCritical() << "Invalid key" << key;
         setShoudBeMovedItem(DesktopItemPointer());
     }
 }
@@ -194,7 +194,7 @@ void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMa
             static_cast<DesktopFrame*>(this->parent())->setAppGroupDestinationPos(QPoint(-1, -1));
         }
     }else{
-        LOG_ERROR() << "Invalid key" << key;
+        qCritical() << "Invalid key" << key;
     }
 }
 
@@ -219,7 +219,7 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
 
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
-    LOG_INFO() << "add Item" << pDesktopItem->getUrl();
+    qDebug() << "add Item" << pDesktopItem->getUrl();
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
     m_list_pItems.append(pDesktopItem);
     checkPageCount();
@@ -249,7 +249,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
 
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
-    LOG_INFO() << "add Item" << pDesktopItem->getUrl();
+    qDebug() << "add Item" << pDesktopItem->getUrl();
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
     m_list_pItems.append(pDesktopItem);
     checkPageCount();
@@ -257,7 +257,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
     if (!pDesktopItem.isNull()){
         GridItemPointer pGridItem = gridManager->getBlankItem();
         if (!pGridItem.isNull()){
-            LOG_INFO() << pGridItem->getRow() << pGridItem->getColumn() << pGridItem->hasDesktopItem();
+            qDebug() << pGridItem->getRow() << pGridItem->getColumn() << pGridItem->hasDesktopItem();
             pDesktopItem->move(pGridItem->getPos());
             pDesktopItem->show();
             pGridItem->setDesktopItem(true);
@@ -276,7 +276,7 @@ void DesktopItemManager::checkPageCount(){
     if (count % (rowCount * columnCount) > 0 && pageCount > 1){
         if (m_pagecount != pageCount){
             emit signalManager->pageCountChanged(pageCount);
-            LOG_INFO() << pageCount << "pageCount" << "/////////////";
+            qDebug() << pageCount << "pageCount" << "/////////////";
             m_pagecount = pageCount;
         }
     }
@@ -291,7 +291,7 @@ void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uin
     qDebug() << m_pItems.contains(url) << url;
     if (m_pItems.contains(url)){
         m_pItems.value(url)->setDesktopIcon(iconUrl);
-        LOG_INFO() << iconUrl;
+        qDebug() << iconUrl;
     }
 }
 
@@ -341,7 +341,7 @@ void DesktopItemManager::cancelCutedItems(QStringList urls){
             pItem->cancelCuted();
         }
     }
-    LOG_INFO() << "cancel cuted";
+    qDebug() << "cancel cuted";
 }
 
 void DesktopItemManager::deleteItem(QString url){
@@ -353,7 +353,7 @@ void DesktopItemManager::deleteItem(QString url){
         _url = decodeUrl(url);
     }
 
-    LOG_INFO() << "deleteItem" << url << _url << m_pItems.contains(_url) << m_pItems.value(_url);
+    qDebug() << "deleteItem" << url << _url << m_pItems.contains(_url) << m_pItems.value(_url);
     if (m_pItems.contains(_url)){
         DesktopItemPointer pItem = m_pItems.value(_url);
 
@@ -447,17 +447,17 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
             DesktopItemPointer  pDesktopItem = m_pItems.value(url);
             m_list_pItems.append(pDesktopItem);
         }else{
-            LOG_ERROR() << url;
+            qCritical() << url;
         }
     }
-    LOG_INFO() << m_list_pItems.length();
+    qDebug() << m_list_pItems.length();
     for (int i = 0; i< m_list_pItems.length() ; i++){
         int pColumn = i / row;
         int pRow = i % row;
         GridItemPointer pGridItem = gridManager->getItems().at(pColumn)->at(pRow);
         if (!pGridItem.isNull()){
             QRect rect = pGridItem->getRect();
-//            LOG_INFO() << pRow << pColumn <<  rect << pGridItem->hasDesktopItem();
+//            qDebug() << pRow << pColumn <<  rect << pGridItem->hasDesktopItem();
             if (!m_list_pItems.at(i).isNull()){
                 m_list_pItems.at(i)->move(rect.topLeft());
                  pGridItem->setDesktopItem(true);

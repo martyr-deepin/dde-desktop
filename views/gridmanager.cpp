@@ -119,7 +119,7 @@ GridItemPointer GridManager::getBlankItem(){
         for (int row = 0; row < m_rowCount; row++){
             GridItemPointer pItem = m_list_items.at(column)->at(row);
             if (!pItem->hasDesktopItem()){
-                LOG_INFO() << row << column << "/////////////";
+                qDebug() << row << column << "/////////////";
                 return pItem;
             }
         }
@@ -290,7 +290,7 @@ DoubleGridItemPointerList GridManager::getItemsByType(SizeType type){
 
 
 void GridManager::updateGridByPageCount(int count){
-    LOG_INFO() << "GridManager update";
+    qDebug() << "GridManager update";
     setPageCount(count);
     getItemsByType(m_sizeType);
 }

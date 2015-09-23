@@ -3,7 +3,6 @@
 
 
 #include <QtCore>
-#include <Logger.h>
 #include "widgets/singleton.h"
 #include "gridmanager.h"
 #include "signalmanager.h"

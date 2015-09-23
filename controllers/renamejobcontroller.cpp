@@ -13,7 +13,7 @@ void RenameJobController::initConnect(){
 }
 
 void RenameJobController::rename(QString url, QString newName){
-    LOG_INFO() << url << newName;
+    qDebug() << url << newName;
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewRenameJob(url, newName);
     reply.waitForFinished();
     if (!reply.isError()){
@@ -23,7 +23,7 @@ void RenameJobController::rename(QString url, QString newName){
         connect(m_renameJobInterface, SIGNAL(Done(QString)), this, SLOT(renameJobExcuteFinished(QString)));
         m_renameJobInterface->Execute();
     }else{
-        LOG_ERROR() << reply.error().message();
+        qCritical() << reply.error().message();
     }
 }
 
@@ -31,7 +31,7 @@ void RenameJobController::renameJobExcuteFinished(QString name){
     disconnect(m_renameJobInterface, SIGNAL(Done(QString)), this, SLOT(renameJobExcuteFinished(QString)));
     m_renameJobInterface->deleteLater();
     m_renameJobInterface = NULL;
-    LOG_INFO() << "rename job finished" << name;
+    qDebug() << "rename job finished" << name;
 }
 
 RenameJobController::~RenameJobController()

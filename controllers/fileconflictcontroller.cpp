@@ -16,7 +16,6 @@ void FileConflictController::registerDBusService(){
     qDebug() << "registerDBusService"<<flag;
 }
 
-
 ConflictInfo FileConflictController::AskSkip(const QString &primaryText,
                                      const QString &secondaryText,
                                      const QString &detailText,

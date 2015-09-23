@@ -56,18 +56,18 @@ void DeleteJobController::handleDeleteAction(int index){
 
 
 void DeleteJobController::deleteFiles(const QStringList &files){
-    LOG_INFO() << "delete" <<files;
+    qDebug() << "delete" <<files;
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewDeleteJob(files, false, "", "", "");
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        LOG_INFO() << "delete files" << files << path;
+        qDebug() << "delete files" << files << path;
         m_deleteJobInterface = new DeleteJobInterface(service, path, QDBusConnection::sessionBus(), this);
         connectDeleteJobSignal();
         m_deleteJobInterface->Execute();
     }else{
-        LOG_ERROR() << reply.error().message();
+        qCritical() << reply.error().message();
     }
 }
 
@@ -98,7 +98,7 @@ void DeleteJobController::deleteJobExcuteFinished(){
     m_deleteJobInterface->deleteLater();
     m_deleteJobInterface = NULL;
     m_deletefiles.clear();
-    LOG_INFO() << "delete job finished";
+    qDebug() << "delete job finished";
 }
 
 void DeleteJobController::deleteJobAbort(){
@@ -111,18 +111,18 @@ void DeleteJobController::deleteJobAbortFinished(){
     disconnectDeleteJobSignal();
     m_deleteJobInterface->deleteLater();
     m_deleteJobInterface = NULL;
-    LOG_INFO() << "delete job aborted";
+    qDebug() << "delete job aborted";
 }
 
 
 void DeleteJobController::onDeletingFile(QString file){
     emit signalManager->deletingFileChaned(file);
-    LOG_INFO() << "onDeletingFile" << file;
+    qDebug() << "onDeletingFile" << file;
 }
 
 void DeleteJobController::onDeletingProcessAmount(qlonglong progress, ushort info){
     emit signalManager->deletingProcessAmountChanged(progress, info);
-    LOG_INFO() << "onDeletingProcessAmount" << progress << info;
+    qDebug() << "onDeletingProcessAmount" << progress << info;
 }
 
 DeleteJobController::~DeleteJobController()

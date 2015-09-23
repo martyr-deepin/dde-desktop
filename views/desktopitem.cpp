@@ -456,6 +456,6 @@ void DesktopItem::addTextShadow(){
 
 DesktopItem::~DesktopItem()
 {
-//    LOG_INFO() << this << "Desktop Item delete";
+//    qDebug() << this << "Desktop Item delete";
 }
 

@@ -10,10 +10,6 @@
 
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
-
-    qApp->setOrganizationName("Linux Deepin");
-    qApp->setOrganizationDomain("linuxdeepin.org");
-    qApp->setApplicationName("dde-desktop");
     m_desktopBox = new DesktopBox;
     m_appController = new AppController;
     initConnect();

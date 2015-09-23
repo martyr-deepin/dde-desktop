@@ -37,12 +37,12 @@ void CopyJobController::copyFiles(QStringList files, QString destination){
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        LOG_INFO() << "copy files" << files << path;
+        qDebug() << "copy files" << files << path;
         m_copyJobInterface = new CopyJobInterface(service, path, QDBusConnection::sessionBus(), this);
         connectCopyJobSignal();
         m_copyJobInterface->Execute();
     }else{
-        LOG_ERROR() << reply.error().message();
+        qCritical() << reply.error().message();
     }
 }
 
@@ -73,7 +73,7 @@ void CopyJobController::copyJobExcuteFinished(QString file){
     disconnectCopyJobSignal();
     m_copyJobInterface->deleteLater();
     m_copyJobInterface = NULL;
-    LOG_INFO() << "copy job finished" << file;
+    qDebug() << "copy job finished" << file;
 }
 
 void CopyJobController::copyJobAbort(){
@@ -86,17 +86,17 @@ void CopyJobController::copyJobAbortFinished(){
     disconnectCopyJobSignal();
     m_copyJobInterface->deleteLater();
     m_copyJobInterface = NULL;
-    LOG_INFO() << "copy job aborted";
+    qDebug() << "copy job aborted";
 }
 
 
 void CopyJobController::onCopyingFile(QString file){
     emit signalManager->copyingFileChaned(file);
-    LOG_INFO() << "onCopyingFile" << file;
+    qDebug() << "onCopyingFile" << file;
 }
 
 void CopyJobController::onCopyingProcessAmount(qlonglong progress, ushort info){
-    LOG_INFO() << "onCopyingProcessAmount" << progress << info;
+    qDebug() << "onCopyingProcessAmount" << progress << info;
     emit signalManager->copyingProcessAmountChanged(progress, info);
 
 }
