@@ -81,7 +81,6 @@ void GrowingElideTextEdit::elideText(){
 }
 
 void GrowingElideTextEdit::showSimpleElideText(){
-    qDebug() << "showSimpleElideText" << m_simpleWrapText << m_texts << m_texts.length();
     if (m_texts.length() <= 2){
         setText(m_fullText);
     }else if (m_texts.length() > 2){
@@ -130,6 +129,8 @@ void GrowingElideTextEdit::showReadOnly(){
                   background-color:rgba(0, 0, 0, 0);\
                   border:1px solid rgba(0, 0, 0, 0);\
                   color: white;\
+                  selection-color: white;\
+                  selection-background-color: #61B5F8;\
                   font-size: 12px;\
               ");
 }
@@ -139,9 +140,11 @@ void GrowingElideTextEdit::showEditing(){
     setTextInteractionFlags(Qt::TextEditorInteraction);
     selectAll();
     setStyleSheet("\
-                  background-color:rgba(0, 0, 0, 0);\
+                  background-color: white);\
                   border:1px solid black;\
                   color: white;\
+                  selection-color: white;\
+                  selection-background-color: #61B5F8;\
                   font-size: 12px;\
               ");
 }
