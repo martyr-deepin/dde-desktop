@@ -6,7 +6,7 @@
 #include "controllers/appcontroller.h"
 #include "dbusinterface/services/desktopadaptor.h"
 #include <QDBusConnection>
-
+#include <QStandardPaths>
 
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {

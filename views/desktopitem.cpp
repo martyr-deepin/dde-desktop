@@ -155,29 +155,40 @@ void DesktopItem::setDesktopIcon(QString icon){
     }else{
         QMimeDatabase mimeDataBae;
         QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(m_url));
-        qDebug() << m_url << mimeType.genericIconName() <<mimeType.comment()<< mimeType.preferredSuffix() << mimeType.suffixes();
+
+        QString cacheIcon = joinPath(getThumbnailsPath(), QFileInfo(icon).fileName());
         if (mimeType.genericIconName() == "image-x-generic"){
-            m_desktopIcon = applyShadowToPixmap(icon);
+            if (QFileInfo(cacheIcon).exists()){
+                m_desktopIcon = QPixmap(cacheIcon);
+            }else{
+                m_desktopIcon = applyShadowToPixmap(icon);
+                m_desktopIcon.save(cacheIcon);
+            }
             addImageShadow();
         }else if (mimeType.genericIconName() == "text-x-generic" && !isDesktopAppFile(m_url)){
-            m_desktopIcon = QPixmap(icon);
-            QPixmap mask(m_iconLabel->size());
-            QSvgRenderer maskRenderer(QString(":/images/skin/images/diban.svg"));
-            mask.fill(Qt::transparent);
-            QPainter painter;
-            painter.begin(&mask);
-            maskRenderer.render(&painter);
-            painter.end();
-            m_desktopIcon.setMask(mask.scaled(m_desktopIcon.size()).mask());
+            if (QFileInfo(cacheIcon).exists()){
+                m_desktopIcon = QPixmap(cacheIcon);
+            }else{
+                m_desktopIcon = QPixmap(icon);
+                QPixmap mask(m_iconLabel->size());
+                QSvgRenderer maskRenderer(QString(":/images/skin/images/diban.svg"));
+                mask.fill(Qt::transparent);
+                QPainter painter;
+                painter.begin(&mask);
+                maskRenderer.render(&painter);
+                painter.end();
+                m_desktopIcon.setMask(mask.scaled(m_desktopIcon.size()).mask());
 
-            QPixmap s(":/images/skin/images/textMask.png");
-            QPainter painter2;
-            painter2.begin(&s);
-            painter2.setRenderHint(QPainter::Antialiasing);
-            painter2.setRenderHint(QPainter::SmoothPixmapTransform);
-            painter2.drawPixmap(3, 4, m_desktopIcon.scaled(QSize(44, 44)));
-            painter2.end();
-            m_desktopIcon = s;
+                QPixmap s(":/images/skin/images/textMask.png");
+                QPainter painter2;
+                painter2.begin(&s);
+                painter2.setRenderHint(QPainter::Antialiasing);
+                painter2.setRenderHint(QPainter::SmoothPixmapTransform);
+                painter2.drawPixmap(3, 4, m_desktopIcon.scaled(QSize(44, 44)));
+                painter2.end();
+                m_desktopIcon = s;
+                m_desktopIcon.save(cacheIcon);
+            }
         }else{
             m_desktopIcon = QPixmap(icon);
         }

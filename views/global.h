@@ -23,7 +23,7 @@
 #define TrashUrl "trash://"
 #define FilePrefix "file://"
 
-
+QString getThumbnailsPath();
 QString decodeUrl(QString url);
 QString deleteFilePrefix(QString path);
 bool isDesktop(QString url);

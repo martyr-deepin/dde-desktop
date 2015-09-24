@@ -1,5 +1,16 @@
 #include "global.h"
 #include <QMimeDatabase>
+#include <QStandardPaths>
+#include "widgets/util.h"
+
+QString getThumbnailsPath(){
+    QString cachePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).at(0);
+    QString thumbnailPath = joinPath(cachePath, "thumbnails");
+    if (!QDir(thumbnailPath).exists()){
+        QDir(thumbnailPath).mkpath(thumbnailPath);
+    }
+    return thumbnailPath;
+}
 
 QString decodeUrl(QString url){
     return QUrl(url).toString();
