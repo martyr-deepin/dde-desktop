@@ -70,6 +70,7 @@ public slots:
     void setCuted();
     void cancelCuted();
     void setEdited(bool flag);
+    void setEditing();
     void setAllChecked(bool flag);
     void setHoverObjectName(QString name);
     void setUrl(QString url);

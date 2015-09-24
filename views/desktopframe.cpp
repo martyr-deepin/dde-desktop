@@ -201,7 +201,7 @@ void DesktopFrame::unCheckCheckedItems(){
 }
 
 
-void DesktopFrame::unCheckItem(DesktopItemPointer &pItem){
+void DesktopFrame::unCheckItem(DesktopItemPointer pItem){
     if (!pItem.isNull()){
         if (pItem->isChecked()){
             emit pItem->setChecked(false);
@@ -212,7 +212,7 @@ void DesktopFrame::unCheckItem(DesktopItemPointer &pItem){
     }
 }
 
-void DesktopFrame::checkRaiseItem(DesktopItemPointer& pItem){
+void DesktopFrame::checkRaiseItem(DesktopItemPointer pItem){
     if (!pItem.isNull()){
         emit lastCheckedDesktopItemChanged(pItem);
         m_multiCheckedByMouse = false;

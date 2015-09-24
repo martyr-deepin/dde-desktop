@@ -462,7 +462,8 @@ void DBusController::createDirectory(){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
         m_createDirJobInterface = new CreateDirJobInterface(service, path, QDBusConnection::sessionBus(), this);
-        connect(m_createDirJobInterface, SIGNAL(Done(QString)), this, SLOT(createDirectoryFinished(QString)));
+        connect(m_createDirJobInterface, SIGNAL(Done(QString,QString)),
+                this, SLOT(createDirectoryFinished(QString,QString)));
         m_createDirJobInterface->Execute();
     }else{
         qCritical() << reply.error().message();
@@ -470,10 +471,11 @@ void DBusController::createDirectory(){
 }
 
 
-void DBusController::createDirectoryFinished(QString dirName){
+void DBusController::createDirectoryFinished(QString dirName, QString error){
     Q_UNUSED(dirName)
-    disconnect(m_createDirJobInterface, SIGNAL(Done(QString)), this, SLOT(createDirectoryFinished(QString)));
+    disconnect(m_createDirJobInterface, SIGNAL(Done(QString, QString)), this, SLOT(createDirectoryFinished(QString, QString)));
     m_createDirJobInterface = NULL;
+    emit signalManager->fileCreated(dirName);
 }
 
 void DBusController::createFile(){
@@ -483,17 +485,19 @@ void DBusController::createFile(){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
         m_createFileJobInterface = new CreateFileJobInterface(service, path, QDBusConnection::sessionBus(), this);
-        connect(m_createFileJobInterface, SIGNAL(Done(QString)), this, SLOT(createFileFinished(QString)));
+        connect(m_createFileJobInterface, SIGNAL(Done(QString,QString)),
+                this, SLOT(createFileFinished(QString, QString)));
         m_createFileJobInterface->Execute();
     }else{
         qCritical() << reply.error().message();
     }
 }
 
-void DBusController::createFileFinished(QString filename){
+void DBusController::createFileFinished(QString filename, QString error){
     Q_UNUSED(filename)
-    disconnect(m_createFileJobInterface, SIGNAL(Done(QString)), this, SLOT(createFileFinished(QString)));
+    disconnect(m_createFileJobInterface, SIGNAL(Done(QString, QString)), this, SLOT(createFileFinished(QString, QString)));
     m_createFileJobInterface = NULL;
+    emit signalManager->fileCreated(filename);
 }
 
 
@@ -504,7 +508,8 @@ void DBusController::createFileFromTemplate(QString templatefile){
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
         m_createFileFromTemplateJobInterface = new CreateFileFromTemplateJobInterface(service, path, QDBusConnection::sessionBus(), this);
-        connect(m_createFileFromTemplateJobInterface, SIGNAL(Done(QString)), this, SLOT(createFileFromTemplateFinished(QString)));
+        connect(m_createFileFromTemplateJobInterface, SIGNAL(Done(QString,QString)),
+                this, SLOT(createFileFromTemplateFinished(QString, QString)));
         m_createFileFromTemplateJobInterface->Execute();
     }else{
         qCritical() << reply.error().message();
@@ -512,10 +517,11 @@ void DBusController::createFileFromTemplate(QString templatefile){
 }
 
 
-void DBusController::createFileFromTemplateFinished(QString filename){
+void DBusController::createFileFromTemplateFinished(QString filename, QString error){
     Q_UNUSED(filename)
-    disconnect(m_createFileFromTemplateJobInterface, SIGNAL(Done(QString)), this, SLOT(createFileFromTemplateFinished(QString)));
+    disconnect(m_createFileFromTemplateJobInterface, SIGNAL(Done(QString, QString)), this, SLOT(createFileFromTemplateFinished(QString, QString)));
     m_createFileFromTemplateJobInterface = NULL;
+    emit signalManager->fileCreated(filename);
 }
 
 

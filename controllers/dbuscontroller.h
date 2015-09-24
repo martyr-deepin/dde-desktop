@@ -110,11 +110,11 @@ public slots:
 
     /*create file*/
     void createDirectory();
-    void createDirectoryFinished(QString dirName);
+    void createDirectoryFinished(QString dirName, QString error);
     void createFile();
-    void createFileFinished(QString filename);
+    void createFileFinished(QString filename, QString error);
     void createFileFromTemplate(QString templatefile);
-    void createFileFromTemplateFinished(QString filename);
+    void createFileFromTemplateFinished(QString filename, QString error);
     void sortByKey(QString key);
 
     /*copy files*/

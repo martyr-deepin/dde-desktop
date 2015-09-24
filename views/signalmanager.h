@@ -127,6 +127,9 @@ signals:
     /*dock mode change*/
     void dockModeChanged(int dockMode);
 
+    /*create folder/file/template finised*/
+    void fileCreated(QString filename);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

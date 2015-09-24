@@ -28,8 +28,8 @@ public:
 
     void unCheckAllItems();
     void unCheckCheckedItems();
-    void checkRaiseItem(DesktopItemPointer& pItem);
-    void unCheckItem(DesktopItemPointer& pItem);
+    void checkRaiseItem(DesktopItemPointer pItem);
+    void unCheckItem(DesktopItemPointer pItem);
     void checkDesktopItemsByRect(QRect rect);
     DesktopItemPointer getLastPressedCheckedDesktopItem();
     DesktopItemPointer getLastCheckedDesktopItem();

@@ -63,6 +63,8 @@ public slots:
 
     void handleDockModeChanged(int dockMode);
 
+    void handleFileCreated(QString filename);
+
 private:
     int m_pagecount = 0;
     QSettings m_settings;

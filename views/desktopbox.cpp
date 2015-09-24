@@ -33,16 +33,10 @@ void DesktopBox::handleRename(){
         qDebug() << "handleRename start";
         DesktopItemPointer pItem = m_desktopFrame->getLastCheckedDesktopItem();
         if (!pItem.isNull()){
-//            qDebug() << "handleRename start" << pItem->getUrl() << pItem->isShowSimpleMode();
-//            if (!pItem->isShowSimpleMode()){
-                pItem->setEdited(true);
                 if (pItem->getUrl() == ComputerUrl || pItem->getUrl() == TrashUrl){
                     return;
                 }
-                pItem->setChecked(false);
-                pItem->getTextEdit()->showEditing();
-                pItem->getTextEdit()->setFocus();
-//            }
+                pItem->setEditing();
         }
     }
 }

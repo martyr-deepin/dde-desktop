@@ -43,7 +43,7 @@ public Q_SLOTS: // METHODS
     }
 
 Q_SIGNALS: // SIGNALS
-    void Done(const QString &in0);
+    void Done(const QString &in0, const QString &in1);
 };
 
 #endif

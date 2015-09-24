@@ -421,6 +421,13 @@ void DesktopItem::setEdited(bool flag){
     m_isEditing = flag;
 }
 
+void DesktopItem::setEditing(){
+    setEdited(true);
+    setChecked(false);
+    getTextEdit()->showEditing();
+    getTextEdit()->setFocus();
+}
+
 QPixmap DesktopItem::applyShadowToPixmap(const QString filename){
     QImage source(filename);
     QSize imageSize = source.size();

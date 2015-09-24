@@ -6,7 +6,7 @@
 
 DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
 
-    m_parentWindow = static_cast<QWidget*>(this->parent());
+    m_parentWindow = static_cast<DesktopFrame*>(this->parent());
 
     QSettings settings;
     settings.beginGroup("Desktop");
@@ -111,6 +111,9 @@ void DesktopItemManager::initConnect(){
 
     connect(signalManager, SIGNAL(dockModeChanged(int)),
             this, SLOT(handleDockModeChanged(int)));
+
+    connect(signalManager, SIGNAL(fileCreated(QString)),
+            this, SLOT(handleFileCreated(QString)));
 }
 
 void DesktopItemManager::loadComputerTrashItems(){
@@ -546,6 +549,21 @@ void DesktopItemManager::handleDockModeChanged(int dockMode){
         qDebug() << "loadComputerTrashItems";
         loadComputerTrashItems();
     }
+}
+
+void DesktopItemManager::handleFileCreated(QString filename){
+    QString uri = decodeUrl(filename);
+    QTimer* t = new QTimer;
+    t->setSingleShot(true);
+    t->setInterval(200);
+    connect(t, &QTimer::timeout, this, [=](){
+        if (m_pItems.contains(uri)){
+            DesktopFrame* p = static_cast<DesktopFrame*>(this->parent());
+            p->checkRaiseItem(m_pItems.value(uri));
+            emit signalManager->requestRenamed(uri);
+        }
+    });
+    t->start();
 }
 
 DesktopItemManager::~DesktopItemManager()
