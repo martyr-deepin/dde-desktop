@@ -64,7 +64,7 @@ void DesktopItem::initUI(){
     m_textedit = new GrowingElideTextEdit();
     m_textedit->setObjectName("GrowingElideTextEdit");
     m_textedit->setFixedWidth(100 - 10);
-    addTextShadow();
+//    addTextShadow();
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_iconLabel, 0, Qt::AlignHCenter);
@@ -164,7 +164,7 @@ void DesktopItem::setDesktopIcon(QString icon){
                 m_desktopIcon = applyShadowToPixmap(icon);
                 m_desktopIcon.save(cacheIcon);
             }
-            addImageShadow();
+//            addImageShadow();
         }else if (mimeType.genericIconName() == "text-x-generic" && !isDesktopAppFile(m_url)){
             if (QFileInfo(cacheIcon).exists()){
                 m_desktopIcon = QPixmap(cacheIcon);

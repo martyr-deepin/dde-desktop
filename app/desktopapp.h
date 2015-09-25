@@ -37,7 +37,6 @@ public slots:
 
 private:
     DesktopBox* m_desktopBox;
-    AppController* m_appController;
 };
 
 #endif // DESKTOPAPP_H

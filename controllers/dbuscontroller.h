@@ -19,7 +19,7 @@ class CreateFileFromTemplateJobInterface;
 class FileMonitor;
 class QTimer;
 class DBusDockSetting;
-
+class AppController;
 
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
 #define FileMonitor_path "/com/deepin/filemanager/Backend/MonitorManager"
@@ -67,7 +67,6 @@ public:
     void initConnect();
 //    void monitorDesktop();
 //    void watchDesktop();
-    void requestDesktopItems();
     void requestIconByUrl(QString scheme, uint size);
     void requestThumbnail(QString scheme, uint size);
 
@@ -100,6 +99,13 @@ public slots:
     void handleFileMovedOut(const QString& path);
     void handleFileRenamed(const QString& oldPath, const QString& newPath);
 
+    void asyncRequestDesktopItems();
+    void asyncRequestComputerIcon();
+    void asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher *call);
+    void asyncRequestTrashIcon();
+    void asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call);
+
+    void asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher* call);
     void asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
     void asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher* call);
 
@@ -148,6 +154,8 @@ private:
 
     DBusDockSetting* m_dockSettingInterface = NULL;
 
+    AppController* m_appController;
+
     DesktopItemInfoMap m_desktopItemInfoMap;
     QMap<QString, DesktopItemInfoMap> m_appGroups;
 
@@ -157,7 +165,10 @@ private:
     QString m_currentThumbnail;
     QStringList m_thumbnails;
 
+    bool m_requestFinished = false;
+
     Q_DISABLE_COPY(DBusController)
+
 
 };
 

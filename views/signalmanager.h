@@ -101,8 +101,8 @@ signals:
     void requestCreatingAppGroup(QStringList urls);
     void requestMergeIntoAppGroup(QStringList urls, QString group_url);
 
-    void desktopItemsChanged(DesktopItemInfoMap& desktopnItems);
-    void appGounpItemsChanged(QString group_url, DesktopItemInfoMap& appItems);
+    void desktopItemsChanged(DesktopItemInfoMap desktopnItems);
+    void appGounpItemsChanged(QString group_url, DesktopItemInfoMap appItems);
 
     /*app group detail show*/
     void appGounpDetailShowed(DesktopItemPointer& pItem, QPoint pos);
@@ -129,6 +129,10 @@ signals:
 
     /*create folder/file/template finised*/
     void fileCreated(QString filename);
+
+    /*request desktop items from dbus*/
+    void startRequest();
+    void stopRequest();
 
 private:
     Q_DISABLE_COPY(SignalManager)

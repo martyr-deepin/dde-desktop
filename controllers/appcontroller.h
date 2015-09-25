@@ -12,6 +12,7 @@ class RenameJobController;
 class DeleteJobController;
 class FileConflictController;
 
+
 class AppController : public QObject
 {
     Q_OBJECT
@@ -20,12 +21,16 @@ public:
     ~AppController();
 
     void initConnect();
-
+    MenuController* getMenuController();
+    TrashJobController* getTrashJobController();
+    MoveJobController* getMoveJobController();
+    CopyJobController* getCopyJobController();
+    RenameJobController* getRenameJobController();
+    DeleteJobController* getDeleteJobController();
+    FileConflictController* getFileConflictController();
 signals:
 
 public slots:
-
-
 
 private:
     MenuController* m_menuController;

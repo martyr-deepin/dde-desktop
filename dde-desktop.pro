@@ -72,7 +72,8 @@ SOURCES += main.cpp \
     dbusinterface/dbusdocksetting.cpp \
     controllers/fileconflictcontroller.cpp \
     dbusinterface/services/conflictdaptor.cpp \
-    dbusinterface/services/desktopadaptor.cpp
+    dbusinterface/services/desktopadaptor.cpp \
+    app/dbusworker.cpp
 
 
 HEADERS  += \
@@ -130,7 +131,8 @@ HEADERS  += \
     dbusinterface/dbusdocksetting.h \
     controllers/fileconflictcontroller.h \
     dbusinterface/services/conflictdaptor.h \
-    dbusinterface/services/desktopadaptor.h
+    dbusinterface/services/desktopadaptor.h \
+    app/dbusworker.h
 
 
 RESOURCES += \

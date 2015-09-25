@@ -84,10 +84,10 @@ void DesktopItemManager::initConnect(){
             this, SLOT(sortedByKey(QString)));
 
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
-    connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap&)),
-            this, SLOT(addItems(DesktopItemInfoMap&)));
-    connect(signalManager, SIGNAL(appGounpItemsChanged(QString,DesktopItemInfoMap&)),
-            this, SLOT(updateAppGounpItem(QString,DesktopItemInfoMap&)));
+    connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap)),
+            this, SLOT(addItems(DesktopItemInfoMap)));
+    connect(signalManager, SIGNAL(appGounpItemsChanged(QString,DesktopItemInfoMap)),
+            this, SLOT(updateAppGounpItem(QString,DesktopItemInfoMap)));
     connect(signalManager, SIGNAL(appGounpDetailShowed(DesktopItemPointer&,QPoint)),
             this, SLOT(showAppGroupDetail(DesktopItemPointer&,QPoint)));
     connect(signalManager, SIGNAL(appGounpDetailClosed(QPoint)), this, SLOT(closeAppGroupDetail(QPoint)));
@@ -180,13 +180,18 @@ void DesktopItemManager::setShoudBeMovedItemByUrl(QString url){
     }
 }
 
-void DesktopItemManager::addItems(DesktopItemInfoMap &desktopInfoMap){
+void DesktopItemManager::addItems(DesktopItemInfoMap desktopInfoMap){
+    qDebug() << "start create desktop items";
     for(int i=0; i< desktopInfoMap.values().count(); i++){
         addItem(desktopInfoMap.values().at(i), i);
     }
+    foreach (DesktopItemPointer pItem, m_pItems.values()) {
+        pItem->show();
+    }
+    qDebug() << "create desktop items finished";
 }
 
-void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap &appItemInfos){
+void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap appItemInfos){
     QString key = formatURl(group_url);
     qDebug() << group_url << "updateAppGounpItem" << m_pItems.contains(key);
     if (m_pItems.contains(key)){
@@ -220,7 +225,6 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
 }
 
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
-
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     qDebug() << "add Item" << pDesktopItem->getUrl();
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
@@ -239,7 +243,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
             QString key = pDesktopItem->getUrl();
             pos = setting.value(key, pos).toPoint();
             pDesktopItem->move(pos);
-            pDesktopItem->show();
+//            pDesktopItem->show();
             pGridItem = gridManager->getItemByPos(pos);
             if (!pGridItem.isNull()){
                 pGridItem->setDesktopItem(true);

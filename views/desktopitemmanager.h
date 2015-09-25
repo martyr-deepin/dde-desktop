@@ -39,11 +39,11 @@ public slots:
     void loadComputerTrashItems();
     void clearComputerTrashItems();
     void unCheckedItem(QString url);
-    void addItems(DesktopItemInfoMap& desktopInfoMap);
+    void addItems(DesktopItemInfoMap desktopInfoMap);
     void addItem(DesktopItemInfo fileInfo, int index);
     void addItem(DesktopItemInfo fileInfo);
     void updateDesktopItemIcon(QString url, QString iconUl, uint size);
-    void updateAppGounpItem(QString group_url, DesktopItemInfoMap& appItems);
+    void updateAppGounpItem(QString group_url, DesktopItemInfoMap appItems);
     void showAppGroupDetail(DesktopItemPointer& pItem, QPoint pos);
     void updateAppGroupDetail(DesktopItemPointer pItem);
     void closeAppGroupDetail(QPoint pos);

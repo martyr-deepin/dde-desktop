@@ -10,7 +10,6 @@
 TrashJobController::TrashJobController(QObject *parent) : QObject(parent)
 {
     m_trashMonitorInterface = new TrashMonitorInterface(FileMonitor_service, TrashMonitor_path, QDBusConnection::sessionBus(), this);
-    monitorTrash();
     initConnect();
 }
 
@@ -37,6 +36,7 @@ void TrashJobController::monitorTrash(){
     }else{
         qCritical() << reply.error().message();
     }
+
     connect(m_trashMonitorInterface, SIGNAL(ItemCountChanged(uint)), this, SLOT(updateTrashIconByCount(uint)));
 }
 
@@ -115,12 +115,12 @@ void TrashJobController::onProcessAmount(qlonglong progress, ushort info){
 void TrashJobController::updateTrashIconByCount(uint count){
     if (count == 0){
         if (!m_isTrashEmpty){
-            dbusController->requestIconByUrl(TrashUrl, 48);
+            dbusController->asyncRequestTrashIcon();
         }
         m_isTrashEmpty = true;
     }else{
         if (m_isTrashEmpty){
-            dbusController->requestIconByUrl(TrashUrl, 48);
+            dbusController->asyncRequestTrashIcon();
         }
         m_isTrashEmpty = false;
     }

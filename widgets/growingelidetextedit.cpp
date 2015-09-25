@@ -46,7 +46,6 @@ void GrowingElideTextEdit::elideText(){
     QString simpleWrapText;
     QFontMetrics fm = this->fontMetrics();
     int fmWidth = width() - 10;
-    qDebug() << fmWidth << "============";
     int i = 0, start = 0;
 
     if (fm.width(m_fullText) < fmWidth){

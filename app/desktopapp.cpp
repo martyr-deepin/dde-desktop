@@ -11,7 +11,6 @@
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
     m_desktopBox = new DesktopBox;
-    m_appController = new AppController;
     initConnect();
     registerDBusService();
 }

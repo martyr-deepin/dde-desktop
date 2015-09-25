@@ -16,6 +16,8 @@
 #include "views/signalmanager.h"
 #include "filemonitor/filemonitor.h"
 #include "widgets/util.h"
+#include "appcontroller.h"
+#include "trashjobcontroller.h"
 
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
@@ -31,11 +33,12 @@ void DBusController::init(){
     m_dockSettingInterface = new DBusDockSetting(this);
 
     m_fileMonitor = new FileMonitor(this);
-    initConnect();
+    m_appController = new AppController(this);
 
     m_thumbnailTimer = new QTimer;
     m_thumbnailTimer->setInterval(500);
-    connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
+
+    initConnect();
 }
 
 void DBusController::initConnect(){
@@ -80,6 +83,7 @@ void DBusController::initConnect(){
     connect(m_fileMonitor, SIGNAL(fileRenamed(QString,QString)), this, SLOT(handleFileRenamed(QString,QString)));
 
     connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
+    connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
 }
 
 void DBusController::loadDesktopSettings(){
@@ -87,9 +91,10 @@ void DBusController::loadDesktopSettings(){
 }
 
 void DBusController::loadDesktopItems(){
-    requestDesktopItems();
-    requestIconByUrl(ComputerUrl, 48);
-    requestIconByUrl(TrashUrl, 48);
+    asyncRequestDesktopItems();
+    asyncRequestComputerIcon();
+    asyncRequestTrashIcon();
+    m_appController->getTrashJobController()->monitorTrash();
 }
 
 int DBusController::getDockMode(){
@@ -108,16 +113,25 @@ DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
     return m_desktopDaemonInterface;
 }
 
-void DBusController::requestDesktopItems(){
+void DBusController::asyncRequestDesktopItems(){
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
-    reply.waitForFinished();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                        this, SLOT(asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher*)));
+}
+
+void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *call){
+    if (m_requestFinished)
+        return;
+    QDBusPendingReply<DesktopItemInfoMap> reply = *call;
     if (!reply.isError()){
+        emit signalManager->stopRequest();
         DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
         /*ToDo desktop daemon settings judge*/
         for(int i=0; i < desktopItems.count(); i++){
             QString key = desktopItems.keys().at(i);
             DesktopItemInfo info = desktopItems.values().at(i);
-            qDebug() << info.BaseName << info.Icon << info.thumbnail;
+//            qDebug() << info.BaseName << info.Icon << info.thumbnail;
             if (info.thumbnail.length() > 0){
                 info.Icon = info.thumbnail;
             }
@@ -133,9 +147,50 @@ void DBusController::requestDesktopItems(){
             }
         }
 
+        m_requestFinished = true;
+
     }else{
         qCritical() << reply.error().message();
     }
+
+    call->deleteLater();
+}
+
+
+void DBusController::asyncRequestComputerIcon(){
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(ComputerUrl, 48);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                        this, SLOT(asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher*)));
+}
+
+void DBusController::asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher *call){
+    QDBusPendingReply<QString> reply = *call;
+    if (!reply.isError()){
+        QString iconUrl = reply.argumentAt(0).toString();
+        emit signalManager->desktoItemIconUpdated(ComputerUrl, iconUrl, 48);
+    }else{
+        qCritical() << reply.error().message();
+    }
+    call->deleteLater();
+}
+
+void DBusController::asyncRequestTrashIcon(){
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(TrashUrl, 48);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                        this, SLOT(asyncRequestTrashIconFinished(QDBusPendingCallWatcher*)));
+}
+
+void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call){
+    QDBusPendingReply<QString> reply = *call;
+    if (!reply.isError()){
+        QString iconUrl = reply.argumentAt(0).toString();
+        emit signalManager->desktoItemIconUpdated(TrashUrl, iconUrl, 48);
+    }else{
+        qCritical() << reply.error().message();
+    }
+    call->deleteLater();
 }
 
 void DBusController::requestIconByUrl(QString scheme, uint size){
