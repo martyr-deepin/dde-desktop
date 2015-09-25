@@ -16,7 +16,6 @@ public:
     ~TrashJobController();
 
     void initConnect();
-    void monitorTrash();
 
 signals:
 
@@ -38,6 +37,10 @@ public slots:
     void handleTrashAction(int index);
     void createEmptyTrashJob();
     void emptyTrashJobExcuteFinished();
+
+    void asyncRequestTrashCount();
+    void asyncRequestTrashCountFinihsed(QDBusPendingCallWatcher *call);
+
 private:
     TrashMonitorInterface* m_trashMonitorInterface=NULL;
     TrashJobInterface* m_trashJobInterface = NULL;

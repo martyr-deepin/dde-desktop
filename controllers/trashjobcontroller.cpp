@@ -23,9 +23,15 @@ void TrashJobController::initConnect(){
     connect(signalManager, SIGNAL(requestEmptyTrash()), this, SLOT(confirmDelete()));
 }
 
-void TrashJobController::monitorTrash(){
+void TrashJobController::asyncRequestTrashCount(){
     QDBusPendingReply<uint> reply = m_trashMonitorInterface->ItemCount();
-    reply.waitForFinished();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                        this, SLOT(asyncRequestTrashCountFinihsed(QDBusPendingCallWatcher*)));
+}
+
+void TrashJobController::asyncRequestTrashCountFinihsed(QDBusPendingCallWatcher *call){
+    QDBusPendingReply<uint> reply = *call;
     if (!reply.isError()){
         uint count = reply.argumentAt(0).toUInt();
         if (count == 0){
@@ -36,9 +42,10 @@ void TrashJobController::monitorTrash(){
     }else{
         qCritical() << reply.error().message();
     }
-
     connect(m_trashMonitorInterface, SIGNAL(ItemCountChanged(uint)), this, SLOT(updateTrashIconByCount(uint)));
+    call->deleteLater();
 }
+
 
 
 void TrashJobController::setTrashEmptyFlag(bool flag){

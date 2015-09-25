@@ -94,7 +94,7 @@ void DBusController::loadDesktopItems(){
     asyncRequestDesktopItems();
     asyncRequestComputerIcon();
     asyncRequestTrashIcon();
-    m_appController->getTrashJobController()->monitorTrash();
+    m_appController->getTrashJobController()->asyncRequestTrashCount();
 }
 
 int DBusController::getDockMode(){
