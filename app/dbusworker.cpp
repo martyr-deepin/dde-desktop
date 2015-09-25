@@ -3,11 +3,10 @@
 #include <QTimer>
 
 DBusWorker::DBusWorker(QObject *parent) :
-    QObject(parent),
-    m_requestTimer(new QTimer)
+    QObject(parent)
 {
-    m_requestTimer->setInterval(1000);
-    m_requestTimer->setSingleShot(true);
+    m_requestTimer = new QTimer(this);
+    m_requestTimer->setInterval(500);
     connect(m_requestTimer, SIGNAL(timeout()),
             this, SLOT(loadDesktopItems()));
     connect(signalManager, SIGNAL(startRequest()),
