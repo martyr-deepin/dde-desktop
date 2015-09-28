@@ -22,7 +22,7 @@ void DesktopItemManager::initComputerItem(){
     QString url = ComputerUrl;
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
-    m_pComputerItem  = DesktopItemPointer::create(defaut_computerIcon, this->tr("Computer"), m_parentWindow);
+    m_pComputerItem  = DesktopItemPointer::create(defaut_computerIcon, tr("Computer"), m_parentWindow);
     m_pComputerItem->setUrl(url);
     m_pComputerItem->resize(width, height);
     m_pComputerItem->getDesktopItemInfo().URI = url;
@@ -49,7 +49,7 @@ void DesktopItemManager::initTrashItem(){
     QString url = TrashUrl;
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
-    m_pTrashItem  = DesktopItemPointer::create(defaut_trashIcon, this->tr("Trash"), m_parentWindow);
+    m_pTrashItem  = DesktopItemPointer::create(defaut_trashIcon, tr("Trash"), m_parentWindow);
     m_pTrashItem->setUrl(url);
     m_pTrashItem->resize(width, height);
     m_pTrashItem->getDesktopItemInfo().URI = url;

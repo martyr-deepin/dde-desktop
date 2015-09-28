@@ -9,8 +9,8 @@ ClearTrashDialog::ClearTrashDialog(QWidget *parent):
 {
 
     QString icon = ":/images/skin/dialogs/images/user-trash-full.png";
-    QString message = tr("Are you sure to clear items in trash?");
-    QString tipMessage = tr("This action cannot be restored");
+    QString message = "Are you sure to clear items in trash?";
+    QString tipMessage = "This action cannot be restored";
     QStringList buttons;
     buttons << "Cancel" << "Clear";
     initUI(icon, message, tipMessage, buttons, buttons);

@@ -9,8 +9,8 @@
 FileConflictDialog::FileConflictDialog(QWidget *parent) : DBaseDialog(parent)
 {
     QString icon = ":/images/skin/dialogs/images/user-trash-full.png";
-    QString message = tr("Are you want to replace this item?");
-    QString tipMessage = tr("There exists a file with same name!");
+    QString message = "Are you want to replace this item?";
+    QString tipMessage = "There exists a file with same name!";
     QStringList buttons;
     buttons << "Cancel" << "Replace" << "Skip";
     initUI(icon, message, tipMessage, buttons, buttons);
@@ -22,15 +22,13 @@ void FileConflictDialog::addConflictFiles(QString newFile, QString oldFile){
     QFileInfo newInfo(newFile);
     QFileInfo oldInfo(oldFile);
 
-    QString message = tr("Are you want to replace %1?").arg(newInfo.fileName());
+    QString message = QString("Are you want to replace %1?").arg(newInfo.fileName());
     setMessage(message);
 
     QString pathBaseName = QFileInfo(newInfo.path()).baseName();
-    QString tipMessage = tr("In") + tr("\" %1 \"").arg(pathBaseName) +
-            tr("exists files in same name") +  tr("%2").arg(newInfo.baseName());
+    QString tipMessage = QString("In") + QString("\" %1 \"").arg(pathBaseName) +
+            QString("exists files in same name") +  QString("%2").arg(newInfo.baseName());
     setTipMessage(tipMessage);
-
-//    QHB tr("Primary file")
 }
 
 
