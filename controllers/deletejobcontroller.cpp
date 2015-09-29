@@ -31,9 +31,9 @@ void DeleteJobController::confimDelete(const QStringList &files){
     ConfirmDeleteDialog d;
     QString message;
     if (files.length() == 1){
-        message = tr("Are you sure to delete  ") + QFileInfo(m_deletefiles.at(0)).fileName();
+        message = tr("Are you sure to delete %1 ?").arg(QFileInfo(m_deletefiles.at(0)).fileName());
     }else{
-        message = tr("Are you sure to delete these ") +  QString::number(m_deletefiles.length()) + " items";
+        message = tr("Are you sure to delete these %1 items?").arg(QString::number(m_deletefiles.length()));
     }
     d.setMessage(message);
     connect(&d, SIGNAL(buttonClicked(int)), this, SLOT(handleDeleteAction(int)));

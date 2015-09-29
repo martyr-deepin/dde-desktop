@@ -150,9 +150,7 @@ void TrashJobController::confirmDelete(){
 }
 
 void TrashJobController::showDialogByCount(int count){
-    QString message = tr("Are you sure to clear %1 items in trash?").arg(QString::number(count));
     ClearTrashDialog d;
-    d.setMessage(message);
     connect(&d, SIGNAL(buttonClicked(int)), this, SLOT(handleTrashAction(int)));
     d.exec();
 }
