@@ -1,0 +1,10 @@
+[main]
+host = https://www.transifex.com
+minimum_perc = 80
+mode = developer
+
+[deepin-desktop-environment.dde-desktop]
+file_filter = translations/dde-desktop<lang>.ts
+source_file = translations/dde-desktop.ts
+source_lang = en
+type = QT

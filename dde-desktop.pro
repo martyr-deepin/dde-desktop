@@ -134,6 +134,8 @@ HEADERS  += \
     dbusinterface/services/desktopadaptor.h \
     app/dbusworker.h
 
+TRANSLATIONS += translations/dde-desktop.ts
+
 
 RESOURCES += \
     skin.qrc \
