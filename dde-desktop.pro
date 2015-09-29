@@ -150,4 +150,8 @@ DISTFILES += \
     dbusinterface/emptytrashjob.xml
 
 target.path = /usr/bin/
-INSTALLS += target
+
+qm_files.files = translations/*.qm
+qm_files.path= /usr/share/dde-desktop/translations/
+
+INSTALLS += target qm_files

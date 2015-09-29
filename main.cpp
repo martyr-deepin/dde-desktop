@@ -7,20 +7,28 @@
 #include "dbusinterface/services/desktopadaptor.h"
 #include "widgets/commandlinemanager.h"
 #include "app/dbusworker.h"
-#include<iostream>
+#include <iostream>
+
 #include <QMetaType>
 #include <QApplication>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
     QDBusConnection conn = QDBusConnection::sessionBus();
     if(conn.registerService(DesktopAdaptor::staticServerPath())){
-        QApplication app(argc, argv);
         qApp->setOrganizationName("Linux Deepin");
         qApp->setOrganizationDomain("linuxdeepin.org");
         qApp->setApplicationName("dde-desktop");
         qApp->setApplicationVersion("2015-1.0");
+
+        // setup translator
+        QTranslator translator;
+        translator.load("/usr/share/dde-desktop/translations/dde-desktop_" + QLocale::system().name() + ".qm");
+        app.installTranslator(&translator);
+
         CommandLineManager::instance()->initOptions();
         RegisterLogger();
 
