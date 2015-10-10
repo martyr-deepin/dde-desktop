@@ -7,6 +7,7 @@
 #include "dbusinterface/dbustype.h"
 
 class AppGroupBox;
+class QTimer;
 
 class DesktopItemManager : public QObject
 {
@@ -65,6 +66,7 @@ public slots:
 
     void handleFileCreated(QString filename);
 
+    void delayUpdateGridStatus();
     void updateGridStatus();
 
 private:
@@ -78,6 +80,7 @@ private:
     QList<DesktopItemPointer> m_list_pItems;
     QMap<QString, DesktopItemPointer> m_pItems;
     AppGroupBox* m_appGroupBox=NULL;
+    QTimer* m_gridUpdateTimer;
 };
 
 #endif // DESKTOPITEMMANAGER_H

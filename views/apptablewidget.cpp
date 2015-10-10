@@ -144,7 +144,7 @@ void AppTableWidget::startDrag(const DesktopItemInfo &info){
     QDrag* pDrag = new QDrag(this);
     pDrag->setMimeData(mimeData);
     pDrag->setPixmap(dragPixmap);
-    pDrag->setHotSpot(QCursor::pos());
+    pDrag->setHotSpot(-mapToGlobal(m_dragItem->pos()) + QCursor::pos());
     Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
      if (action == Qt::MoveAction){
         qDebug() << "app group item drag move======";
@@ -157,16 +157,15 @@ QPixmap AppTableWidget::getDragPixmap(){
     QFrame* F = new QFrame(this);
     F->setAttribute(Qt::WA_DeleteOnClose);
     F->setObjectName("DesktopFrame");
-    F->setGeometry(qApp->desktop()->availableGeometry());
 
     DesktopItem* item = new DesktopItem(m_dragItem->getDesktopItemInfo().Icon,
                                        m_dragItem->getDesktopName(), F);
     item->resize(m_dragItem->size());
-    item->move(mapToGlobal(m_dragItem->pos()));
     item->setObjectName("DragChecked");
     item->setDesktopIcon(m_dragItem->getDesktopItemInfo().Icon);
 
     F->setStyleSheet(qApp->styleSheet());
+    F->resize(100, 100);
     QPixmap ret = F->grab();
     F->close();
     return ret;

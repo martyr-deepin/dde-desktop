@@ -15,6 +15,11 @@ DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
     m_sortFlag = static_cast<QDir::SortFlag>(flag);
 
     m_shoudbeMovedItem = DesktopItemPointer();
+
+    m_gridUpdateTimer = new QTimer;
+    m_gridUpdateTimer->setSingleShot(true);
+    m_gridUpdateTimer->setInterval(100);
+
     initConnect();
 }
 
@@ -115,8 +120,11 @@ void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(fileCreated(QString)),
             this, SLOT(handleFileCreated(QString)));
 
-    connect(signalManager, SIGNAL(gridStatusUpdated()),
+    connect(m_gridUpdateTimer, SIGNAL(timeout()),
             this, SLOT(updateGridStatus()));
+
+    connect(signalManager, SIGNAL(gridStatusUpdated()),
+            this, SLOT(delayUpdateGridStatus()));
 }
 
 void DesktopItemManager::loadComputerTrashItems(){
@@ -255,6 +263,8 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
         }
         setting.endGroup();
     }
+
+    emit signalManager->gridStatusUpdated();
 }
 
 
@@ -572,6 +582,10 @@ void DesktopItemManager::handleFileCreated(QString filename){
         }
     });
     t->start();
+}
+
+void DesktopItemManager::delayUpdateGridStatus(){
+    m_gridUpdateTimer->start();
 }
 
 void DesktopItemManager::updateGridStatus(){
