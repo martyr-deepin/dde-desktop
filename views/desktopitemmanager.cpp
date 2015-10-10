@@ -126,6 +126,7 @@ void DesktopItemManager::loadComputerTrashItems(){
         }
         if (!m_pItems.contains(TrashUrl)){
             initTrashItem();
+            dbusController->asyncRequestTrashIcon();
         }else{
             qDebug() << "TrashItem is existed";
         }
