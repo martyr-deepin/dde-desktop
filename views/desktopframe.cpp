@@ -576,6 +576,7 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
     if (m_isDragStarted){
         emit signalManager->appGounpDetailClosed();
         startDrag();
+        emit signalManager->gridStatusUpdated();
     }else{
         int x = m_pressedEventPos.x();
         int y = m_pressedEventPos.y();

@@ -65,6 +65,8 @@ public slots:
 
     void handleFileCreated(QString filename);
 
+    void updateGridStatus();
+
 private:
     int m_pagecount = 0;
     QSettings m_settings;

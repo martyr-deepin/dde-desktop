@@ -134,6 +134,9 @@ signals:
     void startRequest();
     void stopRequest();
 
+    /*update gridmanager status when move desktopitem*/
+    void gridStatusUpdated();
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

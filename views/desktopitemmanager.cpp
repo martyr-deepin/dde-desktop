@@ -114,6 +114,9 @@ void DesktopItemManager::initConnect(){
 
     connect(signalManager, SIGNAL(fileCreated(QString)),
             this, SLOT(handleFileCreated(QString)));
+
+    connect(signalManager, SIGNAL(gridStatusUpdated()),
+            this, SLOT(updateGridStatus()));
 }
 
 void DesktopItemManager::loadComputerTrashItems(){
@@ -569,6 +572,20 @@ void DesktopItemManager::handleFileCreated(QString filename){
         }
     });
     t->start();
+}
+
+void DesktopItemManager::updateGridStatus(){
+    foreach (GridItemPointer pGridItem, gridManager->getMapItems().values()) {
+        pGridItem->setDesktopItem(false);
+    }
+    foreach (DesktopItemPointer pItem, m_pItems.values()) {
+        foreach (GridItemPointer pGridItem, gridManager->getMapItems().values()) {
+            if (pItem->geometry() == pGridItem->getRect()){
+                pGridItem->setDesktopItem(true);
+                break;
+            }
+        }
+    }
 }
 
 DesktopItemManager::~DesktopItemManager()
