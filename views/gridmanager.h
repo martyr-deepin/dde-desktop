@@ -13,7 +13,6 @@ public:
     explicit GridManager(QObject *parent = 0);
     ~GridManager();
 
-
     static GridManager* instance();
     void initConnect();
 
@@ -66,6 +65,7 @@ private:
     int m_columnCount = 0;
     int m_rowCount = 0;
     int m_pageCount = 1;
+    int m_dockHeight = 70;
     SizeType m_sizeType;
     DoubleGridItemPointerList m_list_items;
     QMap<QString, GridItemPointer> m_map_items;

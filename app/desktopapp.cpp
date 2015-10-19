@@ -8,6 +8,7 @@
 #include <QDBusConnection>
 #include <QStandardPaths>
 
+
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
     m_desktopBox = new DesktopBox;
@@ -27,7 +28,6 @@ void DesktopApp::registerDBusService(){
     QDBusConnection conn = QDBusConnection::sessionBus();
     conn.registerObject(DesktopAdaptor::staticInterfacePath(), this);
 }
-
 
 void DesktopApp::saveGridOn(bool mode){
     QSettings settings;

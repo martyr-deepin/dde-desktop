@@ -26,6 +26,8 @@ public slots:
     void handleRename();
     void renameFinished();
 
+    void handleScreenGeometryChanged();
+
 protected:
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);

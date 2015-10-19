@@ -16,6 +16,7 @@ class FileOperationsInterface;
 class CreateDirJobInterface;
 class CreateFileJobInterface;
 class CreateFileFromTemplateJobInterface;
+class DisplayInterface;
 class FileMonitor;
 class QTimer;
 class DBusDockSetting;
@@ -151,7 +152,7 @@ private:
     CreateDirJobInterface* m_createDirJobInterface = NULL;
     CreateFileJobInterface* m_createFileJobInterface = NULL;
     CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface = NULL;
-
+    DisplayInterface* m_displayInterface;
     DBusDockSetting* m_dockSettingInterface = NULL;
 
     AppController* m_appController;

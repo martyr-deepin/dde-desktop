@@ -13,7 +13,7 @@
 
 DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 {
-    setGeometry(qApp->desktop()->screenGeometry());
+    setGeometry(qApp->desktop()->geometry());
 //    m_backgroundLabel = new BackgroundLabel(false, this);
     m_desktopFrame = new DesktopFrame(this);
     XcbMisc::instance()->set_window_type(winId(),
@@ -21,6 +21,7 @@ DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
     connect(signalManager, SIGNAL(requestRenamed(QString)), this, SLOT(handleRename()));
+    connect(signalManager, SIGNAL(screenGeometryChanged()), this, SLOT(handleScreenGeometryChanged()));
 }
 
 DesktopFrame* DesktopBox::getDesktopFrame(){
@@ -56,7 +57,12 @@ void DesktopBox::renameFinished(){
     }
 }
 
-
+void DesktopBox::handleScreenGeometryChanged(){
+    setGeometry(qApp->desktop()->screenGeometry());
+    m_desktopFrame->setGeometry(qApp->desktop()->screenGeometry());
+    emit signalManager->gridSizeTypeChanged(SizeType::Middle);
+    emit signalManager->gridOnResorted();
+}
 
 void DesktopBox::keyPressEvent(QKeyEvent *event){
     bool m_isGridOn = m_desktopFrame->isGridOn();

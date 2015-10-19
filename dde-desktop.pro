@@ -73,7 +73,8 @@ SOURCES += main.cpp \
     controllers/fileconflictcontroller.cpp \
     dbusinterface/services/conflictdaptor.cpp \
     dbusinterface/services/desktopadaptor.cpp \
-    app/dbusworker.cpp
+    app/dbusworker.cpp \
+    dbusinterface/displayinterface.cpp
 
 
 HEADERS  += \
@@ -132,7 +133,8 @@ HEADERS  += \
     controllers/fileconflictcontroller.h \
     dbusinterface/services/conflictdaptor.h \
     dbusinterface/services/desktopadaptor.h \
-    app/dbusworker.h
+    app/dbusworker.h \
+    dbusinterface/displayinterface.h
 
 TRANSLATIONS += translations/dde-desktop.ts
 

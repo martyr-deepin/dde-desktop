@@ -1,7 +1,6 @@
 #include "gridmanager.h"
 #include "global.h"
 
-
 GridManager::GridManager(QObject *parent) : QObject(parent)
 {
     initConnect();
@@ -28,12 +27,12 @@ int GridManager::getColumnCount(){
 }
 
 int GridManager::getDesktopColumnCount(){
-    int desktopWidth = qApp->desktop()->availableGeometry().width();
+    int desktopWidth = qApp->desktop()->geometry().width();
     return (desktopWidth - m_leftMargin - m_rightMargin) / (m_itemWidth + m_xMinimumSpacing);
 }
 
 int GridManager::getDesktopRowCount(){
-    int desktopHeight = qApp->desktop()->availableGeometry().height();
+    int desktopHeight = qApp->desktop()->geometry().height() - m_dockHeight;
     return (desktopHeight - m_topMargin - m_bottomMargin) / (m_itemHeight + m_yMinimumSpacing);
 }
 
@@ -67,9 +66,10 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
                                                  const int xMinimumSpacing, const int yMinimumSpacing,
                                                  const int leftMargin, const int topMargin,
                                                  const int rightMargin, const int bottomMargin){
-    const QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    const QRect screenGeometry = QApplication::desktop()->geometry();
+    qDebug() << screenGeometry;
     int desktopWidth = screenGeometry.width();
-    int desktopHeight = screenGeometry.height() - 70;
+    int desktopHeight = screenGeometry.height() - m_dockHeight;
 
     m_list_items.clear();
     m_map_items.clear();
@@ -93,7 +93,7 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
     m_xSpacing = (desktopWidth - m_leftMargin - m_rightMargin - m_itemWidth * desktopColumn)/ (desktopColumn - 1);
     m_ySpacing = (desktopHeight - m_topMargin - m_bottomMargin - m_itemHeight * desktopRow) / (desktopRow - 1);
     int x = m_leftMargin;
-    for (int i=0; i<= m_columnCount; i++){
+    for (int i=0; i< m_columnCount; i++){
         if (i>0 && i % desktopColumn == 0){
             x = i / desktopColumn * desktopWidth + m_leftMargin;
         }
@@ -298,7 +298,7 @@ void GridManager::updateGridByPageCount(int count){
 DoubleGridItemPointerList GridManager::getSmallItems(){
     const QRect screenGeometry = QApplication::desktop()->screenGeometry();
     int desktopWidth = screenGeometry.width() * m_pageCount;
-    int desktopHeight = screenGeometry.height() - 70;
+    int desktopHeight = screenGeometry.height() - m_dockHeight;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 0, 10);
     return ret;
@@ -307,7 +307,7 @@ DoubleGridItemPointerList GridManager::getSmallItems(){
 DoubleGridItemPointerList GridManager::getMiddleItems(){
     const QRect screenGeometry = QApplication::desktop()->screenGeometry();
     int desktopWidth = screenGeometry.width() * m_pageCount;
-    int desktopHeight = screenGeometry.height() - 70;
+    int desktopHeight = screenGeometry.height() - m_dockHeight;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 0, 10);
     return ret;
@@ -316,7 +316,7 @@ DoubleGridItemPointerList GridManager::getMiddleItems(){
 DoubleGridItemPointerList GridManager::getLargeItems(){
     const QRect screenGeometry = QApplication::desktop()->screenGeometry();
     int desktopWidth = screenGeometry.width() * m_pageCount;
-    int desktopHeight = screenGeometry.height() - 70;
+    int desktopHeight = screenGeometry.height() - m_dockHeight;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 0, 10);
     return ret;

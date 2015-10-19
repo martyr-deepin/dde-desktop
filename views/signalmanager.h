@@ -137,6 +137,9 @@ signals:
     /*update gridmanager status when move desktopitem*/
     void gridStatusUpdated();
 
+    /*screen geometry changed*/
+    void screenGeometryChanged();
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

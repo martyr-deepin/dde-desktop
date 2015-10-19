@@ -10,6 +10,7 @@
 #include "dbusinterface/createdirjob_interface.h"
 #include "dbusinterface/createfilejob_interface.h"
 #include "dbusinterface/createfilefromtemplatejob_interface.h"
+#include "dbusinterface/displayinterface.h"
 #include "dbusinterface/dbusdocksetting.h"
 
 #include "views/global.h"
@@ -31,7 +32,7 @@ void DBusController::init(){
     m_fileOperationsInterface = new FileOperationsInterface(FileMonitor_service, FileOperations_path, bus, this);
     m_clipboardInterface = new ClipboardInterface(FileMonitor_service, Clipboard_path, bus, this);
     m_dockSettingInterface = new DBusDockSetting(this);
-
+    m_displayInterface = new DisplayInterface(this);
     m_fileMonitor = new FileMonitor(this);
     m_appController = new AppController(this);
 
@@ -84,6 +85,7 @@ void DBusController::initConnect(){
 
     connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
     connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
+    connect(m_displayInterface, SIGNAL(PrimaryRectChanged()), signalManager, SIGNAL(screenGeometryChanged()));
 }
 
 void DBusController::loadDesktopSettings(){

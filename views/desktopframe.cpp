@@ -38,10 +38,10 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_mouseMoveCheckTimer->setSingleShot(true);
     m_mouseMoveCheckTimer->setInterval(10);
 
+    setGeometry(qApp->desktop()->geometry());
+
     initItems();
     initConnect();
-
-    setGeometry(qApp->desktop()->screenGeometry());
     m_desktopItemManager->checkPageCount();
     qApp->setStyleSheet(getQssFromFile(":/qss/skin/qss/DesktopItem.qss"));
 }
@@ -279,7 +279,6 @@ QStringList DesktopFrame::getCheckedFiles(){
     return files;
 }
 
-
 void DesktopFrame::handleKeyCtrlAPressed(){
     checkAllDesktopItems();
 }
@@ -297,7 +296,6 @@ void DesktopFrame::focusInEvent(QFocusEvent *event){
     m_selectRect = QRect(0, 0, 0, 0);
     QFrame::focusInEvent(event);
 }
-
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
     m_isSelectable = false;
@@ -337,6 +335,7 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 }
 
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
+    qDebug() << event->pos();
     m_isDragStarted = false;
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
@@ -636,7 +635,6 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
     }
     QFrame::paintEvent(event);
 }
-
 
 DesktopFrame::~DesktopFrame()
 {

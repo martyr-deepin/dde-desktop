@@ -19,8 +19,7 @@ int main(int argc, char *argv[])
 
     QDBusConnection conn = QDBusConnection::sessionBus();
     if(conn.registerService(DesktopAdaptor::staticServerPath())){
-        qApp->setOrganizationName("Linux Deepin");
-        qApp->setOrganizationDomain("linuxdeepin.org");
+        qApp->setOrganizationName("deepin");
         qApp->setApplicationName("dde-desktop");
         qApp->setApplicationVersion("2015-1.0");
 
