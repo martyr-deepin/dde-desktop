@@ -270,7 +270,10 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
 
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
-    qDebug() << "add Item" << pDesktopItem->getUrl();
+    qDebug() << "add Item" << pDesktopItem->getUrl() << m_pItems.contains(pDesktopItem->getUrl());
+    if (m_pItems.contains(pDesktopItem->getUrl())){
+        return;
+    }
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
     m_list_pItems.append(pDesktopItem);
     checkPageCount();
