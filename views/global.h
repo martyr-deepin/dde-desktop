@@ -38,5 +38,6 @@ bool isDesktopAppFile(QString url);
 QString formatURl(QString url);
 
 bool isRequestThumbnail(QString url);
+QString getMineTypeGenericIconName(QString url);
 #endif // GLOBAL_H
 

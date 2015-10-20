@@ -200,6 +200,7 @@ void DBusController::requestIconByUrl(QString scheme, uint size){
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
+        qDebug() << scheme << iconUrl;
         emit signalManager->desktoItemIconUpdated(scheme, iconUrl, size);
     }else{
         qCritical() << reply.error().message();
@@ -309,7 +310,8 @@ void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher
             qDebug() << "renamed file move in app group" << desktopItemInfo.URI;
             getAppGroupItemsByUrl(desktopItemInfo.URI);
         }
-
+        if (getMineTypeGenericIconName(desktopItemInfo.URI) == "package-x-generic")
+            requestIconByUrl(desktopItemInfo.URI, 48);
     } else {
         qCritical() << reply.error().message();
     }
@@ -330,7 +332,7 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
     QDBusPendingReply<DesktopItemInfo> reply = *call;
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
-        qDebug() << desktopItemInfo.Icon << desktopItemInfo.thumbnail;
+        qDebug() << desktopItemInfo.URI << desktopItemInfo.Icon << desktopItemInfo.thumbnail;
         /*ToDo desktop daemon settings judge*/
         if (desktopItemInfo.thumbnail.length() > 0){
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;

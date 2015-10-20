@@ -131,3 +131,9 @@ bool isRequestThumbnail(QString url){
         return false;
     }
 }
+
+QString getMineTypeGenericIconName(QString url){
+    QMimeDatabase mimeDataBae;
+    QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(url));
+    return mimeType.genericIconName();
+}
