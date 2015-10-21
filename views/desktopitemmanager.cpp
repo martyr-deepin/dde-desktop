@@ -219,6 +219,7 @@ void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMa
 }
 
 DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
+    emit signalManager->gridStatusUpdated();
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
 
@@ -263,8 +264,6 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
         }
         setting.endGroup();
     }
-
-    emit signalManager->gridStatusUpdated();
 }
 
 
@@ -322,6 +321,7 @@ void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uin
 
 void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
     qDebug() << "renameDesktopItem" << desktopItemInfo.URI;
+    qDebug() << m_shoudbeMovedItem.isNull();
     if (!m_shoudbeMovedItem.isNull()){
         QString desktopDisplayName = getDesktopDisplayName(desktopItemInfo);
         m_shoudbeMovedItem->setDesktopName(desktopDisplayName);
@@ -335,6 +335,13 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
                 m_shoudbeMovedItem->setUrl(newKey);
                 m_pItems.insert(iterator, newKey, m_shoudbeMovedItem);
 
+                GridItemPointer pGridItem = gridManager->getItemByPos(m_shoudbeMovedItem->pos());
+                qDebug() << pGridItem.isNull();
+                if (!pGridItem.isNull()){
+                    qDebug() << pGridItem->hasDesktopItem();
+                    pGridItem->setDesktopItem(true);
+                }
+
                 m_settings.beginGroup("DesktopItems");
                 if (m_settings.contains(oldKey)){
                     m_settings.remove(oldKey);
@@ -343,6 +350,9 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
                 m_settings.endGroup();
             }
         }
+    }else{
+        m_shoudbeMovedItem->deleteLater();
+        addItem(desktopItemInfo);
     }
 }
 
@@ -592,17 +602,21 @@ void DesktopItemManager::delayUpdateGridStatus(){
 }
 
 void DesktopItemManager::updateGridStatus(){
-    foreach (GridItemPointer pGridItem, gridManager->getMapItems().values()) {
-        pGridItem->setDesktopItem(false);
-    }
+    gridManager->clearDeskopItemsStatus();
+    QList<DesktopItemPointer> errorPositonItems;
     foreach (DesktopItemPointer pItem, m_pItems.values()) {
         foreach (GridItemPointer pGridItem, gridManager->getMapItems().values()) {
-            if (pItem->geometry() == pGridItem->getRect()){
-                pGridItem->setDesktopItem(true);
+            if (pItem->pos() == pGridItem->getPos()){
+                if (!pGridItem->hasDesktopItem()){
+                    pGridItem->setDesktopItem(true);
+                }else{
+                    errorPositonItems.append(pItem);
+                }
                 break;
             }
         }
-    }
+   }
+   qDebug() << errorPositonItems;
 }
 
 DesktopItemManager::~DesktopItemManager()
