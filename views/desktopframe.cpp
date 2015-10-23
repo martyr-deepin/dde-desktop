@@ -335,7 +335,6 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 }
 
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
-    qDebug() << event->pos();
     m_isDragStarted = false;
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);

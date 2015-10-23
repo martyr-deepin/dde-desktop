@@ -62,15 +62,18 @@ void DesktopItem::initUI(){
     m_iconLabel->setScaledContents(false);
 
     m_textedit = new GrowingElideTextEdit();
+    m_textedit->setAlignment(Qt::AlignTop);
     m_textedit->setObjectName("GrowingElideTextEdit");
     m_textedit->setFixedWidth(100 - 10);
 //    addTextShadow();
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->addSpacing(4);
     mainLayout->addWidget(m_iconLabel, 0, Qt::AlignHCenter);
     mainLayout->addWidget(m_textedit, 0, Qt::AlignHCenter);
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->addStretch();
     setLayout(mainLayout);
 }
 
