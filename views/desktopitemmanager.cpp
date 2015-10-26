@@ -29,6 +29,7 @@ void DesktopItemManager::initComputerItem(){
     int height = gridManager->getItemHeight();
     m_pComputerItem  = DesktopItemPointer::create(defaut_computerIcon, tr("Computer"), m_parentWindow);
     m_pComputerItem->setUrl(url);
+    m_pComputerItem->setRaWUrl(url);
     m_pComputerItem->resize(width, height);
     m_pComputerItem->getDesktopItemInfo().URI = url;
 
@@ -56,6 +57,7 @@ void DesktopItemManager::initTrashItem(){
     int height = gridManager->getItemHeight();
     m_pTrashItem  = DesktopItemPointer::create(defaut_trashIcon, tr("Trash"), m_parentWindow);
     m_pTrashItem->setUrl(url);
+    m_pTrashItem->setRaWUrl(url);
     m_pTrashItem->resize(width, height);
     m_pTrashItem->getDesktopItemInfo().URI = url;
     m_pTrashItem->getDesktopItemInfo().CanExecute = true;
@@ -151,10 +153,6 @@ void DesktopItemManager::clearComputerTrashItems(){
     deleteItem(TrashUrl);
 }
 
-QString DesktopItemManager::decodeUrl(QString url){
-    return QUrl(url).toString();
-}
-
 void DesktopItemManager::unCheckedItem(QString url){
     DesktopItemPointer pItem = getItemByUrl(url);
     if (!pItem.isNull()){
@@ -183,7 +181,7 @@ void DesktopItemManager::setShoudBeMovedItem(DesktopItemPointer pItem){
 }
 
 void DesktopItemManager::setShoudBeMovedItemByUrl(QString url){
-    QString key = formatURl(url);
+    QString key = url;
     if (m_pItems.contains(key)){
         setShoudBeMovedItem(m_pItems.value(key));
     }else{
@@ -204,7 +202,7 @@ void DesktopItemManager::addItems(DesktopItemInfoMap desktopInfoMap){
 }
 
 void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap appItemInfos){
-    QString key = formatURl(group_url);
+    QString key = group_url;
     qDebug() << group_url << "updateAppGounpItem" << m_pItems.contains(key);
     if (m_pItems.contains(key)){
         m_pItems.value(key)->setAppGroupItems(appItemInfos);
@@ -231,6 +229,7 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
 
     DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(defaut_icon, desktopDisplayName, m_parentWindow);
     pDesktopItem->setUrl(url);
+    pDesktopItem->setRaWUrl(uri);
     pDesktopItem->setDesktopIcon(icon);
     pDesktopItem->setDesktopItemInfo(fileInfo);
     pDesktopItem->resize(width, height);
@@ -310,10 +309,15 @@ int DesktopItemManager::getPageCount(){
 }
 
 void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uint size){
-    url = decodeUrl(url);
-    qDebug() << m_pItems.contains(url) << url;
-    if (m_pItems.contains(url)){
-        m_pItems.value(url)->setDesktopIcon(iconUrl);
+    QString key;
+    if (url == ComputerUrl || url == TrashUrl){
+        key = url;
+    }else{
+        key = decodeUrl(url);
+    }
+    qDebug() << m_pItems.contains(key) << url << key;
+    if (m_pItems.contains(key)){
+        m_pItems.value(key)->setDesktopIcon(iconUrl);
         qDebug() << iconUrl;
     }
 }
@@ -330,10 +334,16 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
         QString oldKey = m_shoudbeMovedItem->getUrl();
         if (m_pItems.contains(oldKey)){
             QString newKey = decodeUrl(desktopItemInfo.URI);
+            qDebug() << newKey;
             QMap<QString, DesktopItemPointer>::iterator iterator = m_pItems.find(oldKey);
             if (iterator!= m_pItems.end()){
                 m_shoudbeMovedItem->setUrl(newKey);
+                m_shoudbeMovedItem->setRaWUrl(desktopItemInfo.URI);
                 m_pItems.insert(iterator, newKey, m_shoudbeMovedItem);
+                qDebug() << m_pItems.keys();
+                m_pItems.remove(oldKey);
+                qDebug() << m_pItems.keys();
+                qDebug() << m_list_pItems;
 
                 GridItemPointer pGridItem = gridManager->getItemByPos(m_shoudbeMovedItem->pos());
                 qDebug() << pGridItem.isNull();
@@ -357,12 +367,14 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
 }
 
 void DesktopItemManager::cutItems(QStringList urls){
+    qDebug() << urls;
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         if (pItem->isCuted()){
             pItem->cancelCuted();
         }
     }
     foreach (QString url, urls) {
+        url = decodeUrl(url);
         if (m_pItems.contains(url)){
             m_pItems.value(url)->setCuted();
         }
@@ -380,14 +392,14 @@ void DesktopItemManager::cancelCutedItems(QStringList urls){
 
 void DesktopItemManager::deleteItem(QString url){
     QString _url(url);
-    if (url!=ComputerUrl && url!=TrashUrl){
-        if (!url.startsWith("file://")){
-            url = "file://" + url;
-        }
-        _url = decodeUrl(url);
-    }
-
+//    if (url!=ComputerUrl && url!=TrashUrl){
+//        if (!url.startsWith("file://")){
+//            url = "file://" + url;
+//        }
+//        _url = decodeUrl(url);
+//    }
     qDebug() << "deleteItem" << url << _url << m_pItems.contains(_url) << m_pItems.value(_url);
+    qDebug() << m_pItems.keys();
     if (m_pItems.contains(_url)){
         DesktopItemPointer pItem = m_pItems.value(_url);
 
@@ -400,7 +412,7 @@ void DesktopItemManager::deleteItem(QString url){
         if (m_list_pItems.contains(pItem)){
             m_list_pItems.removeOne(pItem);
         }
-        m_pItems.remove(url);
+        m_pItems.remove(_url);
         pItem->close();
         pItem.clear();
     }
@@ -476,7 +488,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
     int size = desktopInfoList.size();
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
-        QString url = "file://" + decodeUrl(fileInfo.absoluteFilePath());
+        QString url = decodeUrl(fileInfo.absoluteFilePath());
         if (m_pItems.contains(url)){
             DesktopItemPointer  pDesktopItem = m_pItems.value(url);
             m_list_pItems.append(pDesktopItem);

@@ -53,6 +53,7 @@ void TrashJobController::setTrashEmptyFlag(bool flag){
 }
 
 void TrashJobController::trashJobExcute(const QStringList &files){
+    qDebug() << files;
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewTrashJob(files, false, "", "", "");
     reply.waitForFinished();
     if (!reply.isError()){
@@ -62,7 +63,7 @@ void TrashJobController::trashJobExcute(const QStringList &files){
         connectTrashSignal();
         m_trashJobInterface->Execute();
     }else{
-        qCritical() << reply.error().message();
+        qCritical() << reply.error().message() << files;
     }
 }
 

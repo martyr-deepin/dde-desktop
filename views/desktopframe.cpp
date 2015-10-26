@@ -274,7 +274,7 @@ void DesktopFrame::setAppGroupDestinationPos(QPoint pos){
 QStringList DesktopFrame::getCheckedFiles(){
     QStringList files;
     foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-        files.append(pItem->getUrl());
+        files.append(pItem->getRawUrl());
     }
     return files;
 }
@@ -388,7 +388,7 @@ void DesktopFrame::startDrag(){
     QMimeData* mimeData = new QMimeData;
     QList<QUrl> urls;
     foreach (DesktopItemPointer pCheckedItem, m_checkedDesktopItems) {
-        urls.append(QUrl(pCheckedItem->getDesktopItemInfo().URI));
+        urls.append(pCheckedItem->getRawUrl());
     }
     mimeData->setUrls(urls);
     QPixmap dragPixmap = getCheckedPixmap();

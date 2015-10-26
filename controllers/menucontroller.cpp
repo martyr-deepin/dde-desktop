@@ -43,7 +43,7 @@ void MenuController::showMenuByDesktopItem(QString url, QPoint pos){
 void MenuController::showMenuByDesktopItem(DesktopItemPointer pItem, QPoint pos){
     QStringList urls;
     if (!pItem.isNull()) {
-        urls = QStringList(pItem->getUrl());
+        urls = QStringList(pItem->getRawUrl());
     }
     showMenuByUrls(urls, pos);
 }
@@ -54,7 +54,7 @@ void MenuController::showMenuByDesktopItem(const QList<DesktopItemPointer> &pChe
     qDebug() << pCheckItems << pItem << pos;
     QStringList urls;
     foreach (DesktopItemPointer pItem, pCheckItems) {
-        urls.append(pItem->getUrl());
+        urls.append(pItem->getRawUrl());
     }
     showMenuByUrls(urls, pos);
 }

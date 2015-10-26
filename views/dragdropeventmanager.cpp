@@ -68,23 +68,30 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
     QStringList urls;
     if (event->mimeData()->hasUrls()){
         foreach (QUrl url, event->mimeData()->urls()) {
-            urls.append(url.toString());
+            urls.append(url.toEncoded());
         }
+        qDebug() << event->mimeData()->urls() << urls;
         if (!m_destinationDesktopItem.isNull()){
-            bool isCanMoved = !urls.contains(decodeUrl(m_destinationDesktopItem->getDesktopItemInfo().URI));
+            bool isCanMoved = !urls.contains(m_destinationDesktopItem->getRawUrl());
+            qDebug() << isCanMoved << m_destinationDesktopItem->getRawUrl();
             if (isCanMoved){
                 if (isAllApp(urls) && isApp(m_destinationDesktopItem->getUrl())){
+                    qDebug() << "requestCreatingAppGroup";
                     urls.append(m_destinationDesktopItem->getUrl());
                     emit signalManager->requestCreatingAppGroup(urls);
                 }else if (isAllApp(urls) && isAppGroup(m_destinationDesktopItem->getUrl())){
+                    qDebug() << "requestMergeIntoAppGroup";
                     urls.append(m_destinationDesktopItem->getUrl());
                     emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
                 }else if (isApp(m_destinationDesktopItem->getUrl())){
+                    qDebug() << "openFiles";
                     emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), urls);
                 }else if (isTrash(m_destinationDesktopItem->getUrl())){
+                    qDebug() << "trashingAboutToExcute";
                     emit signalManager->trashingAboutToExcute(urls);
                 }else if (isFolder(m_destinationDesktopItem->getUrl())){
-                    emit signalManager->moveFilesExcuted(urls, m_destinationDesktopItem->getUrl());
+                    qDebug() << "moveFilesExcuted";
+                    emit signalManager->moveFilesExcuted(urls, m_destinationDesktopItem->getRawUrl());
                 }
             }
         }else{

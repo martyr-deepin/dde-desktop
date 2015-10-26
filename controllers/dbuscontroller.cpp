@@ -248,9 +248,14 @@ FileInfoInterface* DBusController::getFileInfoInterface(){
 }
 
 void DBusController::getAppGroupItemsByUrl(QString group_url){
-    QString _group_url = group_url;
-    QString group_dir = decodeUrl(_group_url.replace(FilePrefix, ""));
+    if (!group_url.startsWith(FilePrefix)){
+         group_url =  group_url;
+    }else{
+         group_url = decodeUrl(group_url);
+    }
+    QString group_dir = group_url;
     QDir groupDir(group_dir);
+    qDebug() << group_url << groupDir << groupDir.exists();
     QFileInfoList fileInfoList  = groupDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
     if (groupDir.exists()){
         if (fileInfoList.count() == 0){
@@ -407,7 +412,7 @@ void DBusController::handleFileMovedIn(const QString &path){
 
 
 void DBusController::handleFileMovedOut(const QString &path){
-    qDebug() << "handleFileMovedOut";
+    qDebug() << "handleFileMovedOut" << path;
     QFileInfo f(path);
     if (isDesktop(f.path())){
         qDebug() << "move file out desktop" << path;
@@ -627,10 +632,11 @@ void DBusController::pasteFilesToDesktop(){
 }
 
 void DBusController::pasteFiles(QString action, QStringList files, QString destination){
+    qDebug() << action << files << destination;
     if (action == "cut"){
         bool isFilesFromDesktop = true;
         foreach (QString fpath, files) {
-            QString url = fpath.replace("file://", "");
+            QString url = decodeUrl(fpath);
             QFileInfo f(url);
             bool flag = (f.absolutePath() == destination);
             isFilesFromDesktop = isFilesFromDesktop && flag;

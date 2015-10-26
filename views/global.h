@@ -35,7 +35,6 @@ bool isTrash(QString url);
 bool isFolder(QString url);
 bool isInDesktop(QString url);
 bool isDesktopAppFile(QString url);
-QString formatURl(QString url);
 
 bool isRequestThumbnail(QString url);
 QString getMineTypeGenericIconName(QString url);

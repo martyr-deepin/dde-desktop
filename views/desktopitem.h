@@ -37,6 +37,7 @@ public:
     QString getDesktopName();
     QPixmap getAppGroupIcon();
     QString getUrl();
+    QString getRawUrl();
     bool isChecked();
     bool isHover();
     bool isCuted();
@@ -74,6 +75,7 @@ public slots:
     void setAllChecked(bool flag);
     void setHoverObjectName(QString name);
     void setUrl(QString url);
+    void setRaWUrl(QString url);
     void setDesktopItemInfo(DesktopItemInfo& desktopItemInfo);
     void setAppGroupItems(QMap<QString, DesktopItemInfo> items);
     void changeToBeAppGroupIcon();
@@ -96,6 +98,7 @@ private:
     QPixmap m_desktopIcon;
     QString m_desktopName = "";
     QString m_url;
+    QString m_rawUrl;
     bool m_isCuted = false;
     bool m_isInAppGroup = false;
     bool m_mouseRightRelease = false;

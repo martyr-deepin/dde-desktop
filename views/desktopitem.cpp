@@ -265,8 +265,16 @@ void DesktopItem::setUrl(QString url){
     m_url = url;
 }
 
+void DesktopItem::setRaWUrl(QString url){
+    m_rawUrl = url;
+}
+
 QString DesktopItem::getUrl(){
     return m_url;
+}
+
+QString DesktopItem::getRawUrl(){
+    return m_rawUrl;
 }
 
 bool DesktopItem::isHover(){

@@ -13,7 +13,13 @@ QString getThumbnailsPath(){
 }
 
 QString decodeUrl(QString url){
-    return QUrl(url).toString();
+    if (!url.startsWith(FilePrefix)){
+        url = FilePrefix + url;
+        url = QUrl(url).toLocalFile();
+    }else{
+        url = QUrl(url).toLocalFile();
+    }
+    return url;
 }
 
 QString deleteFilePrefix(QString path){
@@ -109,16 +115,6 @@ bool isDesktopAppFile(QString url){
     }
     return false;
 }
-
-
-QString formatURl(QString url){
-    QString key = decodeUrl(url);
-    if (!key.startsWith(FilePrefix)){
-        key = FilePrefix + key;
-    }
-    return key;
-}
-
 
 bool isRequestThumbnail(QString url){
     QMimeDatabase mimeDataBae;

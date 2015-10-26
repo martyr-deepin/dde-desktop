@@ -27,7 +27,6 @@ public:
 
     QDir::SortFlag getSortFlag();
     QString getDesktopDisplayName(DesktopItemInfo& desktopItemInfo);
-    static QString decodeUrl(QString url);
 
     bool isAppGroupBoxShowed();
 

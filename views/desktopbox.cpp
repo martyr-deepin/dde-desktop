@@ -52,7 +52,7 @@ void DesktopBox::renameFinished(){
         }else{
             fileName = pItem->getTextEdit()->toPlainText();
         }
-        emit signalManager->renameJobCreated(pItem->getUrl(), fileName);
+        emit signalManager->renameJobCreated(pItem->getRawUrl(), fileName);
         pItem->getTextEdit()->showText();
     }
 }
