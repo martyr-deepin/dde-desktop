@@ -67,6 +67,7 @@ public slots:
 
     void delayUpdateGridStatus();
     void updateGridStatus();
+    void checkDesktopItemValid();
 
 private:
     int m_pagecount = 0;

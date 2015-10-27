@@ -236,6 +236,7 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
     return pDesktopItem;
 }
 
+
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     qDebug() << "add Item" << pDesktopItem->getUrl();
@@ -267,6 +268,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
 
 
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
+    checkDesktopItemValid();
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     qDebug() << "add Item" << pDesktopItem->getUrl() << m_pItems.contains(pDesktopItem->getUrl());
     if (m_pItems.contains(pDesktopItem->getUrl())){
@@ -286,6 +288,15 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
             m_settings.beginGroup("DesktopItems");
             m_settings.setValue(pDesktopItem->getUrl(), pDesktopItem->pos());
             m_settings.endGroup();
+        }
+    }
+}
+
+void DesktopItemManager::checkDesktopItemValid(){
+    foreach (QString url, m_pItems.keys()) {
+        if (!QFile(url).exists() && url!=ComputerUrl && url!=TrashUrl){
+            qDebug() << "delete invalid desktop item "<< url;
+            deleteItem(url);
         }
     }
 }
