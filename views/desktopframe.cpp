@@ -627,8 +627,8 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
         }
     }
     if (m_isSelectable){
-        painter.setPen(QPen(QColor(255, 255, 255, 50), 2));
-        painter.setBrush(QColor(0, 0 , 0, 63));
+        painter.setPen(QPen(QColor(255, 255, 255, 255*0.25), 1));
+        painter.setBrush(QColor(255, 255 , 255, 255*0.2));
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.drawRect(m_selectRect);
     }
