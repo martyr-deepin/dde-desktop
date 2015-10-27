@@ -139,9 +139,9 @@ void GrowingElideTextEdit::showEditing(){
     setTextInteractionFlags(Qt::TextEditorInteraction);
     selectAll();
     setStyleSheet("\
-                  background-color: white);\
+                  background-color: white;\
                   border:1px solid black;\
-                  color: white;\
+                  color: black;\
                   selection-color: white;\
                   selection-background-color: #61B5F8;\
                   font-size: 12px;\
