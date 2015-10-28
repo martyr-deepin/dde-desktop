@@ -484,7 +484,6 @@ void DesktopFrame::startDrag(){
                 }
             }
         }
-        pDrag->deleteLater();
     }
 }
 
