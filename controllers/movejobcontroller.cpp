@@ -25,7 +25,7 @@ void MoveJobController::moveFiles(QStringList files, QString destination){
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = \
             dbusController->getFileOperationsInterface()->NewMoveJob(
                 files,
-                desktopLocation,
+                destination,
                 "",
                 0,
                 ConflictAdaptor::staticServerPath(),
