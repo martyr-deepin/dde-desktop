@@ -15,6 +15,7 @@ class DesktopItemManager : public QObject
 public:
     DesktopItemManager(QObject* parent=0);
     ~DesktopItemManager();
+
     void initComputerItem();
     void initTrashItem();
     void initConnect();
@@ -25,7 +26,7 @@ public:
     DesktopItemPointer createItem(DesktopItemInfo& fileInfo);
     QList<DesktopItemPointer> getItems();
 
-    QDir::SortFlag getSortFlag();
+    QDir::SortFlags getSortFlag();
     QString getDesktopDisplayName(DesktopItemInfo& desktopItemInfo);
 
     bool isAppGroupBoxShowed();
@@ -53,7 +54,7 @@ public slots:
     void cancelCutedItems(QStringList urls);
     void saveItems();
     void changeSizeByGrid(SizeType type);
-    void sortedByFlags(QDir::SortFlag flag);
+    void sortedByFlags(QDir::SortFlags flag);
     void sortedByKey(QString key);
     void resort();
 
@@ -76,7 +77,7 @@ private:
     DesktopItemPointer m_pTrashItem;
     DesktopItemPointer m_shoudbeMovedItem;
     QWidget* m_parentWindow;
-    QDir::SortFlag m_sortFlag;
+    QDir::SortFlags m_sortFlag;
     QList<DesktopItemPointer> m_list_pItems;
     QMap<QString, DesktopItemPointer> m_pItems;
     AppGroupBox* m_appGroupBox=NULL;

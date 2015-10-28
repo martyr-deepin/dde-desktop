@@ -351,10 +351,7 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
                 m_shoudbeMovedItem->setUrl(newKey);
                 m_shoudbeMovedItem->setRaWUrl(desktopItemInfo.URI);
                 m_pItems.insert(iterator, newKey, m_shoudbeMovedItem);
-                qDebug() << m_pItems.keys();
                 m_pItems.remove(oldKey);
-                qDebug() << m_pItems.keys();
-                qDebug() << m_list_pItems;
 
                 GridItemPointer pGridItem = gridManager->getItemByPos(m_shoudbeMovedItem->pos());
                 qDebug() << pGridItem.isNull();
@@ -378,7 +375,6 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
 }
 
 void DesktopItemManager::cutItems(QStringList urls){
-    qDebug() << urls;
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         if (pItem->isCuted()){
             pItem->cancelCuted();
@@ -410,7 +406,6 @@ void DesktopItemManager::deleteItem(QString url){
 //        _url = decodeUrl(url);
 //    }
     qDebug() << "deleteItem" << url << _url << m_pItems.contains(_url) << m_pItems.value(_url);
-    qDebug() << m_pItems.keys();
     if (m_pItems.contains(_url)){
         DesktopItemPointer pItem = m_pItems.value(_url);
 
@@ -483,7 +478,7 @@ QList<DesktopItemPointer> DesktopItemManager::getItems(){
     return m_list_pItems;
 }
 
-void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
+void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){
     gridManager->clearDeskopItemsStatus();
     m_settings.clear();
     QDir desktopDir(desktopLocation);
@@ -507,7 +502,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
             qCritical() << url;
         }
     }
-    qDebug() << m_list_pItems.length();
+
     for (int i = 0; i< m_list_pItems.length() ; i++){
         int pColumn = i / row;
         int pRow = i % row;
@@ -527,13 +522,13 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlag flag){
 
 void DesktopItemManager::sortedByKey(QString key){
     if (key == "name"){
-        sortedByFlags(QDir::SortFlag::Name);
+        sortedByFlags(QDir::Name);
     }else if (key == "size"){
-        sortedByFlags(QDir::SortFlag::Size);
+        sortedByFlags(QDir::Size);
     }else if (key == "filetype"){
-        sortedByFlags(QDir::SortFlag::Type);
+        sortedByFlags(QDir::Type);
     }else if (key == "mtime"){
-
+        sortedByFlags(QDir::Time | QDir::Reversed);
     }else if (key == "atime"){
 
     }else if (key == "open-with"){
@@ -547,7 +542,7 @@ void DesktopItemManager::resort(){
     sortedByFlags(m_sortFlag);
 }
 
-QDir::SortFlag DesktopItemManager::getSortFlag(){
+QDir::SortFlags DesktopItemManager::getSortFlag(){
     return m_sortFlag;
 }
 
