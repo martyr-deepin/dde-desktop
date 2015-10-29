@@ -399,7 +399,7 @@ void DesktopFrame::startDrag(){
         pDrag->setPixmap(dragPixmap);
         QRect borderRect = getCheckedBorderRect();
         pDrag->setHotSpot(QPoint(-borderRect.x() + QCursor::pos().x(), -borderRect.y() + QCursor::pos().y() ));
-        Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::MoveAction);
+        Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::CopyAction);
         if (action == Qt::MoveAction){
             if (!m_isGridOn){
                 foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
