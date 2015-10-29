@@ -74,7 +74,8 @@ SOURCES += main.cpp \
     dbusinterface/services/conflictdaptor.cpp \
     dbusinterface/services/desktopadaptor.cpp \
     app/dbusworker.cpp \
-    dbusinterface/displayinterface.cpp
+    dbusinterface/displayinterface.cpp \
+    dbusinterface/appearancedaemon_interface.cpp
 
 
 HEADERS  += \
@@ -134,7 +135,8 @@ HEADERS  += \
     dbusinterface/services/conflictdaptor.h \
     dbusinterface/services/desktopadaptor.h \
     app/dbusworker.h \
-    dbusinterface/displayinterface.h
+    dbusinterface/displayinterface.h \
+    dbusinterface/appearancedaemon_interface.h
 
 TRANSLATIONS += translations/dde-desktop.ts
 

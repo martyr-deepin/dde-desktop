@@ -12,6 +12,7 @@
 #include "dbusinterface/createfilefromtemplatejob_interface.h"
 #include "dbusinterface/displayinterface.h"
 #include "dbusinterface/dbusdocksetting.h"
+#include "dbusinterface/appearancedaemon_interface.h"
 
 #include "views/global.h"
 #include "views/signalmanager.h"
@@ -33,6 +34,7 @@ void DBusController::init(){
     m_clipboardInterface = new ClipboardInterface(FileMonitor_service, Clipboard_path, bus, this);
     m_dockSettingInterface = new DBusDockSetting(this);
     m_displayInterface = new DisplayInterface(this);
+    m_appearanceInterface = new AppearanceDaemonInterface(Appearance_service, Appearance_path, bus, this);
     m_fileMonitor = new FileMonitor(this);
     m_appController = new AppController(this);
 
@@ -86,6 +88,7 @@ void DBusController::initConnect(){
     connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
     connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
     connect(m_displayInterface, SIGNAL(PrimaryRectChanged()), signalManager, SIGNAL(screenGeometryChanged()));
+    connect(signalManager, SIGNAL(gtkIconThemeChanged()), this, SLOT(handelIconThemeChanged()));
 }
 
 void DBusController::loadDesktopSettings(){
@@ -652,6 +655,14 @@ void DBusController::pasteFiles(QString action, QStringList files, QString desti
     }
 }
 
+
+void DBusController::handelIconThemeChanged(){
+    requestIconByUrl(ComputerUrl, 48);
+    requestIconByUrl(TrashUrl, 48);
+    foreach(QString url, m_desktopItemInfoMap.keys()){
+        requestIconByUrl(url, 48);
+    }
+}
 
 DBusController::~DBusController()
 {

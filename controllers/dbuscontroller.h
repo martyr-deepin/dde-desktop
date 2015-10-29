@@ -16,6 +16,7 @@ class FileOperationsInterface;
 class CreateDirJobInterface;
 class CreateFileJobInterface;
 class CreateFileFromTemplateJobInterface;
+class AppearanceDaemonInterface;
 class DisplayInterface;
 class FileMonitor;
 class QTimer;
@@ -33,6 +34,9 @@ class AppController;
 
 #define DesktopDaemon_service "com.deepin.dde.daemon.Desktop"
 #define DesktopDaemon_path "/com/deepin/dde/daemon/Desktop"
+
+#define Appearance_service "com.deepin.daemon.Appearance"
+#define Appearance_path "/com/deepin/daemon/Appearance"
 
 #define Watcher_service "com.deepin.filemanager.Backend.Watcher"
 
@@ -140,6 +144,9 @@ public slots:
     /*delay get thumbnail*/
     void delayGetThumbnail();
 
+    /*handle theme changed*/
+    void handelIconThemeChanged();
+
 private:
     FileMonitor* m_fileMonitor = NULL;
     FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;
@@ -154,7 +161,7 @@ private:
     CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface = NULL;
     DisplayInterface* m_displayInterface;
     DBusDockSetting* m_dockSettingInterface = NULL;
-
+    AppearanceDaemonInterface* m_appearanceInterface;
     AppController* m_appController;
 
     DesktopItemInfoMap m_desktopItemInfoMap;

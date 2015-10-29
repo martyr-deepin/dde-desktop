@@ -140,6 +140,8 @@ signals:
     /*screen geometry changed*/
     void screenGeometryChanged();
 
+    /*gtk wather monitor icon theme changed signal*/
+    void gtkIconThemeChanged();
 private:
     Q_DISABLE_COPY(SignalManager)
 };
