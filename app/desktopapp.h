@@ -24,7 +24,7 @@ signals:
 public slots:
     void saveGridOn(bool mode);
     void saveSizeType(SizeType type);
-    void saveSortFlag(QDir::SortFlag flag);
+    void saveSortFlag(QDir::SortFlags flag);
 
     void unRegisterDbusService();
 

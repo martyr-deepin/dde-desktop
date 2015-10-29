@@ -23,7 +23,7 @@ signals:
     void gridOnResorted(); /*sort desktop item when grid on */
 
     void gridSizeTypeChanged(SizeType type);
-    void sortedModeChanged(QDir::SortFlag flag);
+    void sortedModeChanged(QDir::SortFlags flag);
 
     /*uncheck dekstop item by uyl*/
     void unCheckedItem(QString url);

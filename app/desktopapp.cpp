@@ -19,7 +19,7 @@ DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 void DesktopApp::initConnect(){
     connect(signalManager, SIGNAL(gridModeChanged(bool)), this, SLOT(saveGridOn(bool)));
     connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(saveSizeType(SizeType)));
-    connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)), this, SLOT(saveSortFlag(QDir::SortFlag)));
+    connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlags)), this, SLOT(saveSortFlag(QDir::SortFlags)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SIGNAL(closed()));
 }
 
@@ -43,10 +43,10 @@ void DesktopApp::saveSizeType(SizeType type){
     settings.endGroup();
 }
 
-void DesktopApp::saveSortFlag(QDir::SortFlag flag){
+void DesktopApp::saveSortFlag(QDir::SortFlags flag){
     QSettings settings;
     settings.beginGroup("Desktop");
-    settings.setValue("sortFlag", flag);
+    settings.setValue("sortFlag", static_cast<int>(flag));
     settings.endGroup();
 }
 

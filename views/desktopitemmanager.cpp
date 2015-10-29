@@ -12,7 +12,7 @@ DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
     settings.beginGroup("Desktop");
     int flag = settings.value("sortFlag", QDir::Name).toInt();
     settings.endGroup();
-    m_sortFlag = static_cast<QDir::SortFlag>(flag);
+    m_sortFlag = static_cast<QDir::SortFlags>(flag);
 
     m_shoudbeMovedItem = DesktopItemPointer();
 
@@ -85,8 +85,8 @@ void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
     connect(signalManager, SIGNAL(desktoItemIconUpdated(QString,QString,uint)),
             this, SLOT(updateDesktopItemIcon(QString,QString,uint)));
-    connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlag)),
-            this, SLOT(sortedByFlags(QDir::SortFlag)));
+    connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlags)),
+            this, SLOT(sortedByFlags(QDir::SortFlags)));
     connect(signalManager, SIGNAL(sortByKey(QString)),
             this, SLOT(sortedByKey(QString)));
 
