@@ -6,7 +6,8 @@ HEADERS += \
     $$PWD/growingtextedit.h \
     $$PWD/growingelidetextedit.h \
     $$PWD/themeappicon.h \
-    $$PWD/commandlinemanager.h
+    $$PWD/commandlinemanager.h \
+    $$PWD/dgraphicsgloweffect.h
 
 SOURCES += \
     $$PWD/elidelabel.cpp \
@@ -15,5 +16,6 @@ SOURCES += \
     $$PWD/growingtextedit.cpp \
     $$PWD/growingelidetextedit.cpp \
     $$PWD/themeappicon.cpp \
-    $$PWD/commandlinemanager.cpp
+    $$PWD/commandlinemanager.cpp \
+    $$PWD/dgraphicsgloweffect.cpp
 

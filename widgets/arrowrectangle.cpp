@@ -1,10 +1,18 @@
 #include "arrowrectangle.h"
+#include "dgraphicsgloweffect.h"
 
 ArrowRectangle::ArrowRectangle(QWidget * parent) :
     QWidget(parent)
 {
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip | Qt::WindowStaysOnTopHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
+
+    DGraphicsGlowEffect *glowEffect = new DGraphicsGlowEffect(this);
+    glowEffect->setBlurRadius(20);
+    glowEffect->setDistance(1);
+    glowEffect->setXOffset(0);
+    glowEffect->setYOffset(5);
+    setGraphicsEffect(glowEffect);
 }
 
 void ArrowRectangle::show(int x, int y)
