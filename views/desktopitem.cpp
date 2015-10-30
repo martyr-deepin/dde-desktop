@@ -65,7 +65,7 @@ void DesktopItem::initUI(){
     m_textedit->setAlignment(Qt::AlignTop);
     m_textedit->setObjectName("GrowingElideTextEdit");
     m_textedit->setFixedWidth(100 - 10);
-//    addTextShadow();
+    addTextShadow();
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addSpacing(4);
@@ -477,10 +477,14 @@ void DesktopItem::addImageShadow(){
 
 void DesktopItem::addTextShadow(){
     QGraphicsDropShadowEffect *textShadow = new QGraphicsDropShadowEffect;
-    textShadow->setBlurRadius(6);
-    textShadow->setColor(QColor(0, 0, 0, 178));
-    textShadow->setOffset(1, 3);
+    textShadow->setBlurRadius(5);
+    textShadow->setColor(QColor(0, 0, 0, 200));
+    textShadow->setOffset(0, 2);
     m_textedit->setGraphicsEffect(textShadow);
+}
+
+void DesktopItem::disabledTextShadow(){
+    m_textedit->graphicsEffect()->setEnabled(false);
 }
 
 DesktopItem::~DesktopItem()

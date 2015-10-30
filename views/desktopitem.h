@@ -51,6 +51,7 @@ public:
     QPixmap applyShadowToPixmap(const QString filename);
     void addImageShadow();
     void addTextShadow();
+    void disabledTextShadow();
 
 signals:
     void desktopIconChanged(QString icon);

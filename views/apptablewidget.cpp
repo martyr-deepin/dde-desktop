@@ -68,6 +68,7 @@ void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
             pDesktopItem->setDesktopItemInfo(fileInfo);
             pDesktopItem->resize(width, height);
             pDesktopItem->setIsInAppGroup(true);
+            pDesktopItem->disabledTextShadow();
 
             setCellWidget(_row, _column, pDesktopItem);
             setRowHeight(_row, height);
