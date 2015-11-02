@@ -96,7 +96,7 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
             }
         }else{
             if (event->source() != m_parent){
-                emit signalManager->moveFilesExcuted(urls, desktopLocation);
+                emit signalManager->copyFilesExcuted(urls, desktopLocation);
             }/*else{
                 qDebug() << "move desktop item";
             }*/
