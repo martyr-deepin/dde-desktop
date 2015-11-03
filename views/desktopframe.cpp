@@ -292,14 +292,12 @@ void DesktopFrame::handleKeyCtrlVPressed(){
 }
 
 void DesktopFrame::focusInEvent(QFocusEvent *event){
-    m_isSelectable = true;
-    m_selectRect = QRect(0, 0, 0, 0);
+
     QFrame::focusInEvent(event);
 }
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
-    m_isSelectable = false;
-    m_selectRect = QRect(0, 0, 0, 0);
+
     QFrame::focusOutEvent(event);
 }
 
@@ -339,6 +337,8 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
     if (event->button() == Qt::LeftButton){
+        m_isSelectable = true;
+        m_selectRect = QRect(0, 0, 0, 0);
         if (pTopDesktopItem.isNull()){
             if(!m_ctrlPressed){
                 setFocus();
@@ -546,6 +546,8 @@ QRect DesktopFrame::getCheckedBorderRect(){
 
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     clearFocus();
+    m_isSelectable = false;
+    m_selectRect = QRect(0, 0, 0, 0);
 //    update();
     if (event->button() == Qt::LeftButton && !m_ctrlPressed){
         DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
