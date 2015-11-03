@@ -138,7 +138,7 @@ void AppTableWidget::startDrag(const DesktopItemInfo &info){
     qDebug() << info.URI;
     urls.append(QUrl(info.URI));
     QMimeData* mimeData = new QMimeData;
-//    mimeData->setData("application/x-dnditemdata", itemData);
+    mimeData->setData("source", "AppTableWidget");
     mimeData->setUrls(urls);
 
     QPixmap dragPixmap = getDragPixmap();

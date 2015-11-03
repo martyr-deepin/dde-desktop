@@ -292,12 +292,10 @@ void DesktopFrame::handleKeyCtrlVPressed(){
 }
 
 void DesktopFrame::focusInEvent(QFocusEvent *event){
-
     QFrame::focusInEvent(event);
 }
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
-
     QFrame::focusOutEvent(event);
 }
 

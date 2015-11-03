@@ -95,11 +95,15 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
                 }
             }
         }else{
-            if (event->source() != m_parent){
-                emit signalManager->copyFilesExcuted(urls, desktopLocation);
-            }/*else{
-                qDebug() << "move desktop item";
-            }*/
+            if (event->mimeData()->data("source") == "AppTableWidget"){
+                emit signalManager->moveFilesExcuted(urls, desktopLocation);
+            }else{
+                if (event->source() != m_parent){
+                    emit signalManager->copyFilesExcuted(urls, desktopLocation);
+                }else{
+                    qDebug() << "move desktop item";
+                }
+            }
         }
 
     }
