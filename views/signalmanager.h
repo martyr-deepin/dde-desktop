@@ -142,6 +142,19 @@ signals:
 
     /*gtk wather monitor icon theme changed signal*/
     void gtkIconThemeChanged();
+
+    /*dbus to copy job dialog */
+    void copyJobAdded(const QMap<QString, QString>& jobDetail);
+    void copyJobRemoved(const QMap<QString, QString>& jobDetail);
+    void progressChanged(int progress);
+    void copyJobAborted();
+
+    void copyJobDataUpdated(const QMap<QString, QString>& jobDetail,
+                           const QMap<QString, QString>& data);
+
+    /*copy job dialog to dbus*/
+    void abortCopyTask(const QMap<QString, QString>& jobDetail);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

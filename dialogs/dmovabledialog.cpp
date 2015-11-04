@@ -4,26 +4,17 @@
 #include <QDesktopWidget>
 #include <QPushButton>
 #include <QResizeEvent>
+#include <QPainter>
 
 
 DMovabelDialog::DMovabelDialog(QWidget *parent):QDialog(parent)
 {
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
     setAttribute(Qt::WA_TranslucentBackground);
-    m_closeButton = new QPushButton(this);
-    m_closeButton->setObjectName("CloseButton");
-    m_closeButton->setFixedSize(25, 25);
-    m_closeButton->setAttribute(Qt::WA_NoMousePropagation);
-    connect(m_closeButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 
 void DMovabelDialog::setMovableHeight(int height){
     m_movableHeight = height;
-}
-
-
-QPushButton* DMovabelDialog::getCloseButton(){
-    return m_closeButton;
 }
 
 void DMovabelDialog::moveCenter(){
@@ -31,6 +22,11 @@ void DMovabelDialog::moveCenter(){
     QPoint cp = qApp->desktop()->availableGeometry().center();
     qr.moveCenter(cp);
     move(qr.topLeft());
+}
+
+void DMovabelDialog::moveTopRight(){
+    int x = qApp->desktop()->availableGeometry().width() - width();
+    move(x, 0);
 }
 
 void DMovabelDialog::mousePressEvent(QMouseEvent *event)
@@ -54,10 +50,17 @@ void DMovabelDialog::mouseMoveEvent(QMouseEvent *event)
 }
 
 void DMovabelDialog::resizeEvent(QResizeEvent *event){
-    m_closeButton->move(width() - m_closeButton->width() - 4, 4);
-    m_closeButton->raise();
-    moveCenter();
     QDialog::resizeEvent(event);
+}
+
+void DMovabelDialog::paintEvent(QPaintEvent *event){
+    QPainter painter(this);
+    painter.setPen(QPen(QColor(255, 255, 255, 51), 2));
+    painter.setBrush(QColor(0, 0 , 0, 180));
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    QRect r(1, 1, width() - 2, height() - 2);
+    painter.drawRoundedRect(r, 2, 2, Qt::RelativeSize);
+    QDialog::paintEvent(event);
 }
 
 DMovabelDialog::~DMovabelDialog()

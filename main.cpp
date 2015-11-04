@@ -4,6 +4,7 @@
 #include "app/define.h"
 #include "views/global.h"
 #include "dialogs/cleartrashdialog.h"
+
 #include "dbusinterface/services/desktopadaptor.h"
 #include "widgets/commandlinemanager.h"
 #include "app/dbusworker.h"

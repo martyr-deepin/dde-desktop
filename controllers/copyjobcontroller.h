@@ -18,18 +18,9 @@ public:
 signals:
 
 public slots:
-    void copyFiles(QStringList files, QString destination);
-
-    void connectCopyJobSignal();
-    void disconnectCopyJobSignal();
-    void copyJobExcuteFinished(QString file);
-    void copyJobAbort();
-    void copyJobAbortFinished();
-    void onCopyingFile(QString file);
-    void onCopyingProcessAmount(qlonglong progress, ushort info);
-
+    void createCopyJob(QStringList files, QString destination);
 private:
-    CopyJobInterface* m_copyJobInterface;
+
 };
 
 #endif // COPYJOBCONTROLLER_H

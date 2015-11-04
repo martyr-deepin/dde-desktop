@@ -14,22 +14,21 @@ public:
     DMovabelDialog(QWidget *parent = 0);
     ~DMovabelDialog();
 
-    QPushButton* getCloseButton();
-
 public slots:
     void setMovableHeight(int height);
     void moveCenter();
+    void moveTopRight();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent* event);
+    void paintEvent(QPaintEvent* event);
 
 private:
     QPoint m_dragPosition;
     int m_movableHeight = 30;
-    QPushButton* m_closeButton;
 };
 
 #endif // DMOVABLEDIALOG_H

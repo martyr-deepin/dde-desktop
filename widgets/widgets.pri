@@ -7,7 +7,11 @@ HEADERS += \
     $$PWD/growingelidetextedit.h \
     $$PWD/themeappicon.h \
     $$PWD/commandlinemanager.h \
-    $$PWD/dgraphicsgloweffect.h
+    $$PWD/dgraphicsgloweffect.h \
+    $$PWD/dcircleprogress_p.h \
+    $$PWD/dcircleprogress.h \
+    $$PWD/dobject_p.h \
+    $$PWD/dobject.h
 
 SOURCES += \
     $$PWD/elidelabel.cpp \
@@ -17,5 +21,7 @@ SOURCES += \
     $$PWD/growingelidetextedit.cpp \
     $$PWD/themeappicon.cpp \
     $$PWD/commandlinemanager.cpp \
-    $$PWD/dgraphicsgloweffect.cpp
+    $$PWD/dgraphicsgloweffect.cpp \
+    $$PWD/dcircleprogress.cpp \
+    $$PWD/dobject.cpp
 

@@ -4,8 +4,10 @@
 #include <QtCore>
 #include "views/gridmanager.h"
 
+
 class DesktopBox;
 class AppController;
+class DTaskDialog;
 
 class DesktopApp : public QObject
 {
@@ -37,6 +39,7 @@ public slots:
 
 private:
     DesktopBox* m_desktopBox;
+    DTaskDialog* m_taskDialog;
 };
 
 #endif // DESKTOPAPP_H

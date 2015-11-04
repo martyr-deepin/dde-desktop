@@ -4,6 +4,7 @@
 #include "views/desktopitemmanager.h"
 #include "views/desktopframe.h"
 #include "controllers/appcontroller.h"
+#include "dialogs/dtaskdialog.h"
 #include "dbusinterface/services/desktopadaptor.h"
 #include <QDBusConnection>
 #include <QStandardPaths>
@@ -12,6 +13,7 @@
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
     m_desktopBox = new DesktopBox;
+    m_taskDialog = new DTaskDialog;
     initConnect();
     registerDBusService();
 }
@@ -20,6 +22,14 @@ void DesktopApp::initConnect(){
     connect(signalManager, SIGNAL(gridModeChanged(bool)), this, SLOT(saveGridOn(bool)));
     connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)), this, SLOT(saveSizeType(SizeType)));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlags)), this, SLOT(saveSortFlag(QDir::SortFlags)));
+    connect(signalManager, SIGNAL(copyJobAdded(QMap<QString,QString>)),
+            m_taskDialog, SLOT(addCopyMoveTask(QMap<QString,QString>)));
+    connect(signalManager, SIGNAL(copyJobRemoved(QMap<QString,QString>)),
+            m_taskDialog, SLOT(removeTaskWidget(QMap<QString,QString>)));
+    connect(signalManager, SIGNAL(copyJobDataUpdated(QMap<QString,QString>,QMap<QString,QString>)),
+            m_taskDialog, SLOT(handleUpdateTaskWidget(QMap<QString,QString>,QMap<QString,QString>)));
+    connect(m_taskDialog, SIGNAL(abortCopyTask(QMap<QString,QString>)),
+            signalManager, SIGNAL(abortCopyTask(QMap<QString,QString>)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SIGNAL(closed()));
 }
 

@@ -65,6 +65,7 @@ private:
 
     QVBoxLayout* m_messageLayout;
     int m_messageLabelMaxWidth;
+    QPushButton* m_closeButton;
 };
 
 #endif // DBASEDIALOG_H

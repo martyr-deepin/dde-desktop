@@ -52,6 +52,7 @@ public:
     void addImageShadow();
     void addTextShadow();
     void disabledTextShadow();
+    void enableTextShadow();
 
 signals:
     void desktopIconChanged(QString icon);

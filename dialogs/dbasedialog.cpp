@@ -14,8 +14,12 @@
 
 DBaseDialog::DBaseDialog(QWidget *parent):DMovabelDialog(parent)
 {
+    m_closeButton = new QPushButton(this);
+    m_closeButton->setObjectName("CloseButton");
+    m_closeButton->setFixedSize(25, 25);
+    m_closeButton->setAttribute(Qt::WA_NoMousePropagation);
     m_messageLabelMaxWidth = qApp->desktop()->availableGeometry().width() / 2 -
-            100 - 2 * getCloseButton()->width();
+            100 - 2 * m_closeButton->width();
 }
 
 void DBaseDialog::initUI(const QString &icon,
@@ -74,7 +78,7 @@ void DBaseDialog::initUI(const QString &icon,
     m_messageLayout->addWidget(m_messageLabel);
     m_messageLayout->addWidget(m_tipMessageLabel);
     m_messageLayout->addStretch();
-    m_messageLayout->setContentsMargins(5, getCloseButton()->height(), getCloseButton()->width(), 0);
+    m_messageLayout->setContentsMargins(5, m_closeButton->height(), m_closeButton->width(), 0);
 
     QHBoxLayout* topLayout = new QHBoxLayout;
     topLayout->addLayout(iconLayout);
@@ -100,6 +104,7 @@ void DBaseDialog::initUI(const QString &icon,
 
 void DBaseDialog::initConnect(){
     connect(m_buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(handleButtonsClicked(int)));
+    connect(m_closeButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 
 QButtonGroup* DBaseDialog::getButtonsGroup(){
@@ -198,6 +203,9 @@ void DBaseDialog::closeEvent(QCloseEvent *event){
 
 
 void DBaseDialog::resizeEvent(QResizeEvent *event){
+    m_closeButton->move(width() - m_closeButton->width() - 4, 4);
+    m_closeButton->raise();
+    moveCenter();
     DMovabelDialog::resizeEvent(event);
 }
 

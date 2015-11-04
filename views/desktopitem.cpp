@@ -336,6 +336,7 @@ void DesktopItem::setAllChecked(bool flag){
 
 void DesktopItem::setCuted(){
     if (!m_isCuted){
+        disabledTextShadow();
         QGraphicsOpacityEffect *effect = new QGraphicsOpacityEffect;
         effect->setOpacity(0.5);
         setGraphicsEffect(effect);
@@ -345,7 +346,10 @@ void DesktopItem::setCuted(){
 
 void DesktopItem::cancelCuted(){
     if (m_isCuted){
-        static_cast<QGraphicsOpacityEffect*>(graphicsEffect())->setOpacity(1);
+        QGraphicsOpacityEffect * effect = static_cast<QGraphicsOpacityEffect*>(graphicsEffect());
+        effect->setOpacity(1);
+        effect->setEnabled(false);
+        enableTextShadow();
     }
     m_isCuted = false;
 }
@@ -417,20 +421,20 @@ void DesktopItem::leaveEvent(QEvent *event){
 
 void DesktopItem::paintEvent(QPaintEvent *event){
     if (m_checked){
-        QPainter painter(this);
-        painter.setPen(QPen(QColor(255, 255, 255, 51), 2));
-        painter.setBrush(QColor(0, 0 , 0, 76));
-        painter.setRenderHint(QPainter::Antialiasing, true);
+        QPainter painter1(this);
+        painter1.setPen(QPen(QColor(255, 255, 255, 51), 2));
+        painter1.setBrush(QColor(0, 0 , 0, 76));
+        painter1.setRenderHint(QPainter::Antialiasing, true);
         QRect r(2, 2, width() - 4, height() - 4);
-        painter.drawRoundedRect(r, 10, 10, Qt::RelativeSize);
+        painter1.drawRoundedRect(r, 10, 10, Qt::RelativeSize);
     }
     if (m_hover){
-        QPainter painter(this);
-        painter.setPen(QPen(QColor(255, 255, 255, 36), 2));
-        painter.setBrush(QColor(0, 0 , 0, 36));
-        painter.setRenderHint(QPainter::Antialiasing, true);
+        QPainter painter2(this);
+        painter2.setPen(QPen(QColor(255, 255, 255, 36), 2));
+        painter2.setBrush(QColor(0, 0 , 0, 36));
+        painter2.setRenderHint(QPainter::Antialiasing, true);
         QRect r(2, 2, width() - 4, height() - 4);
-        painter.drawRoundedRect(r, 10, 10, Qt::RelativeSize);
+        painter2.drawRoundedRect(r, 10, 10, Qt::RelativeSize);
     }
     QFrame::paintEvent(event);
 }
@@ -485,6 +489,10 @@ void DesktopItem::addTextShadow(){
 
 void DesktopItem::disabledTextShadow(){
     m_textedit->graphicsEffect()->setEnabled(false);
+}
+
+void DesktopItem::enableTextShadow(){
+    m_textedit->graphicsEffect()->setEnabled(true);
 }
 
 DesktopItem::~DesktopItem()
