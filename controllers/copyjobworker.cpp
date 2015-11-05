@@ -63,6 +63,7 @@ void CopyjobWorker::copyFiles(QStringList files, QString destination){
         qDebug() << "copy files" << files << path;
         m_copyjobPath = path;
         m_jobDetail.insert("jobPath", path);
+        m_jobDetail.insert("type", "copy");
         m_jobDataDetail.insert("destination",  QFileInfo(decodeUrl(desktopLocation)).fileName());
         m_copyJobInterface = new CopyJobInterface(service, path, QDBusConnection::sessionBus(), this);
         connectCopyJobSignal();
@@ -120,13 +121,9 @@ void CopyjobWorker::copyJobAbort(){
 }
 
 void CopyjobWorker::copyJobAbortFinished(){
-    disconnectCopyJobSignal();
-    m_copyJobInterface->deleteLater();
-    m_copyJobInterface = NULL;
-    emit finished();
     qDebug() << "copy job aborted";
+    copyJobExcuteFinished("");
 }
-
 
 void CopyjobWorker::onCopyingFile(QString file){
     emit signalManager->copyingFileChaned(file);
@@ -145,7 +142,6 @@ void CopyjobWorker::setTotalAmount(qlonglong amount, ushort type){
 void CopyjobWorker::onCopyingProcessAmount(qlonglong progress, ushort type){
 //    qDebug() << "onCopyingProcessAmount" << this << progress << type;
     m_currentProgress = progress;
-    emit signalManager->copyingProcessAmountChanged(progress, type);
 }
 
 void CopyjobWorker::handleTimeout(){
@@ -156,6 +152,7 @@ void CopyjobWorker::handleTimeout(){
 //    qDebug() << remainTime;
     m_jobDataDetail.insert("speed", QString::number(speed));
     m_jobDataDetail.insert("remainTime", QString::number(remainTime));
+    m_jobDataDetail.insert("progress", "10");
     emit signalManager->copyJobDataUpdated(m_jobDetail, m_jobDataDetail);
 }
 

@@ -3,6 +3,7 @@
 #include "dbusinterface/fileoperations_interface.h"
 #include "dbusinterface/services/conflictdaptor.h"
 #include "views/global.h"
+#include "movejobworker.h"
 
 MoveJobController::MoveJobController(QObject *parent) : QObject(parent)
 {
@@ -11,93 +12,14 @@ MoveJobController::MoveJobController(QObject *parent) : QObject(parent)
 
 void MoveJobController::initConnect(){
     connect(signalManager, SIGNAL(moveFilesExcuted(QStringList,QString)),
-            this, SLOT(moveFiles(QStringList,QString)));
-    connect(signalManager, SIGNAL(moveJobAboutToAbort()), this, SLOT(moveJobAbort()));
+            this, SLOT(createMoveJob(QStringList,QString)));
 }
 
-
-void MoveJobController::moveFiles(QStringList files, QString destination){
-    qDebug() << files << destination;
-
-    if (files.length() == 0)
-        return;
-
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = \
-            dbusController->getFileOperationsInterface()->NewMoveJob(
-                files,
-                destination,
-                "",
-                0,
-                ConflictAdaptor::staticServerPath(),
-                ConflictAdaptor::staticInterfacePath(),
-                ConflictAdaptor::staticInterfaceName()
-                );
-
-//    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewMoveJob(files, destination, "",  0, "",  "", "");
-    reply.waitForFinished();
-    if (!reply.isError()){
-        QString service = reply.argumentAt(0).toString();
-        QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
-        qDebug() << "move files" << files << path;
-        m_moveJobInterface = new MoveJobInterface(service, path, QDBusConnection::sessionBus(), this);
-        connectMoveJobSignal();
-        m_moveJobInterface->Execute();
-    }else{
-        qCritical() << reply.error().message();
-    }
-}
-
-void MoveJobController::connectMoveJobSignal(){
-    if (m_moveJobInterface){
-        connect(m_moveJobInterface, SIGNAL(Done()), this, SLOT(moveJobExcuteFinished()));
-        connect(m_moveJobInterface, SIGNAL(Aborted()), this, SLOT(moveJobAbortFinished()));
-        connect(m_moveJobInterface, SIGNAL(Moving(QString)), this, SLOT(onMovingFile(QString)));
-        connect(m_moveJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
-                this, SLOT(onMovingProcessAmount(qlonglong,ushort)));
-    }
-}
-
-
-void MoveJobController::disconnectMoveJobSignal(){
-    if (m_moveJobInterface){
-        disconnect(m_moveJobInterface, SIGNAL(Done()), this, SLOT(moveJobExcuteFinished()));
-        disconnect(m_moveJobInterface, SIGNAL(Aborted()), this, SLOT(moveJobAbortFinished()));
-        disconnect(m_moveJobInterface, SIGNAL(Moving(QString)), this, SLOT(onMovingFile(QString)));
-        disconnect(m_moveJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
-                this, SLOT(onMovingProcessAmount(qlonglong,ushort)));
-    }
-}
-
-
-void MoveJobController::moveJobExcuteFinished(){
-    disconnectMoveJobSignal();
-    m_moveJobInterface->deleteLater();
-    m_moveJobInterface = NULL;
-    qDebug() << "move job finished";
-}
-
-void MoveJobController::moveJobAbort(){
-    if (m_moveJobInterface){
-        m_moveJobInterface->Abort();
-    }
-}
-
-void MoveJobController::moveJobAbortFinished(){
-    disconnectMoveJobSignal();
-    m_moveJobInterface->deleteLater();
-    m_moveJobInterface = NULL;
-    qDebug() << "move job aborted";
-}
-
-
-void MoveJobController::onMovingFile(QString file){
-    emit signalManager->movingFileChaned(file);
-    qDebug() << "onMovingFile" << file;
-}
-
-void MoveJobController::onMovingProcessAmount(qlonglong progress, ushort info){
-    emit signalManager->movingProcessAmountChanged(progress, info);
-    qDebug() << "onMovingProcessAmount" << progress << info;
+void MoveJobController::createMoveJob(QStringList files, QString destination){
+    MovejobWorker* worker = new MovejobWorker(files, destination);
+    connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    emit worker->startJob();
+    qDebug() << worker;
 }
 
 MoveJobController::~MoveJobController()

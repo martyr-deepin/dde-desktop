@@ -14,7 +14,6 @@ MoveCopyTaskWidget::MoveCopyTaskWidget(const QMap<QString, QString> &jobDetail, 
 {
     initUI();
     initConnect();
-    setProgress(50);
     if (m_jobDetail.contains("target")){
         setTargetObj(m_jobDetail.value("target"));
     }
@@ -22,7 +21,6 @@ MoveCopyTaskWidget::MoveCopyTaskWidget(const QMap<QString, QString> &jobDetail, 
     if (m_jobDetail.contains("destination")){
         setDestinationObj(m_jobDetail.value("destination"));
     }
-    setSpeed(25);
 }
 
 void MoveCopyTaskWidget::initUI(){
@@ -76,7 +74,9 @@ void MoveCopyTaskWidget::initConnect(){
 }
 
 void MoveCopyTaskWidget::updateMessage(const QMap<QString, QString> &data){
-    QString file, destination, speed, remainTime;
+    QString file, destination, speed, remainTime, progress;
+    QString action("copyed");
+    QString message, tipMessage;
     if (data.contains("file")){
         file = data.value("file");
     }
@@ -90,15 +90,36 @@ void MoveCopyTaskWidget::updateMessage(const QMap<QString, QString> &data){
         remainTime = data.value("remainTime");
     }
 
-    QString message = tr("<span style=\"color: #3cadff\"> %1 </span> \
-                         is moved to <span style=\"color: #3cadff\"> %2 </span>")
-            .arg(file, destination);
+    if (data.contains("progress")){
+        progress = data.value("progress");
+    }
 
-    QString tipMessage = tr("current speed:%1 time Left:%2 ")
-               .arg(speed, remainTime);
+    if (m_jobDetail.contains("type")){
+        if (m_jobDetail.value("type") == "copy"){
+            action = "copyed";
+            message = tr("<span style=\"color: #3cadff\"> %1 </span> \
+                                 is %2 to <span style=\"color: #3cadff\"> %3 </span>")
+                    .arg(file, action, destination);
+            tipMessage = tr("current speed:%1 time Left:%2 ")
+                       .arg(speed, remainTime);
 
-    setMessage(message);
-    setTipMessage(tipMessage);
+        }else if (m_jobDetail.value("type") == "move"){
+            action = "moved";
+            message = tr("<span style=\"color: #3cadff\"> %1 </span> \
+                                 is %2 to <span style=\"color: #3cadff\"> %3 </span>")
+                    .arg(file, action, destination);
+
+            tipMessage = tr("current speed:%1 time Left:%2 ")
+                       .arg(speed, remainTime);
+        }else if (m_jobDetail.value("type") == "delete"){
+            message = tr("<span style=\"color: #3cadff\"> %1 </span> \
+                                 is deleted ").arg(file);
+            tipMessage = "";
+        }
+        setMessage(message);
+        setTipMessage(tipMessage);
+    }
+    setProgress(progress);
 }
 
 void MoveCopyTaskWidget::updateTipMessage(){
@@ -136,6 +157,12 @@ void MoveCopyTaskWidget::setProgress(int value){
     m_progress = value;
     m_cirleWidget->setValue(value);
     m_cirleWidget->setText(QString("%1%").arg(QString::number(value)));
+}
+
+void MoveCopyTaskWidget::setProgress(QString value){
+    m_progress = value.toInt();
+    m_cirleWidget->setValue(m_progress);
+    m_cirleWidget->setText(QString("%1%").arg(value));
 }
 
 float MoveCopyTaskWidget::getSpeed(){
@@ -301,7 +328,7 @@ void DTaskDialog::adjustSize(){
         m_taskListWidget->setFixedHeight(listHeight);
         setFixedHeight(listHeight + 60);
     }else{
-        setFixedHeight(qApp->desktop()->availableGeometry().height() - 40);
+        setFixedHeight(qApp->desktop()->availableGeometry().height());
     }
 }
 
@@ -321,7 +348,13 @@ void DTaskDialog::removeTaskWidget(QString jobPath){
 void DTaskDialog::handleTaskClose(const QMap<QString, QString> &jobDetail){
     removeTaskWidget(jobDetail);
     setTitle(m_taskListWidget->count());
-    emit abortCopyTask(jobDetail);
+    if (jobDetail.contains("type")){
+        if (jobDetail.value("type") == "copy"){
+            emit abortCopyTask(jobDetail);
+        }else if (jobDetail.value("type") == "move"){
+            emit abortMoveTask(jobDetail);
+        }
+    }
 }
 
 void DTaskDialog::removeTaskWidget(const QMap<QString, QString> &jobDetail){
@@ -346,5 +379,13 @@ void DTaskDialog::handleUpdateTaskWidget(const QMap<QString, QString> &jobDetail
 
 void DTaskDialog::closeEvent(QCloseEvent *event){
     qDebug() << "close===========";
+    foreach (QListWidgetItem* item, m_jobPathItems.values()) {
+        if (item){
+            if (m_taskListWidget->itemWidget(item)){
+                MoveCopyTaskWidget* w = static_cast<MoveCopyTaskWidget*>(m_taskListWidget->itemWidget(item));
+                w->handleClose();
+            }
+        }
+    }
     DMovabelDialog::closeEvent(event);
 }

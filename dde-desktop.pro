@@ -76,7 +76,9 @@ SOURCES += main.cpp \
     app/dbusworker.cpp \
     dbusinterface/displayinterface.cpp \
     dbusinterface/appearancedaemon_interface.cpp \
-    controllers/copyjobworker.cpp
+    controllers/copyjobworker.cpp \
+    controllers/movejobworker.cpp \
+    controllers/deletejobworker.cpp
 
 
 HEADERS  += \
@@ -138,7 +140,9 @@ HEADERS  += \
     app/dbusworker.h \
     dbusinterface/displayinterface.h \
     dbusinterface/appearancedaemon_interface.h \
-    controllers/copyjobworker.h
+    controllers/copyjobworker.h \
+    controllers/movejobworker.h \
+    controllers/deletejobworker.h
 
 TRANSLATIONS += translations/dde-desktop.ts
 

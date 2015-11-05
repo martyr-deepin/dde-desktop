@@ -81,13 +81,13 @@ signals:
     void movingFileChaned(QString file);
     void movingProcessAmountChanged(qlonglong progress, ushort info);
 
-    /*delete files*/
+    /*dbus delete files*/
     void deleteFilesExcuted(const QStringList& files);
     void deleteJobAboutToAbort();
     void deletingFileChaned(QString file);
     void deletingProcessAmountChanged(qlonglong progress, ushort info);
 
-    /*copy files*/
+    /*dbus copy files*/
     void copyFilesExcuted(QStringList files, QString destination);
     void copyJobAboutToAbort();
     void copyingFileChaned(QString file);
@@ -146,14 +146,37 @@ signals:
     /*dbus to copy job dialog */
     void copyJobAdded(const QMap<QString, QString>& jobDetail);
     void copyJobRemoved(const QMap<QString, QString>& jobDetail);
-    void progressChanged(int progress);
-    void copyJobAborted();
 
     void copyJobDataUpdated(const QMap<QString, QString>& jobDetail,
                            const QMap<QString, QString>& data);
 
     /*copy job dialog to dbus*/
     void abortCopyTask(const QMap<QString, QString>& jobDetail);
+
+
+    /*dbus to move job dialog */
+    void moveJobAdded(const QMap<QString, QString>& jobDetail);
+    void moveJobRemoved(const QMap<QString, QString>& jobDetail);
+
+    void moveJobDataUpdated(const QMap<QString, QString>& jobDetail,
+                           const QMap<QString, QString>& data);
+
+    /*move job dialog to dbus*/
+    void abortMoveTask(const QMap<QString, QString>& jobDetail);
+
+    /*delete confirm dialog to delete woker*/
+    void filesDeleted(const QStringList& files);
+
+    /*dbus to delete job dialog */
+    void deleteJobAdded(const QMap<QString, QString>& jobDetail);
+    void deleteJobRemoved(const QMap<QString, QString>& jobDetail);
+
+    void deleteJobDataUpdated(const QMap<QString, QString>& jobDetail,
+                           const QMap<QString, QString>& data);
+
+    /*move job dialog to dbus*/
+    void abortDeleteTask(const QMap<QString, QString>& jobDetail);
+
 
 private:
     Q_DISABLE_COPY(SignalManager)

@@ -5,7 +5,7 @@
 #include "dbusinterface/fileoperations_interface.h"
 #include "dbusinterface/services/conflictdaptor.h"
 #include "copyjobworker.h"
-#include <QThread>
+
 
 CopyJobController::CopyJobController(QObject *parent) : QObject(parent)
 {

@@ -30,6 +30,7 @@ public slots:
     void setTargetObj(QString targetObj);
     void setDestinationObj(QString destinationObj);
     void setProgress(int value);
+    void setProgress(QString value);
     void setSpeed(float speed);
     void setTimeLeft(int time);
     void setMessage(QString message);

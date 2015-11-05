@@ -28,6 +28,9 @@ public slots:
     void saveSizeType(SizeType type);
     void saveSortFlag(QDir::SortFlags flag);
 
+    void confimDelete(const QStringList &files);
+    void handleDeleteAction(int index);
+
     void unRegisterDbusService();
 
     void show();
@@ -40,6 +43,7 @@ public slots:
 private:
     DesktopBox* m_desktopBox;
     DTaskDialog* m_taskDialog;
+    QStringList m_deletefiles;
 };
 
 #endif // DESKTOPAPP_H

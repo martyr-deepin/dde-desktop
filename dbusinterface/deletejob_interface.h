@@ -52,6 +52,7 @@ Q_SIGNALS: // SIGNALS
     void Aborted();
     void Deleting(const QString &in0);
     void Done();
+    void TotalAmount(qlonglong in0, ushort in1);
     void ProcessedAmount(qlonglong in0, ushort in1);
 };
 

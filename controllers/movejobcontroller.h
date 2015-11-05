@@ -19,17 +19,7 @@ public:
 signals:
 
 public slots:
-    void moveFiles(QStringList files, QString destination);
-    void connectMoveJobSignal();
-    void disconnectMoveJobSignal();
-    void moveJobExcuteFinished();
-    void moveJobAbort();
-    void moveJobAbortFinished();
-    void onMovingFile(QString file);
-    void onMovingProcessAmount(qlonglong progress, ushort info);
-
-private:
-    MoveJobInterface* m_moveJobInterface = NULL;
+    void createMoveJob(QStringList files, QString destination);
 };
 
 #endif // MOVEJOBCONTROLLER_H
