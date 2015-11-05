@@ -8,6 +8,7 @@
 #include <QDesktopWidget>
 #include <QCloseEvent>
 
+
 MoveCopyTaskWidget::MoveCopyTaskWidget(const QMap<QString, QString> &jobDetail, QWidget *parent):
     QFrame(parent),
     m_jobDetail(jobDetail)
@@ -46,17 +47,21 @@ void MoveCopyTaskWidget::initUI(){
     QVBoxLayout* messageLayout = new QVBoxLayout;
     messageLayout->addWidget(m_messageLabel);
     messageLayout->addWidget(m_tipMessageLabel);
-    messageLayout->addSpacing(12);
 
     QHBoxLayout* messageBoxLayout = new QHBoxLayout;
     messageBoxLayout->addLayout(messageLayout);
     messageBoxLayout->addWidget(m_closeButton);
+
+//    initButtonFrame();
 
     QFrame* lineLabel = new QFrame;
     lineLabel->setFixedHeight(1);
     lineLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0.2)");
     QVBoxLayout* rightLayout = new QVBoxLayout;
     rightLayout->addLayout(messageBoxLayout);
+    if ((m_buttonFrame)){
+        rightLayout->addWidget(m_buttonFrame);
+    }
     rightLayout->addWidget(lineLabel);
     rightLayout->setSpacing(0);
     rightLayout->setContentsMargins(0, 0, 0, 0);
@@ -67,6 +72,55 @@ void MoveCopyTaskWidget::initUI(){
     mainLayout->addLayout(rightLayout);
     mainLayout->setContentsMargins(5, 0, 5, 0);
     setLayout(mainLayout);
+}
+
+void MoveCopyTaskWidget::initButtonFrame(){
+    m_buttonFrame = new QFrame;
+
+    QFrame* leftButtonFrame = new QFrame;
+    leftButtonFrame->setFixedHeight(22);
+    leftButtonFrame->setFixedWidth(178);
+    leftButtonFrame->setObjectName("ButtonFrame");
+    QStringList buttonKeys, buttonTexts;
+    buttonKeys << "Coexists" << "Replace" << "Skip";
+    buttonTexts << tr("Coexists") << tr("Replace") << tr("Skip");
+    m_buttonGroup = new QButtonGroup;
+    QHBoxLayout* buttonLayout = new QHBoxLayout;
+    foreach (QString label, buttonKeys) {
+        int index = buttonKeys.indexOf(label);
+        QPushButton* button = new QPushButton(buttonTexts.at(index));
+        button->setObjectName("ConflictButton");
+        button->setAttribute(Qt::WA_NoMousePropagation);
+        button->setCheckable(true);
+        button->setFixedHeight(20);
+        button->setFixedWidth(58);
+        m_buttonGroup->addButton(button, index);
+        buttonLayout->addWidget(button);
+        if (index < buttonKeys.length() - 1){
+            QLabel* label = new QLabel;
+            label->setObjectName("VLine");
+            label->setFixedWidth(1);
+            buttonLayout->addWidget(label);
+        }
+    }
+    buttonLayout->setSpacing(0);
+    buttonLayout->setContentsMargins(0, 0, 0, 0);
+    leftButtonFrame->setLayout(buttonLayout);
+    m_buttonGroup->button(1)->setChecked(true);
+
+
+    m_checkBox = new QCheckBox(tr("no more ask"));
+    m_enterButton = new QPushButton(tr("Ok"));
+    m_enterButton->setObjectName("NormalButton");
+    m_enterButton->setFixedSize(60, 20);
+    QHBoxLayout* mainLayout = new QHBoxLayout;
+    mainLayout->addSpacing(2);
+    mainLayout->addWidget(leftButtonFrame);
+    mainLayout->addWidget(m_checkBox);
+    mainLayout->addWidget(m_enterButton);
+
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    m_buttonFrame->setLayout(mainLayout);
 }
 
 void MoveCopyTaskWidget::initConnect(){
@@ -204,7 +258,7 @@ DTaskDialog::DTaskDialog(QWidget *parent) :
     DMovabelDialog(parent)
 {
     setModal(false);
-    setFixedWidth(420);
+    setFixedWidth(m_defaultWidth);
     initUI();
     initConnect();
     moveTopRight();
@@ -283,15 +337,13 @@ void DTaskDialog::setTitle(int taskCount){
 void DTaskDialog::addCopyMoveTask(const QMap<QString, QString> &jobDetail){
     if (jobDetail.contains("jobPath")){
         MoveCopyTaskWidget* moveWidget = new MoveCopyTaskWidget(jobDetail);
-        moveWidget->setFixedHeight(60);
+        moveWidget->setFixedHeight(85);
         connect(moveWidget, SIGNAL(closed(QMap<QString,QString>)),
                 this, SLOT(handleTaskClose(QMap<QString,QString>)));
 
-
-
         QListWidgetItem* item = new QListWidgetItem();
         item->setFlags(Qt::NoItemFlags);
-        item->setSizeHint(QSize(item->sizeHint().width(), 60));
+        item->setSizeHint(QSize(item->sizeHint().width(), 85));
         m_taskListWidget->addItem(item);
         m_taskListWidget->setItemWidget(item, moveWidget);
         m_jobPathItems.insert(jobDetail.value("jobPath"), item);

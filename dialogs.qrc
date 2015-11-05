@@ -7,6 +7,10 @@
         <file>skin/dialogs/images/dark_minimise_small_hover.png</file>
         <file>skin/dialogs/images/dark_minimise_small_normal.png</file>
         <file>skin/dialogs/images/dark_minimise_small_press.png</file>
+        <file>skin/dialogs/images/check_focus.png</file>
+        <file>skin/dialogs/images/dark_check_checked.png</file>
+        <file>skin/dialogs/images/dark_check.png</file>
+        <file>skin/dialogs/images/dark_check_checked_hover.png</file>
     </qresource>
     <qresource prefix="/qss">
         <file>skin/dialogs/qss/dialogs.qss</file>

@@ -7,6 +7,8 @@
 #include <QListWidget>
 #include <QResizeEvent>
 #include <QListWidgetItem>
+#include <QButtonGroup>
+#include <QCheckBox>
 
 class MoveCopyTaskWidget : public QFrame
 {
@@ -22,6 +24,8 @@ public:
     int getTimeLeft();
     QString getMessage();
     QString getTipMessage();
+
+    void initButtonFrame();
 
 signals:
     void closed(const QMap<QString, QString> m_jobDetail);
@@ -54,6 +58,10 @@ private:
     QLabel* m_tipMessageLabel;
     QPushButton* m_closeButton;
     QMap<QString, QString> m_jobDetail;
+    QButtonGroup* m_buttonGroup;
+    QFrame* m_buttonFrame=NULL;
+    QCheckBox* m_checkBox=NULL;
+    QPushButton* m_enterButton=NULL;
 };
 
 
@@ -87,7 +95,7 @@ protected:
 
 
 private:
-    int m_defaultWidth = 420;
+    int m_defaultWidth = 440;
     int m_defaultHeight = 120;
     QLabel* m_titleLabel=NULL;
     QPushButton* m_titleBarMinimizeButton;
