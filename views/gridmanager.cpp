@@ -8,8 +8,7 @@ GridManager::GridManager(QObject *parent) : QObject(parent)
 
 
 void GridManager::initConnect(){
-    connect(signalManager, SIGNAL(pageCountChanged(int)),
-            this, SLOT(updateGridByPageCount(int)));
+
 }
 
 void GridManager::clearDeskopItemsStatus(){
@@ -111,6 +110,7 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
 
     }
     clearDeskopItemsStatus();
+    getRightBottomItem()->setMultiDesktopItemsIn(true);
     return m_list_items;
 }
 
@@ -124,6 +124,11 @@ GridItemPointer GridManager::getBlankItem(){
         }
     }
     return GridItemPointer();
+}
+
+GridItemPointer GridManager::getRightBottomItem(){
+    GridItemPointer pItem = m_list_items.at(m_columnCount - 1)->at(m_rowCount - 1);
+    return pItem;
 }
 
 GridItemPointer GridManager::getItemByPos(QPoint pos){
@@ -286,14 +291,6 @@ DoubleGridItemPointerList GridManager::getItemsByType(SizeType type){
     }
     m_sizeType = type;
 }
-
-
-void GridManager::updateGridByPageCount(int count){
-    qDebug() << "GridManager update";
-    setPageCount(count);
-    getItemsByType(m_sizeType);
-}
-
 
 DoubleGridItemPointerList GridManager::getSmallItems(){
     const QRect screenGeometry = QApplication::desktop()->screenGeometry();

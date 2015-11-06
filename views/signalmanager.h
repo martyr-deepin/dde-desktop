@@ -18,7 +18,6 @@ signals:
 
     void desktopItemsSaved();
 
-    void pageCountChanged(int count);
     void gridModeChanged(bool mode); /*true: grid on; false: grid off*/
     void gridOnResorted(); /*sort desktop item when grid on */
 

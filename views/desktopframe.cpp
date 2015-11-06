@@ -42,7 +42,6 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 
     initItems();
     initConnect();
-    m_desktopItemManager->checkPageCount();
     qApp->setStyleSheet(getQssFromFile(":/qss/skin/qss/DesktopItem.qss"));
 }
 
@@ -53,8 +52,6 @@ void DesktopFrame::initItems(){
 }
 
 void DesktopFrame::initConnect(){
-    connect(signalManager, SIGNAL(pageCountChanged(int)),
-            this, SLOT(resizeByPageCount(int)));
     connect(signalManager, SIGNAL(gridSizeTypeChanged(SizeType)),
             this, SLOT(changeGridBySizeType(SizeType)));
     connect(signalManager, SIGNAL(gridModeChanged(bool)),
@@ -107,15 +104,6 @@ void DesktopFrame::changeGridMode(bool mode){
         gridManager->clearDeskopItemsStatus();
         emit signalManager->gridOnResorted();
     }
-}
-
-void DesktopFrame::resizeByPageCount(int pageCount){
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int desktopWidth = availableGeometry.width();
-    int desktopHeight = availableGeometry.height();
-    QRect r(0, 0, pageCount  * desktopWidth, desktopHeight);
-    setGeometry(r);
-    update();
 }
 
 DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
@@ -609,7 +597,7 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (m_isGridBackgoundOn){
+    if (true){
         int rowCount = gridManager->getRowCount();
         int columnCount = gridManager->getColumnCount();
         foreach (GridListPointer gridlist, gridManager->getItems()) {
@@ -621,7 +609,9 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
                     _c = 255;
                 }
                 QColor color(_c, _c, _c, 100);
-                painter.fillRect(pGridItem->getRect(), color);
+//                if (!pGridItem->hasDesktopItem()){
+                    painter.fillRect(pGridItem->getRect(), color);
+//                }
             }
         }
     }

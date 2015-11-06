@@ -32,7 +32,6 @@ public:
     bool isAppGroupBoxShowed();
 
     void checkPageCount();
-    int getPageCount();
 
 signals:
 
@@ -71,7 +70,6 @@ public slots:
     void checkDesktopItemValid();
 
 private:
-    int m_pagecount = 0;
     QSettings m_settings;
     DesktopItemPointer m_pComputerItem;
     DesktopItemPointer m_pTrashItem;

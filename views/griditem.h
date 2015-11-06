@@ -20,11 +20,14 @@ public:
     QString key();
 
     bool hasDesktopItem();
+    bool isMultiDesktopItemsIn();
 
 signals:
 
 public slots:
     void setDesktopItem(bool flag);
+    void setMultiDesktopItemsIn(bool flag);
+
 
 private:
     int m_column;
@@ -32,6 +35,7 @@ private:
     QRect m_rect;
     QPoint m_pos;
     bool m_isDesktopItemIn;
+    bool m_isMultiDesktopItemsIn=false;
 };
 
 #endif // GRIDITEM_H

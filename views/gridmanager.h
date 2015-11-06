@@ -25,6 +25,7 @@ public:
     int getPageCount();
     bool isRectInGrid(QRect rect);
     GridItemPointer getBlankItem();
+    GridItemPointer getRightBottomItem();
     GridItemPointer getItemByPos(QPoint pos);
     GridItemPointer getBlankItemByPos(QPoint pos);
     GridItemPointer getProperItemByPos(QPoint pos);
@@ -47,7 +48,6 @@ signals:
 public slots:
     void clearDeskopItemsStatus();
     void setPageCount(int count);
-    void updateGridByPageCount(int count);
 
 private:
     int m_width = 0;

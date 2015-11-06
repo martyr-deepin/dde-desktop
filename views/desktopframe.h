@@ -60,7 +60,6 @@ signals:
 
 public slots:
     void setCtrlPressed(bool pressed);
-    void resizeByPageCount(int pageCount);
     void changeGridBySizeType(SizeType type);
     void changeGridMode(bool mode);
     void setLastCheckedDesktopItem(DesktopItemPointer pItem);

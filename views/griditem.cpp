@@ -39,12 +39,27 @@ QPoint GridItem::getPos(){
 }
 
 bool GridItem::hasDesktopItem(){
-    return m_isDesktopItemIn;
+    if (m_isMultiDesktopItemsIn){
+        return false;
+    }else{
+        return m_isDesktopItemIn;
+    }
 }
 
-
 void GridItem::setDesktopItem(bool flag){
-    m_isDesktopItemIn = flag;
+    if (m_isMultiDesktopItemsIn){
+        m_isDesktopItemIn = false;
+    }else{
+        m_isDesktopItemIn = flag;
+    }
+}
+
+bool GridItem::isMultiDesktopItemsIn(){
+    return m_isMultiDesktopItemsIn;
+}
+
+void GridItem::setMultiDesktopItemsIn(bool flag){
+    m_isMultiDesktopItemsIn = flag;
 }
 
 QString GridItem::key(){
