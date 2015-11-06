@@ -68,7 +68,11 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
     bool m_isGridOn = m_desktopFrame->isGridOn();
 
     if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_Control){
-        m_desktopFrame->setCtrlPressed(!m_desktopFrame->isCtrlPressed());
+        m_desktopFrame->setCtrlPressed(true);
+    }
+
+    if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Shift){
+        m_desktopFrame->setShiftPressed(true);
     }
 
     if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Escape){
@@ -91,6 +95,14 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
             int currentX = m_desktopFrame->x() - desktopWidth;
             m_desktopFrame->move(currentX, m_desktopFrame->y());
         }
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Home){
+        emit signalManager->keyHomePressed();
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_End){
+        emit signalManager->keyEndPressed();
+    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Home){
+        emit signalManager->keyShiftHomePressed();
+    }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_End){
+        emit signalManager->keyShiftEndPressed();
     }
     #if !defined(QT_NO_DEBUG)
     else if (event->key() == Qt::Key_1){
@@ -164,8 +176,13 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
 
 void DesktopBox::keyReleaseEvent(QKeyEvent *event){
     if (event->modifiers() != Qt::ControlModifier && event->key() == Qt::Key_Control){
-        m_desktopFrame->setCtrlPressed(!m_desktopFrame->isCtrlPressed());
+        m_desktopFrame->setCtrlPressed(false);
     }
+
+    if (event->modifiers() != Qt::ShiftModifier && event->key() == Qt::Key_Shift){
+        m_desktopFrame->setShiftPressed(false);
+    }
+
     TranslucentFrame::keyReleaseEvent(event);
 }
 

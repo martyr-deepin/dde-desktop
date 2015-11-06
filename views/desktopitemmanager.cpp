@@ -433,7 +433,7 @@ void DesktopItemManager::changeSizeByGrid(SizeType type){
 
 DesktopItemPointer DesktopItemManager::getItemByPos(QPoint pos){
     foreach (DesktopItemPointer pItem, m_list_pItems) {
-        if (pItem->geometry().contains(pos)){
+        if (pItem->pos() == pos){
             return pItem;
         }
     }
@@ -449,6 +449,33 @@ DesktopItemPointer DesktopItemManager::getItemByUrl(QString url){
 
 QList<DesktopItemPointer> DesktopItemManager::getItems(){
     return m_list_pItems;
+}
+
+QList<DesktopItemPointer> DesktopItemManager::getItemsByStartEnd(QPoint startPos, QPoint endPos){
+    QList<DesktopItemPointer> items;
+    int x1, x2, y1, y2;
+    if (startPos.x() <= endPos.x()){
+        x1 = startPos.x();
+        x2 = endPos.x();
+    }else{
+        x2 = startPos.x();
+        x1 = endPos.x();
+    }
+
+    if (startPos.y() <= endPos.y()){
+        y1 = startPos.y();
+        y2 = endPos.y();
+    }else{
+        y2 = startPos.y();
+        y1 = endPos.y();
+    }
+
+    foreach (DesktopItemPointer pItem, m_list_pItems) {
+        if (pItem->x() >= x1 && pItem->y() >= y1 && pItem->x() <= x2 && pItem->y() <= y2){
+            items.append(pItem);
+        }
+    }
+    return items;
 }
 
 void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){

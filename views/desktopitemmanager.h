@@ -25,7 +25,7 @@ public:
     DesktopItemPointer getShoudBeMovedItem();
     DesktopItemPointer createItem(DesktopItemInfo& fileInfo);
     QList<DesktopItemPointer> getItems();
-
+    QList<DesktopItemPointer> getItemsByStartEnd(QPoint startPos, QPoint endPos);
     QDir::SortFlags getSortFlag();
     QString getDesktopDisplayName(DesktopItemInfo& desktopItemInfo);
 

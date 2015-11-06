@@ -42,6 +42,12 @@ signals:
     void keyCtrlCPressed();
     void keyCtrlVPressed();
 
+    void keyHomePressed();
+    void keyEndPressed();
+
+    void keyShiftHomePressed();
+    void keyShiftEndPressed();
+
     /*context menu signal*/
     void contextMenuShowed(QString url, QPoint pos);
     void contextMenuShowed(DesktopItemPointer pItem, QPoint pos);

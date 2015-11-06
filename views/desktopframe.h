@@ -42,6 +42,7 @@ public:
     SizeType getSizeType();
     bool isGridOn();
     bool isCtrlPressed();
+    bool isShiftPressed();
 
     bool isMultiCheckedByMouse();
     bool isAllAppCheckedItems();
@@ -60,6 +61,7 @@ signals:
 
 public slots:
     void setCtrlPressed(bool pressed);
+    void setShiftPressed(bool pressed);
     void changeGridBySizeType(SizeType type);
     void changeGridMode(bool mode);
     void setLastCheckedDesktopItem(DesktopItemPointer pItem);
@@ -95,14 +97,15 @@ private:
     QPoint m_pressedEventPos;
     QPoint m_dragMovePos;
     QRect m_selectRect;
-    bool m_isSelectable;
-    bool m_multiCheckedByMouse;
-    bool m_ctrlPressed;
+    bool m_isSelectable = false;
+    bool m_multiCheckedByMouse = false;
+    bool m_ctrlPressed = false;
+    bool m_shiftPressed = false;
 
-    bool m_isGridOn;
-    bool m_dragLeave;
+    bool m_isGridOn = false;
+    bool m_dragLeave = false;
 
-    bool m_isDragStarted;
+    bool m_isDragStarted = false;
     bool m_isGridBackgoundOn = false;
 
     SizeType m_sizeType;

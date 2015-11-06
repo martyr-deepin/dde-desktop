@@ -20,16 +20,24 @@ public:
 signals:
 
 public slots:
-    void onKeyUpPressed();
-    void onKeyDownPressed();
-    void onKeyLeftPressed();
-    void onKeyRightPressed();
+    void onKeyUpPressed(bool isMutilChecked=false);
+    void onKeyDownPressed(bool isMutilChecked=false);
+    void onKeyLeftPressed(bool isMutilChecked=false);
+    void onKeyRightPressed(bool isMutilChecked=false);
 
     void onKeyShiftUpPressed();
     void onKeyShiftDownPressed();
     void onKeyShiftLeftPressed();
     void onKeyShiftRightPressed();
 
+    void onKeyHomePressed();
+    void onKeyEndPressed();
+
+    void onKeyShiftHomePressed();
+    void onKeyShiftEndPressed();
+
+    void checkFirstDesktopItem();
+    void checkLastDesktopItem();
 private:
     DesktopItemPointer m_lastCheckedByKeyboard;
 

@@ -70,7 +70,7 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
         foreach (QUrl url, event->mimeData()->urls()) {
             urls.append(url.toEncoded());
         }
-        qDebug() << event->mimeData()->urls() << urls;
+//        qDebug() << event->mimeData()->urls() << urls;
         if (!m_destinationDesktopItem.isNull()){
             bool isCanMoved = !urls.contains(m_destinationDesktopItem->getRawUrl());
             qDebug() << isCanMoved << m_destinationDesktopItem->getRawUrl();
