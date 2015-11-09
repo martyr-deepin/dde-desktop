@@ -197,7 +197,6 @@ void KeyEventManager::onKeyShiftHomePressed(){
         }
         int x = lastCheckedDesktopItem->pos().x();
         int y = lastCheckedDesktopItem->pos().y();
-        static_cast<DesktopFrame*>(parent())->unCheckAllItems();
         QSharedPointer<DesktopItemManager> manager = static_cast<DesktopFrame*>(parent())->getDesktopItemManager();
         foreach (DesktopItemPointer pItem, manager->getItems()) {
             if ((pItem->x() < x) || (pItem->x() == x && pItem->y() >= y)){
@@ -220,7 +219,6 @@ void KeyEventManager::onKeyShiftEndPressed(){
 
         int x = lastCheckedDesktopItem->pos().x();
         int y = lastCheckedDesktopItem->pos().y();
-        static_cast<DesktopFrame*>(parent())->unCheckAllItems();
         QSharedPointer<DesktopItemManager> manager = static_cast<DesktopFrame*>(parent())->getDesktopItemManager();
         foreach (DesktopItemPointer pItem, manager->getItems()) {
             if ((pItem->x() > x) || (pItem->x() == x && pItem->y() <= y)){
