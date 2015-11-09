@@ -52,7 +52,8 @@ void MoveCopyTaskWidget::initUI(){
     messageBoxLayout->addLayout(messageLayout);
     messageBoxLayout->addWidget(m_closeButton);
 
-//    initButtonFrame();
+    initButtonFrame();
+    m_buttonFrame->hide();
 
     QFrame* lineLabel = new QFrame;
     lineLabel->setFixedHeight(1);
@@ -180,6 +181,10 @@ void MoveCopyTaskWidget::updateTipMessage(){
     QString tipMessage = tr("current speed:%1 time Left:%2 ")
                .arg(QString::number(m_speed), QString::number(m_timeLeft));
     setTipMessage(tipMessage);
+}
+
+void MoveCopyTaskWidget::showConflict(){
+    m_buttonFrame->show();
 }
 
 void MoveCopyTaskWidget::handleClose()
@@ -393,6 +398,18 @@ void DTaskDialog::removeTaskWidget(QString jobPath){
         setTitle(m_taskListWidget->count());
         if (m_taskListWidget->count() == 0){
             hide();
+        }
+    }
+}
+
+void DTaskDialog::showConflictDiloagByJob(const QMap<QString, QString> &jobDetail){
+    qDebug() << jobDetail;
+    if (jobDetail.contains("jobPath")){
+        QString jobPath = jobDetail.value("jobPath");
+        if (m_jobPathItems.contains(jobPath)){
+            QListWidgetItem* item = m_jobPathItems.value(jobPath);
+            MoveCopyTaskWidget* w = static_cast<MoveCopyTaskWidget*>(m_taskListWidget->itemWidget(item));
+            w->showConflict();
         }
     }
 }

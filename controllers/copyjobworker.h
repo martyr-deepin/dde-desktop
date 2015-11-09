@@ -8,6 +8,7 @@
 #include <QTime>
 #include <QMap>
 class CopyJobInterface;
+class FileConflictController;
 
 class CopyjobWorker : public QObject
 {
@@ -44,7 +45,8 @@ private:
     QStringList m_files;
     QString m_destination;
     QString m_copyjobPath;
-    CopyJobInterface* m_copyJobInterface;
+    CopyJobInterface* m_copyJobInterface = NULL;
+    FileConflictController* m_conflictController = NULL;
     QTimer* m_progressTimer;
     QMap<QString, QString> m_jobDetail;
     QMap<QString, QString> m_jobDataDetail;

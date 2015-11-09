@@ -4,12 +4,14 @@
 #include "dbusinterface/copyjob_interface.h"
 #include "dbusinterface/fileoperations_interface.h"
 #include "dbusinterface/services/conflictdaptor.h"
+#include "controllers/fileconflictcontroller.h"
 
 CopyjobWorker::CopyjobWorker(QStringList files, QString destination, QObject *parent) :
     QObject(parent),
     m_files(files),
     m_destination(destination)
 {
+    m_conflictController = new FileConflictController;
     m_progressTimer = new QTimer;
     m_progressTimer->setInterval(1000);
     m_time = new QTime;
@@ -52,7 +54,7 @@ void CopyjobWorker::copyFiles(QStringList files, QString destination){
                 "",
                 0,
                 ConflictAdaptor::staticServerPath(),
-                ConflictAdaptor::staticInterfacePath(),
+                m_conflictController->getObjectPath(),
                 ConflictAdaptor::staticInterfaceName()
                 );
 
@@ -64,6 +66,7 @@ void CopyjobWorker::copyFiles(QStringList files, QString destination){
         m_copyjobPath = path;
         m_jobDetail.insert("jobPath", path);
         m_jobDetail.insert("type", "copy");
+        m_conflictController->setJobDetail(m_jobDetail);
         m_jobDataDetail.insert("destination",  QFileInfo(decodeUrl(desktopLocation)).fileName());
         m_copyJobInterface = new CopyJobInterface(service, path, QDBusConnection::sessionBus(), this);
         connectCopyJobSignal();
@@ -160,6 +163,7 @@ void CopyjobWorker::handleFinished(){
     if (m_jobDetail.contains("jobPath")){
         emit signalManager->copyJobRemoved(m_jobDetail);
     }
+    m_conflictController->unRegisterDBusService();
 }
 
 void CopyjobWorker::handleTaskAborted(const QMap<QString, QString> &jobDetail){

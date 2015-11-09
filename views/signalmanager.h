@@ -183,6 +183,9 @@ signals:
     void abortDeleteTask(const QMap<QString, QString>& jobDetail);
 
 
+    /*copy/move job conflict dialog show */
+    void conflictDialogShowed(const QMap<QString, QString>& jobDetail);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

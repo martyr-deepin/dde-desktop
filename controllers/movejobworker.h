@@ -9,6 +9,7 @@
 #include <QMap>
 
 class MoveJobInterface;
+class FileConflictController;
 
 class MovejobWorker : public QObject
 {
@@ -41,6 +42,7 @@ private:
     QString m_destination;
     QString m_movejobPath;
     MoveJobInterface* m_moveJobInterface = NULL;
+    FileConflictController* m_conflictController = NULL;
     QTimer* m_progressTimer;
     QMap<QString, QString> m_jobDetail;
     QMap<QString, QString> m_jobDataDetail;

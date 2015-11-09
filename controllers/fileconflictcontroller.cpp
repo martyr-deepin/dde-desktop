@@ -1,18 +1,22 @@
 #include "fileconflictcontroller.h"
 #include <QDBusConnection>
 #include <QDebug>
+#include "views/global.h"
 
-FileConflictController::FileConflictController(QObject *parent) :
-    QObject(parent)
+int FileConflictController::count = 0;
+
+FileConflictController::FileConflictController(QObject *parent):QObject(parent)
 {
+    FileConflictController::count += 1;
+    m_objectPath = QString("%1%2").arg(ConflictAdaptor::staticInterfacePath(), QString::number(FileConflictController::count));
     registerDBusService();
 }
 
 void FileConflictController::registerDBusService(){
-    new ConflictAdaptor(this);
+    m_conflictAdaptor = new ConflictAdaptor(this);
     QDBusConnection conn = QDBusConnection::sessionBus();
     conn.registerService(ConflictAdaptor::staticServerPath());
-    bool flag = conn.registerObject(ConflictAdaptor::staticInterfacePath(), this);
+    bool flag = conn.registerObject(m_objectPath, this);
     qDebug() << "register conflict DBusService"<<flag;
 }
 
@@ -34,16 +38,30 @@ ConflictInfo FileConflictController::AskSkip(const QString &primaryText,
 
 ConflictInfo FileConflictController::ConflictDialog(){
     qDebug() << "=====ConflictDialog======";
+    emit signalManager->conflictDialogShowed(m_jobDetail);
+    qDebug() << m_jobDetail;
     ConflictInfo obj;
     obj.code = 32;
     obj.applyToAll = false;
     obj.userData = "";
+    emit m_conflictAdaptor->response(obj);
     return obj;
+}
+
+QString FileConflictController::getObjectPath(){
+    return m_objectPath;
+}
+
+void FileConflictController::unRegisterDBusService(){
+    QDBusConnection conn = QDBusConnection::sessionBus();
+    conn.unregisterObject(m_objectPath);
+    conn.registerService(ConflictAdaptor::staticServerPath());
+}
+
+void FileConflictController::setJobDetail(const QMap<QString, QString> &detail){
+    m_jobDetail = detail;
 }
 
 FileConflictController::~FileConflictController()
 {
-    QDBusConnection conn = QDBusConnection::sessionBus();
-    conn.unregisterObject(ConflictAdaptor::staticInterfacePath());
-    conn.registerService(ConflictAdaptor::staticServerPath());
 }

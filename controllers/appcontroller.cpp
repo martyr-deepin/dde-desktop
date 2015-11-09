@@ -16,8 +16,7 @@ AppController::AppController(QObject *parent) : QObject(parent),
     m_moveJobController(new MoveJobController),
     m_copyJobController(new CopyJobController),
     m_renameJobController(new RenameJobController),
-    m_deleteJobController(new DeleteJobController),
-    m_fileConflictController(new FileConflictController)
+    m_deleteJobController(new DeleteJobController)
 {
 
 }
@@ -44,10 +43,6 @@ CopyJobController* AppController::getCopyJobController(){
 
 RenameJobController* AppController::getRenameJobController(){
     return m_renameJobController;
-}
-
-FileConflictController* AppController::getFileConflictController(){
-    return m_fileConflictController;
 }
 
 AppController::~AppController()

@@ -52,6 +52,8 @@ void DesktopApp::initConnect(){
     connect(m_taskDialog, SIGNAL(abortDeleteTask(QMap<QString,QString>)),
             signalManager, SIGNAL(abortDeleteTask(QMap<QString,QString>)));
 
+    connect(signalManager, SIGNAL(conflictDialogShowed(QMap<QString,QString>)),
+            m_taskDialog, SLOT(showConflictDiloagByJob(QMap<QString,QString>)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SIGNAL(closed()));
 }
 

@@ -43,6 +43,8 @@ public slots:
     void updateMessage(const QMap<QString, QString>& data);
     void updateTipMessage();
 
+    void showConflict();
+
 protected:
 
 private:
@@ -89,6 +91,7 @@ public slots:
                                 const QMap<QString, QString>& data);
     void adjustSize();
 
+    void showConflictDiloagByJob(const QMap<QString, QString>& jobDetail);
 
 protected:
     void closeEvent(QCloseEvent* event);
