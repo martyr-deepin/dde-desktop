@@ -126,6 +126,7 @@ void MoveCopyTaskWidget::initButtonFrame(){
 
 void MoveCopyTaskWidget::initConnect(){
     connect(m_closeButton, SIGNAL(clicked()), this, SLOT(handleClose()));
+    connect(m_enterButton, SIGNAL(clicked()), this, SLOT(handleResponse()));
 }
 
 void MoveCopyTaskWidget::updateMessage(const QMap<QString, QString> &data){
@@ -184,12 +185,31 @@ void MoveCopyTaskWidget::updateTipMessage(){
 }
 
 void MoveCopyTaskWidget::showConflict(){
+    setFixedHeight(85);
     m_buttonFrame->show();
+    emit heightChanged();
+    emit conflictShowed(m_jobDetail);
+}
+
+void MoveCopyTaskWidget::hideConflict(){
+    setFixedHeight(60);
+    m_buttonFrame->hide();
+    emit heightChanged();
+    emit conflictHided(m_jobDetail);
 }
 
 void MoveCopyTaskWidget::handleClose()
 {
     emit closed(m_jobDetail);
+}
+
+void MoveCopyTaskWidget::handleResponse(){
+    m_response.insert("code", m_buttonGroup->checkedId());
+    m_response.insert("applyToAll", m_checkBox->isChecked());\
+    if (m_buttonGroup->checkedId() < 2){
+        hideConflict();
+    }
+    emit conflictResponseConfirmed(m_jobDetail, m_response);
 }
 
 QString MoveCopyTaskWidget::getTargetObj(){
@@ -334,7 +354,7 @@ void DTaskDialog::setTitle(int taskCount){
     if (taskCount == 1){
         title = tr("There is %1 task in progress").arg(QString::number(taskCount));
     }else{
-        title = tr("There are %1 task in progress").arg(QString::number(taskCount));
+        title = tr("There are %1 tasks in progress").arg(QString::number(taskCount));
     }
     setTitle(title);
 }
@@ -342,13 +362,19 @@ void DTaskDialog::setTitle(int taskCount){
 void DTaskDialog::addCopyMoveTask(const QMap<QString, QString> &jobDetail){
     if (jobDetail.contains("jobPath")){
         MoveCopyTaskWidget* moveWidget = new MoveCopyTaskWidget(jobDetail);
-        moveWidget->setFixedHeight(85);
+        moveWidget->setFixedHeight(60);
         connect(moveWidget, SIGNAL(closed(QMap<QString,QString>)),
                 this, SLOT(handleTaskClose(QMap<QString,QString>)));
-
+        connect(moveWidget, SIGNAL(conflictResponseConfirmed(QMap<QString,QString>,QMap<QString,QVariant>)),
+                this, SLOT(handleConflictResponse(QMap<QString,QString>,QMap<QString,QVariant>)));
+        connect(moveWidget, SIGNAL(heightChanged()), this, SLOT(adjustSize()));
+        connect(moveWidget, SIGNAL(conflictShowed(QMap<QString,QString>)),
+                this, SIGNAL(conflictShowed(QMap<QString,QString>)));
+        connect(moveWidget, SIGNAL(conflictHided(QMap<QString,QString>)),
+                this, SIGNAL(conflictHided(QMap<QString,QString>)));
         QListWidgetItem* item = new QListWidgetItem();
         item->setFlags(Qt::NoItemFlags);
-        item->setSizeHint(QSize(item->sizeHint().width(), 85));
+        item->setSizeHint(QSize(item->sizeHint().width(), 60));
         m_taskListWidget->addItem(item);
         m_taskListWidget->setItemWidget(item, moveWidget);
         m_jobPathItems.insert(jobDetail.value("jobPath"), item);
@@ -364,6 +390,13 @@ void DTaskDialog::addConflictTask(const QMap<QString, QString> &jobDetail){
         moveWidget->setFixedHeight(85);
         connect(moveWidget, SIGNAL(closed(QMap<QString,QString>)),
                 this, SLOT(handleTaskClose(QMap<QString,QString>)));
+        connect(moveWidget, SIGNAL(conflictResponseConfirmed(QMap<QString,QString>,QMap<QString,QVariant>)),
+                this, SLOT(handleConflictResponse(QMap<QString,QString>,QMap<QString,QVariant>)));
+        connect(moveWidget, SIGNAL(heightChanged()), this, SLOT(adjustSize()));
+        connect(moveWidget, SIGNAL(conflictShowed(QMap<QString,QString>)),
+                this, SIGNAL(conflictShowed(QMap<QString,QString>)));
+        connect(moveWidget, SIGNAL(conflictHided(QMap<QString,QString>)),
+                this, SIGNAL(conflictHided(QMap<QString,QString>)));
         QListWidgetItem* item = new QListWidgetItem();
         item->setFlags(Qt::NoItemFlags);
         item->setSizeHint(QSize(item->sizeHint().width(), 85));
@@ -379,7 +412,10 @@ void DTaskDialog::addConflictTask(const QMap<QString, QString> &jobDetail){
 void DTaskDialog::adjustSize(){
     int listHeight = 2;
     for(int i=0; i < m_taskListWidget->count(); i++){
-        listHeight += m_taskListWidget->itemWidget(m_taskListWidget->item(i))->height();
+        QListWidgetItem* item = m_taskListWidget->item(i);
+        int h = m_taskListWidget->itemWidget(item)->height();
+        item->setSizeHint(QSize(item->sizeHint().width(), h));
+        listHeight += h;
     }
     if (listHeight < qApp->desktop()->availableGeometry().height() - 40){
         m_taskListWidget->setFixedHeight(listHeight);
@@ -412,6 +448,10 @@ void DTaskDialog::showConflictDiloagByJob(const QMap<QString, QString> &jobDetai
             w->showConflict();
         }
     }
+}
+
+void DTaskDialog::handleConflictResponse(const QMap<QString, QString> &jobDetail, const QMap<QString, QVariant> &response){
+    emit conflictRepsonseConfirmed(jobDetail, response);
 }
 
 void DTaskDialog::handleTaskClose(const QMap<QString, QString> &jobDetail){

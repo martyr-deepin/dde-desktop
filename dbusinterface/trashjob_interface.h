@@ -54,6 +54,7 @@ Q_SIGNALS: // SIGNALS
     void Done();
     void ProcessedAmount(qlonglong in0, ushort in1);
     void Trashing(const QString &in0);
+    void ProcessedPercent(qlonglong in0);
 };
 
 #endif

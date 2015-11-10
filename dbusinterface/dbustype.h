@@ -41,7 +41,19 @@ public:
 
 class ConflictInfo{
 
+
 public:
+
+    enum {
+        ResponseCancel  = 1 << 0,
+        ResponseSkip = 1 << 1,
+        ResponseRetry = 1 << 2,
+        ResponseDelete = 1 << 3,
+        ResponseOverwrite = 1 << 4,
+        ResponseAutoRename = 1 << 5, // auto rename the conflict file/directory
+        ResponseYes = 1 << 6
+    };
+
     int32_t code;
     bool applyToAll;
     QString userData;

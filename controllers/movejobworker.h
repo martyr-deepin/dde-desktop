@@ -7,6 +7,7 @@
 #include <QString>
 #include <QTime>
 #include <QMap>
+#include "dbusinterface/dbustype.h"
 
 class MoveJobInterface;
 class FileConflictController;
@@ -17,6 +18,11 @@ class MovejobWorker : public QObject
 public:
     explicit MovejobWorker(QStringList files, QString destination, QObject *parent = 0);
     void initConnect();
+    QStringList getFiles();
+    QString getDestination();
+    QString getJobPath();
+    const QMap<QString, QString>& getJobDetail();
+    FileConflictController* getFileConflictController();
 
 signals:
     void startJob();
@@ -36,7 +42,7 @@ public slots:
     void handleTimeout();
     void handleFinished();
     void handleTaskAborted(const QMap<QString, QString>& jobDetail);
-
+    void handleResponse(ConflictInfo obj);
 private:
     QStringList m_files;
     QString m_destination;

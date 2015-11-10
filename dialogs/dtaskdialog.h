@@ -28,7 +28,11 @@ public:
     void initButtonFrame();
 
 signals:
-    void closed(const QMap<QString, QString> m_jobDetail);
+    void closed(const QMap<QString, QString>& jobDetail);
+    void conflictResponseConfirmed(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
+    void heightChanged();
+    void conflictShowed(const QMap<QString, QString>& jobDetail);
+    void conflictHided(const QMap<QString, QString>& jobDetail);
 
 public slots:
     void setTargetObj(QString targetObj);
@@ -40,11 +44,12 @@ public slots:
     void setMessage(QString message);
     void setTipMessage(QString tipMessage);
     void handleClose();
+    void handleResponse();
     void updateMessage(const QMap<QString, QString>& data);
     void updateTipMessage();
 
     void showConflict();
-
+    void hideConflict();
 protected:
 
 private:
@@ -60,6 +65,7 @@ private:
     QLabel* m_tipMessageLabel;
     QPushButton* m_closeButton;
     QMap<QString, QString> m_jobDetail;
+    QMap<QString, QVariant> m_response;
     QButtonGroup* m_buttonGroup;
     QFrame* m_buttonFrame=NULL;
     QCheckBox* m_checkBox=NULL;
@@ -78,7 +84,9 @@ signals:
     void abortCopyTask(const QMap<QString, QString>& jobDetail);
     void abortMoveTask(const QMap<QString, QString>& jobDetail);
     void abortDeleteTask(const QMap<QString, QString>& jobDetail);
-
+    void conflictRepsonseConfirmed(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
+    void conflictShowed(const QMap<QString, QString>& jobDetail);
+    void conflictHided(const QMap<QString, QString>& jobDetail);
 public slots:
     void setTitle(QString title);
     void setTitle(int taskCount);
@@ -92,7 +100,7 @@ public slots:
     void adjustSize();
 
     void showConflictDiloagByJob(const QMap<QString, QString>& jobDetail);
-
+    void handleConflictResponse(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
 protected:
     void closeEvent(QCloseEvent* event);
 

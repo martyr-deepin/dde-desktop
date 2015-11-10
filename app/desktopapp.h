@@ -31,6 +31,8 @@ public slots:
     void confimDelete(const QStringList &files);
     void handleDeleteAction(int index);
 
+    void confimConflict(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
+
     void unRegisterDbusService();
 
     void show();

@@ -5,6 +5,7 @@
 #include <QtDBus>
 
 class CopyJobInterface;
+class CopyjobWorker;
 
 class CopyJobController : public QObject
 {
@@ -19,8 +20,11 @@ signals:
 
 public slots:
     void createCopyJob(QStringList files, QString destination);
+    void handleConflictConfirmResponse(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
+    void handleWokerTimerStop(const QMap<QString, QString>& jobDetail);
+    void handleWokerTimerRestart(const QMap<QString, QString>& jobDetail);
 private:
-
+    QList<CopyjobWorker*> m_works;
 };
 
 #endif // COPYJOBCONTROLLER_H

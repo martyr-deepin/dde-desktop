@@ -52,8 +52,18 @@ void DesktopApp::initConnect(){
     connect(m_taskDialog, SIGNAL(abortDeleteTask(QMap<QString,QString>)),
             signalManager, SIGNAL(abortDeleteTask(QMap<QString,QString>)));
 
+    connect(m_taskDialog, SIGNAL(conflictRepsonseConfirmed(QMap<QString,QString>,QMap<QString,QVariant>)),
+            this, SLOT(confimConflict(QMap<QString,QString>,QMap<QString,QVariant>)));
+
+    connect(m_taskDialog, SIGNAL(conflictShowed(QMap<QString,QString>)),
+            signalManager, SIGNAL(conflictTimerStoped(QMap<QString,QString>)));
+    connect(m_taskDialog, SIGNAL(conflictHided(QMap<QString,QString>)),
+            signalManager, SIGNAL(conflictTimerReStarted(QMap<QString,QString>)));
+
     connect(signalManager, SIGNAL(conflictDialogShowed(QMap<QString,QString>)),
             m_taskDialog, SLOT(showConflictDiloagByJob(QMap<QString,QString>)));
+
+
     connect(qApp, SIGNAL(aboutToQuit()), this, SIGNAL(closed()));
 }
 
@@ -93,6 +103,11 @@ void DesktopApp::handleDeleteAction(int index){
     default:
         break;
     }
+}
+
+void DesktopApp::confimConflict(const QMap<QString, QString> &jobDetail, const QMap<QString, QVariant> &response){
+    qDebug() << jobDetail << response;
+    emit signalManager->conflictRepsonseConfirmed(jobDetail, response);
 }
 
 void DesktopApp::registerDBusService(){

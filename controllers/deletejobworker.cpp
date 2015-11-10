@@ -5,8 +5,8 @@
 #include "views/global.h"
 
 DeletejobWorker::DeletejobWorker(const QStringList &files, QObject *parent):
-    m_deletefiles(files),
-    QObject(parent)
+    QObject(parent),
+    m_deletefiles(files)
 {
     m_progressTimer = new QTimer;
     m_progressTimer->setInterval(1000);

@@ -6,6 +6,7 @@
 #include <QtDBus>
 
 class MoveJobInterface;
+class MovejobWorker;
 
 class MoveJobController : public QObject
 {
@@ -20,6 +21,10 @@ signals:
 
 public slots:
     void createMoveJob(QStringList files, QString destination);
+    void handleConflictConfirmResponse(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
+
+private:
+    QList<MovejobWorker*> m_works;
 };
 
 #endif // MOVEJOBCONTROLLER_H

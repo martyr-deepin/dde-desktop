@@ -25,6 +25,27 @@ void MovejobWorker::initConnect(){
             this, SLOT(handleTaskAborted(QMap<QString,QString>)));
 }
 
+QStringList MovejobWorker::getFiles(){
+    return m_files;
+}
+
+QString MovejobWorker::getDestination(){
+    return m_destination;
+}
+
+QString MovejobWorker::getJobPath(){
+    return m_movejobPath;
+}
+
+const QMap<QString, QString>& MovejobWorker::getJobDetail(){
+    return m_jobDetail;
+}
+
+FileConflictController* MovejobWorker::getFileConflictController(){
+    return m_conflictController;
+}
+
+
 void MovejobWorker::start(){
     moveFiles(m_files, m_destination);
 }
@@ -127,11 +148,15 @@ void MovejobWorker::onMovingFile(QString file){
 
 void MovejobWorker::setTotalAmount(qlonglong amount, ushort type){
     qDebug() << "========="<< amount << type;
-    m_totalAmout = amount;
+    if (type == 0){
+        m_totalAmout = amount;
+    }
 }
 
 void MovejobWorker::onMovingProcessAmount(qlonglong progress, ushort info){
-    m_currentProgress = progress;
+    if (info == 0){
+        m_currentProgress = progress;
+    }
     qDebug() << "onMovingProcessAmount" << progress << info;
 }
 
@@ -158,3 +183,8 @@ void MovejobWorker::handleTaskAborted(const QMap<QString, QString> &jobDetail){
         moveJobAbort();
     }
 }
+
+void MovejobWorker::handleResponse(ConflictInfo obj){
+    m_conflictController->getConflictAdaptor()->response(obj);
+}
+

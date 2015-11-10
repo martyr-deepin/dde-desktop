@@ -7,8 +7,11 @@
 #include <QString>
 #include <QTime>
 #include <QMap>
+#include "dbusinterface/dbustype.h"
+
 class CopyJobInterface;
 class FileConflictController;
+
 
 class CopyjobWorker : public QObject
 {
@@ -20,6 +23,8 @@ public:
     QStringList getFiles();
     QString getDestination();
     QString getJobPath();
+    const QMap<QString, QString>& getJobDetail();
+    FileConflictController* getFileConflictController();
 
 signals:
     void startJob();
@@ -37,10 +42,13 @@ public slots:
     void onCopyingFile(QString file);
     void setTotalAmount(qlonglong amount, ushort type);
     void onCopyingProcessAmount(qlonglong progress, ushort type);
+    void onProcessedPercent(qlonglong percent);
     void handleTimeout();
     void handleFinished();
     void handleTaskAborted(const QMap<QString, QString>& jobDetail);
-
+    void handleResponse(ConflictInfo obj);
+    void stopTimer();
+    void restartTimer();
 private:
     QStringList m_files;
     QString m_destination;
@@ -54,6 +62,7 @@ private:
     QTime* m_time;
     qlonglong m_lastProgress = 0;
     qlonglong m_currentProgress = 0;
+    qlonglong m_processedPercent = 0;
     int m_elapsedTime;
 };
 

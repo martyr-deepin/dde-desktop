@@ -54,6 +54,7 @@ Q_SIGNALS: // SIGNALS
     void Moving(const QString &in0);
     void TotalAmount(qlonglong in0, ushort in1);
     void ProcessedAmount(qlonglong in0, ushort in1);
+    void ProcessedPercent(qlonglong in0);
 };
 
 #endif

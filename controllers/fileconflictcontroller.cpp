@@ -44,12 +44,15 @@ ConflictInfo FileConflictController::ConflictDialog(){
     obj.code = 32;
     obj.applyToAll = false;
     obj.userData = "";
-    emit m_conflictAdaptor->response(obj);
     return obj;
 }
 
 QString FileConflictController::getObjectPath(){
     return m_objectPath;
+}
+
+ConflictAdaptor* FileConflictController::getConflictAdaptor(){
+    return m_conflictAdaptor;
 }
 
 void FileConflictController::unRegisterDBusService(){

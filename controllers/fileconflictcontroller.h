@@ -17,6 +17,7 @@ public:
     static int count;
 
     QString getObjectPath();
+    ConflictAdaptor* getConflictAdaptor();
 
 signals:
 
