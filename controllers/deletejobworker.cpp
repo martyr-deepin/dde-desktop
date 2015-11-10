@@ -60,9 +60,10 @@ void DeletejobWorker::connectDeleteJobSignal(){
                 this, SLOT(setTotalAmount(qlonglong,ushort)));
         connect(m_deleteJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
                 this, SLOT(onDeletingProcessAmount(qlonglong,ushort)));
+        connect(m_deleteJobInterface, SIGNAL(ProcessedPercent(qlonglong)),
+                this, SLOT(onProcessedPercent(qlonglong)));
     }
 }
-
 
 void DeletejobWorker::disconnectDeleteJobSignal(){
     if (m_deleteJobInterface){
@@ -73,6 +74,8 @@ void DeletejobWorker::disconnectDeleteJobSignal(){
                 this, SLOT(setTotalAmount(qlonglong,ushort)));
         disconnect(m_deleteJobInterface, SIGNAL(ProcessedAmount(qlonglong,ushort)),
                 this, SLOT(onDeletingProcessAmount(qlonglong,ushort)));
+        disconnect(m_deleteJobInterface, SIGNAL(ProcessedPercent(qlonglong)),
+                this, SLOT(onProcessedPercent(qlonglong)));
     }
 }
 
@@ -114,23 +117,42 @@ void DeletejobWorker::onDeletingFile(QString file){
 
 void DeletejobWorker::setTotalAmount(qlonglong amount, ushort type){
     qDebug() << "========="<< amount << type;
-    m_totalAmout = amount;
+    if (type == 0){
+        m_totalAmout = amount;
+    }
 }
 
 void DeletejobWorker::onDeletingProcessAmount(qlonglong progress, ushort info){
-    m_currentProgress = progress;
+    if (info == 0){
+        m_currentProgress = progress;
+    }
     qDebug() << "onDeletingProcessAmount" << progress << info;
 }
 
+void DeletejobWorker::onProcessedPercent(qlonglong percent){
+    m_processedPercent = percent;
+    m_jobDataDetail.insert("progress", QString::number(percent));
+    qDebug() << percent;
+}
+
 void DeletejobWorker::handleTimeout(){
-    float speed = (m_currentProgress - m_lastProgress) / (1024 * 1024);
-//    qDebug() << speed;
+    float speed;
+    int remainTime;
+    QString speedString;
+    if (m_currentProgress - m_lastProgress > 1024 *1024){
+        speed = (m_currentProgress - m_lastProgress) / (1024 * 1024);
+        speedString = QString("%1 M/s").arg(QString::number(speed));
+    }else{
+        speed = (m_currentProgress - m_lastProgress) / 1024;
+        speedString = QString("%1 Kb/s").arg(QString::number(speed));
+    }
+    if (m_currentProgress - m_lastProgress > 0){
+        remainTime = (m_totalAmout - m_currentProgress) / (m_currentProgress - m_lastProgress);
+    }
     m_lastProgress = m_currentProgress;
-    int remainTime = (m_totalAmout - m_currentProgress) / speed;
-//    qDebug() << remainTime;
-    m_jobDataDetail.insert("speed", QString::number(speed));
-    m_jobDataDetail.insert("remainTime", QString::number(remainTime));
-    m_jobDataDetail.insert("progress", "10");
+
+    m_jobDataDetail.insert("speed", speedString);
+    m_jobDataDetail.insert("remainTime", QString("%1 s").arg(QString::number(remainTime)));
     emit signalManager->deleteJobDataUpdated(m_jobDetail, m_jobDataDetail);
 }
 

@@ -32,7 +32,7 @@ public slots:
     void onDeletingFile(QString file);
     void setTotalAmount(qlonglong amount, ushort type);
     void onDeletingProcessAmount(qlonglong progress, ushort info);
-
+    void onProcessedPercent(qlonglong percent);
     void handleTimeout();
     void handleFinished();
     void handleTaskAborted(const QMap<QString, QString>& jobDetail);
@@ -49,6 +49,7 @@ private:
     QTime* m_time;
     qlonglong m_lastProgress = 0;
     qlonglong m_currentProgress = 0;
+    qlonglong m_processedPercent = 0;
     int m_elapsedTime;
 };
 

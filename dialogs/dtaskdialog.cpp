@@ -170,7 +170,8 @@ void MoveCopyTaskWidget::updateMessage(const QMap<QString, QString> &data){
         }else if (m_jobDetail.value("type") == "delete"){
             message = tr("<span style=\"color: #3cadff\"> %1 </span> \
                                  is deleted ").arg(file);
-            tipMessage = "";
+            tipMessage = tr("current speed:%1 time Left:%2 ")
+                        .arg(speed, remainTime);
         }
         setMessage(message);
         setTipMessage(tipMessage);
