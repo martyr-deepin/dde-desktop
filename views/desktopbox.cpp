@@ -175,11 +175,11 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
 
 
 void DesktopBox::keyReleaseEvent(QKeyEvent *event){
-    if (event->modifiers() != Qt::ControlModifier && event->key() == Qt::Key_Control){
+    if (event->key() == Qt::Key_Control){
         m_desktopFrame->setCtrlPressed(false);
     }
 
-    if (event->modifiers() != Qt::ShiftModifier && event->key() == Qt::Key_Shift){
+    if (event->key() == Qt::Key_Shift){
         m_desktopFrame->setShiftPressed(false);
     }
 

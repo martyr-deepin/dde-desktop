@@ -43,14 +43,27 @@
     </message>
 </context>
 <context>
-    <name>DeleteJobController</name>
+    <name>DTaskDialog</name>
     <message>
-        <location filename="../controllers/deletejobcontroller.cpp" line="34"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="356"/>
+        <source>There is %1 task in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="358"/>
+        <source>There are %1 tasks in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DesktopApp</name>
+    <message>
+        <location filename="../app/desktopapp.cpp" line="85"/>
         <source>Are you sure to delete %1 ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../controllers/deletejobcontroller.cpp" line="36"/>
+        <location filename="../app/desktopapp.cpp" line="87"/>
         <source>Are you sure to delete these %1 items?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -58,13 +71,60 @@
 <context>
     <name>DesktopItemManager</name>
     <message>
-        <location filename="../views/desktopitemmanager.cpp" line="25"/>
+        <location filename="../views/desktopitemmanager.cpp" line="30"/>
         <source>Computer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../views/desktopitemmanager.cpp" line="52"/>
+        <location filename="../views/desktopitemmanager.cpp" line="58"/>
         <source>Trash</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MoveCopyTaskWidget</name>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
+        <source>Coexists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
+        <source>Replace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
+        <source>Skip</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="113"/>
+        <source>no more ask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="114"/>
+        <source>Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="156"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="164"/>
+        <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="159"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="168"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="173"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="183"/>
+        <source>current speed:%1 time Left:%2 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="171"/>
+        <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  is deleted </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
