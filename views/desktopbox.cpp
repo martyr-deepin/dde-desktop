@@ -8,6 +8,8 @@
 #include "desktopitem.h"
 #include "background/backgroundlabel.h"
 #include "app/xcb_misc.h"
+#include "dbusinterface/displayinterface.h"
+
 #include <QApplication>
 #include <QDesktopWidget>
 
@@ -21,7 +23,7 @@ DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 
     m_screenChangedTimer = new QTimer;
     m_screenChangedTimer->setSingleShot(true);
-    m_screenChangedTimer->setInterval(500);
+    m_screenChangedTimer->setInterval(2000);
 
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
     connect(signalManager, SIGNAL(requestRenamed(QString)), this, SLOT(handleRename()));
@@ -64,7 +66,9 @@ void DesktopBox::renameFinished(){
 
 void DesktopBox::handleScreenGeometryChanged(){
     setGeometry(qApp->desktop()->screenGeometry());
-    m_desktopFrame->setGeometry(qApp->desktop()->screenGeometry());
+    QRect primaryRect =  QRect(dbusController->getDisplayInterface()->primaryRect());
+    qDebug() << "primaryRect" << primaryRect;
+    m_desktopFrame->setGeometry(primaryRect);
     emit signalManager->gridSizeTypeChanged(SizeType::Middle);
     emit signalManager->gridOnResorted();
 }

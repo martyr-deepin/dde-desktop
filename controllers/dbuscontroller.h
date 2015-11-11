@@ -85,6 +85,7 @@ public:
     void asyncCreateDesktopItemByUrl(QString url);
 
     DesktopDaemonInterface* getDesktopDaemonInterface();
+    DisplayInterface* getDisplayInterface();
 
     void updateDesktopItemInfoMap(DesktopItemInfo desktopItemInfo);
     void updateDesktopItemInfoMap_moved(DesktopItemInfo desktopItemInfo);

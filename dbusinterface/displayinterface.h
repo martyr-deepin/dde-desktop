@@ -24,6 +24,24 @@ typedef QMap<QString, double> BrightnessMap;
 
 Q_DECLARE_METATYPE(BrightnessMap)
 
+struct DisplayRect{
+    qint16 x;
+    qint16 y;
+    quint16 width;
+    quint16 height;
+
+    operator QRect() const
+    {
+        return QRect(x, y, width, height);
+    }
+};
+
+Q_DECLARE_METATYPE(DisplayRect)
+
+QDBusArgument &operator<<(QDBusArgument &argument, const DisplayRect &rect);
+const QDBusArgument &operator>>(const QDBusArgument &argument, DisplayRect &rect);
+QDebug operator<<(QDebug deg, const DisplayRect &rect);
+
 /*
  * Proxy class for interface com.deepin.daemon.Display
  */
@@ -88,9 +106,9 @@ public:
     inline QString primary() const
     { return qvariant_cast< QString >(property("Primary")); }
 
-    Q_PROPERTY(QRect PrimaryRect READ primaryRect NOTIFY PrimaryRectChanged)
-    inline QRect primaryRect() const
-    { return qvariant_cast< QRect >(property("PrimaryRect")); }
+    Q_PROPERTY(DisplayRect PrimaryRect READ primaryRect NOTIFY PrimaryRectChanged)
+    inline DisplayRect primaryRect() const
+    { return qvariant_cast< DisplayRect >(property("PrimaryRect")); }
 
     Q_PROPERTY(ushort ScreenHeight READ screenHeight NOTIFY ScreenHeightChanged)
     inline ushort screenHeight() const

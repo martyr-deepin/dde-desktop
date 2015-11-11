@@ -118,6 +118,10 @@ DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
     return m_desktopDaemonInterface;
 }
 
+DisplayInterface* DBusController::getDisplayInterface(){
+    return m_displayInterface;
+}
+
 void DBusController::asyncRequestDesktopItems(){
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
