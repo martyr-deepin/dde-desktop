@@ -19,9 +19,14 @@ DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
     XcbMisc::instance()->set_window_type(winId(),
                                          XcbMisc::Desktop);
 
+    m_screenChangedTimer = new QTimer;
+    m_screenChangedTimer->setSingleShot(true);
+    m_screenChangedTimer->setInterval(500);
+
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
     connect(signalManager, SIGNAL(requestRenamed(QString)), this, SLOT(handleRename()));
-    connect(signalManager, SIGNAL(screenGeometryChanged()), this, SLOT(handleScreenGeometryChanged()));
+    connect(signalManager, SIGNAL(screenGeometryChanged()), m_screenChangedTimer, SLOT(start()));
+    connect(m_screenChangedTimer, SIGNAL(timeout()), this, SLOT(handleScreenGeometryChanged()));
 }
 
 DesktopFrame* DesktopBox::getDesktopFrame(){

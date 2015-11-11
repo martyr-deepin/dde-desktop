@@ -38,6 +38,7 @@ private:
     int m_currentPage = 0;
     DesktopFrame* m_desktopFrame;
     BackgroundLabel* m_backgroundLabel;
+    QTimer* m_screenChangedTimer;
 };
 
 #endif // DESKTOPBOX_H

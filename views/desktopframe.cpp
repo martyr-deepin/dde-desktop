@@ -102,7 +102,6 @@ void DesktopFrame::changeGridBySizeType(SizeType type){
     m_gridItems = gridManager->getItemsByType(type);
     m_mapItems = gridManager->getMapItems();
     m_sizeType = type;
-    m_desktopItemManager->changeSizeByGrid(type);
     update();
 }
 
