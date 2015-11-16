@@ -89,6 +89,7 @@ void DBusController::initConnect(){
     connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
     connect(m_displayInterface, SIGNAL(PrimaryRectChanged()), signalManager, SIGNAL(screenGeometryChanged()));
     connect(signalManager, SIGNAL(gtkIconThemeChanged()), this, SLOT(handelIconThemeChanged()));
+    connect(signalManager, SIGNAL(refreshCopyFileIcon(QString)), this, SLOT(refreshThumail(QString)));
 }
 
 void DBusController::loadDesktopSettings(){
@@ -203,7 +204,11 @@ void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call
 }
 
 void DBusController::requestIconByUrl(QString scheme, uint size){
-    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(scheme, size);
+    QString _url(scheme);
+    if (!scheme.startsWith(FilePrefix)){
+        _url = FilePrefix + scheme;
+    }
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(_url, size);
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
@@ -223,9 +228,35 @@ void DBusController::delayGetThumbnail(){
     }
 }
 
+void DBusController::refreshThumail(QString url, uint size){
+    qDebug() << url;
+    QString _url(url);
+    if (!url.startsWith(FilePrefix)){
+        _url = FilePrefix + url;
+    }
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnail(_url, size);
+    reply.waitForFinished();
+    if (!reply.isError()){
+        QString iconUrl = reply.argumentAt(0).toString();
+        qDebug() << iconUrl;
+        if (iconUrl.length() == 0){
+            requestIconByUrl(url, size);
+        }else{
+            emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
+        }
+    }else{
+        qCritical() << reply.error().message();
+        requestIconByUrl(url, size);
+    }
+}
+
 void DBusController::requestThumbnail(QString scheme, uint size){
     qDebug() << scheme;
-    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnail(scheme, size);
+    QString _url(scheme);
+    if (!scheme.startsWith(FilePrefix)){
+        _url = FilePrefix + scheme;
+    }
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnail(_url, size);
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
@@ -344,7 +375,7 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
     QDBusPendingReply<DesktopItemInfo> reply = *call;
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
-        qDebug() << desktopItemInfo.URI << desktopItemInfo.Icon << desktopItemInfo.thumbnail;
+        qDebug() << desktopItemInfo.URI << desktopItemInfo.Icon << desktopItemInfo.thumbnail << desktopItemInfo.MIME;
         /*ToDo desktop daemon settings judge*/
         if (desktopItemInfo.thumbnail.length() > 0){
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;
@@ -375,6 +406,14 @@ void DBusController::handleFileCreated(const QString &path){
     if (isDesktop(f.path())){
         qDebug() << "create file in desktop" << path;
         asyncCreateDesktopItemByUrl(path);
+        QTimer* refreshTimer = new QTimer;
+        refreshTimer->setSingleShot(true);
+        refreshTimer->setInterval(500);
+        connect(refreshTimer, &QTimer::timeout, [=](){
+            this->refreshThumail("file://" + path);
+        });
+        connect(refreshTimer, SIGNAL(timeout()), refreshTimer, SLOT(deleteLater()));
+        refreshTimer->start();
     }else{
         if(isApp(path)){
             qDebug() << "create file in app group" << path;

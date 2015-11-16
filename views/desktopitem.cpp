@@ -58,8 +58,14 @@ void DesktopItem::initUI(){
     m_iconLabel = new QLabel;
     m_iconLabel->setObjectName("Icon");
     m_iconLabel->setAlignment(Qt::AlignCenter);
-    m_iconLabel->setFixedSize(48, 48);
+    m_iconLabel->setFixedSize(44, 44);
     m_iconLabel->setScaledContents(false);
+
+
+    QVBoxLayout* iconLayout = new QVBoxLayout;
+    iconLayout->addWidget(m_iconLabel, 0, Qt::AlignCenter);
+    iconLayout->setSpacing(0);
+    iconLayout->setContentsMargins(4, 4, 4, 4);
 
     m_textedit = new GrowingElideTextEdit();
     m_textedit->setAlignment(Qt::AlignTop);
@@ -69,11 +75,11 @@ void DesktopItem::initUI(){
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addSpacing(4);
-    mainLayout->addWidget(m_iconLabel, 0, Qt::AlignHCenter);
+    mainLayout->addLayout(iconLayout);
     mainLayout->addWidget(m_textedit, 0, Qt::AlignHCenter);
     mainLayout->setSpacing(0);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->addStretch();
+    mainLayout->setContentsMargins(0, 0, 0, 4);
     setLayout(mainLayout);
 }
 
@@ -360,7 +366,7 @@ bool DesktopItem::isCuted(){
 
 
 QString DesktopItem::gridKey(){
-    return QString("%1-%2").arg(QString::number(pos().x()), QString::number(pos()   .y()));
+    return QString("%1-%2").arg(QString::number(pos().x()), QString::number(pos().y()));
 }
 
 bool DesktopItem::isShowSimpleMode(){

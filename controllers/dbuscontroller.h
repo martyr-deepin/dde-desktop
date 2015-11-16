@@ -148,6 +148,9 @@ public slots:
     /*handle theme changed*/
     void handelIconThemeChanged();
 
+    /*request thumbnail to update icon for get icon error by tmp file*/
+    void refreshThumail(QString url, uint size=48);
+
 private:
     FileMonitor* m_fileMonitor = NULL;
     FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;

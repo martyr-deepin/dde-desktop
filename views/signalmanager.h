@@ -190,6 +190,9 @@ signals:
     void conflictTimerStoped(const QMap<QString, QString>& jobDetail);
     void conflictTimerReStarted(const QMap<QString, QString>& jobDetail);
 
+    /*refresh icon when file copy finished*/
+    void refreshCopyFileIcon(QString file);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

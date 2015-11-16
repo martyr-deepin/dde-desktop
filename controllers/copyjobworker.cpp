@@ -6,6 +6,7 @@
 #include "dbusinterface/services/conflictdaptor.h"
 #include "controllers/fileconflictcontroller.h"
 #include "dbusinterface/services/conflictdaptor.h"
+#include "widgets/util.h"
 
 CopyjobWorker::CopyjobWorker(QStringList files, QString destination, QObject *parent) :
     QObject(parent),
@@ -195,6 +196,11 @@ void CopyjobWorker::handleFinished(){
         emit signalManager->copyJobRemoved(m_jobDetail);
     }
     m_conflictController->unRegisterDBusService();
+    if (m_jobDataDetail.contains("destination")){
+        QString f = joinPath(desktopLocation, m_jobDataDetail.value("destination"));
+        qDebug() << f;
+        emit signalManager->refreshCopyFileIcon(f);
+    }
 }
 
 void CopyjobWorker::handleTaskAborted(const QMap<QString, QString> &jobDetail){
