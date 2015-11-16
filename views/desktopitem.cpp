@@ -6,6 +6,7 @@
 #include "controllers/dbuscontroller.h"
 #include "appgroupiconframe.h"
 #include "desktopframe.h"
+#include "widgets/themeappicon.h"
 #include <QSvgRenderer>
 #include <QImage>
 #include <QGraphicsEffect>
@@ -50,7 +51,7 @@ void DesktopItem::init(){
     setObjectName("DesktopItem");
     initUI();
     initConnect();
-    setDesktopIcon(m_desktopIcon);
+    setDesktopIcon(ThemeAppIcon::getThemeIconPath("application-default-icon"));
     setDesktopName(m_desktopName);
 }
 
@@ -153,6 +154,7 @@ QPixmap DesktopItem::getDesktopIcon(){
 }
 
 void DesktopItem::setDesktopIcon(QString icon){
+    qDebug() << icon;
     if (icon.endsWith(".svg")){
         m_desktopIcon = QPixmap(m_iconLabel->size());
         QSvgRenderer renderer(icon);
@@ -161,6 +163,13 @@ void DesktopItem::setDesktopIcon(QString icon){
         painter.begin(&m_desktopIcon);
         renderer.render(&painter);
         painter.end();
+    }else if (icon.startsWith("data:image/")){
+        // icon is a string representing an inline image.
+        QStringList strs = icon.split("base64,");
+        if (strs.length() == 2) {
+            QByteArray data = QByteArray::fromBase64(strs.at(1).toLatin1());
+            m_desktopIcon.loadFromData(data);
+        }
     }else{
         QMimeDatabase mimeDataBae;
         QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(m_url));
@@ -199,7 +208,11 @@ void DesktopItem::setDesktopIcon(QString icon){
                 m_desktopIcon.save(cacheIcon);
             }
         }else{
-            m_desktopIcon = QPixmap(icon);
+            if (icon.length() > 0){
+                m_desktopIcon = QPixmap(icon);
+            }else{
+                m_desktopIcon = QPixmap(ThemeAppIcon::getThemeIconPath("application-default-icon"));
+            }
         }
     }
     emit desktopIconChanged(icon);
