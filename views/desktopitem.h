@@ -54,6 +54,8 @@ public:
     void disabledTextShadow();
     void enableTextShadow();
 
+    QLabel* getIconLabel();
+
 signals:
     void desktopIconChanged(QString icon);
     void desktopIconChanged(QPixmap& icon);

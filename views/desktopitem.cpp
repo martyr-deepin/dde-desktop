@@ -51,7 +51,11 @@ void DesktopItem::init(){
     setObjectName("DesktopItem");
     initUI();
     initConnect();
-    setDesktopIcon(ThemeAppIcon::getThemeIconPath("application-default-icon"));
+    if (m_desktopIcon.isNull()){
+        setDesktopIcon(ThemeAppIcon::getThemeIconPath("application-default-icon"));
+    }else{
+        setDesktopIcon(m_desktopIcon);
+    }
     setDesktopName(m_desktopName);
 }
 
@@ -214,16 +218,18 @@ void DesktopItem::setDesktopIcon(QString icon){
                 m_desktopIcon = QPixmap(ThemeAppIcon::getThemeIconPath("application-default-icon"));
             }
         }
-    }
+    }  
     emit desktopIconChanged(icon);
-    m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    m_desktopIcon = m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_iconLabel->setPixmap(m_desktopIcon);
 //  m_iconLabel->setPixmap(m_desktopIcon);
 }
 
 void DesktopItem::setDesktopIcon(QPixmap &icon){
-     m_desktopIcon = icon;
      emit desktopIconChanged(icon);
-     m_iconLabel->setPixmap(m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+     m_desktopIcon = m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+     m_iconLabel->setPixmap(m_desktopIcon);
+
 //     m_iconLabel->setPixmap(m_desktopIcon);
 }
 
@@ -512,6 +518,10 @@ void DesktopItem::disabledTextShadow(){
 
 void DesktopItem::enableTextShadow(){
     m_textedit->graphicsEffect()->setEnabled(true);
+}
+
+QLabel* DesktopItem::getIconLabel(){
+    return m_iconLabel;
 }
 
 DesktopItem::~DesktopItem()
