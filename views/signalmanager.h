@@ -45,6 +45,8 @@ signals:
     void keyHomePressed();
     void keyEndPressed();
 
+    void keyEnterPressed();
+
     void keyShiftHomePressed();
     void keyShiftEndPressed();
 

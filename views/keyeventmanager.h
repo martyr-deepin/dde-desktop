@@ -33,6 +33,8 @@ public slots:
     void onKeyHomePressed();
     void onKeyEndPressed();
 
+    void onKeyEnterPressed();
+
     void onKeyShiftHomePressed();
     void onKeyShiftEndPressed();
 

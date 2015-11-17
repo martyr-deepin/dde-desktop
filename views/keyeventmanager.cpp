@@ -25,6 +25,8 @@ void KeyEventManager::initConnect(){
     connect(signalManager, SIGNAL(keyHomePressed()), this, SLOT(onKeyHomePressed()));
     connect(signalManager, SIGNAL(keyEndPressed()), this, SLOT(onKeyEndPressed()));
 
+    connect(signalManager, SIGNAL(keyEnterPressed()), this, SLOT(onKeyEnterPressed()));
+
     connect(signalManager, SIGNAL(keyShiftHomePressed()), this, SLOT(onKeyShiftHomePressed()));
     connect(signalManager, SIGNAL(keyShiftEndPressed()), this, SLOT(onKeyShiftEndPressed()));
 }
@@ -186,6 +188,15 @@ void KeyEventManager::onKeyHomePressed(){
 
 void KeyEventManager::onKeyEndPressed(){
     checkLastDesktopItem();
+}
+
+void KeyEventManager::onKeyEnterPressed(){
+    QList<DesktopItemPointer> checkedItems = static_cast<DesktopFrame*>(parent())->getCheckedDesktopItems();
+    foreach (DesktopItemPointer pItem, checkedItems) {
+        if (!pItem.isNull()) {
+            emit signalManager->openFile(pItem->getDesktopItemInfo());
+        }
+    }
 }
 
 void KeyEventManager::onKeyShiftHomePressed(){

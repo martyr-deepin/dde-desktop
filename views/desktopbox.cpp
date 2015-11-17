@@ -111,6 +111,10 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         emit signalManager->keyHomePressed();
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_End){
         emit signalManager->keyEndPressed();
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Return){
+        emit signalManager->keyEnterPressed();
+    }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Enter){
+        emit signalManager->keyEnterPressed();
     }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Home){
         emit signalManager->keyShiftHomePressed();
     }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_End){
