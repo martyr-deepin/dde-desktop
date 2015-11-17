@@ -252,11 +252,11 @@ void DesktopItem::updateAppGroupIcon(){
 }
 
 DesktopItemInfoMap DesktopItem::getAppGroupItems(){
-    return m_appGounpItems;
+    return m_appGroupItems;
 }
 
 void DesktopItem::setAppGroupItems(QMap<QString, DesktopItemInfo> items){
-    m_appGounpItems = items;
+    m_appGroupItems = items;
     m_desktopIcon = getAppGroupIcon().scaled(m_iconLabel->size());
     m_iconLabel->setPixmap(m_desktopIcon);
 }
@@ -266,8 +266,8 @@ QPixmap DesktopItem::getAppGroupIcon(){
     QStringList icons;
     for(int i = 0; i < 2; i++){
         for (int j=0; j < 2; j++){
-            if (m_appGounpItems.count() > i *2 + j){
-                icons.append(m_appGounpItems.values().at(i*2 + j).Icon);
+            if (m_appGroupItems.count() > i *2 + j){
+                icons.append(m_appGroupItems.values().at(i*2 + j).Icon);
             }
         }
     }

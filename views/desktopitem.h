@@ -112,7 +112,7 @@ private:
     bool m_isAllChecked = false;
     QString m_hoverObjectName = "Hover";
     DesktopItemInfo m_desktopItemInfo;
-    QMap<QString, DesktopItemInfo> m_appGounpItems;
+    QMap<QString, DesktopItemInfo> m_appGroupItems;
     QSettings m_settings;
 };
 

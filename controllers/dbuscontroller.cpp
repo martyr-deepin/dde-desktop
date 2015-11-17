@@ -247,7 +247,9 @@ void DBusController::refreshThumail(QString url, uint size){
         }
     }else{
         qCritical() << reply.error().message();
-        requestIconByUrl(url, size);
+        if (!isAppGroup(url)){
+            requestIconByUrl(url, size);
+        }
     }
 }
 
