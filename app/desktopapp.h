@@ -29,7 +29,7 @@ public slots:
     void saveSortFlag(QDir::SortFlags flag);
 
     void confimClear(int count);
-    void confimDelete(const QStringList &files);
+    void confimDelete(const QMap<QString, QString> &files);
     void handleDeleteAction(int index);
 
     void confimConflict(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);

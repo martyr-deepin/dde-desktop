@@ -144,8 +144,8 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Delete){
         emit signalManager->trashingAboutToExcute(m_desktopFrame->getCheckedFiles());
     }else if (event->modifiers() == Qt::ShiftModifier && event->key() == Qt::Key_Delete){
-        qDebug() << m_desktopFrame->getCheckedFiles() << "shift delete";
-        emit signalManager->deleteFilesExcuted(m_desktopFrame->getCheckedFiles());
+        qDebug() << m_desktopFrame->getCheckedFileDislpyNames() << "shift delete";
+        emit signalManager->deleteFilesExcuted(m_desktopFrame->getCheckedFileDislpyNames());
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
         if (m_isGridOn){
             emit signalManager->keyUpPressed();
@@ -184,6 +184,8 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         emit signalManager->keyCtrlCPressed();
     }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_V){
         emit signalManager->keyCtrlVPressed();
+    }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_X){
+        emit signalManager->keyCtrlXPressed();
     }
 
     TranslucentFrame::keyPressEvent(event);

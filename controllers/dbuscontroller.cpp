@@ -70,6 +70,7 @@ void DBusController::initConnect(){
     connect(m_desktopDaemonInterface, SIGNAL(RequestEmptyTrash()), signalManager, SIGNAL(requestEmptyTrash()));
 
     connect(signalManager, SIGNAL(filesCopyed(QStringList)), this, SLOT(copyFiles(QStringList)));
+    connect(signalManager, SIGNAL(filesCuted(QStringList)), this, SLOT(cutFiles(QStringList)));
     connect(signalManager, SIGNAL(pasteFilesToDesktop()), this, SLOT(pasteFilesToDesktop()));
     connect(m_clipboardInterface, SIGNAL(RequestPaste(QString,QStringList,QString)),
             this, SLOT(pasteFiles(QString,QStringList,QString)));
@@ -674,6 +675,10 @@ void DBusController::mergeIntoAppGroup(QStringList urls, QString group_url){
 
 void DBusController::copyFiles(QStringList urls){
     m_clipboardInterface->CopyToClipboard(urls);
+}
+
+void DBusController::cutFiles(QStringList urls){
+    m_clipboardInterface->CutToClipboard(urls);
 }
 
 void DBusController::pasteFilesToDesktop(){

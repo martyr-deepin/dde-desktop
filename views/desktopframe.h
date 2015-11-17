@@ -48,6 +48,7 @@ public:
     bool isAllAppCheckedItems();
 
     QStringList getCheckedFiles();
+    QMap<QString, QString> getCheckedFileDislpyNames();
 
     QPoint getAppGroupDestinationPos();
 
@@ -78,6 +79,7 @@ public slots:
     void handleKeyCtrlAPressed();
     void handleKeyCtrlCPressed();
     void handleKeyCtrlVPressed();
+    void handleKeyCtrlXPressed();
 
     void move(const QPoint &pos);
     void move(int x, int y);

@@ -62,6 +62,7 @@ void DesktopFrame::initConnect(){
     connect(signalManager, SIGNAL(keyCtrlAPressed()), this, SLOT(handleKeyCtrlAPressed()));
     connect(signalManager, SIGNAL(keyCtrlCPressed()), this, SLOT(handleKeyCtrlCPressed()));
     connect(signalManager, SIGNAL(keyCtrlVPressed()), this, SLOT(handleKeyCtrlVPressed()));
+    connect(signalManager, SIGNAL(keyCtrlXPressed()), this, SLOT(handleKeyCtrlXPressed()));
     connect(signalManager, SIGNAL(shiftReleased(bool)), this, SLOT(setShiftPressed(bool)));
     connect(this, SIGNAL(lastCheckedDesktopItemChanged(DesktopItemPointer)),
             this, SLOT(setLastCheckedDesktopItem(DesktopItemPointer)));
@@ -278,6 +279,14 @@ QStringList DesktopFrame::getCheckedFiles(){
     return files;
 }
 
+QMap<QString, QString> DesktopFrame::getCheckedFileDislpyNames(){
+    QMap<QString, QString> files;
+    foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+        files.insert(pItem->getRawUrl(), pItem->getDesktopName());
+    }
+    return files;
+}
+
 void DesktopFrame::handleKeyCtrlAPressed(){
     checkAllDesktopItems();
 }
@@ -288,6 +297,11 @@ void DesktopFrame::handleKeyCtrlCPressed(){
 
 void DesktopFrame::handleKeyCtrlVPressed(){
     emit signalManager->pasteFilesToDesktop();
+}
+
+void DesktopFrame::handleKeyCtrlXPressed(){
+    qDebug() << "========";
+    emit signalManager->filesCuted(getCheckedFiles());
 }
 
 void DesktopFrame::move(const QPoint &pos){

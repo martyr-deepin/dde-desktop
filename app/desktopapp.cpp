@@ -43,8 +43,8 @@ void DesktopApp::initConnect(){
     connect(m_taskDialog, SIGNAL(abortMoveTask(QMap<QString,QString>)),
             signalManager, SIGNAL(abortMoveTask(QMap<QString,QString>)));
 
-    connect(signalManager, SIGNAL(deleteFilesExcuted(QStringList)),
-            this, SLOT(confimDelete(QStringList)));
+    connect(signalManager, SIGNAL(deleteFilesExcuted(QMap<QString,QString>)),
+            this, SLOT(confimDelete(QMap<QString,QString>)));
     connect(signalManager, SIGNAL(deleteJobAdded(QMap<QString,QString>)),
             m_taskDialog, SLOT(addCopyMoveTask(QMap<QString,QString>)));
     connect(signalManager, SIGNAL(deleteJobRemoved(QMap<QString,QString>)),
@@ -79,8 +79,9 @@ void DesktopApp::confimClear(int count){
     d.exec();
 }
 
-void DesktopApp::confimDelete(const QStringList &files){
-    m_deletefiles = files;
+void DesktopApp::confimDelete(const QMap<QString, QString> &files){
+    m_deletefiles.clear();
+    m_deletefiles = files.keys();
     m_deletefiles.removeOne(ComputerUrl);
     m_deletefiles.removeOne(TrashUrl);
 
@@ -91,13 +92,19 @@ void DesktopApp::confimDelete(const QStringList &files){
         return;
     }
 
+    QStringList displayNames;
+    foreach (QString url, m_deletefiles) {
+        displayNames.append(files.value(url));
+    }
+
     ConfirmDeleteDialog d(m_desktopBox->getDesktopFrame());
     connect(signalManager, SIGNAL(desktopFrameRectChanged(QRect)), &d, SLOT(moveCenterByRect(QRect)));
     QString message;
-    if (files.length() == 1){
-        message = tr("Are you sure to delete %1 ?").arg(QFileInfo(m_deletefiles.at(0)).fileName());
+    if (displayNames.length() == 1){
+        QString name = displayNames.at(0);
+        message = tr("Are you sure to delete %1 ?").arg(name);
     }else{
-        message = tr("Are you sure to delete these %1 items?").arg(QString::number(m_deletefiles.length()));
+        message = tr("Are you sure to delete these %1 items?").arg(QString::number(displayNames.length()));
     }
     d.setMessage(message);
     connect(&d, SIGNAL(buttonClicked(int)), this, SLOT(handleDeleteAction(int)));

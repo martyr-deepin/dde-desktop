@@ -132,6 +132,9 @@ public slots:
     /*copy files*/
     void copyFiles(QStringList urls);
 
+    /*cut files*/
+    void cutFiles(QStringList urls);
+
     /*app group*/
     void requestCreatingAppGroup(QStringList urls);
     void getAppGroupItemsByUrl(QString group_url);

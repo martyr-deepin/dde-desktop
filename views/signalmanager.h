@@ -41,6 +41,7 @@ signals:
     void keyCtrlAPressed();
     void keyCtrlCPressed();
     void keyCtrlVPressed();
+    void keyCtrlXPressed();
 
     void keyHomePressed();
     void keyEndPressed();
@@ -89,7 +90,7 @@ signals:
     void movingProcessAmountChanged(qlonglong progress, ushort info);
 
     /*dbus delete files*/
-    void deleteFilesExcuted(const QStringList& files);
+    void deleteFilesExcuted(const QMap<QString, QString>& files);
     void deleteJobAboutToAbort();
     void deletingFileChaned(QString file);
     void deletingProcessAmountChanged(qlonglong progress, ushort info);
