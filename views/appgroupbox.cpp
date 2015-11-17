@@ -3,11 +3,11 @@
 #include "global.h"
 #include "app/xcb_misc.h"
 
-AppGroupBox::AppGroupBox(QWidget *parent) : ArrowRectangle(parent)
+AppGroupBox::AppGroupBox(QWidget *parent) :
+    DArrowRectangle(DArrowRectangle::ArrowTop, parent)
 {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::SplashScreen);
+    setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::Tool);
     setAttribute(Qt::WA_DeleteOnClose);
-    setMargin(10);
 }
 
 
@@ -27,24 +27,25 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
         int desktopWidth = qApp->desktop()->availableGeometry().width();
         int desktopHeight = qApp->desktop()->availableGeometry().height();
 
-        int topHeight = pItem->pos().y() - getMargin() * 2 - getArrowHeight() ;
-        int bottomHeight = desktopHeight - pItem->pos().y() - height - getMargin() * 2 - getArrowHeight();
-        int groupHeight = getMargin() * 2 + getArrowHeight()  + tableWidget->height();
+        int topHeight = pItem->pos().y() - margin() * 2 - arrowHeight() ;
+        int bottomHeight = desktopHeight - pItem->pos().y() - height - margin() * 2 - arrowHeight();
+        int groupHeight = margin() * 2 + arrowHeight()  + tableWidget->height();
 
         if (bottomHeight > groupHeight){
-            setArrorDirection(ArrowRectangle::ArrowTop);
             setContent(tableWidget);
-            QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2, pItem->pos().y() + height));
-            showAtTop(point.x() % desktopWidth, point.y());
+            QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2,
+                                              pItem->pos().y() + height - margin() - shadowBlurRadius()));
+            setArrowDirection(ArrowTop);
+            show(point.x() % desktopWidth, point.y());
         }else{
             if (groupHeight < topHeight){
-                setArrorDirection(ArrowRectangle::ArrowBottom);
                 setContent(tableWidget);
-                QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2, pItem->pos().y()));
-                showAtBottom(point.x() % desktopWidth, point.y());
+                QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2,
+                                                  pItem->pos().y() + shadowBlurRadius()));
+                setArrowDirection(ArrowBottom);
+                show(point.x() % desktopWidth, point.y());
             }else{
                 if (topHeight / height * height > bottomHeight / height * height){
-                    setArrorDirection(ArrowRectangle::ArrowBottom);
                     tableWidget->setFixedHeight(topHeight / height * height);
 
                     if (tableWidget->width() < desktopWidth){
@@ -54,10 +55,11 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
                     }
 
                     setContent(tableWidget);
-                    QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2, pItem->pos().y()));
-                    showAtBottom(point.x() % desktopWidth, point.y());
+                    QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2,
+                                                      pItem->pos().y() + shadowBlurRadius()));
+                    setArrowDirection(ArrowBottom);
+                    show(point.x() % desktopWidth, point.y());
                 }else{
-                    setArrorDirection(ArrowRectangle::ArrowTop);
                     tableWidget->setFixedHeight(bottomHeight / height * height);
                     if (tableWidget->width() < desktopWidth){
                         tableWidget->setFixedWidth(tableWidget->width() + 5);
@@ -65,8 +67,10 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
                         tableWidget->setFixedWidth(desktopWidth / width * width + 5);
                     }
                     setContent(tableWidget);
-                    QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2, pItem->pos().y() + height));
-                    showAtTop(point.x() % desktopWidth, point.y());
+                    QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2,
+                                                      pItem->pos().y() + height - shadowBlurRadius()));
+                    setArrowDirection(ArrowTop);
+                    show(point.x() % desktopWidth, point.y());
                 }
             }
         }

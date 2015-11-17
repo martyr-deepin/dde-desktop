@@ -17,7 +17,7 @@ include(./dialogs/dialogs.pri)
 include(./background/background.pri)
 
 
-PKGCONFIG += x11 gtk+-2.0 xcb xcb-ewmh gsettings-qt
+PKGCONFIG += x11 gtk+-2.0 xcb xcb-ewmh gsettings-qt dui
 CONFIG += c++11 link_pkgconfig
 #DEFINES += QT_NO_DEBUG_OUTPUT
 
