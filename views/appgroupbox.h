@@ -1,11 +1,13 @@
 #ifndef APPGROUPBOX_H
 #define APPGROUPBOX_H
 
+#include <libdui/darrowrectangle.h>
 
 #include "desktopfwd.h"
-#include "widgets/arrowrectangle.h"
 
-class AppGroupBox : public ArrowRectangle
+DUI_USE_NAMESPACE
+
+class AppGroupBox : public DArrowRectangle
 {
     Q_OBJECT
 public:
