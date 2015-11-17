@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
         qDebug() << "Starting the application";
 
         gtk_init(NULL, NULL);
+        gdk_error_trap_push();
         initGtkThemeWatcher();
 
         int reslut = app.exec();
