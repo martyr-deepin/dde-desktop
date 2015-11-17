@@ -62,6 +62,7 @@ void DesktopFrame::initConnect(){
     connect(signalManager, SIGNAL(keyCtrlAPressed()), this, SLOT(handleKeyCtrlAPressed()));
     connect(signalManager, SIGNAL(keyCtrlCPressed()), this, SLOT(handleKeyCtrlCPressed()));
     connect(signalManager, SIGNAL(keyCtrlVPressed()), this, SLOT(handleKeyCtrlVPressed()));
+    connect(signalManager, SIGNAL(shiftReleased(bool)), this, SLOT(setShiftPressed(bool)));
     connect(this, SIGNAL(lastCheckedDesktopItemChanged(DesktopItemPointer)),
             this, SLOT(setLastCheckedDesktopItem(DesktopItemPointer)));
     connect(this, SIGNAL(checkedDesktopItemsAdded(DesktopItemPointer)),

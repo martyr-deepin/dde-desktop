@@ -193,7 +193,10 @@ void DesktopBox::keyReleaseEvent(QKeyEvent *event){
 
     if (event->key() == Qt::Key_Shift){
         m_desktopFrame->setShiftPressed(false);
+        qDebug() << "===================";
     }
+
+    qDebug() << event->modifiers() << event->key();
 
     TranslucentFrame::keyReleaseEvent(event);
 }

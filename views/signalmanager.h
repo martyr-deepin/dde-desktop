@@ -200,6 +200,8 @@ signals:
     void confimClear(int count);
     void actionHandled(int index);
 
+    /*shift released*/
+    void shiftReleased(bool flag);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

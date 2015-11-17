@@ -103,6 +103,9 @@ void DesktopApp::confimDelete(const QStringList &files){
     connect(&d, SIGNAL(buttonClicked(int)), this, SLOT(handleDeleteAction(int)));
     int code = d.exec();
     qDebug() << code << "dialog close";
+
+    emit signalManager->shiftReleased(false);
+
 }
 
 void DesktopApp::handleDeleteAction(int index){
