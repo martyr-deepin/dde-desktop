@@ -33,7 +33,6 @@ public slots:
     void updateTrashIconByCount(uint count);
 
     void confirmDelete();
-    void showDialogByCount(int count);
     void handleTrashAction(int index);
     void createEmptyTrashJob();
     void emptyTrashJobExcuteFinished();

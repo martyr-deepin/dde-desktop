@@ -10,6 +10,7 @@ class QResizeEvent;
 
 class DMovabelDialog:public QDialog
 {
+    Q_OBJECT
 public:
     DMovabelDialog(QWidget *parent = 0);
     ~DMovabelDialog();
@@ -18,6 +19,8 @@ public slots:
     void setMovableHeight(int height);
     void moveCenter();
     void moveTopRight();
+    void moveCenterByRect(QRect rect);
+    void moveTopRightByRect(QRect rect);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);

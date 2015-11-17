@@ -21,6 +21,7 @@ void TrashJobController::initConnect(){
             this, SLOT(trashJobAbort()));
 
     connect(signalManager, SIGNAL(requestEmptyTrash()), this, SLOT(confirmDelete()));
+    connect(signalManager, SIGNAL(actionHandled(int)), this, SLOT(handleTrashAction(int)));
 }
 
 void TrashJobController::asyncRequestTrashCount(){
@@ -143,17 +144,11 @@ void TrashJobController::confirmDelete(){
         if (count == 0){
              qCritical() << "count read error";
         }else{
-             showDialogByCount(count);
+             emit signalManager->confimClear(count);
         }
     }else{
         qCritical() << reply.error().message();
     }
-}
-
-void TrashJobController::showDialogByCount(int count){
-    ClearTrashDialog d;
-    connect(&d, SIGNAL(buttonClicked(int)), this, SLOT(handleTrashAction(int)));
-    d.exec();
 }
 
 void TrashJobController::handleTrashAction(int index){

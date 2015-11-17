@@ -28,6 +28,7 @@ public slots:
     void saveSizeType(SizeType type);
     void saveSortFlag(QDir::SortFlags flag);
 
+    void confimClear(int count);
     void confimDelete(const QStringList &files);
     void handleDeleteAction(int index);
 

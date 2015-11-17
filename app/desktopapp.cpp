@@ -7,6 +7,8 @@
 #include "dialogs/dtaskdialog.h"
 #include "dialogs/confirmdeletedialog.h"
 #include "dbusinterface/services/desktopadaptor.h"
+#include "dialogs/cleartrashdialog.h"
+#include "dialogs/dmovabledialog.h"
 #include <QDBusConnection>
 #include <QStandardPaths>
 
@@ -65,6 +67,16 @@ void DesktopApp::initConnect(){
 
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SIGNAL(closed()));
+    connect(signalManager, SIGNAL(desktopFrameRectChanged(QRect)), m_taskDialog, SLOT(moveTopRightByRect(QRect)));
+
+    connect(signalManager, SIGNAL(confimClear(int)), this, SLOT(confimClear(int)));
+}
+
+void DesktopApp::confimClear(int count){
+    ClearTrashDialog d(m_desktopBox->getDesktopFrame());
+    connect(signalManager, SIGNAL(desktopFrameRectChanged(QRect)), &d, SLOT(moveCenterByRect(QRect)));
+    connect(&d, SIGNAL(buttonClicked(int)), signalManager, SIGNAL(actionHandled(int)));
+    d.exec();
 }
 
 void DesktopApp::confimDelete(const QStringList &files){
@@ -79,7 +91,8 @@ void DesktopApp::confimDelete(const QStringList &files){
         return;
     }
 
-    ConfirmDeleteDialog d;
+    ConfirmDeleteDialog d(m_desktopBox->getDesktopFrame());
+    connect(signalManager, SIGNAL(desktopFrameRectChanged(QRect)), &d, SLOT(moveCenterByRect(QRect)));
     QString message;
     if (files.length() == 1){
         message = tr("Are you sure to delete %1 ?").arg(QFileInfo(m_deletefiles.at(0)).fileName());

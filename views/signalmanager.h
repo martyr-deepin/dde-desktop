@@ -193,6 +193,13 @@ signals:
     /*refresh icon when file copy finished*/
     void refreshCopyFileIcon(QString file);
 
+    /*mutisreen desktop main frame view positionchanged*/
+    void desktopFrameRectChanged(QRect rect);
+
+    /*confirm dialog*/
+    void confimClear(int count);
+    void actionHandled(int index);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

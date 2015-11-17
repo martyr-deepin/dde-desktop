@@ -127,6 +127,9 @@ void DesktopItemManager::initConnect(){
 
     connect(signalManager, SIGNAL(gridStatusUpdated()),
             this, SLOT(delayUpdateGridStatus()));
+
+    connect(signalManager, SIGNAL(screenGeometryChanged()),
+            this, SLOT(closeAppGroupDetail()));
 }
 
 void DesktopItemManager::loadComputerTrashItems(){
@@ -247,7 +250,13 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
         int row = gridManager->getRowCount();
         QSettings setting;
         setting.beginGroup("DesktopItems");
-        QPoint defaultPos = gridManager->getRightBottomItem()->getPos();
+        QPoint defaultPos;
+        GridItemPointer blankItem = gridManager->getBlankItem();
+        if (blankItem.isNull()){
+            defaultPos = gridManager->getRightBottomItem()->getPos();
+        }else{
+            defaultPos = blankItem->getPos();
+        }
         QString key = pDesktopItem->getUrl();
         QPoint pos = setting.value(key, defaultPos).toPoint();
         pDesktopItem->move(pos);
@@ -578,7 +587,7 @@ void DesktopItemManager::showAppGroupDetail(DesktopItemPointer &pItem, QPoint po
         }
     }
 
-    m_appGroupBox = new AppGroupBox();
+    m_appGroupBox = new AppGroupBox(m_parentWindow);
     m_appGroupBox->showDetailByDesktopItem(pItem);
 }
 
@@ -586,7 +595,7 @@ void DesktopItemManager::updateAppGroupDetail(DesktopItemPointer pItem){
     if (m_appGroupBox){
         if (m_appGroupBox->isVisible()){
             closeAppGroupDetail();
-            m_appGroupBox = new AppGroupBox();
+            m_appGroupBox = new AppGroupBox(m_parentWindow);
             m_appGroupBox->showDetailByDesktopItem(pItem);
         }
     }

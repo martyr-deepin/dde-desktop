@@ -1,5 +1,6 @@
 #include "gridmanager.h"
 #include "global.h"
+#include "dbusinterface/displayinterface.h"
 
 GridManager::GridManager(QObject *parent) : QObject(parent)
 {
@@ -25,13 +26,11 @@ int GridManager::getColumnCount(){
     return m_columnCount;
 }
 
-int GridManager::getDesktopColumnCount(){
-    int desktopWidth = qApp->desktop()->geometry().width();
+int GridManager::getDesktopColumnCount(int desktopWidth){
     return (desktopWidth - m_leftMargin - m_rightMargin) / (m_itemWidth + m_xMinimumSpacing);
 }
 
-int GridManager::getDesktopRowCount(){
-    int desktopHeight = qApp->desktop()->geometry().height() - m_dockHeight;
+int GridManager::getDesktopRowCount(int desktopHeight){
     return (desktopHeight - m_topMargin - m_bottomMargin) / (m_itemHeight + m_yMinimumSpacing);
 }
 
@@ -65,10 +64,10 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
                                                  const int xMinimumSpacing, const int yMinimumSpacing,
                                                  const int leftMargin, const int topMargin,
                                                  const int rightMargin, const int bottomMargin){
-    const QRect screenGeometry = QApplication::desktop()->geometry();
-    qDebug() << screenGeometry;
-    int desktopWidth = screenGeometry.width();
-    int desktopHeight = screenGeometry.height() - m_dockHeight;
+    const QRect primaryRect  =  QRect(dbusController->getDisplayInterface()->primaryRect());
+    qDebug() << primaryRect;
+    int desktopWidth = primaryRect.width();
+    int desktopHeight = primaryRect.height() - m_dockHeight;
 
     m_list_items.clear();
     m_map_items.clear();
@@ -83,8 +82,11 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
     m_rightMargin = rightMargin;
     m_bottomMargin = bottomMargin;
 
-    int desktopColumn = getDesktopColumnCount();
-    int desktopRow = getDesktopRowCount();
+    int desktopColumn = getDesktopColumnCount(desktopWidth);
+    int desktopRow = getDesktopRowCount(desktopHeight);
+
+    qDebug() << "desktopColumn:" << desktopColumn;
+    qDebug() << "desktopRow:" << desktopRow;
 
     m_columnCount = desktopColumn * width / desktopWidth;
     m_rowCount = desktopRow * height / desktopHeight;
@@ -293,27 +295,27 @@ DoubleGridItemPointerList GridManager::getItemsByType(SizeType type){
 }
 
 DoubleGridItemPointerList GridManager::getSmallItems(){
-    const QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int desktopWidth = screenGeometry.width() * m_pageCount;
-    int desktopHeight = screenGeometry.height() - m_dockHeight;
+    const QRect primaryRect = QRect(dbusController->getDisplayInterface()->primaryRect());
+    int desktopWidth = primaryRect.width() * m_pageCount;
+    int desktopHeight = primaryRect.height() - m_dockHeight;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 
 DoubleGridItemPointerList GridManager::getMiddleItems(){
-    const QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int desktopWidth = screenGeometry.width() * m_pageCount;
-    int desktopHeight = screenGeometry.height() - m_dockHeight;
+    const QRect primaryRect = QRect(dbusController->getDisplayInterface()->primaryRect());
+    int desktopWidth = primaryRect.width() * m_pageCount;
+    int desktopHeight = primaryRect.height() - m_dockHeight;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 
 DoubleGridItemPointerList GridManager::getLargeItems(){
-    const QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int desktopWidth = screenGeometry.width() * m_pageCount;
-    int desktopHeight = screenGeometry.height() - m_dockHeight;
+    const QRect primaryRect = QRect(dbusController->getDisplayInterface()->primaryRect());
+    int desktopWidth = primaryRect.width() * m_pageCount;
+    int desktopHeight = primaryRect.height() - m_dockHeight;
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 0, 10);
     return ret;

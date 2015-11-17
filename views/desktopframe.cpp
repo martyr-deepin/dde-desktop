@@ -5,6 +5,7 @@
 #include "keyeventmanager.h"
 #include "dragdropeventmanager.h"
 #include "global.h"
+#include "dbusinterface/displayinterface.h"
 
 #include <QTimer>
 
@@ -38,7 +39,9 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_mouseMoveCheckTimer->setSingleShot(true);
     m_mouseMoveCheckTimer->setInterval(10);
 
-    setGeometry(qApp->desktop()->geometry());
+    QRect primaryRect =  QRect(dbusController->getDisplayInterface()->primaryRect());
+    move(primaryRect.x(), primaryRect.y());
+    setFixedSize(primaryRect.width(), primaryRect.height());
 
     initItems();
     initConnect();
@@ -284,6 +287,15 @@ void DesktopFrame::handleKeyCtrlCPressed(){
 
 void DesktopFrame::handleKeyCtrlVPressed(){
     emit signalManager->pasteFilesToDesktop();
+}
+
+void DesktopFrame::move(const QPoint &pos){
+    emit positionChanged(pos);
+    QFrame::move(pos);
+}
+
+void DesktopFrame::move(int x, int y){
+    move(QPoint(x, y));
 }
 
 void DesktopFrame::focusInEvent(QFocusEvent *event){

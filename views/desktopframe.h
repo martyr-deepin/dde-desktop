@@ -58,6 +58,7 @@ signals:
     void checkedDesktopItemsAdded(DesktopItemPointer pItem);
     void checkedDesktopItemsRemoved(DesktopItemPointer pItem);
     void multiCheckedByMouseChanged(bool flag);
+    void positionChanged(QPoint pos);
 
 public slots:
     void setCtrlPressed(bool pressed);
@@ -77,6 +78,9 @@ public slots:
     void handleKeyCtrlAPressed();
     void handleKeyCtrlCPressed();
     void handleKeyCtrlVPressed();
+
+    void move(const QPoint &pos);
+    void move(int x, int y);
 
 protected:
     void focusInEvent(QFocusEvent* event);

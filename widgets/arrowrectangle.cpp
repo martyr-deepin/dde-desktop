@@ -1,5 +1,6 @@
 #include "arrowrectangle.h"
 #include "dgraphicsgloweffect.h"
+#include <QDesktopWidget>
 
 ArrowRectangle::ArrowRectangle(QWidget * parent) :
     QWidget(parent)
@@ -165,8 +166,13 @@ void ArrowRectangle::destroyContent()
 
 void ArrowRectangle::move(int x, int y)
 {
-    QDesktopWidget dw;
-    QRect rec = dw.screenGeometry();
+    QRect rec;
+    if (parent()){
+        rec = static_cast<QWidget*>(parent())->geometry();
+    }else{
+        QDesktopWidget dw;
+        rec = dw.availableGeometry();
+    }
     int xLeftValue = x - width() / 2;
     int xRightValue = x + width() / 2 - rec.width();
     int yTopValue = y - height() / 2;

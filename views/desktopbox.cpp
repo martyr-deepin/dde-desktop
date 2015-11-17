@@ -65,10 +65,13 @@ void DesktopBox::renameFinished(){
 }
 
 void DesktopBox::handleScreenGeometryChanged(){
-    setGeometry(qApp->desktop()->screenGeometry());
+    qDebug() << "handleScreenGeometryChanged" << qApp->desktop()->geometry();
+    setGeometry(qApp->desktop()->geometry());
     QRect primaryRect =  QRect(dbusController->getDisplayInterface()->primaryRect());
     qDebug() << "primaryRect" << primaryRect;
-    m_desktopFrame->setGeometry(primaryRect);
+    m_desktopFrame->move(primaryRect.x(), primaryRect.y());
+    m_desktopFrame->setFixedSize(primaryRect.width(), primaryRect.height());
+    emit signalManager->desktopFrameRectChanged(primaryRect);
     emit signalManager->gridSizeTypeChanged(SizeType::Middle);
     emit signalManager->gridOnResorted();
 }

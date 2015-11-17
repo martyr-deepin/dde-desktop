@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QPainter>
+#include <QWidget>
+#include <QDebug>
 
 
 DMovabelDialog::DMovabelDialog(QWidget *parent):QDialog(parent)
@@ -19,14 +21,36 @@ void DMovabelDialog::setMovableHeight(int height){
 
 void DMovabelDialog::moveCenter(){
     QRect qr = frameGeometry();
-    QPoint cp = qApp->desktop()->availableGeometry().center();
+    QPoint cp;
+    if (parent()){
+        cp = static_cast<QWidget*>(parent())->geometry().center();
+    }else{
+        cp = qApp->desktop()->availableGeometry().center();
+    }
     qr.moveCenter(cp);
     move(qr.topLeft());
 }
 
 void DMovabelDialog::moveTopRight(){
-    int x = qApp->desktop()->availableGeometry().width() - width();
-    move(x, 0);
+    QRect pRect;
+    if (parent()){
+        pRect = static_cast<QWidget*>(parent())->geometry();
+    }else{
+        pRect = qApp->desktop()->availableGeometry();
+    }
+    int x = pRect.width() - width();
+    move(QPoint(x, 0));
+}
+
+void DMovabelDialog::moveTopRightByRect(QRect rect){
+    int x = rect.x() + rect.width() - width();
+    move(QPoint(x, 0));
+}
+
+void DMovabelDialog::moveCenterByRect(QRect rect){
+    QRect qr = frameGeometry();
+    qr.moveCenter(rect.center());
+    move(qr.topLeft());
 }
 
 void DMovabelDialog::mousePressEvent(QMouseEvent *event)
@@ -56,7 +80,7 @@ void DMovabelDialog::resizeEvent(QResizeEvent *event){
 void DMovabelDialog::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setPen(QPen(QColor(255, 255, 255, 51), 2));
-    painter.setBrush(QColor(0, 0 , 0, 180));
+    painter.setBrush(QColor(0, 0 , 0, 204));
     painter.setRenderHint(QPainter::Antialiasing, true);
     QRect r(1, 1, width() - 2, height() - 2);
     painter.drawRoundedRect(r, 2, 2, Qt::RelativeSize);

@@ -18,8 +18,8 @@ public:
 
     int getColumnCount();
     int getRowCount();
-    int getDesktopRowCount();
-    int getDesktopColumnCount();
+    int getDesktopRowCount(int desktopHeight);
+    int getDesktopColumnCount(int desktopWidth);
     int getItemWidth();
     int getItemHeight();
     int getPageCount();
