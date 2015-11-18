@@ -197,8 +197,10 @@ void DesktopFrame::unCheckCheckedItems(){
             pItem->setChecked(false);
         }
     }
+    foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+        pItem->setChecked(false);
+    }
     m_checkedDesktopItems.clear();
-    m_checkedDesktopItems.append(pItems);
 }
 
 

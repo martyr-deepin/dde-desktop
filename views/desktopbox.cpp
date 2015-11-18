@@ -36,6 +36,7 @@ DesktopFrame* DesktopBox::getDesktopFrame(){
 }
 
 void DesktopBox::handleRename(){
+    qDebug() << !m_desktopFrame->getLastCheckedDesktopItem().isNull() << m_desktopFrame->getCheckedDesktopItems().length();
     if (!m_desktopFrame->getLastCheckedDesktopItem().isNull() &&\
             m_desktopFrame->getCheckedDesktopItems().length() == 1){
         qDebug() << "handleRename start";
@@ -179,6 +180,7 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
             emit signalManager->keyShiftDownPressed();
         }
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_F2){
+        qDebug() << "Key_F2";
         handleRename();
     }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C){
         emit signalManager->keyCtrlCPressed();
