@@ -122,6 +122,7 @@ void GrowingElideTextEdit::showText(){
 }
 
 void GrowingElideTextEdit::showReadOnly(){
+    setAttribute(Qt::WA_TransparentForMouseEvents, true);
     setReadOnly(true);
     setTextInteractionFlags(Qt::NoTextInteraction);
     setStyleSheet("\
@@ -135,6 +136,7 @@ void GrowingElideTextEdit::showReadOnly(){
 }
 
 void GrowingElideTextEdit::showEditing(){
+    setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setReadOnly(false);
     setTextInteractionFlags(Qt::TextEditorInteraction);
     selectAll();
