@@ -484,6 +484,10 @@ void DBusController::handleFileRenamed(const QString &oldPath, const QString &ne
     bool isDesktopFile = isInDesktop(oldFileInfo.filePath()) && isInDesktop(newFileInfo.filePath());
     qDebug() << "isAppGroupFolder" << isAppGroupFolder<< "isDesktopFile" << isDesktopFile;
 
+    if (newFileInfo.fileName().startsWith(".")){
+        emit signalManager->itemDeleted(oldPath);
+        return;
+    }
     if (isDesktopFile){
         qDebug() << "desktop file renamed";
         m_itemShoudBeMoved = oldPath;
