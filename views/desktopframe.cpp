@@ -170,6 +170,7 @@ bool DesktopFrame::isAllAppCheckedItems(){
 }
 
 void DesktopFrame::unCheckAllItems(){
+    /*obsolete*/
     foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         pItem->setChecked(false);
     }

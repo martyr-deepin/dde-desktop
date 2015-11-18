@@ -241,7 +241,7 @@ void KeyEventManager::onKeyShiftEndPressed(){
 }
 
 void KeyEventManager::checkFirstDesktopItem(){
-    static_cast<DesktopFrame*>(parent())->unCheckAllItems();
+    static_cast<DesktopFrame*>(parent())->unCheckCheckedItems();
     int rowCount = gridManager->getRowCount();
     int columnCount = gridManager->getColumnCount();
     for (int column=0; column < columnCount; column++){
@@ -263,7 +263,7 @@ void KeyEventManager::checkFirstDesktopItem(){
 }
 
 void KeyEventManager::checkLastDesktopItem(){
-    static_cast<DesktopFrame*>(parent())->unCheckAllItems();
+    static_cast<DesktopFrame*>(parent())->unCheckCheckedItems();
     int rowCount = gridManager->getRowCount();
     int columnCount = gridManager->getColumnCount();
     for (int column=columnCount - 1; column >= 0; column--){
