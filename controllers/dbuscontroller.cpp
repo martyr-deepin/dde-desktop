@@ -215,6 +215,9 @@ void DBusController::requestIconByUrl(QString scheme, uint size){
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
         qDebug() << scheme << iconUrl;
+        if (iconUrl.length() == 0){
+            return;
+        }
         emit signalManager->desktoItemIconUpdated(scheme, iconUrl, size);
     }else{
         qCritical() << reply.error().message();
