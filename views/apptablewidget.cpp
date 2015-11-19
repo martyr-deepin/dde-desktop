@@ -91,6 +91,7 @@ void AppTableWidget::handleCellClicked(int row, int column){
 
 void AppTableWidget::handleCellPressed(int row, int column){
     qDebug() << row << column << "handleCellPressed";
+    emit signalManager->appGroupItemRightClicked(true);
     DesktopItem* pItem = reinterpret_cast<DesktopItem*>(cellWidget(row, column));
     if (pItem == NULL){
         qDebug() << "handleCellPressed no desktop item";

@@ -21,7 +21,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const DesktopItemInfo &obj)
     argument.beginStructure();
     argument << obj.DisplayName << obj.BaseName;
     argument << obj.URI << obj.MIME;
-    argument << obj.Icon <<  obj.thumbnail << obj.Size;
+    argument << obj.Icon <<  obj.IconName << obj.thumbnail << obj.Size;
     argument << obj.FileType << obj.IsBackup << obj.IsHidden;
     argument << obj.IsReadOnly << obj.IsSymlink;
     argument << obj.CanDelete << obj.CanExecute;
@@ -37,7 +37,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DesktopItemInfo &
     argument.beginStructure();
     argument >> obj.DisplayName >> obj.BaseName;
     argument >> obj.URI >> obj.MIME;
-    argument >> obj.Icon >> obj.thumbnail >>obj.Size;
+    argument >> obj.Icon >> obj.IconName >> obj.thumbnail >>obj.Size;
     argument >> obj.FileType >> obj.IsBackup >> obj.IsHidden;
     argument >> obj.IsReadOnly >> obj.IsSymlink;
     argument >> obj.CanDelete >> obj.CanExecute;

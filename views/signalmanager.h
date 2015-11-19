@@ -205,6 +205,9 @@ signals:
 
     /*shift released*/
     void shiftReleased(bool flag);
+
+    /*app group right clicked*/
+    void appGroupItemRightClicked(bool flag);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

@@ -25,14 +25,24 @@ DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
     m_screenChangedTimer->setSingleShot(true);
     m_screenChangedTimer->setInterval(2000);
 
+    initConnect();
+    installEventFilter(this);
+}
+
+void DesktopBox::initConnect(){
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
     connect(signalManager, SIGNAL(requestRenamed(QString)), this, SLOT(handleRename()));
     connect(signalManager, SIGNAL(screenGeometryChanged()), m_screenChangedTimer, SLOT(start()));
+    connect(signalManager, SIGNAL(appGroupItemRightClicked(bool)), this, SLOT(setAppGroupRightClicked(bool)));
     connect(m_screenChangedTimer, SIGNAL(timeout()), this, SLOT(handleScreenGeometryChanged()));
 }
 
 DesktopFrame* DesktopBox::getDesktopFrame(){
     return m_desktopFrame;
+}
+
+void DesktopBox::setAppGroupRightClicked(bool flag){
+    m_appGroupRightClicked = flag;
 }
 
 void DesktopBox::handleRename(){
@@ -213,6 +223,18 @@ void DesktopBox::keyReleaseEvent(QKeyEvent *event){
 void DesktopBox::closeEvent(QCloseEvent *event){
     qDebug() << "closeEvent";
     event->accept();
+}
+
+bool DesktopBox::eventFilter(QObject *obj, QEvent *event)
+{
+    if(event->type() == QEvent::WindowDeactivate && !m_appGroupRightClicked){
+        emit signalManager->appGounpDetailClosed();
+        setAppGroupRightClicked(false);
+    }else if((event->type() == QEvent::Leave || event->type() == QEvent::WindowActivate) && m_appGroupRightClicked){
+        emit signalManager->appGounpDetailClosed();
+        setAppGroupRightClicked(false);
+    }
+    return QObject::eventFilter(obj, event);
 }
 
 DesktopBox::~DesktopBox()
