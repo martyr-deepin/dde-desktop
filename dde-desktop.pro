@@ -164,4 +164,7 @@ target.path = /usr/bin/
 qm_files.files = translations/*.qm
 qm_files.path= /usr/share/dde-desktop/translations/
 
-INSTALLS += target qm_files
+services.path = /usr/share/dbus-1/services
+services.files = dbusservices/com.deepin.dde.desktop.service
+
+INSTALLS += target qm_files services
