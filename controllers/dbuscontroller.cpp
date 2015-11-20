@@ -103,6 +103,8 @@ void DBusController::loadDesktopItems(){
     asyncRequestComputerIcon();
     asyncRequestTrashIcon();
     m_appController->getTrashJobController()->asyncRequestTrashCount();
+
+//    handelIconThemeChanged();
 }
 
 int DBusController::getDockMode(){
@@ -133,8 +135,11 @@ void DBusController::asyncRequestDesktopItems(){
 }
 
 void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *call){
-    if (m_requestFinished)
+    qDebug() << "===============";
+    if (m_requestFinished){
+        emit signalManager->stopRequest();
         return;
+    }
     QDBusPendingReply<DesktopItemInfoMap> reply = *call;
     if (!reply.isError()){
         emit signalManager->stopRequest();
@@ -207,7 +212,9 @@ void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call
 
 void DBusController::requestIconByUrl(QString scheme, uint size){
     QString _url(scheme);
-    if (!scheme.startsWith(FilePrefix)){
+    if (scheme == ComputerUrl || scheme == TrashUrl){
+
+    }else if (!scheme.startsWith(FilePrefix)){
         _url = FilePrefix + scheme;
     }
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(_url, size);
@@ -715,6 +722,8 @@ void DBusController::pasteFiles(QString action, QStringList files, QString desti
 
 
 void DBusController::handelIconThemeChanged(){
+    bool rmFlag = QDir(getThumbnailsPath()).removeRecursively();
+    qDebug() << "Remove cache" << rmFlag;
     requestIconByUrl(ComputerUrl, 48);
     requestIconByUrl(TrashUrl, 48);
     foreach(QString url, m_desktopItemInfoMap.keys()){

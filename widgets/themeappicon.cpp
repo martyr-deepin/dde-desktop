@@ -35,6 +35,8 @@ QPixmap ThemeAppIcon::getIconPixmap(QString iconPath, int width, int height){
     } else {
         // try to read the iconPath as a icon name.
         QString path = getThemeIconPath(iconPath);
+        if (path.isEmpty())
+            path = getThemeIconPath("application-default-icon");
         if (path.endsWith(".svg")) {
             QSvgRenderer renderer(path);
             pixmap.fill(Qt::transparent);
@@ -58,10 +60,20 @@ QString ThemeAppIcon::getThemeIconPath(QString iconName)
     QByteArray bytes = iconName.toUtf8();
     const char *name = bytes.constData();
 
-    GtkIconTheme* theme = gtk_icon_theme_get_default();
+//    GtkIconTheme* theme = gtk_icon_theme_get_default();
+
+    GtkSettings* gs = gtk_settings_get_default();
+    char* aname = NULL;
+    g_object_get(gs, "gtk-icon-theme-name", &aname, NULL);
+
+    qDebug() << "default gtk icon theme name:" << aname;
+    auto theme = gtk_icon_theme_new();
+    gtk_icon_theme_set_custom_theme(theme, aname);
+
+    g_free(aname);
 
     GtkIconInfo* info = gtk_icon_theme_lookup_icon(theme, name, 48, GTK_ICON_LOOKUP_GENERIC_FALLBACK);
-
+    g_object_unref(theme);
     if (info) {
         char* path = g_strdup(gtk_icon_info_get_filename(info));
 #if GTK_MAJOR_VERSION >= 3
@@ -72,6 +84,20 @@ QString ThemeAppIcon::getThemeIconPath(QString iconName)
         return QString(path);
     } else {
         qDebug() << "no info";
+
+        GtkIconTheme* theme = gtk_icon_theme_get_default();
+        GtkIconInfo* info = gtk_icon_theme_lookup_icon(theme, name, 48, GTK_ICON_LOOKUP_GENERIC_FALLBACK);
+        if (info) {
+            char* path = g_strdup(gtk_icon_info_get_filename(info));
+    #if GTK_MAJOR_VERSION >= 3
+            g_object_unref(info);
+    #elif GTK_MAJOR_VERSION == 2
+            gtk_icon_info_free(info);
+    #endif
+            return QString(path);
+        } else {
+            qDebug() << "no info";
+        }
         return "";
     }
 }

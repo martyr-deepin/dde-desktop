@@ -20,15 +20,20 @@ extern "C" {
 
 static void requrestUpdateIcons()
 {
+    GtkIconTheme* gs = gtk_icon_theme_get_default();
+    auto a = gtk_icon_theme_get_example_icon_name(gs);
+    if (a != NULL) g_free(a);
     //can not passing QObject to the callback function,so use signal
     emit signalManager->gtkIconThemeChanged();
 }
 
 void initGtkThemeWatcher()
 {
-    GtkSettings* gs = gtk_settings_get_default();
-    g_signal_connect(gs, "notify::gtk-icon-theme-name",
+    GtkIconTheme* gs = gtk_icon_theme_get_default();
+    g_signal_connect(gs, "changed",
                      G_CALLBACK(requrestUpdateIcons), NULL);
+    auto a = gtk_icon_theme_get_example_icon_name(gs);
+    if (a != NULL) g_free(a);
 }
 
 void debug_daemon_off(){
