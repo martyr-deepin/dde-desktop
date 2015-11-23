@@ -488,13 +488,14 @@ void DBusController::handleFileMovedOut(const QString &path){
 void DBusController::handleFileRenamed(const QString &oldPath, const QString &newPath){
     QFileInfo oldFileInfo(oldPath);
     QFileInfo newFileInfo(newPath);
+    qDebug() << oldPath << newPath;
     qDebug() <<oldFileInfo.filePath() << isInDesktop(oldFileInfo.filePath()) << newFileInfo.filePath()<<isInDesktop(newFileInfo.path());
 
     bool isAppGroupFolder = isAppGroup(oldFileInfo.filePath()) && isAppGroup(newFileInfo.filePath());
     bool isDesktopFile = isInDesktop(oldFileInfo.filePath()) && isInDesktop(newFileInfo.filePath());
     qDebug() << "isAppGroupFolder" << isAppGroupFolder<< "isDesktopFile" << isDesktopFile;
 
-    if (newFileInfo.fileName().startsWith(".")){
+    if (newFileInfo.fileName().startsWith(".") && !isAppGroupFolder){
         emit signalManager->itemDeleted(oldPath);
         return;
     }

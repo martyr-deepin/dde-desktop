@@ -504,7 +504,12 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
         QString url = decodeUrl(fileInfo.absoluteFilePath());
+        qDebug() << fileInfo.absoluteFilePath() << url << m_pItems.keys() << m_pItems.keys().contains(url) << m_pItems.keys().contains(fileInfo.absoluteFilePath());
         if (m_pItems.contains(url)){
+            DesktopItemPointer  pDesktopItem = m_pItems.value(url);
+            m_list_pItems.append(pDesktopItem);
+        }else if (m_pItems.contains(fileInfo.absoluteFilePath())){
+            url = fileInfo.absoluteFilePath();
             DesktopItemPointer  pDesktopItem = m_pItems.value(url);
             m_list_pItems.append(pDesktopItem);
         }else{

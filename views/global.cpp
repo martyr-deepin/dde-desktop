@@ -104,6 +104,10 @@ bool isFolder(QString url){
 bool isInDesktop(QString url){
     if (decodeUrl(QFileInfo(url).path()) == desktopLocation){
         return true;
+    }else if (QFileInfo(url).path() == desktopLocation){
+        return true;
+    }else if (url.contains(desktopLocation)){
+        return true;
     }
     return false;
 }
