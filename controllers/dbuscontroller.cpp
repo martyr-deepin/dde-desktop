@@ -449,7 +449,7 @@ void DBusController::handleFileDeleted(const QString &path){
             getAppGroupItemsByUrl(path);
             emit signalManager->appGounpDetailClosed();
         }
-    }else if (isAppGroup(path)){
+    }else if (isAppGroup(f.path())){
         removeDesktopItemInfoByUrl(path);
         emit signalManager->itemDeleted(path);
         qDebug() << "delete desktop app group folder:" << path;

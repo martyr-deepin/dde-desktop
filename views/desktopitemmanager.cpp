@@ -321,6 +321,7 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
     qDebug() << m_shoudbeMovedItem.isNull();
     if (!m_shoudbeMovedItem.isNull()){
         QString desktopDisplayName = getDesktopDisplayName(desktopItemInfo);
+        qDebug() << desktopDisplayName << "============";
         m_shoudbeMovedItem->setDesktopName(desktopDisplayName);
         m_shoudbeMovedItem->setDesktopItemInfo(desktopItemInfo);
 
