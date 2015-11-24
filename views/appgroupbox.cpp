@@ -24,8 +24,8 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
 
         int width = gridManager->getItemWidth();
         int height = gridManager->getItemHeight();
-        int desktopWidth = qApp->desktop()->availableGeometry().width();
-        int desktopHeight = qApp->desktop()->availableGeometry().height();
+        int desktopWidth = qApp->desktop()->geometry().width();
+        int desktopHeight = qApp->desktop()->geometry().height();
 
         int topHeight = pItem->pos().y() - margin() * 2 - arrowHeight() ;
         int bottomHeight = desktopHeight - pItem->pos().y() - height - margin() * 2 - arrowHeight();
@@ -33,17 +33,22 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
 
         if (bottomHeight > groupHeight){
             setContent(tableWidget);
-            QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2,
-                                              pItem->pos().y() + height - margin() - shadowBlurRadius()));
             setArrowDirection(ArrowTop);
-            show(point.x() % desktopWidth, point.y());
+            QPoint point = mapToParent(QPoint(pItem->pos().x() + width / 2,
+                                              pItem->pos().y() + height - margin() - shadowBlurRadius()));
+
+            int globalX = static_cast<QWidget*>(parent())->x() + point.x();
+            int globalY = static_cast<QWidget*>(parent())->y() + point.y() + 2;
+            show(globalX, globalY);
         }else{
             if (groupHeight < topHeight){
                 setContent(tableWidget);
                 QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2,
                                                   pItem->pos().y() + shadowBlurRadius()));
                 setArrowDirection(ArrowBottom);
-                show(point.x() % desktopWidth, point.y());
+                int globalX = static_cast<QWidget*>(parent())->x() + point.x();
+                int globalY = static_cast<QWidget*>(parent())->y() + point.y() + 2;
+                show(globalX, globalY);
             }else{
                 if (topHeight / height * height > bottomHeight / height * height){
                     tableWidget->setFixedHeight(topHeight / height * height);
@@ -58,7 +63,9 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
                     QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2,
                                                       pItem->pos().y() + shadowBlurRadius()));
                     setArrowDirection(ArrowBottom);
-                    show(point.x() % desktopWidth, point.y());
+                    int globalX = static_cast<QWidget*>(parent())->x() + point.x();
+                    int globalY = static_cast<QWidget*>(parent())->y() + point.y() + 2;
+                    show(globalX, globalY);
                 }else{
                     tableWidget->setFixedHeight(bottomHeight / height * height);
                     if (tableWidget->width() < desktopWidth){
@@ -70,7 +77,9 @@ void AppGroupBox::showDetailByDesktopItem(DesktopItemPointer &pItem){
                     QPoint point = mapToGlobal(QPoint(pItem->pos().x() + width / 2,
                                                       pItem->pos().y() + height - shadowBlurRadius()));
                     setArrowDirection(ArrowTop);
-                    show(point.x() % desktopWidth, point.y());
+                    int globalX = static_cast<QWidget*>(parent())->x() + point.x();
+                    int globalY = static_cast<QWidget*>(parent())->y() + point.y() + 2;
+                    show(globalX, globalY);
                 }
             }
         }
