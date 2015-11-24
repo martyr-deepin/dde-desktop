@@ -103,8 +103,7 @@ void DBusController::loadDesktopItems(){
     asyncRequestComputerIcon();
     asyncRequestTrashIcon();
     m_appController->getTrashJobController()->asyncRequestTrashCount();
-
-//    handelIconThemeChanged();
+    QTimer::singleShot(500, this, SLOT(handelIconThemeChanged()));
 }
 
 int DBusController::getDockMode(){
@@ -211,6 +210,9 @@ void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call
 }
 
 void DBusController::requestIconByUrl(QString scheme, uint size){
+    if (isAppGroup(scheme)){
+        return;
+    }
     QString _url(scheme);
     if (scheme == ComputerUrl || scheme == TrashUrl){
 
@@ -242,6 +244,9 @@ void DBusController::delayGetThumbnail(){
 
 void DBusController::refreshThumail(QString url, uint size){
     qDebug() << url;
+    if (isAppGroup(url)){
+        return;
+    }
     QString _url(url);
     if (!url.startsWith(FilePrefix)){
         _url = FilePrefix + url;
@@ -266,6 +271,9 @@ void DBusController::refreshThumail(QString url, uint size){
 
 void DBusController::requestThumbnail(QString scheme, uint size){
     qDebug() << scheme;
+    if (isAppGroup(scheme)){
+        return;
+    }
     QString _url(scheme);
     if (!scheme.startsWith(FilePrefix)){
         _url = FilePrefix + scheme;
