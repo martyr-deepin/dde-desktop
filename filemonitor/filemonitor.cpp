@@ -44,7 +44,7 @@ bool FileMonitor::isGoutputstreamTempFile(QString path){
 }
 
 void FileMonitor::handleCreated(int cookie, QString path){
-
+    Q_UNUSED(cookie)
     if (isAppGroup(path)){
         m_appGroupPath = path;
         m_delayAppGroupUpdatedTimer->start();
@@ -124,6 +124,7 @@ void FileMonitor::handleMoveTo(int cookie, QString path){
 }
 
 void FileMonitor::handleDelete(int cookie, QString path){
+    Q_UNUSED(cookie)
     if (isAppGroup(QFileInfo(path).path()) || isInDesktop(path)){
         qDebug() << "delete" << path;
         emit fileDeleted(path);

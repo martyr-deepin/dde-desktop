@@ -241,13 +241,14 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
 
 
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
+    Q_UNUSED(index)
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     qDebug() << "add Item" << pDesktopItem->getUrl();
     m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
     m_list_pItems.append(pDesktopItem);
 
     if (!pDesktopItem.isNull()){
-        int row = gridManager->getRowCount();
+//        int row = gridManager->getRowCount();
         QSettings setting;
         setting.beginGroup("DesktopItems");
         QPoint defaultPos;
@@ -302,6 +303,7 @@ void DesktopItemManager::checkDesktopItemValid(){
 }
 
 void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uint size){
+    Q_UNUSED(size)
     QString key;
     if (url == ComputerUrl || url == TrashUrl){
         key = url;
@@ -372,6 +374,7 @@ void DesktopItemManager::cutItems(QStringList urls){
 }
 
 void DesktopItemManager::cancelCutedItems(QStringList urls){
+    Q_UNUSED(urls)
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         if (pItem->isCuted()){
             pItem->cancelCuted();
@@ -500,7 +503,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){
         m_list_pItems.append(m_pTrashItem);
     }
 
-    int row = gridManager->getRowCount();
+//    int row = gridManager->getRowCount();
     int size = desktopInfoList.size();
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
@@ -586,6 +589,7 @@ QDir::SortFlags DesktopItemManager::getSortFlag(){
 }
 
 void DesktopItemManager::showAppGroupDetail(DesktopItemPointer &pItem, QPoint pos){
+    Q_UNUSED(pos)
     if (m_appGroupBox){
         if (pItem->getUrl() == m_appGroupBox->property("url").toString()){
             closeAppGroupDetail();

@@ -73,6 +73,7 @@ void DesktopApp::initConnect(){
 }
 
 void DesktopApp::confimClear(int count){
+    Q_UNUSED(count)
     ClearTrashDialog d(m_desktopBox->getDesktopFrame());
     connect(signalManager, SIGNAL(desktopFrameRectChanged(QRect)), &d, SLOT(moveCenterByRect(QRect)));
     connect(&d, SIGNAL(buttonClicked(int)), signalManager, SIGNAL(actionHandled(int)));

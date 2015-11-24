@@ -72,8 +72,8 @@ public:
     void initConnect();
 //    void monitorDesktop();
 //    void watchDesktop();
-    void requestIconByUrl(QString scheme, uint size);
-    void requestThumbnail(QString scheme, uint size);
+    void requestIconByUrl(QString url, uint size);
+    void requestThumbnail(QString url, uint size);
 
     FileOperationsInterface* getFileOperationsInterface();
     FileInfoInterface* getFileInfoInterface();

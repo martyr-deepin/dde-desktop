@@ -53,7 +53,7 @@ void CopyjobWorker::start(){
 }
 
 void CopyjobWorker::copyFiles(QStringList files, QString destination){
-
+    Q_UNUSED(destination)
     if (files.length() == 0)
         return;
 

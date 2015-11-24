@@ -209,25 +209,32 @@ void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call
     call->deleteLater();
 }
 
-void DBusController::requestIconByUrl(QString scheme, uint size){
-    if (isAppGroup(scheme)){
+void DBusController::requestIconByUrl(QString url, uint size){
+    if (isAppGroup(url)){
         return;
     }
-    QString _url(scheme);
-    if (scheme == ComputerUrl || scheme == TrashUrl){
+    QString _url(url);
+    if (url == ComputerUrl || url == TrashUrl){
 
-    }else if (!scheme.startsWith(FilePrefix)){
-        _url = FilePrefix + scheme;
+    }else if (!url.startsWith(FilePrefix)){
+        _url = FilePrefix + url;
     }
+
+    if (m_desktopItemInfoMap.contains(_url)){
+        if (m_desktopItemInfoMap.value(_url).thumbnail.length() > 0){
+            return;
+        }
+    }
+
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(_url, size);
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
-        qDebug() << scheme << iconUrl;
+        qDebug() << url << iconUrl;
         if (iconUrl.length() == 0){
             return;
         }
-        emit signalManager->desktoItemIconUpdated(scheme, iconUrl, size);
+        emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
     }else{
         qCritical() << reply.error().message();
     }
@@ -269,28 +276,28 @@ void DBusController::refreshThumail(QString url, uint size){
     }
 }
 
-void DBusController::requestThumbnail(QString scheme, uint size){
-    qDebug() << scheme;
-    if (isAppGroup(scheme)){
+void DBusController::requestThumbnail(QString url, uint size){
+    qDebug() << url;
+    if (isAppGroup(url)){
         return;
     }
-    QString _url(scheme);
-    if (!scheme.startsWith(FilePrefix)){
-        _url = FilePrefix + scheme;
+    QString _url(url);
+    if (!url.startsWith(FilePrefix)){
+        _url = FilePrefix + url;
     }
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnail(_url, size);
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
         qDebug() << iconUrl;
-        if (m_thumbnails.contains(scheme)){
-            m_thumbnails.removeOne(scheme);
+        if (m_thumbnails.contains(url)){
+            m_thumbnails.removeOne(url);
         }
-        emit signalManager->desktoItemIconUpdated(scheme, iconUrl, size);
+        emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
     }else{
         qCritical() << reply.error().message();
-        if (m_thumbnails.contains(scheme)){
-            m_thumbnails.removeOne(scheme);
+        if (m_thumbnails.contains(url)){
+            m_thumbnails.removeOne(url);
         }
     }
 }
@@ -610,6 +617,7 @@ void DBusController::createDirectory(){
 
 void DBusController::createDirectoryFinished(QString dirName, QString error){
     Q_UNUSED(dirName)
+    Q_UNUSED(error)
     disconnect(m_createDirJobInterface, SIGNAL(Done(QString, QString)), this, SLOT(createDirectoryFinished(QString, QString)));
     m_createDirJobInterface = NULL;
     emit signalManager->fileCreated(dirName);
@@ -632,6 +640,7 @@ void DBusController::createFile(){
 
 void DBusController::createFileFinished(QString filename, QString error){
     Q_UNUSED(filename)
+    Q_UNUSED(error)
     disconnect(m_createFileJobInterface, SIGNAL(Done(QString, QString)), this, SLOT(createFileFinished(QString, QString)));
     m_createFileJobInterface = NULL;
     emit signalManager->fileCreated(filename);
@@ -656,6 +665,7 @@ void DBusController::createFileFromTemplate(QString templatefile){
 
 void DBusController::createFileFromTemplateFinished(QString filename, QString error){
     Q_UNUSED(filename)
+    Q_UNUSED(error)
     disconnect(m_createFileFromTemplateJobInterface, SIGNAL(Done(QString, QString)), this, SLOT(createFileFromTemplateFinished(QString, QString)));
     m_createFileFromTemplateJobInterface = NULL;
     emit signalManager->fileCreated(filename);
@@ -679,6 +689,8 @@ void DBusController::requestCreatingAppGroup(QStringList urls){
 }
 
 void DBusController::createAppGroup(QString group_url, QStringList urls){
+    Q_UNUSED(group_url)
+    Q_UNUSED(urls)
 //    qDebug() << group_url << urls;
 //    if (urls.count() >= 2){
 //        emit signalManager->appGounpCreated(group_url);
@@ -731,12 +743,14 @@ void DBusController::pasteFiles(QString action, QStringList files, QString desti
 
 
 void DBusController::handelIconThemeChanged(){
-    bool rmFlag = QDir(getThumbnailsPath()).removeRecursively();
-    qDebug() << "Remove cache" << rmFlag;
+//    bool rmFlag = QDir(getThumbnailsPath()).removeRecursively();
+//    qDebug() << "Remove cache" << rmFlag;
     requestIconByUrl(ComputerUrl, 48);
     requestIconByUrl(TrashUrl, 48);
     foreach(QString url, m_desktopItemInfoMap.keys()){
-        requestIconByUrl(url, 48);
+        if (m_desktopItemInfoMap.value(url).thumbnail.length() == 0){
+            requestIconByUrl(url, 48);;
+        }
     }
 }
 
