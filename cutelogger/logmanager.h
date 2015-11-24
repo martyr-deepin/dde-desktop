@@ -9,10 +9,17 @@ class RollingFileAppender;
 class LogManager
 {
 public:
-    explicit LogManager();
-    ~LogManager();
     void initConsoleAppender();
     void initRollingFileAppender();
+
+    inline static LogManager* instance(){
+        static LogManager instance;
+        return &instance;
+    }
+
+    void debug_log_console_on();
+    QString joinPath(const QString& path, const QString& fileName);
+    QString getlogFilePath();
 
 signals:
 
@@ -24,6 +31,9 @@ private:
     ConsoleAppender* m_consoleAppender;
     RollingFileAppender* m_rollingFileAppender;
 
+
+    explicit LogManager();
+    ~LogManager();
     LogManager(const LogManager &);
     LogManager & operator = (const LogManager &);
 };

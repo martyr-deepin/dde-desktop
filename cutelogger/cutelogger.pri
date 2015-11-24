@@ -7,7 +7,8 @@ HEADERS += \
     $$PWD/CuteLogger_global.h \
     $$PWD/ConsoleAppender.h \
     $$PWD/AbstractStringAppender.h \
-    $$PWD/AbstractAppender.h
+    $$PWD/AbstractAppender.h \
+    $$PWD/logmanager.h
 
 SOURCES += \
     $$PWD/RollingFileAppender.cpp \
@@ -15,8 +16,8 @@ SOURCES += \
     $$PWD/FileAppender.cpp \
     $$PWD/ConsoleAppender.cpp \
     $$PWD/AbstractStringAppender.cpp \
-    $$PWD/AbstractAppender.cpp
-
+    $$PWD/AbstractAppender.cpp \
+    $$PWD/logmanager.cpp
 
 win32 {
     SOURCES += $$PWD/OutputDebugAppender.cpp

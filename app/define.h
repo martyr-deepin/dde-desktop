@@ -47,17 +47,17 @@ void RegisterLogger(){
     QString value = CommandLineManager::instance()->value("logDestination");
     if (isSet){
         if (value == "stdout"){
-            Singleton<LogManager>::instance()->initConsoleAppender();
+            LogManager::instance()->initConsoleAppender();
         }else if (value == "file"){
-            Singleton<LogManager>::instance()->initRollingFileAppender();
+            LogManager::instance()->initRollingFileAppender();
         }else{
-            Singleton<LogManager>::instance()->initRollingFileAppender();
+            LogManager::instance()->initRollingFileAppender();
         }
     }else{
 #if !defined(QT_NO_DEBUG)
-        Singleton<LogManager>::instance()->initConsoleAppender();
+        LogManager::instance()->initConsoleAppender();
 #endif
-        Singleton<LogManager>::instance()->initRollingFileAppender();
+        LogManager::instance()->initRollingFileAppender();
     }
 }
 

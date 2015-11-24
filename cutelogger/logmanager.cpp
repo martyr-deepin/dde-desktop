@@ -1,5 +1,4 @@
 #include "logmanager.h"
-#include "widgets/util.h"
 #include <Logger.h>
 #include <ConsoleAppender.h>
 #include <RollingFileAppender.h>
@@ -20,12 +19,30 @@ void LogManager::initRollingFileAppender(){
     if (!QDir(cachePath).exists()){
         QDir(cachePath).mkpath(cachePath);
     }
-    m_logPath = joinPath(cachePath, QString("desktop.log"));
+    m_logPath = joinPath(cachePath, QString("%1.log").arg(qApp->applicationName()));
     m_rollingFileAppender = new RollingFileAppender(m_logPath);
     m_rollingFileAppender->setFormat(m_format);
     m_rollingFileAppender->setLogFilesLimit(5);
     m_rollingFileAppender->setDatePattern(RollingFileAppender::DailyRollover);
     logger->registerAppender(m_rollingFileAppender);
+}
+
+void LogManager::debug_log_console_on(){
+    #if !defined(QT_NO_DEBUG)
+    LogManager::instance()->initConsoleAppender();
+    #endif
+    LogManager::instance()->initRollingFileAppender();
+}
+
+
+QString LogManager::joinPath(const QString &path, const QString &fileName){
+    QString separator(QDir::separator());
+    return QString("%1%2%3").arg(path, separator, fileName);
+}
+
+
+QString LogManager::getlogFilePath(){
+    return m_logPath;
 }
 
 LogManager::~LogManager()

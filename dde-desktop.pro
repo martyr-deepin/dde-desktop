@@ -20,6 +20,7 @@ include(./background/background.pri)
 PKGCONFIG += x11 gtk+-2.0 xcb xcb-ewmh gsettings-qt dui
 CONFIG += c++11 link_pkgconfig
 #DEFINES += QT_NO_DEBUG_OUTPUT
+DEFINES += QT_MESSAGELOGCONTEXT
 
 SOURCES += main.cpp \
     views/desktopframe.cpp \
@@ -58,7 +59,6 @@ SOURCES += main.cpp \
     dbusinterface/copyjob_interface.cpp \
     views/desktopbox.cpp \
     views/dragdropeventmanager.cpp \
-    app/logmanager.cpp \
     app/xcb_misc.cpp \
     app/daemon.cpp \
     filemonitor/filemonitorwoker.cpp \
@@ -121,7 +121,6 @@ HEADERS  += \
     views/dragdropeventmanager.h \
     views/desktopfwd.h \
     views/desktopenums.h \
-    app/logmanager.h \
     app/xcb_misc.h \
     app/daemon.h \
     app/define.h \
