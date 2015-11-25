@@ -208,6 +208,13 @@ signals:
 
     /*app group right clicked*/
     void appGroupItemRightClicked(bool flag);
+
+    /*desktop textedit contextMenu show by conetnt*/
+    void showTextEditMenuBySelectContent(QString url, QString fullText, QString selectText, QPoint pos);
+    void desktopItemNameCuted(QString url);
+    void desktopItemNameCopyed(QString url);
+    void desktopItemNamePasted(QString url);
+    void desktopItemNameSelectAll(QString url);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

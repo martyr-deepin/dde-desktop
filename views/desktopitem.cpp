@@ -91,6 +91,11 @@ void DesktopItem::initUI(){
 void DesktopItem::initConnect(){
     connect(m_textedit, SIGNAL(heightChanged(int)), this, SLOT(updateHeight(int)));
     connect(m_textedit, SIGNAL(renameFinished()), signalManager, SIGNAL(renameFinished()));
+    connect(m_textedit, SIGNAL(menuShowed(QPoint)),this, SLOT(showContextMenu(QPoint)));
+    connect(signalManager, SIGNAL(desktopItemNameCuted(QString)), this, SLOT(handleCut(QString)));
+    connect(signalManager, SIGNAL(desktopItemNameCopyed(QString)), this, SLOT(handleCopy(QString)));
+    connect(signalManager, SIGNAL(desktopItemNamePasted(QString)), this, SLOT(handlePaste(QString)));
+    connect(signalManager, SIGNAL(desktopItemNameSelectAll(QString)), this, SLOT(handleSelectAll(QString)));
 }
 
 void DesktopItem::updateHeight(int textHeight){
@@ -401,6 +406,7 @@ void DesktopItem::showSimpWrapName(){
 }
 
 void DesktopItem::mousePressEvent(QMouseEvent *event){
+    qDebug() << event;
     if (event->button() == Qt::RightButton){
         if (m_isInAppGroup){
             emit signalManager->contextMenuShowed(m_url, mapToGlobal(event->pos()));
@@ -523,6 +529,36 @@ void DesktopItem::enableTextShadow(){
 QLabel* DesktopItem::getIconLabel(){
     return m_iconLabel;
 }
+
+void DesktopItem::showContextMenu(QPoint pos){
+    emit signalManager->showTextEditMenuBySelectContent(m_url, m_textedit->toPlainText(), m_textedit->textCursor().selectedText(), pos);
+}
+
+void DesktopItem::handleCut(QString url){
+    if (url == m_url){
+        m_textedit->cut();
+    }
+}
+
+void DesktopItem::handleCopy(QString url){
+    if (url == m_url){
+        m_textedit->copy();
+    }
+}
+
+
+void DesktopItem::handlePaste(QString url){
+    if (url == m_url){
+        m_textedit->paste();
+    }
+}
+
+void DesktopItem::handleSelectAll(QString url){
+    if (url == m_url){
+        m_textedit->selectAll();
+    }
+}
+
 
 DesktopItem::~DesktopItem()
 {

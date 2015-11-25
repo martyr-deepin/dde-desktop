@@ -69,12 +69,12 @@
 <context>
     <name>DesktopApp</name>
     <message>
-        <location filename="../app/desktopapp.cpp" line="85"/>
+        <location filename="../app/desktopapp.cpp" line="106"/>
         <source>Are you sure to delete %1 ?</source>
         <translation type="unfinished">您确定要删除 %1 吗？</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="87"/>
+        <location filename="../app/desktopapp.cpp" line="108"/>
         <source>Are you sure to delete these %1 items?</source>
         <translation type="unfinished">您确定要删除%1 项吗？</translation>
     </message>
@@ -83,13 +83,42 @@
     <name>DesktopItemManager</name>
     <message>
         <location filename="../views/desktopitemmanager.cpp" line="30"/>
+        <location filename="../views/desktopitemmanager.cpp" line="31"/>
         <source>Computer</source>
         <translation>计算机</translation>
     </message>
     <message>
-        <location filename="../views/desktopitemmanager.cpp" line="58"/>
+        <location filename="../views/desktopitemmanager.cpp" line="30"/>
+        <source>Cu&amp;t</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../views/desktopitemmanager.cpp" line="59"/>
         <source>Trash</source>
         <translation>回收站</translation>
+    </message>
+</context>
+<context>
+    <name>MenuController</name>
+    <message>
+        <location filename="../controllers/menucontroller.cpp" line="154"/>
+        <source>Cut(_X)</source>
+        <translation type="unfinished">剪切(_X)</translation>
+    </message>
+    <message>
+        <location filename="../controllers/menucontroller.cpp" line="155"/>
+        <source>Copy(_C)</source>
+        <translation type="unfinished">复制(_C)</translation>
+    </message>
+    <message>
+        <location filename="../controllers/menucontroller.cpp" line="156"/>
+        <source>Paste(_V)</source>
+        <translation type="unfinished">粘贴(_V)</translation>
+    </message>
+    <message>
+        <location filename="../controllers/menucontroller.cpp" line="157"/>
+        <source>Select All(_A)</source>
+        <translation type="unfinished">全选(_A)</translation>
     </message>
 </context>
 <context>

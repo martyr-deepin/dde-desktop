@@ -20,10 +20,62 @@ void MenuController::initConnect(){
             this, SLOT(showMenuByDesktopItem(QList<DesktopItemPointer>,DesktopItemPointer,QPoint)));
     connect(signalManager, SIGNAL(contextMenuShowed(DesktopItemPointer,QPoint)),
             this, SLOT(showMenuByDesktopItem(DesktopItemPointer,QPoint)));
+    connect(signalManager, SIGNAL(showTextEditMenuBySelectContent(QString,QString,QString,QPoint)),
+            this, SLOT(showTexitEditMenuBySelectContent(QString,QString,QString,QPoint)));
 }
 
 MenuController::~MenuController()
 {
+}
+
+QJsonObject MenuController::createMenuItem(int itemId, QString itemText){
+    QJsonObject itemObj;
+    itemObj["itemId"] = QString::number(itemId);
+    itemObj["itemText"] = itemText;
+    itemObj["isActive"] = true;
+    itemObj["isCheckable"] = false;
+    itemObj["checked"] = false;
+    itemObj["itemIcon"] = "";
+    itemObj["itemIconHover"] = "";
+    itemObj["itemIconInactive"] = "";
+    itemObj["showCheckMark"] = false;
+    QJsonObject subMenuObj;
+    subMenuObj["checkableMenu"] = false;
+    subMenuObj["singleCheck"] = false;
+    subMenuObj["items"] = QJsonArray();
+    itemObj["itemSubMenu"] = subMenuObj;
+    return itemObj;
+}
+
+
+QJsonObject MenuController::createSeperator(){
+    return createMenuItem(-100, "");
+}
+
+QString MenuController::JsonToQString(QPoint pos, QString menucontent) {
+    QJsonObject menuObj;
+    menuObj["x"] = pos.x();
+    menuObj["y"] = pos.y();
+    menuObj["isDockMenu"] = false;
+    menuObj["menuJsonContent"] = menucontent;
+    return QString(QJsonDocument(menuObj).toJson());
+}
+
+QString MenuController::registerMenu() {
+    QDBusPendingReply<QDBusObjectPath> reply = m_menuManagerInterface->RegisterMenu();
+    reply.waitForFinished();
+    if (!reply.isError()) {
+        return reply.value().path();
+    } else {
+        return "";
+    }
+}
+
+void MenuController::showTexitEditMenu(QString menuDBusObjectPath, QString menuContent) {
+    m_menuInterface = new MenuInterface(MenuManager_service, menuDBusObjectPath, QDBusConnection::sessionBus(), this);
+    m_menuInterface->ShowMenu(menuContent);
+    connect(m_menuInterface, SIGNAL(ItemInvoked(QString, bool)),this, SLOT(textEditMenuInvoked(QString,bool)));
+    connect(m_menuInterface, SIGNAL(MenuUnregistered()), m_menuInterface, SLOT(deleteLater()));
 }
 
 
@@ -82,26 +134,6 @@ QString MenuController::createMenuContent(QStringList createmenupath) {
     }
 }
 
-QString MenuController::JsonToQString(QPoint pos, QString menucontent) {
-    QJsonObject menuObj;
-    menuObj["x"] = pos.x();
-    menuObj["y"] = pos.y();
-    menuObj["isDockMenu"] = false;
-    menuObj["menuJsonContent"] = menucontent;
-//    qDebug() << menucontent;
-    return QString(QJsonDocument(menuObj).toJson());
-}
-
-QString MenuController::registerMenu() {
-    QDBusPendingReply<QDBusObjectPath> menu_register_reply = m_menuManagerInterface->RegisterMenu();
-    menu_register_reply.waitForFinished();
-    if (!menu_register_reply.isError()) {
-        return menu_register_reply.value().path();
-    } else {
-        return "";
-    }
-}
-
 void MenuController::showMenu(const QString showmenu_path, QString menucontent) {
     m_menuInterface = new MenuInterface(MenuManager_service, showmenu_path, QDBusConnection::sessionBus(), this);
     m_menuInterface->ShowMenu(menucontent);
@@ -114,4 +146,68 @@ void MenuController::menuItemInvoked(QString itemId, bool flag){
     Q_UNUSED(flag)
     dbusController->getDesktopDaemonInterface()->HandleSelectedMenuItem(itemId);
     emit signalManager->appGounpDetailClosed();
+}
+
+
+QString MenuController::createTextEditMenuContentByContent(QString fullText, QString selectText){
+    qDebug() << fullText << selectText;
+    QJsonObject cutObj = createMenuItem(0, tr("Cut(_X)"));
+    QJsonObject copyObj = createMenuItem(1, tr("Copy(_C)"));
+    QJsonObject pasteObj = createMenuItem(2, tr("Paste(_V)"));
+    QJsonObject selectAllObj = createMenuItem(3, tr("Select All(_A)"));
+
+    if (selectText.length() == 0 && fullText.length() == 0){
+        cutObj["isActive"] = false;
+        copyObj["isActive"] = false;
+        selectAllObj["isActive"] = false;
+    }else if (selectText.length() == fullText.length()){
+        selectAllObj["isActive"] = false;
+    }
+
+    QJsonArray items;
+    items.append(cutObj);
+    items.append(copyObj);
+    items.append(pasteObj);
+    items.append(selectAllObj);
+
+    QJsonObject menuObj;
+    menuObj["checkableMenu"] = false;
+    menuObj["singleCheck"] = false;
+    menuObj["items"] = items;
+
+    return QString(QJsonDocument(menuObj).toJson());
+}
+
+void MenuController::showTexitEditMenuBySelectContent(QString url, QString fullText, QString selectText, QPoint pos){
+    m_url = url;
+    QString menucontent = createTextEditMenuContentByContent(fullText, selectText);
+    QString menucontentfinal = JsonToQString(pos, menucontent);
+    QString menucreatepath = registerMenu();
+    if (menucreatepath.length() > 0){
+        showTexitEditMenu(menucreatepath, menucontentfinal);
+    }else{
+        qCritical() << "register textedit menu fail!";
+    }
+}
+
+void MenuController::textEditMenuInvoked(QString itemId, bool flag){
+    Q_UNUSED(flag)
+    int id = itemId.toInt();
+    qDebug() << "menuItemInvoked" << itemId << m_url;
+    switch (id) {
+    case 0:
+        emit signalManager->desktopItemNameCuted(m_url);
+        break;
+    case 1:
+        emit signalManager->desktopItemNameCopyed(m_url);
+        break;
+    case 2:
+        emit signalManager->desktopItemNamePasted(m_url);
+        break;
+    case 3:
+        emit signalManager->desktopItemNameSelectAll(m_url);
+        break;
+    default:
+        break;
+    }
 }

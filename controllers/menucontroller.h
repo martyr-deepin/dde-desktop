@@ -14,6 +14,7 @@ class MenuInterface;
 class MenuController : public QObject
 {
     Q_OBJECT
+
 public:
 
     explicit MenuController(QObject *parent = 0);
@@ -21,6 +22,16 @@ public:
 
     void initConnect();
 
+    QJsonObject createMenuItem(int itemId, QString itemText);
+    QJsonObject createSeperator();
+
+    QString registerMenu();
+    QString JsonToQString(QPoint pos, QString menucontent);
+    QString createTextEditMenuContentByContent(QString fullText, QString selectText);
+    void showTexitEditMenu(QString menuDBusObjectPath, QString menuContent);
+
+    QString createMenuContent(QStringList createmenupath);
+    void showMenu(const QString path, QString content);
 signals:
 
 public slots:
@@ -30,14 +41,14 @@ public slots:
     void showMenuByDesktopItem(const QList<DesktopItemPointer>& pCheckItems, const DesktopItemPointer& pItem, QPoint pos);
     void menuItemInvoked(QString itemId, bool flag);
 
+    void showTexitEditMenuBySelectContent(QString url, QString fullText, QString selectText, QPoint pos);
+    void textEditMenuInvoked(QString itemId, bool flag);
+
 private:
     MenumanagerInterface* m_menuManagerInterface;
     MenuInterface* m_menuInterface;
+    QString m_url;
 
-    QString createMenuContent(QStringList createmenupath);
-    QString registerMenu();
-    QString JsonToQString(QPoint pos, QString menucontent);
-    void showMenu(const QString path, QString content);
 };
 
 #endif // MENUCONTROLLER_H

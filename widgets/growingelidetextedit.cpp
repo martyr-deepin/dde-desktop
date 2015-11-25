@@ -1,5 +1,6 @@
 #include "growingelidetextedit.h"
 #include <QDebug>
+#include <QMenu>
 
 GrowingElideTextEdit::GrowingElideTextEdit(QWidget *parent) : QTextEdit(parent)
 {
@@ -162,6 +163,20 @@ void GrowingElideTextEdit::keyPressEvent(QKeyEvent *event){
         return;
     }
     QTextEdit::keyPressEvent(event);
+}
+
+
+void GrowingElideTextEdit::mousePressEvent(QMouseEvent *event){
+
+    if (event->button() == Qt::RightButton){
+        event->accept();
+    }else{
+        QTextEdit::mousePressEvent(event);
+    }
+}
+
+void GrowingElideTextEdit::contextMenuEvent(QContextMenuEvent *event){
+    emit menuShowed(mapToGlobal(event->pos()));
 }
 
 //void GrowingElideTextEdit::enterEvent(QEvent *event){

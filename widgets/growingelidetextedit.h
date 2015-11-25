@@ -22,6 +22,7 @@ public:
 signals:
     void heightChanged(int height);
     void renameFinished();
+    void menuShowed(QPoint pos);
 
 public slots:
     void showSimpleElideText();
@@ -35,6 +36,8 @@ public slots:
 
 protected:
     void keyPressEvent(QKeyEvent* event);
+    void mousePressEvent(QMouseEvent *event);
+    void contextMenuEvent(QContextMenuEvent *event);
 //    void enterEvent(QEvent *event);
 
 private:

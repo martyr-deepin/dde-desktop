@@ -88,6 +88,12 @@ public slots:
     void showSimpWrapName();
     void updateHeight(int textHeight);
 
+    void showContextMenu(QPoint pos);
+    void handleCut(QString url);
+    void handleCopy(QString url);
+    void handlePaste(QString url);
+    void handleSelectAll(QString url);
+
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
