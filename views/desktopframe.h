@@ -126,6 +126,7 @@ private:
     DesktopItemPointer m_TopDesktopItem; // z order top item
     DesktopItemPointer m_lastPressedCheckDesktopItem; // last press checked item
     DesktopItemPointer m_lastCheckedDesktopItem; // last checked item
+    DesktopItemPointer m_shiftPressFirstCheckedDesktopItem; // first checked item when shift pressed
 
     DesktopItemPointer m_destinationDesktopItem = DesktopItemPointer(); /*desktop item which will change to be app group*/
     QPoint m_appGroupDestinationPos = QPoint(-1, -1);

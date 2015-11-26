@@ -34,6 +34,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_TopDesktopItem = DesktopItemPointer();
     m_lastPressedCheckDesktopItem = DesktopItemPointer();
     m_lastCheckedDesktopItem = DesktopItemPointer();
+    m_shiftPressFirstCheckedDesktopItem = DesktopItemPointer();
 
     m_mouseMoveCheckTimer = new QTimer;
     m_mouseMoveCheckTimer->setSingleShot(true);
@@ -101,6 +102,11 @@ bool DesktopFrame::isShiftPressed(){
 
 void DesktopFrame::setShiftPressed(bool pressed){
     m_shiftPressed = pressed;
+    if (pressed){
+        m_shiftPressFirstCheckedDesktopItem = m_lastCheckedDesktopItem;
+    }else{
+        m_shiftPressFirstCheckedDesktopItem.clear();
+    }
 }
 
 void DesktopFrame::changeGridBySizeType(SizeType type){
@@ -378,7 +384,13 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
                 }
             }else if (!m_ctrlPressed && m_shiftPressed){
                 if (m_checkedDesktopItems.length() > 0){
-                    DesktopItemPointer firstCheckedItem = m_checkedDesktopItems.at(0);
+
+                    DesktopItemPointer firstCheckedItem;
+                    if (!m_shiftPressFirstCheckedDesktopItem.isNull()){
+                        firstCheckedItem = m_shiftPressFirstCheckedDesktopItem;
+                    }else{
+                         firstCheckedItem  = m_checkedDesktopItems.at(0);
+                    }
                     QList<DesktopItemPointer> items = m_desktopItemManager->getItemsByStartEnd(firstCheckedItem->pos(),
                                                                                                pTopDesktopItem->pos());
                     unCheckCheckedItems();
