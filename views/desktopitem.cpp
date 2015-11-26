@@ -10,7 +10,7 @@
 #include <QSvgRenderer>
 #include <QImage>
 #include <QGraphicsEffect>
-
+#include <QPen>
 
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
@@ -451,23 +451,32 @@ void DesktopItem::leaveEvent(QEvent *event){
 }
 
 void DesktopItem::paintEvent(QPaintEvent *event){
+    int borderWidth = 2;
+    int radius = 4;
     if (m_checked){
-        QPainter painter1(this);
-        painter1.setPen(QPen(QColor(255, 255, 255, 51), 2));
-        painter1.setBrush(QColor(0, 0 , 0, 76));
-        painter1.setRenderHint(QPainter::Antialiasing, true);
-        QRect r(2, 2, width() - 4, height() - 4);
-        painter1.drawRoundedRect(r, 10, 10, Qt::RelativeSize);
+        drawBorder(borderWidth, radius, QColor(255, 255, 255, 50), QColor(0, 0 , 0, 76));
     }
     if (m_hover){
-        QPainter painter2(this);
-        painter2.setPen(QPen(QColor(255, 255, 255, 36), 2));
-        painter2.setBrush(QColor(0, 0 , 0, 36));
-        painter2.setRenderHint(QPainter::Antialiasing, true);
-        QRect r(2, 2, width() - 4, height() - 4);
-        painter2.drawRoundedRect(r, 10, 10, Qt::RelativeSize);
+        drawBorder(borderWidth, radius, QColor(255, 255, 255, 36), QColor(0, 0 , 0, 36));
     }
     QFrame::paintEvent(event);
+}
+
+void DesktopItem::drawBorder(int borderWidth, int radius, QColor borderColor, QColor brushColor){
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen(QPen(QColor(0, 0, 0, 0), 0));
+
+    QPen pen;
+    pen.setColor(borderColor);
+    pen.setWidth(borderWidth);
+    QPainterPath border;
+    border.addRoundedRect(QRectF(borderWidth / 2, borderWidth/2, width() - borderWidth, height() - borderWidth), radius * 3/4, radius*3/4);
+    painter.strokePath(border, pen);
+
+    painter.setBrush(brushColor);
+    QRect r(borderWidth, borderWidth, width() - borderWidth*2, height() - borderWidth*2);
+    painter.drawRoundedRect(r, radius, radius);
 }
 
 bool DesktopItem::isEditing(){

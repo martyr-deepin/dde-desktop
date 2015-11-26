@@ -56,6 +56,8 @@ public:
 
     QLabel* getIconLabel();
 
+    void drawBorder(int borderWidth, int radius, QColor borderColor, QColor brushColor);
+
 signals:
     void desktopIconChanged(QString icon);
     void desktopIconChanged(QPixmap& icon);
