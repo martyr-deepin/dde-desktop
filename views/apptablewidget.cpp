@@ -92,7 +92,7 @@ void AppTableWidget::handleCellClicked(int row, int column){
 void AppTableWidget::handleCellPressed(int row, int column){
     qDebug() << row << column << "handleCellPressed";
     emit signalManager->appGroupItemRightClicked(true);
-    DesktopItem* m_dragItem = reinterpret_cast<DesktopItem*>(cellWidget(row, column));
+    m_dragItem = reinterpret_cast<DesktopItem*>(cellWidget(row, column));
     qDebug() << "handleCellPressed drag desktop item" << m_dragItem;
 }
 
