@@ -92,13 +92,8 @@ void AppTableWidget::handleCellClicked(int row, int column){
 void AppTableWidget::handleCellPressed(int row, int column){
     qDebug() << row << column << "handleCellPressed";
     emit signalManager->appGroupItemRightClicked(true);
-    DesktopItem* pItem = reinterpret_cast<DesktopItem*>(cellWidget(row, column));
-    if (pItem == NULL){
-        qDebug() << "handleCellPressed no desktop item";
-    }else{
-        qDebug() << "handleCellPressed drag desktop item" << pItem;
-        m_dragItem = pItem;
-    }
+    DesktopItem* m_dragItem = reinterpret_cast<DesktopItem*>(cellWidget(row, column));
+    qDebug() << "handleCellPressed drag desktop item" << m_dragItem;
 }
 
 
