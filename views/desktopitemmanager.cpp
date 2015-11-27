@@ -196,9 +196,22 @@ void DesktopItemManager::setShoudBeMovedItemByUrl(QString url){
 
 void DesktopItemManager::addItems(DesktopItemInfoMap desktopInfoMap){
     qDebug() << "start create desktop items";
+    QSettings setting;
+    setting.beginGroup("DesktopItems");
+    DesktopItemInfoMap unSavedDesktopItemInfoMap;
     for(int i=0; i< desktopInfoMap.values().count(); i++){
-        addItem(desktopInfoMap.values().at(i), i);
+        QString url = decodeUrl(desktopInfoMap.values().at(i).URI);
+        if (setting.contains(url)){
+            addItem(desktopInfoMap.values().at(i), i);
+        }else{
+            unSavedDesktopItemInfoMap.insert(desktopInfoMap.keys().at(i), desktopInfoMap.values().at(i));
+        }
     }
+
+    for(int i=0; i< unSavedDesktopItemInfoMap.values().count(); i++){
+        addItem(unSavedDesktopItemInfoMap.values().at(i), i);
+    }
+
     foreach (DesktopItemPointer pItem, m_pItems.values()) {
         pItem->show();
     }
