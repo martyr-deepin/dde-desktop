@@ -399,7 +399,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
                         addCheckedDesktopItem(pItem);
                     }
                 }else{
-
+                    m_shiftPressFirstCheckedDesktopItem = pTopDesktopItem;
                 }
                 checkRaiseItem(pTopDesktopItem);
                 setLastPressedCheckedDesktopItem(pTopDesktopItem);

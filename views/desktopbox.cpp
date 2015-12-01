@@ -89,6 +89,7 @@ void DesktopBox::handleScreenGeometryChanged(){
 }
 
 void DesktopBox::keyPressEvent(QKeyEvent *event){
+    qDebug() << event->modifiers() << event->key();
     bool m_isGridOn = m_desktopFrame->isGridOn();
 
     if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_Control){
@@ -160,10 +161,12 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         emit signalManager->deleteFilesExcuted(m_desktopFrame->getCheckedFileDislpyNames());
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Up){
         if (m_isGridOn){
+            qDebug() << "Key_Up";
             emit signalManager->keyUpPressed();
         }
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Down){
         if (m_isGridOn){
+            qDebug() << "Key_Down";
             emit signalManager->keyDownPressed();
         }
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Left){
@@ -200,6 +203,8 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
     }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_X){
         emit signalManager->keyCtrlXPressed();
     }
+
+
 
     TranslucentFrame::keyPressEvent(event);
 }
