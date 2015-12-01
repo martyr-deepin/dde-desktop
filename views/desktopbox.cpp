@@ -85,6 +85,7 @@ void DesktopBox::handleScreenGeometryChanged(){
     emit signalManager->desktopFrameRectChanged(primaryRect);
     emit signalManager->gridSizeTypeChanged(SizeType::Middle);
     emit signalManager->gridOnResorted();
+    emit signalManager->desktopItemsSaved();
 }
 
 void DesktopBox::keyPressEvent(QKeyEvent *event){

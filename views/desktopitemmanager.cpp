@@ -34,10 +34,13 @@ void DesktopItemManager::initComputerItem(){
     m_pComputerItem->resize(width, height);
     m_pComputerItem->getDesktopItemInfo().URI = url;
 
+    QPoint pos;
     GridItemPointer pGridItem = gridManager->getBlankItem();
-    QRect rect = pGridItem->getRect();
-    QPoint pos = rect.topLeft();
-
+    if (pGridItem.isNull()){
+        pos = gridManager->getRightBottomItem()->getPos();
+    }else{
+        pos = pGridItem->getPos();
+    }
     m_settings.beginGroup("DesktopItems");
     pos = m_settings.value(url, pos).toPoint();
     m_settings.endGroup();
@@ -46,6 +49,8 @@ void DesktopItemManager::initComputerItem(){
     if (!pGridItem.isNull()){
         pGridItem->setDesktopItem(true);
     }
+
+    qDebug() << url << m_settings.contains(url) << pGridItem.isNull() << pos;
     m_pComputerItem->move(pos);
     m_pItems.insert(url, m_pComputerItem);
     m_list_pItems.append(m_pComputerItem);
@@ -63,9 +68,13 @@ void DesktopItemManager::initTrashItem(){
     m_pTrashItem->getDesktopItemInfo().URI = url;
     m_pTrashItem->getDesktopItemInfo().CanExecute = true;
 
+    QPoint pos;
     GridItemPointer pGridItem = gridManager->getBlankItem();
-    QRect rect = pGridItem->getRect();
-    QPoint pos = rect.topLeft();
+    if (pGridItem.isNull()){
+        pos = gridManager->getRightBottomItem()->getPos();
+    }else{
+        pos = pGridItem->getPos();
+    }
     m_settings.beginGroup("DesktopItems");
     pos = m_settings.value(url, pos).toPoint();
     m_settings.endGroup();
@@ -74,6 +83,8 @@ void DesktopItemManager::initTrashItem(){
     if (!pGridItem.isNull()){
         pGridItem->setDesktopItem(true);
     }
+
+    qDebug() << url << m_settings.contains(url) << pGridItem.isNull() << pos;
     m_pTrashItem->move(pos);
     m_pItems.insert(url, m_pTrashItem);
     m_list_pItems.append(m_pTrashItem);
@@ -276,6 +287,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
         QPoint pos = setting.value(key, defaultPos).toPoint();
         pDesktopItem->move(pos);
         GridItemPointer pGridItem = gridManager->getItemByPos(pos);
+        qDebug() << __func__ << pGridItem.isNull();
         if (!pGridItem.isNull()){
             pGridItem->setDesktopItem(true);
         }

@@ -588,7 +588,7 @@ void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QStri
 
 void DBusController::openFile(DesktopItemInfo desktopItemInfo){
     //TODO query RequestOpenPolicyOpen or RequestOpenPolicyOpen
-    QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, 0);
+    QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFileWithTimestamp(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, 0, 0);
     reply.waitForFinished();
     if (!reply.isError()){
 

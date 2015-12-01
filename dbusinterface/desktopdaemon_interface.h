@@ -64,6 +64,13 @@ public Q_SLOTS: // METHODS
         return asyncCallWithArgumentList(QStringLiteral("ActivateFile"), argumentList);
     }
 
+    inline QDBusPendingReply<> ActivateFileWithTimestamp(const QString &in0, const QStringList &in1, bool in2, u_int32_t in3, int in4)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1) << QVariant::fromValue(in2) << QVariant::fromValue(in3) << QVariant::fromValue(in4);
+        return asyncCallWithArgumentList(QStringLiteral("ActivateFileWithTimestamp"), argumentList);
+    }
+
     inline QDBusPendingReply<> DestroyMenu()
     {
         QList<QVariant> argumentList;
