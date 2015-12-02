@@ -215,6 +215,9 @@ signals:
     void desktopItemNameCopyed(QString url);
     void desktopItemNamePasted(QString url);
     void desktopItemNameSelectAll(QString url);
+
+    /*set right bottom grid as a container*/
+    void rightBottomItemChangedtoBeContainer(bool flag);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

@@ -69,6 +69,8 @@ public slots:
     void updateGridStatus();
     void checkDesktopItemValid();
 
+    void updateItems(QString url, const DesktopItemPointer& pItem);
+    void handleItemsChanged();
 private:
     QSettings m_settings;
     DesktopItemPointer m_pComputerItem;

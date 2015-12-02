@@ -52,8 +52,9 @@ void DesktopItemManager::initComputerItem(){
 
     qDebug() << url << m_settings.contains(url) << pGridItem.isNull() << pos;
     m_pComputerItem->move(pos);
-    m_pItems.insert(url, m_pComputerItem);
-    m_list_pItems.append(m_pComputerItem);
+    updateItems(url, m_pComputerItem);
+//    m_pItems.insert(url, m_pComputerItem);
+//    m_list_pItems.append(m_pComputerItem);
     m_pComputerItem->show();
 }
 
@@ -86,8 +87,9 @@ void DesktopItemManager::initTrashItem(){
 
     qDebug() << url << m_settings.contains(url) << pGridItem.isNull() << pos;
     m_pTrashItem->move(pos);
-    m_pItems.insert(url, m_pTrashItem);
-    m_list_pItems.append(m_pTrashItem);
+    updateItems(url, m_pTrashItem);
+//    m_pItems.insert(url, m_pTrashItem);
+//    m_list_pItems.append(m_pTrashItem);
     m_pTrashItem->show();
 }
 
@@ -142,6 +144,21 @@ void DesktopItemManager::initConnect(){
 
     connect(signalManager, SIGNAL(screenGeometryChanged()),
             this, SLOT(closeAppGroupDetail()));
+}
+
+void DesktopItemManager::updateItems(QString url, const DesktopItemPointer &pItem){
+    m_pItems.insert(url, pItem);
+    m_list_pItems.append(pItem);
+    handleItemsChanged();
+}
+
+void DesktopItemManager::handleItemsChanged(){
+    qDebug() << "handleItemsChanged" << gridManager->isFull();
+    if (gridManager->isFull()){
+        emit signalManager->rightBottomItemChangedtoBeContainer(true);
+    }else{
+        emit signalManager->rightBottomItemChangedtoBeContainer(false);
+    }
 }
 
 void DesktopItemManager::loadComputerTrashItems(){
@@ -269,8 +286,8 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
     Q_UNUSED(index)
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     qDebug() << "add Item" << pDesktopItem->getUrl();
-    m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
-    m_list_pItems.append(pDesktopItem);
+//    m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
+//    m_list_pItems.append(pDesktopItem);
 
     if (!pDesktopItem.isNull()){
 //        int row = gridManager->getRowCount();
@@ -292,6 +309,8 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
             pGridItem->setDesktopItem(true);
         }
         setting.endGroup();
+
+        updateItems(pDesktopItem->getUrl(), pDesktopItem);
     }
 }
 
@@ -302,8 +321,6 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
     if (m_pItems.contains(pDesktopItem->getUrl())){
         return;
     }
-    m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
-    m_list_pItems.append(pDesktopItem);
 
     if (!pDesktopItem.isNull()){
         GridItemPointer pGridItem = gridManager->getBlankItem();
@@ -316,6 +333,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
             m_settings.setValue(pDesktopItem->getUrl(), pDesktopItem->pos());
             m_settings.endGroup();
         }
+        updateItems(pDesktopItem->getUrl(), pDesktopItem);
     }
 }
 
@@ -433,6 +451,8 @@ void DesktopItemManager::deleteItem(QString url){
         m_pItems.remove(_url);
         pItem->close();
         pItem.clear();
+
+        handleItemsChanged();
     }
 //    checkPageCount();
     emit signalManager->desktopItemsSaved();

@@ -281,6 +281,9 @@ QPixmap DesktopItem::getAppGroupIcon(){
 }
 
 void DesktopItem::changeToBeAppGroupIcon(){
+    if (gridManager->isFull()){
+        return;
+    }
     QStringList icons;
     icons.append(m_desktopItemInfo.Icon);
     QPixmap appGroupIcon = AppGroupIconFrame::getPixmap(icons);

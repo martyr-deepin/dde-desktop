@@ -192,14 +192,17 @@ void CopyjobWorker::handleTimeout(){
 }
 
 void CopyjobWorker::handleFinished(){
+    qDebug() << m_jobDetail << m_jobDataDetail;
     if (m_jobDetail.contains("jobPath")){
         emit signalManager->copyJobRemoved(m_jobDetail);
     }
     m_conflictController->unRegisterDBusService();
-    if (m_jobDataDetail.contains("destination")){
-        QString f = joinPath(desktopLocation, m_jobDataDetail.value("destination"));
-        qDebug() << f;
-        emit signalManager->refreshCopyFileIcon(f);
+    if (m_jobDataDetail.contains("file")){
+        QString f = joinPath(desktopLocation, m_jobDataDetail.value("file"));
+        if (QFile(f).exists()){
+            qDebug() << f;
+            emit signalManager->refreshCopyFileIcon(f);
+        }
     }
 }
 

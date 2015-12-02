@@ -9,13 +9,19 @@ GridManager::GridManager(QObject *parent) : QObject(parent)
 
 
 void GridManager::initConnect(){
-
+    connect(signalManager, SIGNAL(rightBottomItemChangedtoBeContainer(bool)),
+            this, SLOT(setRightBottomItemChangedtoBeContainer(bool)));
 }
 
 void GridManager::clearDeskopItemsStatus(){
     foreach (GridItemPointer pItem, m_map_items.values()) {
         pItem->setDesktopItem(false);
     }
+}
+
+void GridManager::setRightBottomItemChangedtoBeContainer(bool flag){
+    m_isRightBottomContainer = flag;
+    getRightBottomItem()->setMultiDesktopItemsIn(flag);
 }
 
 int GridManager::getRowCount(){
@@ -49,6 +55,10 @@ int GridManager::getPageCount(){
 
 void GridManager::setPageCount(int count){
     m_pageCount = count;
+}
+
+int GridManager::getGridCount(){
+    return m_rowCount * m_columnCount;
 }
 
 QMap<QString, GridItemPointer> GridManager::getMapItems(){
@@ -112,7 +122,6 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
 
     }
     clearDeskopItemsStatus();
-    getRightBottomItem()->setMultiDesktopItemsIn(true);
     return m_list_items;
 }
 
@@ -145,6 +154,20 @@ bool GridManager::isRectInGrid(QRect rect){
     QRect desktopGridRect = QRect(m_leftMargin, m_topMargin, m_width, m_height);
     bool flag = desktopGridRect.intersects(rect);
     return flag;
+}
+
+bool GridManager::isRightBottomContainer(){
+    return m_isRightBottomContainer;
+}
+
+bool GridManager::isFull(){
+    bool isFull(true);
+    foreach (GridItemPointer pItem, m_map_items.values()) {
+        if (pItem != getRightBottomItem()){
+            isFull = isFull && pItem->hasDesktopItem();
+        }
+    }
+    return isFull;
 }
 
 GridItemPointer GridManager::getBlankItemByPos(QPoint pos){

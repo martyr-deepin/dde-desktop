@@ -23,7 +23,10 @@ public:
     int getItemWidth();
     int getItemHeight();
     int getPageCount();
+    int getGridCount();
     bool isRectInGrid(QRect rect);
+    bool isRightBottomContainer();
+    bool isFull();
     GridItemPointer getBlankItem();
     GridItemPointer getRightBottomItem();
     GridItemPointer getItemByPos(QPoint pos);
@@ -47,6 +50,7 @@ signals:
 
 public slots:
     void clearDeskopItemsStatus();
+    void setRightBottomItemChangedtoBeContainer(bool flag);
     void setPageCount(int count);
 
 private:
@@ -66,6 +70,7 @@ private:
     int m_rowCount = 0;
     int m_pageCount = 1;
     int m_dockHeight = 70;
+    bool m_isRightBottomContainer = false;
     SizeType m_sizeType;
     DoubleGridItemPointerList m_list_items;
     QMap<QString, GridItemPointer> m_map_items;
