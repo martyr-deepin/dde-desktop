@@ -136,10 +136,21 @@ QString MenuController::createMenuContent(QStringList createmenupath) {
 
 void MenuController::showMenu(const QString showmenu_path, QString menucontent) {
     m_menuInterface = new MenuInterface(MenuManager_service, showmenu_path, QDBusConnection::sessionBus(), this);
-    m_menuInterface->ShowMenu(menucontent);
     connect(m_menuInterface, SIGNAL(ItemInvoked(QString, bool)),this, SLOT(menuItemInvoked(QString,bool)));
     connect(m_menuInterface, SIGNAL(MenuUnregistered()), dbusController->getDesktopDaemonInterface(), SLOT(DestroyMenu()));
+    connect(m_menuInterface, SIGNAL(MenuUnregistered()), this, SLOT(handleMenuUnregistered()));
     connect(m_menuInterface, SIGNAL(MenuUnregistered()), m_menuInterface, SLOT(deleteLater()));
+    QDBusPendingReply<> reply = m_menuInterface->ShowMenu(menucontent);
+    reply.waitForFinished();
+    if (!reply.isError()) {
+        emit signalManager->contextMenuShowed(true);
+    } else {
+        emit signalManager->contextMenuShowed(false);
+    }
+}
+
+void MenuController::handleMenuUnregistered(){
+    emit signalManager->contextMenuShowed(false);
 }
 
 void MenuController::menuItemInvoked(QString itemId, bool flag){

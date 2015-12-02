@@ -10,6 +10,8 @@
 #include <QTimer>
 
 
+bool DesktopFrame::IsMenuShowed = false;
+
 DesktopFrame::DesktopFrame(QWidget *parent)
     : QFrame(parent)
 {
@@ -74,6 +76,8 @@ void DesktopFrame::initConnect(){
     connect(this, SIGNAL(multiCheckedByMouseChanged(bool)), this, SLOT(setMultiCheckedByMouse(bool)));
 
     connect(m_mouseMoveCheckTimer, SIGNAL(timeout()), this, SLOT(handleMouseMoveCheckItems()));
+
+    connect(signalManager, SIGNAL(contextMenuShowed(bool)), this ,SLOT(setMenuShowed(bool)));
 }
 
 QSharedPointer<DesktopItemManager> DesktopFrame::getDesktopItemManager(){
@@ -322,6 +326,10 @@ void DesktopFrame::move(int x, int y){
     move(QPoint(x, y));
 }
 
+void DesktopFrame::setMenuShowed(bool flag){
+    DesktopFrame::IsMenuShowed = flag;
+}
+
 void DesktopFrame::focusInEvent(QFocusEvent *event){
     QFrame::focusInEvent(event);
 }
@@ -412,19 +420,20 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
             }
             m_isDragStarted = true;
         }
-
     }else if (event->button() == Qt::RightButton){
+        m_isSelectable = false;
+        m_selectRect = QRect(0, 0, 0, 0);
         if (pTopDesktopItem.isNull()){
             unCheckCheckedItems();
-            emit signalManager->contextMenuShowed(pTopDesktopItem, mapToGlobal(m_pressedEventPos));
+            emit signalManager->contextMenuShowed(pTopDesktopItem, mapToGlobal(event->pos()));
         }else{
             if (m_checkedDesktopItems.contains(pTopDesktopItem) && m_checkedDesktopItems.count() > 1){
-                emit signalManager->contextMenuShowed(m_checkedDesktopItems, pTopDesktopItem, mapToGlobal(m_pressedEventPos));
+                emit signalManager->contextMenuShowed(m_checkedDesktopItems, pTopDesktopItem, mapToGlobal(event->pos()));
             }else{
                 unCheckCheckedItems();
                 checkRaiseItem(pTopDesktopItem);
                 setLastPressedCheckedDesktopItem(pTopDesktopItem);
-                emit signalManager->contextMenuShowed(pTopDesktopItem, mapToGlobal(m_pressedEventPos));
+                emit signalManager->contextMenuShowed(pTopDesktopItem, mapToGlobal(event->pos()));
                 if(isAppGroup(pTopDesktopItem->getUrl())){
                     emit signalManager->appGounpDetailClosed();
                 }
@@ -600,8 +609,8 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     m_isSelectable = false;
     m_selectRect = QRect(0, 0, 0, 0);
     update();
+    DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(event->pos());
     if (event->button() == Qt::LeftButton && !m_ctrlPressed){
-        DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
         if (m_desktopItemManager->isAppGroupBoxShowed()){
             emit signalManager->appGounpDetailClosed(event->pos());
             if (!pTopDesktopItem.isNull()){
@@ -628,14 +637,16 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
         startDrag();
         emit signalManager->gridStatusUpdated();
     }else{
-        int x = m_pressedEventPos.x();
-        int y = m_pressedEventPos.y();
-        int width = event->pos().x() - x;
-        int height = event->pos().y() -y;
-        m_selectRect = QRect(x, y , width, height);
-        update();
-        m_mouseMoveCheckTimer->start();
-//        handleMouseMoveCheckItems();
+        if (int(event->buttons()) == Qt::LeftButton){
+            int x = m_pressedEventPos.x();
+            int y = m_pressedEventPos.y();
+            int width = event->pos().x() - x;
+            int height = event->pos().y() -y;
+            m_selectRect = QRect(x, y , width, height);
+            qDebug() << m_isSelectable << m_selectRect;
+            update();
+            m_mouseMoveCheckTimer->start();
+        }
     }
     QFrame::mouseMoveEvent(event);
 }
@@ -661,7 +672,7 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
     Q_UNUSED(event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-
+    qDebug() << m_isSelectable << m_selectRect;
     if (m_isGridBackgoundOn){
         int rowCount = gridManager->getRowCount();
         int columnCount = gridManager->getColumnCount();

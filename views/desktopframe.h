@@ -18,6 +18,7 @@ public:
     DesktopFrame(QWidget *parent = 0);
     ~DesktopFrame();
 
+    static bool IsMenuShowed;
     friend class KeyEventManager;
 
     void initItems();
@@ -83,6 +84,8 @@ public slots:
 
     void move(const QPoint &pos);
     void move(int x, int y);
+
+    void setMenuShowed(bool flag);
 
 protected:
     void focusInEvent(QFocusEvent* event);

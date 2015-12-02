@@ -44,6 +44,8 @@ public slots:
     void showTexitEditMenuBySelectContent(QString url, QString fullText, QString selectText, QPoint pos);
     void textEditMenuInvoked(QString itemId, bool flag);
 
+    void handleMenuUnregistered();
+
 private:
     MenumanagerInterface* m_menuManagerInterface;
     MenuInterface* m_menuInterface;

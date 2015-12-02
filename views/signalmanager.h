@@ -218,6 +218,9 @@ signals:
 
     /*set right bottom grid as a container*/
     void rightBottomItemChangedtoBeContainer(bool flag);
+
+    /*Menu Show/Hide signal*/
+    void  contextMenuShowed(bool flag);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

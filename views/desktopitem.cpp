@@ -444,7 +444,8 @@ void DesktopItem::moveEvent(QMoveEvent *event){
 }
 
 void DesktopItem::enterEvent(QEvent *event){
-    setHover(true);
+    if (!DesktopFrame::IsMenuShowed)
+        setHover(true);
     QFrame::enterEvent(event);
 }
 
