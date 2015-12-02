@@ -158,7 +158,9 @@ void DesktopFrame::checkDesktopItemsByRect(QRect rect){
     }
 
     if (m_checkedDesktopItems.count() > 1){
-        m_multiCheckedByMouse = true;
+        emit multiCheckedByMouseChanged(true);
+    }else{
+        emit multiCheckedByMouseChanged(false);
     }
 }
 
@@ -384,12 +386,14 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
             }
         }else{
             if(m_ctrlPressed && !m_shiftPressed){
+                bool oldChecked = pTopDesktopItem->isChecked();
+                pTopDesktopItem->setProperty("oldChecked", oldChecked);
                 if (!pTopDesktopItem->isChecked()){
                     checkRaiseItem(pTopDesktopItem);
                     setLastPressedCheckedDesktopItem(pTopDesktopItem);
-                }else{
-                    unCheckItem(pTopDesktopItem);
                 }
+            }else if (m_ctrlPressed && m_shiftPressed){
+
             }else if (!m_ctrlPressed && m_shiftPressed){
                 if (m_checkedDesktopItems.length() > 0){
 
@@ -411,7 +415,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
                 }
                 checkRaiseItem(pTopDesktopItem);
                 setLastPressedCheckedDesktopItem(pTopDesktopItem);
-            }else{
+            }else if (!m_ctrlPressed && !m_shiftPressed){
                 if (!pTopDesktopItem->isChecked()){
                     unCheckCheckedItems();
                     checkRaiseItem(pTopDesktopItem);
@@ -451,9 +455,9 @@ void DesktopFrame::startDrag(){
         urls.append(pCheckedItem->getRawUrl());
     }
     mimeData->setUrls(urls);
-    QPixmap dragPixmap = getCheckedPixmap();
 
     if (m_checkedDesktopItems.length() > 0){
+        QPixmap dragPixmap = getCheckedPixmap();
         QDrag* pDrag = new QDrag(this);
         pDrag->setMimeData(mimeData);
         pDrag->setPixmap(dragPixmap);
@@ -549,33 +553,37 @@ void DesktopFrame::startDrag(){
 
 
 QPixmap DesktopFrame::getCheckedPixmap(){
-    QFrame* F = new QFrame(this);
-    F->setAttribute(Qt::WA_DeleteOnClose);
-    F->setObjectName("DesktopFrame");
-    F->setGeometry(qApp->desktop()->availableGeometry());
-    foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
-        DesktopItem* item = new DesktopItem(pItem->getDesktopIcon(),
-                                       pItem->getDesktopName(), F);
-        if (item->getTextEdit()->graphicsEffect())
-            item->getTextEdit()->graphicsEffect()->setEnabled(false);
-        bool flag = pItem->isShowSimpleMode();
-        pItem->showSimpWrapName();
-        item->resize(pItem->size());
-        item->showSimpWrapName();
-        if (flag){
+    if (m_checkedDesktopItems.length() > 0){
+        QFrame* F = new QFrame(this);
+        F->setAttribute(Qt::WA_DeleteOnClose);
+        F->setObjectName("DesktopFrame");
+        F->setGeometry(qApp->desktop()->availableGeometry());
+        foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+            DesktopItem* item = new DesktopItem(pItem->getDesktopIcon(),
+                                           pItem->getDesktopName(), F);
+            if (item->getTextEdit()->graphicsEffect())
+                item->getTextEdit()->graphicsEffect()->setEnabled(false);
+            bool flag = pItem->isShowSimpleMode();
             pItem->showSimpWrapName();
-        }else{
-            pItem->showFullWrapName();
+            item->resize(pItem->size());
+            item->showSimpWrapName();
+            if (flag){
+                pItem->showSimpWrapName();
+            }else{
+                pItem->showFullWrapName();
+            }
+            item->move(mapToGlobal(pItem->pos()));
+            item->setObjectName("DragChecked");
         }
-        item->move(mapToGlobal(pItem->pos()));
-        item->setObjectName("DragChecked");
+        F->setStyleSheet(qApp->styleSheet());
+        QRect viewRect(0, 0, qApp->desktop()->availableGeometry().width(), height());
+        QPixmap ret = F->grab(getCheckedBorderRect());
+        F->close();
+        qDebug() << "getCheckedBorderRect" << getCheckedBorderRect();
+        return ret;
+    }else{
+        return QPixmap();
     }
-    F->setStyleSheet(qApp->styleSheet());
-    QRect viewRect(0, 0, qApp->desktop()->availableGeometry().width(), height());
-    QPixmap ret = F->grab(getCheckedBorderRect());
-    F->close();
-    qDebug() << "getCheckedBorderRect" << getCheckedBorderRect();
-    return ret;
 }
 
 QRect DesktopFrame::getCheckedBorderRect(){
@@ -606,25 +614,56 @@ QRect DesktopFrame::getCheckedBorderRect(){
 
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     clearFocus();
+    QRect oldSelectRect = m_selectRect;
+    bool isMultiCheckedByMouseMove = (oldSelectRect == QRect(0, 0, 0, 0));
     m_isSelectable = false;
     m_selectRect = QRect(0, 0, 0, 0);
     update();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(event->pos());
-    if (event->button() == Qt::LeftButton && !m_ctrlPressed){
-        if (m_desktopItemManager->isAppGroupBoxShowed()){
-            emit signalManager->appGounpDetailClosed(event->pos());
+    if (event->button() == Qt::LeftButton){
+        if (!m_ctrlPressed){
             if (!pTopDesktopItem.isNull()){
-                if (isAppGroup(pTopDesktopItem->getUrl())){
-                    pTopDesktopItem->setChecked(true);
+                if (m_desktopItemManager->isAppGroupBoxShowed()){
+                    emit signalManager->appGounpDetailClosed(event->pos());
+                    if (isAppGroup(pTopDesktopItem->getUrl())){
+                        pTopDesktopItem->setChecked(true);
+                    }
+                }else{
+                    if (isAppGroup(pTopDesktopItem->getUrl()) && isMultiCheckedByMouseMove){
+                        unCheckCheckedItems();
+                        emit pTopDesktopItem->setHover(true);
+                        emit signalManager->appGounpDetailShowed(pTopDesktopItem, event->pos());
+                    }
                 }
+
+                if (!m_shiftPressed){
+                    qDebug() << pTopDesktopItem->isChecked() << oldSelectRect << isMultiCheckedByMouseMove;
+                    if (pTopDesktopItem->isChecked() && isMultiCheckedByMouseMove){
+                        unCheckCheckedItems();
+                        checkRaiseItem(pTopDesktopItem);
+                        setLastPressedCheckedDesktopItem(pTopDesktopItem);
+                    }else{
+
+                    }
+                }
+
+            }else{
+                emit signalManager->appGounpDetailClosed(event->pos());
             }
         }else{
             if (!pTopDesktopItem.isNull()){
-                if (isAppGroup(pTopDesktopItem->getUrl())){
-                    unCheckCheckedItems();
-                    emit pTopDesktopItem->setHover(true);
-                    emit signalManager->appGounpDetailShowed(pTopDesktopItem, event->pos());
+                if (pTopDesktopItem->isChecked()){
+                    if (pTopDesktopItem->property("oldChecked").isValid()){
+                        bool oldChecked = pTopDesktopItem->property("oldChecked").toBool();
+                        if (oldChecked){
+                            unCheckItem(pTopDesktopItem);
+                        }
+                    }
+                }else{
+
                 }
+            }else{
+                unCheckCheckedItems();
             }
         }
     }
@@ -672,7 +711,7 @@ void DesktopFrame::paintEvent(QPaintEvent *event){
     Q_UNUSED(event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    qDebug() << m_isSelectable << m_selectRect;
+//    qDebug() << m_isSelectable << m_selectRect;
     if (m_isGridBackgoundOn){
         int rowCount = gridManager->getRowCount();
         int columnCount = gridManager->getColumnCount();
