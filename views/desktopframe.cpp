@@ -629,7 +629,7 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
                         pTopDesktopItem->setChecked(true);
                     }
                 }else{
-                    if (isAppGroup(pTopDesktopItem->getUrl()) && isMultiCheckedByMouseMove){
+                    if (isAppGroup(pTopDesktopItem->getUrl()) && isMultiCheckedByMouseMove && !m_shiftPressed){
                         unCheckCheckedItems();
                         emit pTopDesktopItem->setHover(true);
                         emit signalManager->appGounpDetailShowed(pTopDesktopItem, event->pos());
@@ -682,7 +682,6 @@ void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
             int width = event->pos().x() - x;
             int height = event->pos().y() -y;
             m_selectRect = QRect(x, y , width, height);
-            qDebug() << m_isSelectable << m_selectRect;
             update();
             m_mouseMoveCheckTimer->start();
         }
