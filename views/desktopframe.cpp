@@ -613,7 +613,7 @@ QRect DesktopFrame::getCheckedBorderRect(){
 }
 
 void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
-    clearFocus();
+    setFocus();
     QRect oldSelectRect = m_selectRect;
     bool isMultiCheckedByMouseMove = (oldSelectRect == QRect(0, 0, 0, 0));
     m_isSelectable = false;
