@@ -47,12 +47,12 @@
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="355"/>
         <source>There is %1 task in progress</source>
-        <translation type="unfinished">有%1个任务正在进行</translation>
+        <translation>有%1个任务正在进行</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="357"/>
         <source>There are %1 tasks in progress</source>
-        <translation type="unfinished">有%1个任务正在进行</translation>
+        <translation>有%1个任务正在进行</translation>
     </message>
 </context>
 <context>
@@ -69,14 +69,24 @@
 <context>
     <name>DesktopApp</name>
     <message>
-        <location filename="../app/desktopapp.cpp" line="106"/>
+        <location filename="../app/desktopapp.cpp" line="109"/>
         <source>Are you sure to delete %1 ?</source>
-        <translation type="unfinished">您确定要删除 %1 吗？</translation>
+        <translation>您确定要删除 %1 吗？</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="108"/>
+        <location filename="../app/desktopapp.cpp" line="111"/>
         <source>Are you sure to delete these %1 items?</source>
-        <translation type="unfinished">您确定要删除%1 项吗？</translation>
+        <translation>您确定要删除%1 项吗？</translation>
+    </message>
+    <message>
+        <location filename="../app/desktopapp.cpp" line="144"/>
+        <source>&quot;%1&quot; already exists, please select a different name.</source>
+        <translation>名称“%1”已被占用，请使用其他名称。</translation>
+    </message>
+    <message>
+        <location filename="../app/desktopapp.cpp" line="145"/>
+        <source>Confirm</source>
+        <translation>确定</translation>
     </message>
 </context>
 <context>
@@ -93,7 +103,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../views/desktopitemmanager.cpp" line="59"/>
+        <location filename="../views/desktopitemmanager.cpp" line="65"/>
         <source>Trash</source>
         <translation>回收站</translation>
     </message>
@@ -101,24 +111,24 @@
 <context>
     <name>MenuController</name>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="154"/>
+        <location filename="../controllers/menucontroller.cpp" line="165"/>
         <source>Cut(_X)</source>
-        <translation type="unfinished">剪切(_X)</translation>
+        <translation>剪切(_X)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="155"/>
+        <location filename="../controllers/menucontroller.cpp" line="166"/>
         <source>Copy(_C)</source>
-        <translation type="unfinished">复制(_C)</translation>
+        <translation>复制(_C)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="156"/>
+        <location filename="../controllers/menucontroller.cpp" line="167"/>
         <source>Paste(_V)</source>
-        <translation type="unfinished">粘贴(_V)</translation>
+        <translation>粘贴(_V)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="157"/>
+        <location filename="../controllers/menucontroller.cpp" line="168"/>
         <source>Select All(_A)</source>
-        <translation type="unfinished">全选(_A)</translation>
+        <translation>全选(_A)</translation>
     </message>
 </context>
 <context>

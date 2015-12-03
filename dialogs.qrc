@@ -11,6 +11,7 @@
         <file>skin/dialogs/images/dark_check_checked.png</file>
         <file>skin/dialogs/images/dark_check.png</file>
         <file>skin/dialogs/images/dark_check_checked_hover.png</file>
+        <file>skin/dialogs/images/dialog-warning.svg</file>
     </qresource>
     <qresource prefix="/qss">
         <file>skin/dialogs/qss/dialogs.qss</file>

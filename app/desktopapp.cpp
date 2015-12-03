@@ -9,9 +9,11 @@
 #include "dbusinterface/services/desktopadaptor.h"
 #include "dialogs/cleartrashdialog.h"
 #include "dialogs/dmovabledialog.h"
+#include "libdui/ddialog.h"
 #include <QDBusConnection>
 #include <QStandardPaths>
 
+DUI_USE_NAMESPACE
 
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
@@ -70,6 +72,7 @@ void DesktopApp::initConnect(){
     connect(signalManager, SIGNAL(desktopFrameRectChanged(QRect)), m_taskDialog, SLOT(moveTopRightByRect(QRect)));
 
     connect(signalManager, SIGNAL(confimClear(int)), this, SLOT(confimClear(int)));
+    connect(signalManager, SIGNAL(renameDialogShowed(QString)), this, SLOT(confirmRenameDialog(QString)));
 }
 
 void DesktopApp::confimClear(int count){
@@ -132,6 +135,16 @@ void DesktopApp::handleDeleteAction(int index){
 void DesktopApp::confimConflict(const QMap<QString, QString> &jobDetail, const QMap<QString, QVariant> &response){
     qDebug() << jobDetail << response;
     emit signalManager->conflictRepsonseConfirmed(jobDetail, response);
+}
+
+void DesktopApp::confirmRenameDialog(QString name){
+    qDebug() << "confirmRenameDialog" << name;
+    DDialog* d = new DDialog(m_desktopBox);
+    d->setModal(false);
+    d->setTitle(tr("\"%1\" already exists, please select a different name.").arg(name));
+    d->addButton(tr("Confirm"));
+    d->setIconPixmap((QPixmap(":/images/skin/dialogs/images/dialog-warning.svg")));
+    d->show();
 }
 
 void DesktopApp::registerDBusService(){

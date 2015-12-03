@@ -221,6 +221,9 @@ signals:
 
     /*Menu Show/Hide signal*/
     void  contextMenuShowed(bool flag);
+
+    /*rename tip dialog show*/
+    void renameDialogShowed(QString name);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

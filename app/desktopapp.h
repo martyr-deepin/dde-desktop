@@ -33,7 +33,7 @@ public slots:
     void handleDeleteAction(int index);
 
     void confimConflict(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
-
+    void confirmRenameDialog(QString name);
     void unRegisterDbusService();
 
     void show();
@@ -46,6 +46,7 @@ public slots:
 private:
     DesktopBox* m_desktopBox;
     DTaskDialog* m_taskDialog;
+    QDialog* m_renamDialog;
     QStringList m_deletefiles;
 };
 

@@ -166,6 +166,7 @@ void DesktopItemManager::loadComputerTrashItems(){
     if (mode != 0){
         if (!m_pItems.contains(ComputerUrl)){
             initComputerItem();
+            dbusController->asyncRequestComputerIcon();
         }else{
             qDebug() << "ComputerItem is existed";
         }

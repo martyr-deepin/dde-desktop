@@ -406,6 +406,7 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
         qDebug() << desktopItemInfo.URI << desktopItemInfo.Icon << desktopItemInfo.thumbnail << desktopItemInfo.MIME;
         /*ToDo desktop daemon settings judge*/
+        qDebug() << getMineTypeGenericIconName(desktopItemInfo.URI);
         if (desktopItemInfo.thumbnail.length() > 0){
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;
         }

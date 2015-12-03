@@ -22,6 +22,7 @@ public slots:
 
 private:
     RenameJobInterface* m_renameJobInterface = NULL;
+    QString m_newName;
 };
 
 #endif // RENAMEJOBCONTROLLER_H

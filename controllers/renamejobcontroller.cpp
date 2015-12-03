@@ -3,6 +3,7 @@
 #include "dbusinterface/fileoperations_interface.h"
 #include "views/global.h"
 
+
 RenameJobController::RenameJobController(QObject *parent) : QObject(parent)
 {
     initConnect();
@@ -14,6 +15,7 @@ void RenameJobController::initConnect(){
 
 void RenameJobController::rename(QString url, QString newName){
     qDebug() << url << newName;
+    m_newName = newName;
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewRenameJob(url, newName);
     reply.waitForFinished();
     if (!reply.isError()){
@@ -28,10 +30,15 @@ void RenameJobController::rename(QString url, QString newName){
 }
 
 void RenameJobController::renameJobExcuteFinished(QString name){
-    disconnect(m_renameJobInterface, SIGNAL(Done(QString)), this, SLOT(renameJobExcuteFinished(QString)));
-    m_renameJobInterface->deleteLater();
-    m_renameJobInterface = NULL;
-    qDebug() << "rename job finished" << name;
+    qDebug() << "rename job return" << name;
+    if (name.length() == 0){
+        disconnect(m_renameJobInterface, SIGNAL(Done(QString)), this, SLOT(renameJobExcuteFinished(QString)));
+        m_renameJobInterface->deleteLater();
+        m_renameJobInterface = NULL;
+        qDebug() << "rename job finished" << name;
+    }else{
+        emit signalManager->renameDialogShowed(m_newName);
+    }
 }
 
 RenameJobController::~RenameJobController()
