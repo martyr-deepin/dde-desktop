@@ -132,8 +132,20 @@ bool isRequestThumbnail(QString url){
     }
 }
 
-QString getMineTypeGenericIconName(QString url){
+QString getMimeTypeGenericIconName(QString url){
     QMimeDatabase mimeDataBae;
     QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(url));
     return mimeType.genericIconName();
+}
+
+QString getMimeTypeIconName(QString url){
+    QMimeDatabase mimeDataBae;
+    QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(url));
+    return mimeType.iconName();
+}
+
+QString getMimeTypeName(QString url){
+    QMimeDatabase mimeDataBae;
+    QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(url));
+    return mimeType.name();
 }

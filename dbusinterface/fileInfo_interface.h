@@ -418,6 +418,13 @@ public Q_SLOTS: // METHODS
         return asyncCallWithArgumentList(QStringLiteral("GetThumbnail"), argumentList);
     }
 
+    inline QDBusPendingReply<QString> GetThumbnailWithMIME(const QString &in0, int in1, const QString& in2)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1) << QVariant::fromValue(in2);
+        return asyncCallWithArgumentList(QStringLiteral("GetThumbnailWithMIME"), argumentList);
+    }
+
     inline QDBusPendingReply<bool> IsNativeFile(const QString &in0)
     {
         QList<QVariant> argumentList;

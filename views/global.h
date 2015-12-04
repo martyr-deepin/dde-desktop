@@ -37,6 +37,8 @@ bool isInDesktop(QString url);
 bool isDesktopAppFile(QString url);
 
 bool isRequestThumbnail(QString url);
-QString getMineTypeGenericIconName(QString url);
+QString getMimeTypeGenericIconName(QString url);
+QString getMimeTypeIconName(QString url);
+QString getMimeTypeName(QString url);
 #endif // GLOBAL_H
 

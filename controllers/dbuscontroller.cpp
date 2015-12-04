@@ -13,6 +13,7 @@
 #include "dbusinterface/displayinterface.h"
 #include "dbusinterface/dbusdocksetting.h"
 #include "dbusinterface/appearancedaemon_interface.h"
+#include "widgets/themeappicon.h"
 
 #include "views/global.h"
 #include "views/signalmanager.h"
@@ -39,7 +40,7 @@ void DBusController::init(){
     m_appController = new AppController(this);
 
     m_thumbnailTimer = new QTimer;
-    m_thumbnailTimer->setInterval(500);
+    m_thumbnailTimer->setInterval(1000);
 
     initConnect();
 }
@@ -210,6 +211,7 @@ void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call
 }
 
 void DBusController::requestIconByUrl(QString url, uint size){
+    qDebug() << __func__ << url;
     if (isAppGroup(url)){
         return;
     }
@@ -250,7 +252,7 @@ void DBusController::delayGetThumbnail(){
 }
 
 void DBusController::refreshThumail(QString url, uint size){
-    qDebug() << url;
+    qDebug() << __func__ << url;
     if (isAppGroup(url)){
         return;
     }
@@ -258,26 +260,29 @@ void DBusController::refreshThumail(QString url, uint size){
     if (!url.startsWith(FilePrefix)){
         _url = FilePrefix + url;
     }
-    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnail(_url, size);
+    QString mimetype = getMimeTypeName(url);
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
         qDebug() << iconUrl;
         if (iconUrl.length() == 0){
-            requestIconByUrl(url, size);
+            QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+            emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
         }else{
             emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
         }
     }else{
         qCritical() << reply.error().message();
         if (!isAppGroup(url)){
-            requestIconByUrl(url, size);
+            QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+            emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
         }
     }
 }
 
 void DBusController::requestThumbnail(QString url, uint size){
-    qDebug() << url;
+    qDebug() << __func__<< url;
     if (isAppGroup(url)){
         return;
     }
@@ -285,7 +290,8 @@ void DBusController::requestThumbnail(QString url, uint size){
     if (!url.startsWith(FilePrefix)){
         _url = FilePrefix + url;
     }
-    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnail(_url, size);
+    QString mimetype = getMimeTypeName(url);
+    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
@@ -299,6 +305,9 @@ void DBusController::requestThumbnail(QString url, uint size){
         if (m_thumbnails.contains(url)){
             m_thumbnails.removeOne(url);
         }
+//        requestIconByUrl(getMimeTypeIconName(url), size);
+        QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+        emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
     }
 }
 
@@ -382,7 +391,7 @@ void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher
             qDebug() << "renamed file move in app group" << desktopItemInfo.URI;
             getAppGroupItemsByUrl(desktopItemInfo.URI);
         }
-        if (getMineTypeGenericIconName(desktopItemInfo.URI) == "package-x-generic")
+        if (getMimeTypeGenericIconName(desktopItemInfo.URI) == "package-x-generic")
             requestIconByUrl(desktopItemInfo.URI, 48);
     } else {
         qCritical() << reply.error().message();
@@ -404,9 +413,8 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
     QDBusPendingReply<DesktopItemInfo> reply = *call;
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
-        qDebug() << desktopItemInfo.URI << desktopItemInfo.Icon << desktopItemInfo.thumbnail << desktopItemInfo.MIME;
+        qDebug() << desktopItemInfo.URI << desktopItemInfo.Icon << desktopItemInfo.thumbnail << desktopItemInfo.MIME << getMimeTypeName(desktopItemInfo.URI);
         /*ToDo desktop daemon settings judge*/
-        qDebug() << getMineTypeGenericIconName(desktopItemInfo.URI);
         if (desktopItemInfo.thumbnail.length() > 0){
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;
         }
