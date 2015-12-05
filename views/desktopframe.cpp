@@ -673,6 +673,9 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
 void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
     if (m_isDragStarted){
         emit signalManager->appGounpDetailClosed();
+        foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
+            pItem->showSimpWrapName();
+        }
         startDrag();
         emit signalManager->gridStatusUpdated();
     }else{

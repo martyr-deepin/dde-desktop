@@ -8,6 +8,7 @@ DragDropEventManager::DragDropEventManager(QObject *parent) : QObject(parent)
 }
 
 void DragDropEventManager::handleDragMoveEvent(const QList<DesktopItemPointer>& items, QDragMoveEvent *event){
+    qDebug() << event;
     DesktopFrame* m_parent = static_cast<DesktopFrame*>(parent());
     if (event->source() == m_parent){
         event->setDropAction(Qt::MoveAction);
