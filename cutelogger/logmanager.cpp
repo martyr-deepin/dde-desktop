@@ -5,7 +5,7 @@
 
 LogManager::LogManager()
 {
-    m_format = "%{time}{dd-MM-yyyy, HH:mm:ss.zzz} [%{type:-7}] [%{file:-25} %{line}] %{message}\n";
+    m_format = "%{time}{dd-MM-yyyy, HH:mm:ss.zzz} [%{type:-7}] [%{file:-25} %{function:-40} %{line}] %{message}\n";
 }
 
 void LogManager::initConsoleAppender(){

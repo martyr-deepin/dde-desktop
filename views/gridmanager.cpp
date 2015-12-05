@@ -101,6 +101,11 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
     m_columnCount = desktopColumn * width / desktopWidth;
     m_rowCount = desktopRow * height / desktopHeight;
 
+    m_availableDesktopItemRect = QRect(m_leftMargin,
+                                       m_topMargin,
+                                       desktopWidth - m_leftMargin - m_rightMargin,
+                                       desktopHeight - m_topMargin - m_bottomMargin);
+    qDebug() << desktopWidth << m_availableDesktopItemRect;
     m_xSpacing = (desktopWidth - m_leftMargin - m_rightMargin - m_itemWidth * desktopColumn)/ (desktopColumn - 1);
     m_ySpacing = (desktopHeight - m_topMargin - m_bottomMargin - m_itemHeight * desktopRow) / (desktopRow - 1);
     int x = m_leftMargin;
@@ -121,6 +126,10 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
         x =  x + m_itemWidth  + m_xSpacing;
 
     }
+    m_availableDesktopItemRect = QRect(m_leftMargin,
+                                       m_topMargin,
+                                       m_columnCount * m_itemWidth + (m_columnCount - 1)* m_xSpacing,
+                                       m_rowCount * m_itemHeight + (m_rowCount - 1)* m_ySpacing);
     clearDeskopItemsStatus();
     return m_list_items;
 }
@@ -151,8 +160,9 @@ GridItemPointer GridManager::getItemByPos(QPoint pos){
 }
 
 bool GridManager::isRectInGrid(QRect rect){
-    QRect desktopGridRect = QRect(m_leftMargin, m_topMargin, m_width, m_height);
+    QRect desktopGridRect = m_availableDesktopItemRect;
     bool flag = desktopGridRect.intersects(rect);
+    qDebug() << m_availableDesktopItemRect << rect << flag;
     return flag;
 }
 

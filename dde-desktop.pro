@@ -78,7 +78,8 @@ SOURCES += main.cpp \
     dbusinterface/appearancedaemon_interface.cpp \
     controllers/copyjobworker.cpp \
     controllers/movejobworker.cpp \
-    controllers/deletejobworker.cpp
+    controllers/deletejobworker.cpp \
+    dbusinterface/pinyin_interface.cpp
 
 
 HEADERS  += \
@@ -141,7 +142,8 @@ HEADERS  += \
     dbusinterface/appearancedaemon_interface.h \
     controllers/copyjobworker.h \
     controllers/movejobworker.h \
-    controllers/deletejobworker.h
+    controllers/deletejobworker.h \
+    dbusinterface/pinyin_interface.h
 
 TRANSLATIONS += translations/dde-desktop.ts
 
@@ -167,3 +169,6 @@ services.path = /usr/share/dbus-1/services
 services.files = dbusservices/com.deepin.dde.desktop.service
 
 INSTALLS += target qm_files services
+
+OTHER_FILES += \
+    dbusinterface/pinyin.xml

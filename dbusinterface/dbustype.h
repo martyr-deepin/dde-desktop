@@ -29,6 +29,10 @@ public:
     bool CanTrash;
     bool CanWrite;
 
+    /*custom property*/
+    QString pinyinName;
+    QString lowerPinyinName;
+
     DesktopItemInfo();
     ~DesktopItemInfo();
 

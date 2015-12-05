@@ -25,6 +25,8 @@ public:
     DesktopItemPointer getShoudBeMovedItem();
     DesktopItemPointer createItem(DesktopItemInfo& fileInfo);
     QList<DesktopItemPointer> getItems();
+    QList<DesktopItemPointer> getSortedItems();
+    QList<DesktopItemPointer> getCheckedSortedItems();
     QList<DesktopItemPointer> getItemsByStartEnd(QPoint startPos, QPoint endPos);
     QDir::SortFlags getSortFlag();
     QString getDesktopDisplayName(DesktopItemInfo& desktopItemInfo);
@@ -54,6 +56,8 @@ public slots:
     void saveItems();
     void changeSizeByGrid(SizeType type);
     void sortedByFlags(QDir::SortFlags flag);
+    void sortedItems();
+    void sortedByName();
     void sortedByKey(QString key);
     void resort();
 
@@ -71,6 +75,8 @@ public slots:
 
     void updateItems(QString url, const DesktopItemPointer& pItem);
     void handleItemsChanged();
+
+    void handlePinyinChanged(const QList<DesktopItemInfo>& items);
 private:
     QSettings m_settings;
     DesktopItemPointer m_pComputerItem;
@@ -79,6 +85,7 @@ private:
     QWidget* m_parentWindow;
     QDir::SortFlags m_sortFlag;
     QList<DesktopItemPointer> m_list_pItems;
+    QList<DesktopItemInfo> m_sortedPinyin_pItems;
     QMap<QString, DesktopItemPointer> m_pItems;
     AppGroupBox* m_appGroupBox=NULL;
     QTimer* m_gridUpdateTimer;

@@ -144,6 +144,9 @@ void DesktopItemManager::initConnect(){
 
     connect(signalManager, SIGNAL(screenGeometryChanged()),
             this, SLOT(closeAppGroupDetail()));
+
+    connect(signalManager, SIGNAL(pinyinResultChanged(QList<DesktopItemInfo>)),
+            this, SLOT(handlePinyinChanged(QList<DesktopItemInfo>)));
 }
 
 void DesktopItemManager::updateItems(QString url, const DesktopItemPointer &pItem){
@@ -159,6 +162,10 @@ void DesktopItemManager::handleItemsChanged(){
     }else{
         emit signalManager->rightBottomItemChangedtoBeContainer(false);
     }
+}
+
+void DesktopItemManager::handlePinyinChanged(const QList<DesktopItemInfo> &items){
+    m_sortedPinyin_pItems = items;
 }
 
 void DesktopItemManager::loadComputerTrashItems(){
@@ -511,6 +518,44 @@ QList<DesktopItemPointer> DesktopItemManager::getItems(){
     return m_list_pItems;
 }
 
+QList<DesktopItemPointer> DesktopItemManager::getSortedItems(){
+    QList<DesktopItemPointer> desktopItems;
+    for(int row = 0; row < gridManager->getItems().count(); row++){
+        GridListPointer plist = gridManager->getItems().at(row);
+        for (int column = 0; column < plist->count(); column++){
+            GridItemPointer pGridItem = plist->at(column);
+            if (!pGridItem.isNull()){
+                DesktopItemPointer pItem = getItemByPos(pGridItem->getPos());
+                if (!pItem.isNull()){
+                    desktopItems.append(pItem);
+                }
+            }
+        }
+    }
+    return desktopItems;
+}
+
+QList<DesktopItemPointer> DesktopItemManager::getCheckedSortedItems(){
+    QList<DesktopItemPointer> desktopItems;
+    for(int row = 0; row < gridManager->getItems().count(); row++){
+        GridListPointer plist = gridManager->getItems().at(row);
+        for (int column = 0; column < plist->count(); column++){
+            GridItemPointer pGridItem = plist->at(column);
+            if (!pGridItem.isNull()){
+                DesktopItemPointer pItem = getItemByPos(pGridItem->getPos());
+                if (!pItem.isNull()){
+                    if (pItem->isChecked()){
+                        desktopItems.append(pItem);
+                    }
+                }
+            }
+        }
+    }
+    return desktopItems;
+}
+
+
+
 QList<DesktopItemPointer> DesktopItemManager::getItemsByStartEnd(QPoint startPos, QPoint endPos){
     QList<DesktopItemPointer> items;
     int x1, x2, y1, y2;
@@ -567,6 +612,11 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){
             qCritical() << url;
         }
     }
+    sortedItems();
+    m_sortFlag = flag;
+}
+
+void DesktopItemManager::sortedItems(){
     int columnCount = gridManager->getColumnCount();
     int rowCount = gridManager->getRowCount();
     int index = 0;
@@ -606,12 +656,30 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){
         }
     }
     emit signalManager->desktopItemsSaved();
-    m_sortFlag = flag;
+}
+
+void DesktopItemManager::sortedByName(){
+    gridManager->clearDeskopItemsStatus();
+    m_settings.clear();
+    m_list_pItems.clear();
+    int mode = dbusController->getDockMode();
+    if (mode != 0){
+        m_list_pItems.append(m_pComputerItem);
+        m_list_pItems.append(m_pTrashItem);
+    }
+    for(int i=0; i<m_sortedPinyin_pItems.count(); i++){
+        QString URI = m_sortedPinyin_pItems.at(i).URI;
+        QString url = decodeUrl(URI);
+        if (m_pItems.contains(url)){
+            m_list_pItems.append(m_pItems.value(url));
+        }
+    }
+    sortedItems();
 }
 
 void DesktopItemManager::sortedByKey(QString key){
     if (key == "name"){
-        sortedByFlags(QDir::Name);
+        sortedByName();
     }else if (key == "size"){
         sortedByFlags(QDir::Size);
     }else if (key == "filetype"){
@@ -724,7 +792,9 @@ void DesktopItemManager::updateGridStatus(){
             }
         }
    }
-   qDebug() << errorPositonItems;
+    foreach (DesktopItemPointer pItem, errorPositonItems) {
+        qDebug() << pItem->getDesktopName();
+    }
 }
 
 DesktopItemManager::~DesktopItemManager()

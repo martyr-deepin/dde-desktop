@@ -18,6 +18,7 @@ class CreateFileJobInterface;
 class CreateFileFromTemplateJobInterface;
 class AppearanceDaemonInterface;
 class DisplayInterface;
+class PinyinInterface;
 class FileMonitor;
 class QTimer;
 class DBusDockSetting;
@@ -39,6 +40,9 @@ class AppController;
 #define Appearance_path "/com/deepin/daemon/Appearance"
 
 #define Watcher_service "com.deepin.filemanager.Backend.Watcher"
+
+#define Pinyin_service "com.deepin.api.Pinyin"
+#define Pinyin_path "/com/deepin/api/Pinyin"
 
 typedef QSharedPointer<FileMonitorInstanceInterface> FileMonitorInstanceInterfacePointer;
 
@@ -154,6 +158,10 @@ public slots:
     /*request thumbnail to update icon for get icon error by tmp file*/
     void refreshThumail(QString url, uint size=48);
 
+    /*request pinyin convert*/
+    void convertNameToPinyin();
+    void sortPingyinEnglish();
+
 private:
     FileMonitor* m_fileMonitor = NULL;
     FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;
@@ -167,16 +175,19 @@ private:
     CreateFileJobInterface* m_createFileJobInterface = NULL;
     CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface = NULL;
     DisplayInterface* m_displayInterface;
+    PinyinInterface* m_pinyinInterface;
     DBusDockSetting* m_dockSettingInterface = NULL;
     AppearanceDaemonInterface* m_appearanceInterface;
     AppController* m_appController;
 
     DesktopItemInfoMap m_desktopItemInfoMap;
     QMap<QString, DesktopItemInfoMap> m_appGroups;
+    QList<DesktopItemInfo> m_sortedPinyinInfos;
 
     QString m_itemShoudBeMoved;
 
     QTimer* m_thumbnailTimer;
+    QTimer* m_pinyinTimer;
     QString m_currentThumbnail;
     QStringList m_thumbnails;
 

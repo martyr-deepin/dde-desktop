@@ -72,6 +72,7 @@ void DesktopBox::renameFinished(){
         }
         emit signalManager->renameJobCreated(pItem->getRawUrl(), fileName);
         pItem->getTextEdit()->showText();
+        m_desktopFrame->setFocus();
     }
 }
 

@@ -224,6 +224,9 @@ signals:
 
     /*rename tip dialog show*/
     void renameDialogShowed(QString name);
+
+    /*send pinyin result to desktopitem manager*/
+    void pinyinResultChanged(const QList<DesktopItemInfo>& infos);
 private:
     Q_DISABLE_COPY(SignalManager)
 };

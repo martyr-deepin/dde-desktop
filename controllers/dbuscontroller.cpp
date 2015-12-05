@@ -13,6 +13,7 @@
 #include "dbusinterface/displayinterface.h"
 #include "dbusinterface/dbusdocksetting.h"
 #include "dbusinterface/appearancedaemon_interface.h"
+#include "dbusinterface/pinyin_interface.h"
 #include "widgets/themeappicon.h"
 
 #include "views/global.h"
@@ -21,6 +22,18 @@
 #include "widgets/util.h"
 #include "appcontroller.h"
 #include "trashjobcontroller.h"
+
+
+inline bool compareByName(const QString& name1, const QString& name2)
+{
+    return name1 < name2;
+}
+
+inline bool appNameLessThan(const DesktopItemInfo &info1, const DesktopItemInfo &info2)
+{
+    return compareByName(info1.lowerPinyinName, info2.lowerPinyinName);
+}
+
 
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
@@ -35,12 +48,17 @@ void DBusController::init(){
     m_clipboardInterface = new ClipboardInterface(FileMonitor_service, Clipboard_path, bus, this);
     m_dockSettingInterface = new DBusDockSetting(this);
     m_displayInterface = new DisplayInterface(this);
+    m_pinyinInterface = new PinyinInterface(Pinyin_service, Pinyin_path, QDBusConnection::sessionBus(), this);
     m_appearanceInterface = new AppearanceDaemonInterface(Appearance_service, Appearance_path, bus, this);
     m_fileMonitor = new FileMonitor(this);
     m_appController = new AppController(this);
 
-    m_thumbnailTimer = new QTimer;
+    m_thumbnailTimer = new QTimer(this);
     m_thumbnailTimer->setInterval(1000);
+
+    m_pinyinTimer = new QTimer(this);
+    m_pinyinTimer->setSingleShot(true);
+    m_pinyinTimer->setInterval(1000);
 
     initConnect();
 }
@@ -89,6 +107,7 @@ void DBusController::initConnect(){
 
     connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
     connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
+    connect(m_pinyinTimer, SIGNAL(timeout()), this, SLOT(convertNameToPinyin()));
     connect(m_displayInterface, SIGNAL(PrimaryRectChanged()), signalManager, SIGNAL(screenGeometryChanged()));
     connect(m_displayInterface, SIGNAL(PrimaryChanged()), signalManager, SIGNAL(screenGeometryChanged()));
     connect(signalManager, SIGNAL(gtkIconThemeChanged()), this, SLOT(handelIconThemeChanged()));
@@ -157,6 +176,8 @@ void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *c
         emit signalManager->desktopItemsChanged(desktopItems);
 
         m_desktopItemInfoMap = desktopItems;
+
+        m_pinyinTimer->start();
 
         foreach (QString url, desktopItems.keys()) {
             if (isAppGroup(decodeUrl(url))){
@@ -234,7 +255,7 @@ void DBusController::requestIconByUrl(QString url, uint size){
         QString iconUrl = reply.argumentAt(0).toString();
         qDebug() << url << iconUrl;
         if (iconUrl.length() == 0){
-            return;
+             iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
         }
         emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
     }else{
@@ -277,6 +298,7 @@ void DBusController::refreshThumail(QString url, uint size){
         if (!isAppGroup(url)){
             QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
             emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
+            requestIconByUrl(url, size);
         }
     }
 }
@@ -305,11 +327,64 @@ void DBusController::requestThumbnail(QString url, uint size){
         if (m_thumbnails.contains(url)){
             m_thumbnails.removeOne(url);
         }
-//        requestIconByUrl(getMimeTypeIconName(url), size);
+        requestIconByUrl(url, size);
         QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
         emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
     }
 }
+
+void DBusController::convertNameToPinyin(){
+    QStringList names;
+    for(int i=0; i< m_desktopItemInfoMap.count(); i++){
+        names.append(m_desktopItemInfoMap.values()[i].DisplayName);
+    }
+
+    QDBusPendingReply<QString> reply = m_pinyinInterface->QueryList(names);
+    reply.waitForFinished();
+    if (!reply.isError()){
+        QString result = reply.argumentAt(0).toString();
+        QJsonObject obj = QJsonObject::fromVariantMap(QJsonDocument::fromJson(result.toLocal8Bit()).toVariant().toMap());
+        foreach(QString key, m_desktopItemInfoMap.keys()){
+            QString displayName = m_desktopItemInfoMap.value(key).DisplayName;
+            QString uri = m_desktopItemInfoMap.value(key).URI;
+            if (obj.contains(displayName)){
+                  QList<QVariant> pinyins  = obj.value(displayName).toVariant().toList();
+                  if (pinyins.length() > 0){
+                      if (isAppGroup(uri)){
+                          m_desktopItemInfoMap[key].pinyinName = pinyins.at(0).toString().mid(QString(RichDirPrefix).length());
+                      }else{
+                        m_desktopItemInfoMap[key].pinyinName = pinyins.at(0).toString();
+                      }
+                      m_desktopItemInfoMap[key].lowerPinyinName = m_desktopItemInfoMap[key].pinyinName.toLower();
+                  }
+            }
+        }
+        sortPingyinEnglish();
+    }else{
+        qCritical() << reply.error().message();
+    }
+}
+
+
+void DBusController::sortPingyinEnglish(){
+    QList<DesktopItemInfo> pinyinInfos;
+    QList<DesktopItemInfo> englishInfos;
+    foreach (DesktopItemInfo info, m_desktopItemInfoMap.values()) {
+        if (info.pinyinName.length() > 0 && info.DisplayName.length() > 0){
+            if (info.pinyinName.at(0) == info.DisplayName.at(0)){
+                englishInfos.append(info);
+            }else{
+                pinyinInfos.append(info);
+            }
+        }
+    }
+    std::sort(pinyinInfos.begin(), pinyinInfos.end(), appNameLessThan);
+    std::sort(englishInfos.begin(), englishInfos.end(), appNameLessThan);
+    m_sortedPinyinInfos.clear();
+    m_sortedPinyinInfos = pinyinInfos + englishInfos;
+    emit signalManager->pinyinResultChanged(m_sortedPinyinInfos);
+}
+
 
 QMap<QString, DesktopItemInfoMap> DBusController::getAppGroups(){
     return m_appGroups;
@@ -460,6 +535,7 @@ void DBusController::handleFileCreated(const QString &path){
             qDebug() << "*******" << "created invalid file(not .desktop file)"<< "*********";
         }
     }
+    m_pinyinTimer->start();
 }
 
 void DBusController::handleFileDeleted(const QString &path){
@@ -479,6 +555,7 @@ void DBusController::handleFileDeleted(const QString &path){
         qDebug() << "delete desktop app group folder:" << path;
         getAppGroupItemsByUrl(f.path());
     }
+    m_pinyinTimer->start();
 }
 
 
@@ -492,6 +569,7 @@ void DBusController::handleFileMovedIn(const QString &path){
         qDebug() << "move file in App Group" << path;
        getAppGroupItemsByUrl(f.path());
    }
+   m_pinyinTimer->start();
 }
 
 
@@ -506,6 +584,7 @@ void DBusController::handleFileMovedOut(const QString &path){
          qDebug() << "move file out App Group" << path;
         getAppGroupItemsByUrl(f.path());
     }
+    m_pinyinTimer->start();
 }
 
 
@@ -529,6 +608,7 @@ void DBusController::handleFileRenamed(const QString &oldPath, const QString &ne
         emit signalManager->itemShoudBeMoved(oldPath);
         asyncRenameDesktopItemByUrl(newPath);
     }
+    m_pinyinTimer->start();
 }
 
 void DBusController::updateDesktopItemInfoMap(DesktopItemInfo desktopItemInfo){
