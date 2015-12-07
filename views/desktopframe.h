@@ -28,7 +28,6 @@ public:
     DesktopItemPointer getTopDesktopItemByPos(QPoint pos);
 
     void unCheckAllItems();
-    void unCheckCheckedItems();
     void checkRaiseItem(DesktopItemPointer pItem);
     void unCheckItem(DesktopItemPointer pItem);
     void checkDesktopItemsByRect(QRect rect);
@@ -65,6 +64,7 @@ signals:
 public slots:
     void setCtrlPressed(bool pressed);
     void setShiftPressed(bool pressed);
+    void unCheckCheckedItems();
     void changeGridBySizeType(SizeType type);
     void changeGridMode(bool mode);
     void setLastCheckedDesktopItem(DesktopItemPointer pItem);

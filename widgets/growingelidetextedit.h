@@ -23,6 +23,7 @@ signals:
     void heightChanged(int height);
     void renameFinished();
     void menuShowed(QPoint pos);
+    void returnEnterPressed();
 
 public slots:
     void showSimpleElideText();

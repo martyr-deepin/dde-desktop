@@ -227,6 +227,9 @@ signals:
 
     /*send pinyin result to desktopitem manager*/
     void pinyinResultChanged(const QList<DesktopItemInfo>& infos);
+
+    /*growing edit enter/return pressed*/
+    void returnEnterPressed();
 private:
     Q_DISABLE_COPY(SignalManager)
 };

@@ -67,10 +67,10 @@ void GrowingElideTextEdit::elideText(){
     }
     fullWrapText = texts.join("\n");
     if (texts.length() >= 2){
-        QString elidedText = fm.elidedText(texts.mid(1).join("\n"), Qt::ElideMiddle, fmWidth);
+        QString elidedText = fm.elidedText(texts.mid(1).join(""), Qt::ElideMiddle, fmWidth);
         QStringList simpleList;
         simpleList << texts.at(0) << elidedText;
-        simpleWrapText = simpleList.join("\n");
+        simpleWrapText = simpleList.join("");
     }else{
         simpleWrapText = texts.at(0);
     }
@@ -158,8 +158,8 @@ void GrowingElideTextEdit::keyPressEvent(QKeyEvent *event){
         return;
     }else if ((event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Return)
               || (event->modifiers() == Qt::KeypadModifier && event->key() == Qt::Key_Enter)){
-        qDebug() << "Key_Return" << "Key_Enter";
-        tryRenamed();
+        qDebug() << "Key_Return" << "Key_Enter" << toPlainText();
+        emit returnEnterPressed();
         return;
     }
     QTextEdit::keyPressEvent(event);

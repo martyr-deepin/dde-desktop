@@ -92,10 +92,12 @@ void DesktopItem::initConnect(){
     connect(m_textedit, SIGNAL(heightChanged(int)), this, SLOT(updateHeight(int)));
     connect(m_textedit, SIGNAL(renameFinished()), signalManager, SIGNAL(renameFinished()));
     connect(m_textedit, SIGNAL(menuShowed(QPoint)),this, SLOT(showContextMenu(QPoint)));
+    connect(m_textedit, SIGNAL(returnEnterPressed()), signalManager, SIGNAL(returnEnterPressed()));
     connect(signalManager, SIGNAL(desktopItemNameCuted(QString)), this, SLOT(handleCut(QString)));
     connect(signalManager, SIGNAL(desktopItemNameCopyed(QString)), this, SLOT(handleCopy(QString)));
     connect(signalManager, SIGNAL(desktopItemNamePasted(QString)), this, SLOT(handlePaste(QString)));
     connect(signalManager, SIGNAL(desktopItemNameSelectAll(QString)), this, SLOT(handleSelectAll(QString)));
+
 }
 
 void DesktopItem::updateHeight(int textHeight){

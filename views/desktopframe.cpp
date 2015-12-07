@@ -78,6 +78,7 @@ void DesktopFrame::initConnect(){
     connect(m_mouseMoveCheckTimer, SIGNAL(timeout()), this, SLOT(handleMouseMoveCheckItems()));
 
     connect(signalManager, SIGNAL(contextMenuShowed(bool)), this ,SLOT(setMenuShowed(bool)));
+    connect(signalManager, SIGNAL(returnEnterPressed()), this, SLOT(unCheckCheckedItems()));
 }
 
 QSharedPointer<DesktopItemManager> DesktopFrame::getDesktopItemManager(){
