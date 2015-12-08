@@ -8,6 +8,7 @@
 
 class AppGroupBox;
 class QTimer;
+class DesktopFrame;
 
 class DesktopItemManager : public QObject
 {
@@ -82,7 +83,7 @@ private:
     DesktopItemPointer m_pComputerItem;
     DesktopItemPointer m_pTrashItem;
     DesktopItemPointer m_shoudbeMovedItem;
-    QWidget* m_parentWindow;
+    DesktopFrame* m_parentWindow;
     QDir::SortFlags m_sortFlag;
     QList<DesktopItemPointer> m_list_pItems;
     QList<DesktopItemInfo> m_sortedPinyin_pItems;

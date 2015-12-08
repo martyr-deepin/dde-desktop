@@ -269,6 +269,7 @@ void DesktopFrame::addCheckedDesktopItem(DesktopItemPointer pItem){
 }
 
 void DesktopFrame::removeCheckedDesktopItem(DesktopItemPointer pItem){
+    qDebug() << pItem << m_checkedDesktopItems.contains(pItem);
     if (m_checkedDesktopItems.contains(pItem)){
         int index = m_checkedDesktopItems.indexOf(pItem);
         m_checkedDesktopItems.removeAt(index);

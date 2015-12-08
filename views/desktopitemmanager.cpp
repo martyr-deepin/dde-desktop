@@ -457,8 +457,11 @@ void DesktopItemManager::deleteItem(QString url){
             m_list_pItems.removeOne(pItem);
         }
         m_pItems.remove(_url);
+        m_parentWindow->removeCheckedDesktopItem(pItem);
         pItem->close();
         pItem.clear();
+
+
 
         handleItemsChanged();
     }

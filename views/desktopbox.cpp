@@ -90,7 +90,7 @@ void DesktopBox::handleScreenGeometryChanged(){
 }
 
 void DesktopBox::keyPressEvent(QKeyEvent *event){
-    qDebug() << event->modifiers() << event->key();
+//    qDebug() << event->modifiers() << event->key();
     bool m_isGridOn = m_desktopFrame->isGridOn();
 
     if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_Control){
@@ -221,7 +221,7 @@ void DesktopBox::keyReleaseEvent(QKeyEvent *event){
         qDebug() << "===================";
     }
 
-    qDebug() << event->modifiers() << event->key();
+//    qDebug() << event->modifiers() << event->key();
 
     TranslucentFrame::keyReleaseEvent(event);
 }
