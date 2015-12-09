@@ -3,6 +3,7 @@
 #include <QStandardPaths>
 #include "widgets/util.h"
 
+
 QString getThumbnailsPath(){
     QString cachePath = QStandardPaths::standardLocations(QStandardPaths::CacheLocation).at(0);
     QString thumbnailPath = joinPath(cachePath, "thumbnails");
@@ -121,11 +122,9 @@ bool isDesktopAppFile(QString url){
 }
 
 bool isRequestThumbnail(QString url){
-    QMimeDatabase mimeDataBae;
-    QMimeType mimeType = mimeDataBae.mimeTypeForFile(deleteFilePrefix(url));
-    bool isImage = mimeType.genericIconName() == "image-x-generic";
-    bool isText = mimeType.genericIconName() == "text-x-generic" && !isDesktopAppFile(url);
-    if (isImage || isText){
+    QString mimetypeName = getMimeTypeName(url);
+    qDebug() << mimetypeName;
+    if (SupportMimeTypes.contains(mimetypeName)){
         return true;
     }else{
         return false;

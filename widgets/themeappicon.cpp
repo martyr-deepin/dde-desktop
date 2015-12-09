@@ -35,6 +35,7 @@ QPixmap ThemeAppIcon::getIconPixmap(QString iconPath, int width, int height){
     } else {
         // try to read the iconPath as a icon name.
         QString path = getThemeIconPath(iconPath);
+        qDebug() << path << path.isEmpty();
         if (path.isEmpty())
             path = getThemeIconPath("application-default-icon");
         if (path.endsWith(".svg")) {
@@ -66,7 +67,7 @@ QString ThemeAppIcon::getThemeIconPath(QString iconName)
     char* aname = NULL;
     g_object_get(gs, "gtk-icon-theme-name", &aname, NULL);
 
-    qDebug() << "default gtk icon theme name:" << aname;
+    qDebug() << "default gtk icon theme name:" << iconName << aname;
     auto theme = gtk_icon_theme_new();
     gtk_icon_theme_set_custom_theme(theme, aname);
 

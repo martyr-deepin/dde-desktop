@@ -23,6 +23,10 @@
 #define TrashUrl "trash://"
 #define FilePrefix "file://"
 
+const QSet<QString> SupportMimeTypes{"image/png" ,"image/jpeg" , "image/gif"
+                                      , "image/bmp", "image/tiff" , "image/svg+xml"
+                                      , "application/pdf"
+                                    };
 QString getThumbnailsPath();
 QString decodeUrl(QString url);
 QString deleteFilePrefix(QString path);

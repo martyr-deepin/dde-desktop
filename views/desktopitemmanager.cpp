@@ -156,7 +156,7 @@ void DesktopItemManager::updateItems(QString url, const DesktopItemPointer &pIte
 }
 
 void DesktopItemManager::handleItemsChanged(){
-    qDebug() << "handleItemsChanged" << gridManager->isFull();
+    qDebug() << "Is gridManager is Full:"<< gridManager->isFull();
     if (gridManager->isFull()){
         emit signalManager->rightBottomItemChangedtoBeContainer(true);
     }else{
@@ -275,12 +275,12 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
     int height = gridManager->getItemHeight();
 
     QString desktopDisplayName = getDesktopDisplayName(fileInfo);
-    QString displayName = fileInfo.DisplayName;
     QString uri = fileInfo.URI;
     QString url = decodeUrl(uri);
     QString icon = fileInfo.Icon;
 
-    DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(defaut_icon, desktopDisplayName, m_parentWindow);
+    DesktopItemPointer  pDesktopItem = DesktopItemPointer::create(m_parentWindow);
+    pDesktopItem->setDesktopName(desktopDisplayName);
     pDesktopItem->setUrl(url);
     pDesktopItem->setRaWUrl(uri);
     pDesktopItem->setDesktopIcon(icon);
@@ -312,7 +312,6 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
         QPoint pos = setting.value(key, defaultPos).toPoint();
         pDesktopItem->move(pos);
         GridItemPointer pGridItem = gridManager->getItemByPos(pos);
-        qDebug() << __func__ << pGridItem.isNull();
         if (!pGridItem.isNull()){
             pGridItem->setDesktopItem(true);
         }

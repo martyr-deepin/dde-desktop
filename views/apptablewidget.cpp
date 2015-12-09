@@ -61,8 +61,9 @@ void AppTableWidget::addItems(QList<DesktopItemInfo> itemInfos){
             QString url = decodeUrl(uri);
             QString icon = fileInfo.Icon;
 
-            DesktopItem*  pDesktopItem = new DesktopItem(defaut_icon, displayName, this);
+            DesktopItem*  pDesktopItem = new DesktopItem(this);
             pDesktopItem->setFocusPolicy(Qt::NoFocus);
+            pDesktopItem->setDesktopName(displayName);
             pDesktopItem->setUrl(url);
             pDesktopItem->setDesktopIcon(icon);
             pDesktopItem->setDesktopItemInfo(fileInfo);

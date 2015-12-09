@@ -167,8 +167,10 @@ void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *c
         for(int i=0; i < desktopItems.count(); i++){
             QString key = desktopItems.keys().at(i);
             DesktopItemInfo info = desktopItems.values().at(i);
-//            qDebug() << info.BaseName << info.Icon << info.thumbnail;
-            if (info.thumbnail.length() > 0){
+            bool isRequestThumbnailFlag = isRequestThumbnail(info.URI);
+            qDebug() << info.URI << info.BaseName << info.Icon << info.thumbnail;
+            qDebug() << "isRequestThumbnailFlag" << isRequestThumbnailFlag;
+            if (info.thumbnail.length() > 0 && isRequestThumbnailFlag){
                 info.Icon = info.thumbnail;
             }
             desktopItems.insert(key, info);
@@ -281,6 +283,11 @@ void DBusController::refreshThumail(QString url, uint size){
     if (!url.startsWith(FilePrefix)){
         _url = FilePrefix + url;
     }
+
+    if(!isRequestThumbnail(url)){
+        return;
+    }
+
     QString mimetype = getMimeTypeName(url);
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
     reply.waitForFinished();
@@ -312,6 +319,11 @@ void DBusController::requestThumbnail(QString url, uint size){
     if (!url.startsWith(FilePrefix)){
         _url = FilePrefix + url;
     }
+
+    if(!isRequestThumbnail(url)){
+        return;
+    }
+
     QString mimetype = getMimeTypeName(url);
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
     reply.waitForFinished();
@@ -490,12 +502,13 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
         qDebug() << desktopItemInfo.URI << desktopItemInfo.Icon << desktopItemInfo.thumbnail << desktopItemInfo.MIME << getMimeTypeName(desktopItemInfo.URI);
         /*ToDo desktop daemon settings judge*/
-        if (desktopItemInfo.thumbnail.length() > 0){
+        bool isRequestThumbnailFlag = isRequestThumbnail(desktopItemInfo.URI);
+        if (desktopItemInfo.thumbnail.length() > 0 && isRequestThumbnailFlag){
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;
         }
         m_thumbnails.append(desktopItemInfo.URI);
-        qDebug() << desktopItemInfo.URI << isRequestThumbnail(desktopItemInfo.URI);
-        if (isRequestThumbnail(desktopItemInfo.URI)){
+        qDebug() << desktopItemInfo.URI << isRequestThumbnailFlag;
+        if (isRequestThumbnailFlag){
             m_thumbnailTimer->start();
         }
         emit signalManager->itemCreated(desktopItemInfo);
