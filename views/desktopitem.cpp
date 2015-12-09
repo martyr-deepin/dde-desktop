@@ -194,10 +194,10 @@ void DesktopItem::setDesktopIcon(QString icon){
                 m_desktopIcon.save(cacheIcon);
             }
 //            addImageShadow();
-        }else if (mimeType.genericIconName() == "text-x-generic" && !isDesktopAppFile(m_url)){
+        }/*else if (mimeType.genericIconName() == "text-x-generic" && !isDesktopAppFile(m_url)){
             if (QFileInfo(cacheIcon).exists()){
                 m_desktopIcon = QPixmap(cacheIcon);
-            }/*else{
+            }else{
                 m_desktopIcon = QPixmap(icon);
                 QPixmap mask(m_iconLabel->size());
                 QSvgRenderer maskRenderer(QString(":/images/skin/images/diban.svg"));
@@ -217,8 +217,8 @@ void DesktopItem::setDesktopIcon(QString icon){
                 painter2.end();
                 m_desktopIcon = s;
                 m_desktopIcon.save(cacheIcon);
-            }*/
-        }else{
+            }
+        }*/else{
             if (icon.length() > 0){
                 m_desktopIcon = QPixmap(icon);
             }else{

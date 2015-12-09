@@ -172,7 +172,10 @@ void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *c
             qDebug() << "isRequestThumbnailFlag" << isRequestThumbnailFlag;
             if (info.thumbnail.length() > 0 && isRequestThumbnailFlag){
                 info.Icon = info.thumbnail;
+            }else if(info.thumbnail.length() > 0 && !isRequestThumbnailFlag){
+                info.thumbnail = "";
             }
+
             desktopItems.insert(key, info);
         }
         emit signalManager->desktopItemsChanged(desktopItems);
@@ -514,7 +517,7 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
         emit signalManager->itemCreated(desktopItemInfo);
         qDebug() << "asyncCreateDesktopItemByUrlFinished" << desktopItemInfo.thumbnail <<"11111111111";
         updateDesktopItemInfoMap(desktopItemInfo);
-
+        qDebug() << "isAppGroup(desktopItemInfo.URI)" << isAppGroup(desktopItemInfo.URI);
         if (isAppGroup(desktopItemInfo.URI)){
             getAppGroupItemsByUrl(desktopItemInfo.URI);
         }
@@ -541,7 +544,7 @@ void DBusController::handleFileCreated(const QString &path){
         connect(refreshTimer, SIGNAL(timeout()), refreshTimer, SLOT(deleteLater()));
         refreshTimer->start();
     }else{
-        if(isApp(path)){
+        if(isApp(path) && isAppGroup(f.path())){
             qDebug() << "create file in app group" << path;
             getAppGroupItemsByUrl(f.path());
         }else{
@@ -850,9 +853,12 @@ void DBusController::handelIconThemeChanged(){
     requestIconByUrl(ComputerUrl, 48);
     requestIconByUrl(TrashUrl, 48);
     foreach(QString url, m_desktopItemInfoMap.keys()){
+        qDebug() << getMimeTypeName(url);
         if (m_desktopItemInfoMap.value(url).thumbnail.length() == 0){
-            requestIconByUrl(url, 48);;
-        }
+            requestIconByUrl(url, 48);
+        }/*else if (m_desktopItemInfoMap.value(url).thumbnail.length() > 0 && getMimeTypeName(url) == "text/plain"){
+            requestIconByUrl(url, 48);
+        }*/
     }
 }
 
