@@ -502,7 +502,7 @@ void DesktopItemManager::changeSizeByGrid(SizeType type){
 
 DesktopItemPointer DesktopItemManager::getItemByPos(QPoint pos){
     foreach (DesktopItemPointer pItem, m_list_pItems) {
-        if (pItem->pos() == pos){
+        if (pItem->pos() == pos && pos!=gridManager->getRightBottomItem()->getPos()){
             return pItem;
         }
     }
@@ -520,6 +520,17 @@ QList<DesktopItemPointer> DesktopItemManager::getItems(){
     return m_list_pItems;
 }
 
+QList<DesktopItemPointer> DesktopItemManager::getRightBottomItems()
+{
+    QList<DesktopItemPointer> desktopItems;
+    foreach (DesktopItemPointer pItem, m_list_pItems) {
+        if (pItem->pos() == gridManager->getRightBottomItem()->getPos()){
+            desktopItems.append(pItem);
+        }
+    }
+    return desktopItems;
+}
+
 QList<DesktopItemPointer> DesktopItemManager::getSortedItems(){
     QList<DesktopItemPointer> desktopItems;
     for(int row = 0; row < gridManager->getItems().count(); row++){
@@ -527,9 +538,13 @@ QList<DesktopItemPointer> DesktopItemManager::getSortedItems(){
         for (int column = 0; column < plist->count(); column++){
             GridItemPointer pGridItem = plist->at(column);
             if (!pGridItem.isNull()){
-                DesktopItemPointer pItem = getItemByPos(pGridItem->getPos());
-                if (!pItem.isNull()){
-                    desktopItems.append(pItem);
+                if (pGridItem == gridManager->getRightBottomItem()){
+                    desktopItems.append(getRightBottomItems());
+                }else{
+                    DesktopItemPointer pItem = getItemByPos(pGridItem->getPos());
+                    if (!pItem.isNull()){
+                        desktopItems.append(pItem);
+                    }
                 }
             }
         }
@@ -544,12 +559,16 @@ QList<DesktopItemPointer> DesktopItemManager::getCheckedSortedItems(){
         for (int column = 0; column < plist->count(); column++){
             GridItemPointer pGridItem = plist->at(column);
             if (!pGridItem.isNull()){
-                DesktopItemPointer pItem = getItemByPos(pGridItem->getPos());
-                if (!pItem.isNull()){
-                    if (pItem->isChecked()){
-                        desktopItems.append(pItem);
+//                if (pGridItem == gridManager->getRightBottomItem()){
+//                    desktopItems.append(getRightBottomItems());
+//                }else{
+                    DesktopItemPointer pItem = getItemByPos(pGridItem->getPos());
+                    if (!pItem.isNull()){
+                        if (pItem->isChecked()){
+                            desktopItems.append(pItem);
+                        }
                     }
-                }
+//                }
             }
         }
     }

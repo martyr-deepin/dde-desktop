@@ -140,7 +140,7 @@ DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
 }
 
 void DesktopFrame::checkDesktopItemsByRect(QRect rect){
-    foreach (DesktopItemPointer pItem, m_desktopItemManager->getSortedItems()) {
+    foreach (DesktopItemPointer pItem, m_desktopItemManager->getItems()) {
         if (rect.intersects(pItem->geometry())){
             if (!pItem->isChecked()){
                 pItem->setChecked(true);
@@ -492,7 +492,9 @@ void DesktopFrame::startDrag(){
                     QList<DesktopItemPointer> insideDesktopItems; // 桌面范围内的desktopitems
                     QList<DesktopItemPointer> occupiedDesktopItems; // 位置被占据了的desktopitems
 
-                    foreach (DesktopItemPointer pItem, m_desktopItemManager->getCheckedSortedItems()) {//清空gridItem状态, 如果超出桌面范围, 设置相应gridItem无法容纳desktopitem
+                    QSet<DesktopItemPointer> checkedItems = QSet<DesktopItemPointer>::fromList(m_desktopItemManager->getCheckedSortedItems() + getCheckedDesktopItems());
+
+                    foreach (DesktopItemPointer pItem, checkedItems) {//清空gridItem状态, 如果超出桌面范围, 设置相应gridItem无法容纳desktopitem
                         GridItemPointer pGridItem = gridManager->getItemByPos(pItem->pos());
                         if (!pGridItem.isNull())
                             pGridItem->setDesktopItem(false);

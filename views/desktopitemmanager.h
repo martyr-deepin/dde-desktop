@@ -26,6 +26,7 @@ public:
     DesktopItemPointer getShoudBeMovedItem();
     DesktopItemPointer createItem(DesktopItemInfo& fileInfo);
     QList<DesktopItemPointer> getItems();
+    QList<DesktopItemPointer> getRightBottomItems();
     QList<DesktopItemPointer> getSortedItems();
     QList<DesktopItemPointer> getCheckedSortedItems();
     QList<DesktopItemPointer> getItemsByStartEnd(QPoint startPos, QPoint endPos);
