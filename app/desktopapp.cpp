@@ -138,11 +138,14 @@ void DesktopApp::confimConflict(const QMap<QString, QString> &jobDetail, const Q
 }
 
 void DesktopApp::confirmRenameDialog(QString name){
+    if (name.startsWith(RichDirPrefix)){
+        name = name.mid(QString(RichDirPrefix).length());
+    }
     qDebug() << "confirmRenameDialog" << name;
     DDialog* d = new DDialog(m_desktopBox);
     d->setModal(false);
     d->setTitle(tr("\"%1\" already exists, please select a different name.").arg(name));
-    d->addButton(tr("Confirm"));
+    d->addButton(tr("Confirm"), true);
     d->setIconPixmap((QPixmap(":/images/skin/dialogs/images/dialog-warning.svg")));
     d->show();
 }

@@ -364,13 +364,10 @@ void DBusController::convertNameToPinyin(){
             QString uri = m_desktopItemInfoMap.value(key).URI;
             if (obj.contains(displayName)){
                   QList<QVariant> pinyins  = obj.value(displayName).toVariant().toList();
+                  qDebug() << displayName << pinyins;
                   if (pinyins.length() > 0){
-                      if (isAppGroup(uri)){
-                          m_desktopItemInfoMap[key].pinyinName = pinyins.at(0).toString().mid(QString(RichDirPrefix).length());
-                      }else{
                         m_desktopItemInfoMap[key].pinyinName = pinyins.at(0).toString();
-                      }
-                      m_desktopItemInfoMap[key].lowerPinyinName = m_desktopItemInfoMap[key].pinyinName.toLower();
+                        m_desktopItemInfoMap[key].lowerPinyinName = m_desktopItemInfoMap[key].pinyinName.toLower();
                   }
             }
         }
@@ -386,7 +383,7 @@ void DBusController::sortPingyinEnglish(){
     QList<DesktopItemInfo> englishInfos;
     foreach (DesktopItemInfo info, m_desktopItemInfoMap.values()) {
         if (info.pinyinName.length() > 0 && info.DisplayName.length() > 0){
-            if (info.pinyinName.at(0) == info.DisplayName.at(0)){
+            if (info.lowerPinyinName.at(0) == info.DisplayName.toLower().at(0)){
                 englishInfos.append(info);
             }else{
                 pinyinInfos.append(info);
