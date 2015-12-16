@@ -98,7 +98,9 @@ bool DesktopFrame::isCtrlPressed(){
 }
 
 void DesktopFrame::setCtrlPressed(bool pressed){
-    m_ctrlPressed = pressed;
+    if (m_ctrlPressed != pressed){
+        m_ctrlPressed = pressed;
+    }
 }
 
 bool DesktopFrame::isShiftPressed(){
@@ -106,11 +108,13 @@ bool DesktopFrame::isShiftPressed(){
 }
 
 void DesktopFrame::setShiftPressed(bool pressed){
-    m_shiftPressed = pressed;
-    if (pressed){
-        m_shiftPressFirstCheckedDesktopItem = m_lastCheckedDesktopItem;
-    }else{
-        m_shiftPressFirstCheckedDesktopItem.clear();
+    if (m_shiftPressed != pressed){
+        m_shiftPressed = pressed;
+        if (pressed){
+            m_shiftPressFirstCheckedDesktopItem = m_lastCheckedDesktopItem;
+        }else{
+            m_shiftPressFirstCheckedDesktopItem.clear();
+        }
     }
 }
 
@@ -339,6 +343,7 @@ void DesktopFrame::focusInEvent(QFocusEvent *event){
 }
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
+    qDebug() << event;
     QFrame::focusOutEvent(event);
 }
 
@@ -374,6 +379,23 @@ void DesktopFrame::dropEvent(QDropEvent *event){
 }
 
 void DesktopFrame::mousePressEvent(QMouseEvent *event){
+
+    if(event->modifiers() == Qt::ControlModifier){
+        if (!m_ctrlPressed){
+            setCtrlPressed(true);
+        }
+    }else{
+        setCtrlPressed(false);
+    }
+
+    if (event->modifiers() == Qt::ShiftModifier){
+        if (!m_shiftPressed){
+            setShiftPressed(true);
+        }
+    }else{
+        setShiftPressed(false);
+    }
+
     emit signalManager->appGroupItemRightClicked(false);
     m_isDragStarted = false;
     m_pressedEventPos = event->pos();
