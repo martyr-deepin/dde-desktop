@@ -27,7 +27,7 @@ void DesktopItemManager::initComputerItem(){
     QString url = ComputerUrl;
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
-    qDebug() << tr("Computer") << tr("Cu&t");
+    qDebug() << tr("Computer");
     m_pComputerItem  = DesktopItemPointer::create(defaut_computerIcon, tr("Computer"), m_parentWindow);
     m_pComputerItem->setUrl(url);
     m_pComputerItem->setRaWUrl(url);

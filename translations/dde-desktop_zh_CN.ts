@@ -56,17 +56,6 @@
     </message>
 </context>
 <context>
-    <name>DeleteJobController</name>
-    <message>
-        <source>Are you sure to delete %1 ?</source>
-        <translation type="vanished">您确定要删除 %1 吗？</translation>
-    </message>
-    <message>
-        <source>Are you sure to delete these %1 items?</source>
-        <translation type="vanished">您确定要删除%1 项吗？</translation>
-    </message>
-</context>
-<context>
     <name>DesktopApp</name>
     <message>
         <location filename="../app/desktopapp.cpp" line="109"/>
@@ -79,12 +68,12 @@
         <translation>您确定要删除%1 项吗？</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="144"/>
+        <location filename="../app/desktopapp.cpp" line="147"/>
         <source>&quot;%1&quot; already exists, please select a different name.</source>
         <translation>名称“%1”已被占用，请使用其他名称。</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="145"/>
+        <location filename="../app/desktopapp.cpp" line="148"/>
         <source>Confirm</source>
         <translation>确定</translation>
     </message>
@@ -96,11 +85,6 @@
         <location filename="../views/desktopitemmanager.cpp" line="31"/>
         <source>Computer</source>
         <translation>计算机</translation>
-    </message>
-    <message>
-        <location filename="../views/desktopitemmanager.cpp" line="30"/>
-        <source>Cu&amp;t</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../views/desktopitemmanager.cpp" line="65"/>
@@ -136,47 +120,47 @@
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
         <source>Coexists</source>
-        <translation type="unfinished">共存</translation>
+        <translation>共存</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
         <source>Replace</source>
-        <translation type="unfinished">替换</translation>
+        <translation>替换</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
         <source>Skip</source>
-        <translation type="unfinished">跳过</translation>
+        <translation>跳过</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="113"/>
         <source>no more ask</source>
-        <translation type="unfinished">不再询问</translation>
+        <translation>不再询问</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="114"/>
         <source>Ok</source>
-        <translation type="unfinished">确定</translation>
+        <translation>确定</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="155"/>
         <source>copyed</source>
-        <translation type="unfinished">复制</translation>
+        <translation>复制</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="156"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt; is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
-        <translation type="unfinished">正在将&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;%2到&lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
+        <translation>正在将&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;%2到&lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="162"/>
         <source>moved</source>
-        <translation type="unfinished">移动</translation>
+        <translation>移动</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="163"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
-        <translation type="unfinished">正在将&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;%2到&lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
+        <translation>正在将&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;%2到&lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="158"/>
@@ -184,12 +168,12 @@
         <location filename="../dialogs/dtaskdialog.cpp" line="172"/>
         <location filename="../dialogs/dtaskdialog.cpp" line="182"/>
         <source>current speed:%1 time Left:%2 </source>
-        <translation type="unfinished">当前速度%1 剩余时间%2</translation>
+        <translation>当前速度%1 剩余时间%2</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="170"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  is deleted </source>
-        <translation type="unfinished">正在删除&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;</translation>
+        <translation>正在删除&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;</translation>
     </message>
 </context>
 </TS>
