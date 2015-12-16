@@ -35,6 +35,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent* event);
     void dragMoveEvent(QDragMoveEvent* event);
     void dragLeaveEvent(QDragLeaveEvent* event);
+    void mousePressEvent(QMouseEvent* event);
 
 private:
     DesktopItem* m_dragItem;

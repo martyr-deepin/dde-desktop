@@ -214,6 +214,16 @@ void AppTableWidget::dragLeaveEvent(QDragLeaveEvent *event){
     event->ignore();
 }
 
+void AppTableWidget::mousePressEvent(QMouseEvent *event)
+{
+    int i = event->pos().x() / gridManager->getItemWidth();
+    int j = event->pos().y() / gridManager->getItemHeight();
+    if (!cellWidget(j, i)){
+        return;
+    }
+    QTableWidget::mousePressEvent(event);
+}
+
 void AppTableWidget::setItemUnChecked(){
     for(int i = 0; i< rowCount(); i++){
         for (int j=0; j < columnCount(); j++){
