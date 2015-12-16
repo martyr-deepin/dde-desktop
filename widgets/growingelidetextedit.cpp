@@ -71,6 +71,7 @@ void GrowingElideTextEdit::elideText(){
         QStringList simpleList;
         simpleList << texts.at(0) << elidedText;
         simpleWrapText = simpleList.join("");
+        qDebug() << simpleList << simpleWrapText;
     }else{
         simpleWrapText = texts.at(0);
     }
@@ -81,18 +82,18 @@ void GrowingElideTextEdit::elideText(){
 }
 
 void GrowingElideTextEdit::showSimpleElideText(){
+    m_simpleWrapMode = true;
     if (m_texts.length() <= 2){
         setText(m_fullText);
     }else if (m_texts.length() > 2){
         setText(m_simpleWrapText);
     }
-    qDebug() << m_texts << m_texts.length() << toPlainText();
-    m_simpleWrapMode = true;
+    qDebug() << m_texts << m_simpleWrapText << m_fullText;
 }
 
 void GrowingElideTextEdit::showFullWrapText(){
-    setText(m_fullText);
     m_simpleWrapMode = false;
+    setText(m_fullText);
 }
 
 void GrowingElideTextEdit::updateSize(){

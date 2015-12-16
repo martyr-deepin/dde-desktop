@@ -101,13 +101,13 @@ void DesktopItem::initConnect(){
 }
 
 void DesktopItem::updateHeight(int textHeight){
-    int h = m_iconLabel->height() + textHeight;
-//    qDebug() << h << textHeight;
-    m_textedit->setFixedHeight(textHeight);
-    if (h >= 100){
+    int h = m_iconLabel->height() + textHeight + 2;
+    m_textedit->setFixedHeight(textHeight + 2);
+    qDebug() << height() << h << m_textedit->isSimpleWrapMode();
+    if (!m_textedit->isSimpleWrapMode() && h>=102){
         setFixedHeight(h + 15);
     }else{
-        setFixedHeight(100);
+        setFixedHeight(102);
     }
 }
 
