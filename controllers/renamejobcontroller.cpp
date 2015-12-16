@@ -29,15 +29,24 @@ void RenameJobController::rename(QString url, QString newName){
     }
 }
 
-void RenameJobController::renameJobExcuteFinished(QString name){
-    qDebug() << "rename job return" << name;
-    if (name.length() == 0){
+void RenameJobController::renameJobExcuteFinished(QString message){
+    qDebug() << "rename job return" << message;
+    if (message.length() == 0){
         disconnect(m_renameJobInterface, SIGNAL(Done(QString)), this, SLOT(renameJobExcuteFinished(QString)));
         m_renameJobInterface->deleteLater();
         m_renameJobInterface = NULL;
-        qDebug() << "rename job finished" << name;
+        qDebug() << "rename job finished" << message;
     }else{
-        emit signalManager->renameDialogShowed(m_newName);
+        QJsonParseError* error = new QJsonParseError();
+        QJsonObject messageObj = QJsonDocument::fromJson(QByteArray(message.toStdString().c_str()), error).object();
+        qDebug() << messageObj << error->errorString();
+        if (messageObj.contains("Code")){
+            if (messageObj.value("Code").toInt() == 2){
+                emit signalManager->renameDialogShowed(m_newName);
+            }else{
+                qDebug() << messageObj;
+            }
+        }
     }
 }
 

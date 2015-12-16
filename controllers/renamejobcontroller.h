@@ -18,7 +18,7 @@ signals:
 
 public slots:
     void rename(QString url, QString newName);
-    void renameJobExcuteFinished(QString name);
+    void renameJobExcuteFinished(QString message);
 
 private:
     RenameJobInterface* m_renameJobInterface = NULL;

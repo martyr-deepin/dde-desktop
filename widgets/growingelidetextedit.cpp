@@ -86,7 +86,7 @@ void GrowingElideTextEdit::showSimpleElideText(){
     }else if (m_texts.length() > 2){
         setText(m_simpleWrapText);
     }
-    qDebug() << m_texts.length() << toPlainText();
+    qDebug() << m_texts << m_texts.length() << toPlainText();
     m_simpleWrapMode = true;
 }
 
