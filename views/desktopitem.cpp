@@ -12,6 +12,9 @@
 #include <QGraphicsEffect>
 #include <QPen>
 
+int DesktopItem::OneTextHeight = 26;
+int DesktopItem::DoubleTextHeight = 44;
+
 DesktopItem::DesktopItem(QWidget *parent) : QFrame(parent)
 {
     m_desktopIcon = QPixmap();
@@ -101,13 +104,17 @@ void DesktopItem::initConnect(){
 }
 
 void DesktopItem::updateHeight(int textHeight){
-    int h = m_iconLabel->height() + textHeight + 2;
-    m_textedit->setFixedHeight(textHeight + 2);
-    qDebug() << height() << h << m_textedit->isSimpleWrapMode();
-    if (!m_textedit->isSimpleWrapMode() && h>=102){
+    int h = m_iconLabel->height() + textHeight;
+    m_textedit->setFixedHeight(textHeight);
+    if (!m_textedit->isSimpleWrapMode() && h>=100){
         setFixedHeight(h + 15);
     }else{
-        setFixedHeight(102);
+        if (h <= 100){
+            setFixedHeight(100);
+        }else{
+            m_textedit->setFixedHeight(DesktopItem::DoubleTextHeight);
+            setFixedHeight(100);
+        }
     }
 }
 
@@ -152,10 +159,10 @@ void DesktopItem::setDesktopName(QString name){
     m_desktopName = name;
     emit desktopNameChanged(name);
     m_textedit->setFullText(name);
-    if (m_textedit->getTexts().length()  == 1){
-        m_textedit->setFixedHeight(26);
+    if (m_textedit->getTexts().length()  == 1 && !name.contains("\n")){
+        m_textedit->setFixedHeight(DesktopItem::OneTextHeight);
     }else{
-        m_textedit->setFixedHeight(44);
+        m_textedit->setFixedHeight(DesktopItem::DoubleTextHeight);
     }
 }
 

@@ -28,6 +28,9 @@ public:
     explicit DesktopItem(QString url, QString icon, QString name, QWidget *parent = 0);
     ~DesktopItem();
 
+    static int OneTextHeight;
+    static int DoubleTextHeight;
+
     void init();
     void initUI();
     void initConnect();
