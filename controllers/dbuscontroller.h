@@ -192,6 +192,7 @@ private:
     QStringList m_thumbnails;
 
     bool m_requestFinished = false;
+    int m_thumbnailCount = 0;
 
     Q_DISABLE_COPY(DBusController)
 

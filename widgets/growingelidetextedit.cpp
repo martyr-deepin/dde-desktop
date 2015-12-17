@@ -70,7 +70,7 @@ void GrowingElideTextEdit::elideText(){
         QString elidedText = fm.elidedText(QStringList(texts.mid(1)).join(""), Qt::ElideMiddle, fmWidth);
         QStringList simpleList;
         simpleList << texts.at(0) << elidedText;
-        simpleWrapText = simpleList.join("");
+        simpleWrapText = simpleList.join("\n");
         qDebug() << simpleList << simpleWrapText;
     }else{
         simpleWrapText = texts.at(0);

@@ -274,6 +274,7 @@ void DBusController::delayGetThumbnail(){
     }
     if (m_thumbnails.count() == 0){
         m_thumbnailTimer->stop();
+        m_thumbnailCount = 0;
     }
 }
 
@@ -315,6 +316,12 @@ void DBusController::refreshThumail(QString url, uint size){
 
 void DBusController::requestThumbnail(QString url, uint size){
     qDebug() << __func__<< url;
+
+    if (m_thumbnailCount > 100){
+        m_thumbnails.clear();
+        m_thumbnailTimer->stop();
+        m_thumbnailCount = 0;
+    }
     if (isAppGroup(url)){
         return;
     }
@@ -346,6 +353,7 @@ void DBusController::requestThumbnail(QString url, uint size){
         QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
         emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
     }
+    m_thumbnailCount += 1;
 }
 
 void DBusController::convertNameToPinyin(){
