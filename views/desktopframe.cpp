@@ -343,7 +343,6 @@ void DesktopFrame::focusInEvent(QFocusEvent *event){
 }
 
 void DesktopFrame::focusOutEvent(QFocusEvent *event){
-    qDebug() << event;
     QFrame::focusOutEvent(event);
 }
 

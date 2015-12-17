@@ -322,7 +322,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
 }
 
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
-    checkDesktopItemValid();
+//    checkDesktopItemValid();
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
     qDebug() << "add Item" << pDesktopItem->getUrl() << m_pItems.contains(pDesktopItem->getUrl());
     if (m_pItems.contains(pDesktopItem->getUrl())){
@@ -608,7 +608,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){
     gridManager->clearDeskopItemsStatus();
     m_settings.clear();
     QDir desktopDir(desktopLocation);
-    QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::Hidden, flag);
+    QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden |QDir::System, flag);
     m_list_pItems.clear();
     int mode = dbusController->getDockMode();
     if (mode != 0){
@@ -621,7 +621,7 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
         QString url = decodeUrl(fileInfo.absoluteFilePath());
-        qDebug() << fileInfo.absoluteFilePath() << url << m_pItems.keys() << m_pItems.keys().contains(url) << m_pItems.keys().contains(fileInfo.absoluteFilePath());
+//        qDebug() << fileInfo.absoluteFilePath() << url << m_pItems.keys() << m_pItems.keys().contains(url) << m_pItems.keys().contains(fileInfo.absoluteFilePath());
         if (m_pItems.contains(url)){
             DesktopItemPointer  pDesktopItem = m_pItems.value(url);
             m_list_pItems.append(pDesktopItem);
