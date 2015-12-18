@@ -696,6 +696,7 @@ void DesktopItemManager::sortedByName(){
         }
     }
     sortedItems();
+    m_sortFlag = QDir::Name;
 }
 
 void DesktopItemManager::sortedByKey(QString key){
@@ -717,7 +718,12 @@ void DesktopItemManager::sortedByKey(QString key){
 }
 
 void DesktopItemManager::resort(){
-    sortedByFlags(m_sortFlag);
+    if (m_sortFlag == QDir::Name){
+        sortedByName();
+    }else{
+        sortedByFlags(m_sortFlag);
+    }
+
 }
 
 QDir::SortFlags DesktopItemManager::getSortFlag(){
