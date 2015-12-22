@@ -391,6 +391,12 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
                 m_pItems.insert(iterator, newKey, m_shoudbeMovedItem);
                 m_pItems.remove(oldKey);
 
+                if (m_shoudbeMovedItem->isCuted()){
+                    QStringList files;
+                    files.append(desktopItemInfo.URI);
+                    emit signalManager->filesCuted(files);
+                }
+
                 GridItemPointer pGridItem = gridManager->getItemByPos(m_shoudbeMovedItem->pos());
                 qDebug() << pGridItem.isNull();
                 if (!pGridItem.isNull()){
