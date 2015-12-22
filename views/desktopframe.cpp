@@ -313,7 +313,7 @@ void DesktopFrame::handleKeyCtrlAPressed(){
 }
 
 void DesktopFrame::handleKeyCtrlCPressed(){
-    emit signalManager->filesCopyed(getCheckedFiles());
+    emit signalManager->filesCopied(getCheckedFiles());
 }
 
 void DesktopFrame::handleKeyCtrlVPressed(){

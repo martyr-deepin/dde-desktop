@@ -55,6 +55,7 @@ public slots:
     void deleteItem(QString url);
     void cutItems(QStringList urls);
     void cancelCutedItems(QStringList urls);
+    void cancelCutedItems();
     void saveItems();
     void changeSizeByGrid(SizeType type);
     void sortedByFlags(QDir::SortFlags flag);

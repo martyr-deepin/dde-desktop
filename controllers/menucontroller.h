@@ -50,7 +50,6 @@ private:
     MenumanagerInterface* m_menuManagerInterface;
     MenuInterface* m_menuInterface;
     QString m_url;
-
 };
 
 #endif // MENUCONTROLLER_H

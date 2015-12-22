@@ -138,6 +138,7 @@ Q_SIGNALS: // SIGNALS
     void AppGroupMerged(const QString &in0, const QStringList &in1);
     void ItemCreated(const QString &in0);
     void ItemCut(const QStringList &in0);
+    void ItemCopied(const QStringList &in0);
     void ItemDeleted(const QString &in0);
     void ItemModified(const QString &in0);
     void ReqeustAutoArrange();

@@ -76,11 +76,12 @@ signals:
     void requestEmptyTrash();
 
     /*copy files*/
-    void filesCopyed(QStringList urls);
+    void filesCopied(QStringList urls);
 
     /*cut files*/
     void filesCuted(QStringList urls);
     void cancelFilesCuted(QStringList urls);
+    void cancleFilesCuted();
 
     /*paste files*/
     void pasteFilesToDesktop();

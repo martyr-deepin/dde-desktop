@@ -129,6 +129,8 @@ void DesktopItemManager::initConnect(){
             this, SLOT(cutItems(QStringList)));
     connect(signalManager, SIGNAL(cancelFilesCuted(QStringList)),
             this, SLOT(cancelCutedItems(QStringList)));
+    connect(signalManager, SIGNAL(cancleFilesCuted()),
+            this, SLOT(cancelCutedItems()));
 
     connect(signalManager, SIGNAL(dockModeChanged(int)),
             this, SLOT(handleDockModeChanged(int)));
@@ -426,8 +428,15 @@ void DesktopItemManager::cutItems(QStringList urls){
 
 void DesktopItemManager::cancelCutedItems(QStringList urls){
     Q_UNUSED(urls)
+    cancelCutedItems();
+}
+
+void DesktopItemManager::cancelCutedItems()
+{
+    qDebug() << "===============";
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         if (pItem->isCuted()){
+            qDebug() << pItem->getDesktopName();
             pItem->cancelCuted();
         }
     }
