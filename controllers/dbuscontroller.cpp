@@ -489,8 +489,7 @@ void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher
             qDebug() << "renamed file move in app group" << desktopItemInfo.URI;
             getAppGroupItemsByUrl(desktopItemInfo.URI);
         }
-        if (getMimeTypeGenericIconName(desktopItemInfo.URI) == "package-x-generic")
-            requestIconByUrl(desktopItemInfo.URI, 48);
+        requestIconByUrl(desktopItemInfo.URI, 48);
     } else {
         qCritical() << reply.error().message();
     }
@@ -528,6 +527,13 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
         qDebug() << "isAppGroup(desktopItemInfo.URI)" << isAppGroup(desktopItemInfo.URI);
         if (isAppGroup(desktopItemInfo.URI)){
             getAppGroupItemsByUrl(desktopItemInfo.URI);
+        }
+
+        if (desktopItemInfo.MIME != getMimeTypeName(desktopItemInfo.URI)){
+            qDebug() << "update icon because of mimetype" << getMimeTypeName(desktopItemInfo.URI);
+            QString url = desktopItemInfo.URI;
+            QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+            emit signalManager->desktoItemIconUpdated(url, iconUrl, 48);
         }
 
     } else {
