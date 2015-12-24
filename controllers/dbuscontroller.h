@@ -79,6 +79,8 @@ public:
     void requestIconByUrl(QString url, uint size);
     void requestThumbnail(QString url, uint size);
 
+    static int RequestThumailMaxCount;
+
     FileOperationsInterface* getFileOperationsInterface();
     FileInfoInterface* getFileInfoInterface();
 

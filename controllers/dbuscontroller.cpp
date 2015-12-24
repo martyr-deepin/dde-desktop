@@ -35,6 +35,8 @@ inline bool appNameLessThan(const DesktopItemInfo &info1, const DesktopItemInfo 
 }
 
 
+int DBusController::RequestThumailMaxCount = 100;
+
 DBusController::DBusController(QObject *parent) : QObject(parent)
 {
     init();
@@ -273,7 +275,7 @@ void DBusController::delayGetThumbnail(){
     foreach(QString url, m_thumbnails){
         requestThumbnail(url, 48);
     }
-    if (m_thumbnails.count() == 0){
+    if (m_thumbnails.count() == 0 || m_thumbnailCount > DBusController::RequestThumailMaxCount){
         m_thumbnailTimer->stop();
         m_thumbnailCount = 0;
     }
@@ -316,9 +318,9 @@ void DBusController::refreshThumail(QString url, uint size){
 }
 
 void DBusController::requestThumbnail(QString url, uint size){
-    qDebug() << __func__<< url;
+    qDebug() << __func__<< url << m_thumbnailCount;
 
-    if (m_thumbnailCount > 100){
+    if (m_thumbnailCount > DBusController::RequestThumailMaxCount){
         m_thumbnails.clear();
         m_thumbnailTimer->stop();
         m_thumbnailCount = 0;

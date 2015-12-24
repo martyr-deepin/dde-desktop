@@ -41,7 +41,7 @@ public slots:
     void toggle();
     void exit();
 
-
+    void handleF1Pressed();
 
 private:
     DesktopBox* m_desktopBox;

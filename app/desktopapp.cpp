@@ -12,6 +12,7 @@
 #include "libdui/ddialog.h"
 #include <QDBusConnection>
 #include <QStandardPaths>
+#include <QProcess>
 
 DUI_USE_NAMESPACE
 
@@ -73,6 +74,7 @@ void DesktopApp::initConnect(){
 
     connect(signalManager, SIGNAL(confimClear(int)), this, SLOT(confimClear(int)));
     connect(signalManager, SIGNAL(renameDialogShowed(QString)), this, SLOT(confirmRenameDialog(QString)));
+    connect(signalManager, SIGNAL(f1Preesed()), this, SLOT(handleF1Pressed()));
 }
 
 void DesktopApp::confimClear(int count){
@@ -196,6 +198,11 @@ void DesktopApp::toggle(){
 
 void DesktopApp::exit(){
     qApp->quit();
+}
+
+void DesktopApp::handleF1Pressed()
+{
+    QProcess::execute("dman dde");
 }
 
 void DesktopApp::unRegisterDbusService(){

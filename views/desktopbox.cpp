@@ -149,11 +149,11 @@ void DesktopBox::keyPressEvent(QKeyEvent *event){
         emit signalManager->sortedModeChanged(QDir::Type);
     }else if (event->key() == Qt::Key_7){
         emit signalManager->sortedModeChanged(QDir::Time);
-    }else if (event->key() == Qt::Key_F1){
-        emit signalManager->gridModeChanged(!m_isGridOn);
     }
     #endif
-    else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_A){
+    else if (event->key() == Qt::Key_F1){
+        emit signalManager->f1Preesed();
+    }else if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_A){
         emit signalManager->keyCtrlAPressed();
     }else if (event->modifiers() == Qt::NoModifier && event->key() == Qt::Key_Delete){
         emit signalManager->trashingAboutToExcute(m_desktopFrame->getCheckedFiles());

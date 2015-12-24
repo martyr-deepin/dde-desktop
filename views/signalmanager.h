@@ -231,6 +231,9 @@ signals:
 
     /*growing edit enter/return pressed*/
     void returnEnterPressed();
+
+    /*press F1 to excute dman dde*/
+    void f1Preesed();
 private:
     Q_DISABLE_COPY(SignalManager)
 };
