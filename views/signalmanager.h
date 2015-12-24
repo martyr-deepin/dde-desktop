@@ -232,8 +232,13 @@ signals:
     /*growing edit enter/return pressed*/
     void returnEnterPressed();
 
+
     /*press F1 to excute dman dde*/
     void f1Preesed();
+
+    /*active changed signal from dock dbus client*/
+    void activeWindowChanged(uint windowId);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

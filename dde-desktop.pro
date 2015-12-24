@@ -79,7 +79,8 @@ SOURCES += main.cpp \
     controllers/copyjobworker.cpp \
     controllers/movejobworker.cpp \
     controllers/deletejobworker.cpp \
-    dbusinterface/pinyin_interface.cpp
+    dbusinterface/pinyin_interface.cpp \
+    dbusinterface/dbusclientmanager.cpp
 
 
 HEADERS  += \
@@ -143,7 +144,8 @@ HEADERS  += \
     controllers/copyjobworker.h \
     controllers/movejobworker.h \
     controllers/deletejobworker.h \
-    dbusinterface/pinyin_interface.h
+    dbusinterface/pinyin_interface.h \
+    dbusinterface/dbusclientmanager.h
 
 TRANSLATIONS += translations/dde-desktop.ts
 

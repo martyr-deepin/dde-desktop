@@ -214,6 +214,11 @@ QString DesktopItemManager::getDesktopDisplayName(DesktopItemInfo &desktopItemIn
     return desktopDisplayName;
 }
 
+AppGroupBox *DesktopItemManager::getAppGroupBox()
+{
+    return m_appGroupBox;
+}
+
 DesktopItemPointer DesktopItemManager::getShoudBeMovedItem(){
     return m_shoudbeMovedItem;
 }

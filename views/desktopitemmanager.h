@@ -32,7 +32,7 @@ public:
     QList<DesktopItemPointer> getItemsByStartEnd(QPoint startPos, QPoint endPos);
     QDir::SortFlags getSortFlag();
     QString getDesktopDisplayName(DesktopItemInfo& desktopItemInfo);
-
+    AppGroupBox* getAppGroupBox();
     bool isAppGroupBoxShowed();
 
     void checkPageCount();

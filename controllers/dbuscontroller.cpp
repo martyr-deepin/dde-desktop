@@ -20,6 +20,7 @@
 #include "views/signalmanager.h"
 #include "filemonitor/filemonitor.h"
 #include "widgets/util.h"
+#include "dbusinterface/dbusclientmanager.h"
 #include "appcontroller.h"
 #include "trashjobcontroller.h"
 
@@ -52,6 +53,7 @@ void DBusController::init(){
     m_displayInterface = new DisplayInterface(this);
     m_pinyinInterface = new PinyinInterface(Pinyin_service, Pinyin_path, QDBusConnection::sessionBus(), this);
     m_appearanceInterface = new AppearanceDaemonInterface(Appearance_service, Appearance_path, bus, this);
+    m_dockClientManagerInterface = new DBusClientManager(this);
     m_fileMonitor = new FileMonitor(this);
     m_appController = new AppController(this);
 
@@ -115,6 +117,7 @@ void DBusController::initConnect(){
     connect(m_displayInterface, SIGNAL(PrimaryChanged()), signalManager, SIGNAL(screenGeometryChanged()));
     connect(signalManager, SIGNAL(gtkIconThemeChanged()), this, SLOT(handelIconThemeChanged()));
     connect(signalManager, SIGNAL(refreshCopyFileIcon(QString)), this, SLOT(refreshThumail(QString)));
+    connect(m_dockClientManagerInterface, SIGNAL(ActiveWindowChanged(uint)), signalManager, SIGNAL(activeWindowChanged(uint)));
 }
 
 void DBusController::loadDesktopSettings(){

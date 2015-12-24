@@ -19,6 +19,7 @@ class CreateFileFromTemplateJobInterface;
 class AppearanceDaemonInterface;
 class DisplayInterface;
 class PinyinInterface;
+class DBusClientManager;
 class FileMonitor;
 class QTimer;
 class DBusDockSetting;
@@ -180,6 +181,7 @@ private:
     PinyinInterface* m_pinyinInterface;
     DBusDockSetting* m_dockSettingInterface = NULL;
     AppearanceDaemonInterface* m_appearanceInterface;
+    DBusClientManager* m_dockClientManagerInterface;
     AppController* m_appController;
 
     DesktopItemInfoMap m_desktopItemInfoMap;

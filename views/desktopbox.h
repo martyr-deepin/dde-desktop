@@ -32,6 +32,8 @@ public slots:
 
     void setAppGroupRightClicked(bool flag);
 
+    void handleActiveWindowChanged(uint windowId);
+
 protected:
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
