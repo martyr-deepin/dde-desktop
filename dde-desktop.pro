@@ -147,7 +147,8 @@ HEADERS  += \
     dbusinterface/pinyin_interface.h \
     dbusinterface/dbusclientmanager.h
 
-TRANSLATIONS += translations/dde-desktop.ts
+# Automating generation .qm files from .ts files
+system($$PWD/translate_generation.sh)
 
 
 RESOURCES += \
