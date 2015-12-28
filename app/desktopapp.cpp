@@ -202,7 +202,7 @@ void DesktopApp::exit(){
 
 void DesktopApp::handleF1Pressed()
 {
-    QProcess::execute("dman dde");
+    QProcess::startDetached("dman dde");
 }
 
 void DesktopApp::unRegisterDbusService(){
