@@ -109,10 +109,15 @@ void DesktopItem::updateHeight(int textHeight){
     if (!m_textedit->isSimpleWrapMode() && h>=100){
         setFixedHeight(h + 15);
     }else{
-        if (h <= 100){
+        if (m_textedit->fontMetrics().width(m_textedit->toPlainText()) > m_textedit->width() - 10){
+            m_textedit->setFixedHeight(DesktopItem::DoubleTextHeight);
             setFixedHeight(100);
         }else{
-            m_textedit->setFixedHeight(DesktopItem::DoubleTextHeight);
+            if (isEditing()){
+                m_textedit->setFixedHeight(DesktopItem::OneTextHeight);
+            }else{
+                m_textedit->setFixedHeight(DesktopItem::DoubleTextHeight);
+            }
             setFixedHeight(100);
         }
     }
@@ -160,7 +165,7 @@ void DesktopItem::setDesktopName(QString name){
     emit desktopNameChanged(name);
     m_textedit->setFullText(name);
     if (m_textedit->getTexts().length()  == 1 && !name.contains("\n")){
-        m_textedit->setFixedHeight(DesktopItem::OneTextHeight);
+        m_textedit->setFixedHeight(DesktopItem::DoubleTextHeight);
     }else{
         m_textedit->setFixedHeight(DesktopItem::DoubleTextHeight);
     }
@@ -504,6 +509,9 @@ void DesktopItem::setEditing(){
     setChecked(false);
     getTextEdit()->showEditing();
     getTextEdit()->setFocus();
+    if (m_textedit->getTexts().length()  == 1 && !m_desktopName.contains("\n")){
+        m_textedit->setFixedHeight(DesktopItem::OneTextHeight);
+    }
 }
 
 QPixmap DesktopItem::applyShadowToPixmap(const QString filename){

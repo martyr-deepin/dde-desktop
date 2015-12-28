@@ -1,6 +1,7 @@
 #include "growingelidetextedit.h"
 #include <QDebug>
 #include <QMenu>
+#include <QScrollBar>
 
 GrowingElideTextEdit::GrowingElideTextEdit(QWidget *parent) : QTextEdit(parent)
 {
@@ -13,6 +14,7 @@ GrowingElideTextEdit::GrowingElideTextEdit(QWidget *parent) : QTextEdit(parent)
 void GrowingElideTextEdit::setText(const QString &text){
     QTextEdit::setText(text);
     setAlignment(Qt::AlignCenter);
+//    verticalScrollBar()->setValue(verticalScrollBar()->maximumHeight());
 }
 
 QString GrowingElideTextEdit::getFullText(){
@@ -101,6 +103,7 @@ void GrowingElideTextEdit::updateSize(){
     if (docHeight > m_minHeight && docHeight <= m_maxHeight){
        emit heightChanged(docHeight);
     }
+//    verticalScrollBar()->setValue(verticalScrollBar()->maximumHeight());
 }
 
 void GrowingElideTextEdit::tryRenamed(){
@@ -132,6 +135,7 @@ void GrowingElideTextEdit::showReadOnly(){
                   background-color:rgba(0, 0, 0, 0);\
                   border:1px solid rgba(0, 0, 0, 0);\
                   color: white;\
+                  padding:0px;\
                   selection-color: white;\
                   selection-background-color: #61B5F8;\
                   font-size: 12px;\
@@ -147,10 +151,12 @@ void GrowingElideTextEdit::showEditing(){
                   background-color: white;\
                   border:1px solid black;\
                   color: black;\
+                  padding:0px;\
                   selection-color: white;\
                   selection-background-color: #61B5F8;\
                   font-size: 12px;\
               ");
+//    verticalScrollBar()->setValue(verticalScrollBar()->maximumHeight());
 }
 
 
