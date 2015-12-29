@@ -694,7 +694,11 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
 
                 }
             }else{
-                unCheckCheckedItems();
+                if (oldSelectRect!= QRect(0, 0, 0, 0) && m_ctrlPressed){
+
+                }else{
+                    unCheckCheckedItems();
+                }
             }
         }
     }
