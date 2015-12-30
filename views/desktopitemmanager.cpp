@@ -330,12 +330,11 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
 
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
 //    checkDesktopItemValid();
-    DesktopItemPointer pDesktopItem = createItem(fileInfo);
-    qDebug() << "add Item" << pDesktopItem->getUrl() << m_pItems.contains(pDesktopItem->getUrl());
-    if (m_pItems.contains(pDesktopItem->getUrl())){
+    if (m_pItems.contains(decodeUrl(fileInfo.URI))){
         return;
     }
-
+    DesktopItemPointer pDesktopItem = createItem(fileInfo);
+    qDebug() << "add Item" << pDesktopItem->getUrl() << m_pItems.contains(pDesktopItem->getUrl());
     if (!pDesktopItem.isNull()){
         GridItemPointer pGridItem = gridManager->getBlankItem();
         if (!pGridItem.isNull()){
@@ -388,7 +387,12 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
         QString oldKey = m_shoudbeMovedItem->getUrl();
         if (m_pItems.contains(oldKey)){
             QString newKey = decodeUrl(desktopItemInfo.URI);
-            qDebug() << newKey;
+            qDebug() << newKey << m_pItems.contains(newKey);
+
+            /*if desktopItem has exitsed, delete oldkey desktopItem*/
+            if (m_pItems.contains(newKey)){
+                deleteItem(newKey);
+            }
             QMap<QString, DesktopItemPointer>::iterator iterator = m_pItems.find(oldKey);
             if (iterator!= m_pItems.end()){
                 m_shoudbeMovedItem->setUrl(newKey);
@@ -415,6 +419,8 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
                     m_settings.setValue(newKey, m_shoudbeMovedItem->pos());
                 }
                 m_settings.endGroup();
+                qDebug() << m_pItems.contains(newKey);
+                emit signalManager->thumbnailRequested(newKey);
             }
         }
     }else{

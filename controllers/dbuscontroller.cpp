@@ -117,6 +117,7 @@ void DBusController::initConnect(){
     connect(m_displayInterface, SIGNAL(PrimaryChanged()), signalManager, SIGNAL(screenGeometryChanged()));
     connect(signalManager, SIGNAL(gtkIconThemeChanged()), this, SLOT(handelIconThemeChanged()));
     connect(signalManager, SIGNAL(refreshCopyFileIcon(QString)), this, SLOT(refreshThumail(QString)));
+    connect(signalManager, SIGNAL(thumbnailRequested(QString)), this, SLOT(requestThumbnail(QString)));
     connect(m_dockClientManagerInterface, SIGNAL(ActiveWindowChanged(uint)), signalManager, SIGNAL(activeWindowChanged(uint)));
 }
 
@@ -336,28 +337,32 @@ void DBusController::requestThumbnail(QString url, uint size){
         _url = FilePrefix + url;
     }
 
-    if(!isRequestThumbnail(url)){
-        return;
-    }
-
     QString mimetype = getMimeTypeName(url);
-    QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
-    reply.waitForFinished();
-    if (!reply.isError()){
-        QString iconUrl = reply.argumentAt(0).toString();
-        qDebug() << iconUrl;
+    if(!isRequestThumbnail(url)){
         if (m_thumbnails.contains(url)){
             m_thumbnails.removeOne(url);
         }
-        emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
+        qDebug() << "Unsupport request thumbail" << url << mimetype;
     }else{
-        qCritical() << reply.error().message();
-        if (m_thumbnails.contains(url)){
-            m_thumbnails.removeOne(url);
+        qDebug() << _url << size << mimetype;
+        QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
+        reply.waitForFinished();
+        if (!reply.isError()){
+            QString iconUrl = reply.argumentAt(0).toString();
+            qDebug() << iconUrl;
+            if (m_thumbnails.contains(url)){
+                m_thumbnails.removeOne(url);
+            }
+            emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
+        }else{
+            qCritical() << reply.error().message();
+            if (m_thumbnails.contains(url)){
+                m_thumbnails.removeOne(url);
+            }
+            requestIconByUrl(url, size);
+            QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+            emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
         }
-        requestIconByUrl(url, size);
-        QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
-        emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
     }
     m_thumbnailCount += 1;
 }

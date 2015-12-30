@@ -197,6 +197,9 @@ signals:
     /*refresh icon when file copy finished*/
     void refreshCopyFileIcon(QString file);
 
+    /*request thumbnail when desktopitem renamed finished*/
+    void thumbnailRequested(QString url);
+
     /*mutisreen desktop main frame view positionchanged*/
     void desktopFrameRectChanged(QRect rect);
 

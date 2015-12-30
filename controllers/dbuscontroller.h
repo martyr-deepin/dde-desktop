@@ -75,10 +75,6 @@ public:
     ~DBusController();
     void init();
     void initConnect();
-//    void monitorDesktop();
-//    void watchDesktop();
-    void requestIconByUrl(QString url, uint size);
-    void requestThumbnail(QString url, uint size);
 
     static int RequestThumailMaxCount;
 
@@ -105,6 +101,9 @@ signals:
 public slots:
     void loadDesktopSettings();
     void loadDesktopItems();
+
+    void requestIconByUrl(QString url, uint size = 48);
+    void requestThumbnail(QString url, uint size = 48);
 
     void handleFileCreated(const QString& path);
     void handleFileDeleted(const QString& path);
