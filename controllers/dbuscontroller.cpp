@@ -554,6 +554,9 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
 void DBusController::handleFileCreated(const QString &path){
     qDebug() << "handleFileCreated" << path;
     QFileInfo f(path);
+    if (f.fileName().startsWith(".")){
+        return;
+    }
     if (isDesktop(f.path())){
         qDebug() << "create file in desktop" << path;
         asyncCreateDesktopItemByUrl(path);
