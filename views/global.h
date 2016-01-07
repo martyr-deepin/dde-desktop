@@ -38,6 +38,7 @@ bool isComputer(QString url);
 bool isTrash(QString url);
 bool isFolder(QString url);
 bool isInDesktop(QString url);
+bool isInDesktopFolder(QString url);
 bool isDesktopAppFile(QString url);
 
 bool isRequestThumbnail(QString url);
