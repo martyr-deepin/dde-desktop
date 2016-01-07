@@ -5,10 +5,12 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
+#include <QGSettings>
 
 class DesktopItemManager;
 class KeyEventManager;
 class DragDropEventManager;
+class WaterMaskFrame;
 
 class DesktopFrame : public QFrame
 {
@@ -23,6 +25,7 @@ public:
 
     void initItems();
     void initConnect();
+    void loadWaterMask();
 
     QSharedPointer<DesktopItemManager> getDesktopItemManager();
     DesktopItemPointer getTopDesktopItemByPos(QPoint pos);
@@ -137,7 +140,7 @@ private:
     QList<DesktopItemPointer> m_checkedDesktopItems;
 
     QTimer* m_mouseMoveCheckTimer;
-
+    WaterMaskFrame* m_waterMaskFrame;
 };
 
 #endif // DESKTOPFRAME__H

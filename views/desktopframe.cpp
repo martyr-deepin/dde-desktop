@@ -6,7 +6,7 @@
 #include "dragdropeventmanager.h"
 #include "global.h"
 #include "dbusinterface/displayinterface.h"
-
+#include "widgets/watermaskframe.h"
 #include <QTimer>
 
 
@@ -45,7 +45,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     QRect primaryRect =  QRect(dbusController->getDisplayInterface()->primaryRect());
     move(primaryRect.x(), primaryRect.y());
     setFixedSize(primaryRect.width(), primaryRect.height());
-
+    loadWaterMask();
     initItems();
     initConnect();
     qApp->setStyleSheet(getQssFromFile(":/qss/skin/qss/DesktopItem.qss"));
@@ -79,6 +79,10 @@ void DesktopFrame::initConnect(){
 
     connect(signalManager, SIGNAL(contextMenuShowed(bool)), this ,SLOT(setMenuShowed(bool)));
     connect(signalManager, SIGNAL(returnEnterPressed()), this, SLOT(unCheckCheckedItems()));
+}
+
+void DesktopFrame::loadWaterMask(){
+    m_waterMaskFrame = new WaterMaskFrame("/usr/share/deepin/dde-desktop-watermask.json", this);
 }
 
 QSharedPointer<DesktopItemManager> DesktopFrame::getDesktopItemManager(){

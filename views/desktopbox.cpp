@@ -254,7 +254,6 @@ void DesktopBox::closeEvent(QCloseEvent *event){
 bool DesktopBox::eventFilter(QObject *obj, QEvent *event)
 {
     if(event->type() == QEvent::WindowDeactivate && !m_appGroupRightClicked){
-        qDebug() << "QEvent::WindowDeactivate";
         emit signalManager->appGounpDetailClosed();
         setAppGroupRightClicked(false);
     }/*else if((event->type() == QEvent::Leave || event->type() == QEvent::WindowActivate) && m_appGroupRightClicked){
