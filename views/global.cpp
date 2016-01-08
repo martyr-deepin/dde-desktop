@@ -113,6 +113,15 @@ bool isInDesktop(QString url){
     return false;
 }
 
+bool isInDesktopFolder(QString url){
+    if (decodeUrl(QFileInfo(url).path()) == desktopLocation){
+        return true;
+    }else if (QFileInfo(url).path() == desktopLocation){
+        return true;
+    }
+    return false;
+}
+
 
 bool isDesktopAppFile(QString url){
     if (QFileInfo(url).fileName().endsWith(AppSuffix)){

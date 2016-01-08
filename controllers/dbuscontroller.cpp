@@ -633,10 +633,10 @@ void DBusController::handleFileRenamed(const QString &oldPath, const QString &ne
     QFileInfo oldFileInfo(oldPath);
     QFileInfo newFileInfo(newPath);
     qDebug() << oldPath << newPath;
-    qDebug() <<oldFileInfo.filePath() << isInDesktop(oldFileInfo.filePath()) << newFileInfo.filePath()<<isInDesktop(newFileInfo.path());
+    qDebug() <<oldFileInfo.filePath() << isInDesktopFolder(oldFileInfo.filePath()) << newFileInfo.filePath()<<isInDesktopFolder(newFileInfo.path());
 
     bool isAppGroupFolder = isAppGroup(oldFileInfo.filePath()) && isAppGroup(newFileInfo.filePath());
-    bool isDesktopFile = isInDesktop(oldFileInfo.filePath()) && isInDesktop(newFileInfo.filePath());
+    bool isDesktopFile = isInDesktopFolder(oldFileInfo.filePath()) && isInDesktopFolder(newFileInfo.filePath());
     qDebug() << "isAppGroupFolder" << isAppGroupFolder<< "isDesktopFile" << isDesktopFile;
 
     if (newFileInfo.fileName().startsWith(".") && !isAppGroupFolder){
