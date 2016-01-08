@@ -8,6 +8,7 @@
 class DesktopBox;
 class AppController;
 class DTaskDialog;
+class LauncherInterface;
 
 class DesktopApp : public QObject
 {
@@ -18,6 +19,7 @@ public:
 
     void initConnect();
     void registerDBusService();
+    void createLauncerInterface();
 
 signals:
     void closed();
@@ -43,11 +45,15 @@ public slots:
 
     void handleF1Pressed();
 
+    void handleAppUninstalled(const QString& appKey);
+    void removeInvalidDesktopFile(const QString& path, const QString& appKey);
+
 private:
     DesktopBox* m_desktopBox;
     DTaskDialog* m_taskDialog;
     QDialog* m_renamDialog;
     QStringList m_deletefiles;
+    LauncherInterface* m_launcherInterface;
 };
 
 #endif // DESKTOPAPP_H
