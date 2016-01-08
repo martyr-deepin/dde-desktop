@@ -13,9 +13,9 @@ public:
     ~AppGroupIconFrame();
     static QPixmap getPixmap(QStringList icons);
     static QPixmap getPixmap(QList<QPixmap> icons);
-signals:
 
-public slots:
+protected:
+    void paintEvent(QPaintEvent *e) Q_DECL_OVERRIDE;
 };
 
 #endif // APPGROUPICONFRAME_H

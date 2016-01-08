@@ -3,16 +3,11 @@
 AppGroupIconFrame::AppGroupIconFrame(QWidget *parent) : QFrame(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_TranslucentBackground);
     setObjectName("AppGroup");
-    setStyleSheet("QFrame#AppGroup{\
-                 background-color: rgba(0, 0, 0, 0);\
-                 border: 6px solid rgba(255, 255, 255, 0.8);\
-                 border-radius: 14px;\
-                 color:white\
-                 }\
-                 QLabel#IconLabel{\
-                 border: none;\
-                 }");
+    setStyleSheet("QFrame#AppGroup{"
+                  "padding:10px;"
+                  "}");
 }
 
 QPixmap AppGroupIconFrame::getPixmap(QStringList icons){
@@ -64,10 +59,28 @@ QPixmap AppGroupIconFrame::getPixmap(QList<QPixmap> icons){
     QPixmap appGroupIcon = appGroupIconFrame->grab();
     appGroupIconFrame->close();
     return appGroupIcon;
+    }
+
+void AppGroupIconFrame::paintEvent(QPaintEvent *e)
+{
+    QFrame::paintEvent(e);
+
+    const double borderWidth = 6.0;
+    QRectF rect(borderWidth, borderWidth, width() - borderWidth * 2, height() - borderWidth * 2);
+
+    QPainterPath border;
+    border.addRoundedRect(rect, 10, 10);
+
+    QPen pen;
+    pen.setColor(QColor(255, 255, 255, 255 * 0.8));
+    pen.setWidth(borderWidth);
+
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.strokePath(border, pen);
 }
 
 AppGroupIconFrame::~AppGroupIconFrame()
 {
 
 }
-
