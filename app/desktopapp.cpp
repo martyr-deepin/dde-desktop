@@ -10,7 +10,9 @@
 #include "dialogs/cleartrashdialog.h"
 #include "dialogs/dmovabledialog.h"
 #include "libdui/ddialog.h"
+#include "dbusinterface/launcher_interface.h"
 #include <QDBusConnection>
+#include <QDBusInterface>
 #include <QStandardPaths>
 #include <QProcess>
 
@@ -22,6 +24,7 @@ DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
     m_taskDialog = new DTaskDialog;
     initConnect();
     registerDBusService();
+    createLauncerInterface();
 }
 
 void DesktopApp::initConnect(){
@@ -156,6 +159,51 @@ void DesktopApp::registerDBusService(){
     new DesktopAdaptor(this);
     QDBusConnection conn = QDBusConnection::sessionBus();
     conn.registerObject(DesktopAdaptor::staticInterfacePath(), this);
+}
+
+void DesktopApp::createLauncerInterface()
+{
+    m_launcherInterface = new LauncherInterface(this);
+    connect(m_launcherInterface, SIGNAL(UninstallSuccess(QString)), this, SLOT(handleAppUninstalled(QString)));
+}
+
+void DesktopApp::handleAppUninstalled(const QString &appKey){
+    qDebug() << "handleAppUninstalled" << appKey;
+    removeInvalidDesktopFile(desktopLocation, appKey);
+    QDir desktopDir(desktopLocation);
+    QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden, QDir::Name);
+    int size = desktopInfoList.size();
+    for (int i = 0; i < size; i++) {
+        QFileInfo fileInfo = desktopInfoList.at(i);
+        if (isAppGroup(fileInfo.filePath())){
+            qDebug() << fileInfo.filePath() << fileInfo.fileName();
+            removeInvalidDesktopFile(fileInfo.filePath(), appKey);
+        }
+    }
+
+}
+
+void DesktopApp::removeInvalidDesktopFile(const QString &path, const QString &appKey)
+{
+    QDir desktopDir(path);
+    QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot, QDir::Name);
+    int size = desktopInfoList.size();
+    for (int i = 0; i < size; i++) {
+        QFileInfo fileInfo = desktopInfoList.at(i);
+        qDebug() << fileInfo.filePath() << fileInfo.fileName();
+        if (fileInfo.fileName().endsWith(".desktop")){
+            QSettings desktopFileSettings(fileInfo.filePath(), QSettings::IniFormat);
+            desktopFileSettings.beginGroup("Desktop Entry");
+            qDebug() << desktopFileSettings.contains("X-Deepin-AppID");
+            if (desktopFileSettings.contains("X-Deepin-AppID")){
+                if (desktopFileSettings.value("X-Deepin-AppID") == appKey){
+                    bool removeFileFlag = QFile(fileInfo.filePath()).remove();
+                    qDebug() << "Remove" << fileInfo.filePath() << removeFileFlag;
+                }
+            }
+            desktopFileSettings.endGroup();
+        }
+    }
 }
 
 void DesktopApp::saveGridOn(bool mode){

@@ -80,7 +80,8 @@ SOURCES += main.cpp \
     controllers/movejobworker.cpp \
     controllers/deletejobworker.cpp \
     dbusinterface/pinyin_interface.cpp \
-    dbusinterface/dbusclientmanager.cpp
+    dbusinterface/dbusclientmanager.cpp \
+    dbusinterface/launcher_interface.cpp
 
 
 HEADERS  += \
@@ -145,7 +146,8 @@ HEADERS  += \
     controllers/movejobworker.h \
     controllers/deletejobworker.h \
     dbusinterface/pinyin_interface.h \
-    dbusinterface/dbusclientmanager.h
+    dbusinterface/dbusclientmanager.h \
+    dbusinterface/launcher_interface.h
 
 # Automating generation .qm files from .ts files
 system($$PWD/translate_generation.sh)
