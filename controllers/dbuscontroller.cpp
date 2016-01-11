@@ -383,7 +383,7 @@ void DBusController::convertNameToPinyin(){
             QString uri = m_desktopItemInfoMap.value(key).URI;
             if (obj.contains(displayName)){
                   QList<QVariant> pinyins  = obj.value(displayName).toVariant().toList();
-                  qDebug() << displayName << pinyins;
+//                  qDebug() << displayName << pinyins;
                   if (pinyins.length() > 0){
                         m_desktopItemInfoMap[key].pinyinName = pinyins.at(0).toString();
                         m_desktopItemInfoMap[key].lowerPinyinName = m_desktopItemInfoMap[key].pinyinName.toLower();
@@ -554,7 +554,7 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
 void DBusController::handleFileCreated(const QString &path){
     qDebug() << "handleFileCreated" << path;
     QFileInfo f(path);
-    if (f.fileName().startsWith(".")){
+    if (f.fileName().startsWith(".") && !isAppGroup(path)){
         return;
     }
     if (isDesktop(f.path())){

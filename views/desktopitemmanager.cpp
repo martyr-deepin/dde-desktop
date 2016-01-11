@@ -262,8 +262,8 @@ void DesktopItemManager::addItems(DesktopItemInfoMap desktopInfoMap){
 }
 
 void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap appItemInfos){
-    QString key = group_url;
-    qDebug() << group_url << "updateAppGounpItem" << m_pItems.contains(key);
+    QString key = decodeUrl(group_url);
+    qDebug() << group_url << "updateAppGounpItem" << m_pItems.contains(key) << m_pItems.keys();
     if (m_pItems.contains(key)){
         m_pItems.value(key)->setAppGroupItems(appItemInfos);
         updateAppGroupDetail(m_pItems.value(key));
