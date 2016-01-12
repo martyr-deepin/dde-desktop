@@ -1,25 +1,25 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="es" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="bg" version="2.1">
 <context>
     <name>ClearTrashDialog</name>
     <message>
         <location filename="../dialogs/cleartrashdialog.cpp" line="12"/>
         <source>Are you sure to empty trash?</source>
-        <translation>¿Esta seguro de vaciar la papelería?</translation>
+        <translation>Наистина ли изпразвате кошчето?</translation>
     </message>
     <message>
         <location filename="../dialogs/cleartrashdialog.cpp" line="13"/>
         <source>This action cannot be restored</source>
-        <translation>Esta acción no puede ser restaurado</translation>
+        <translation>Това действие не може да бъде поправено</translation>
     </message>
     <message>
         <location filename="../dialogs/cleartrashdialog.cpp" line="16"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Отмяна</translation>
     </message>
     <message>
         <location filename="../dialogs/cleartrashdialog.cpp" line="16"/>
         <source>Empty</source>
-        <translation>Vacio</translation>
+        <translation>Изпразни</translation>
     </message>
 </context>
 <context>
@@ -27,17 +27,17 @@
     <message>
         <location filename="../dialogs/confirmdeletedialog.cpp" line="11"/>
         <source>This action cannot be restored</source>
-        <translation>Esta acción no puede ser restaurado</translation>
+        <translation>Това действие не може да бъде поправено</translation>
     </message>
     <message>
         <location filename="../dialogs/confirmdeletedialog.cpp" line="14"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Отмяна</translation>
     </message>
     <message>
         <location filename="../dialogs/confirmdeletedialog.cpp" line="14"/>
         <source>Delete</source>
-        <translation>Eliminar</translation>
+        <translation>Изтриване</translation>
     </message>
 </context>
 <context>
@@ -45,12 +45,12 @@
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="355"/>
         <source>There is %1 task in progress</source>
-        <translation>Hay %1 tarea en curso</translation>
+        <translation>Има %1 напредък на задачата</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="357"/>
         <source>There are %1 tasks in progress</source>
-        <translation>Hay %1 tareas en curso</translation>
+        <translation>Има %1 задачи в процес</translation>
     </message>
 </context>
 <context>
@@ -58,22 +58,22 @@
     <message>
         <location filename="../app/desktopapp.cpp" line="111"/>
         <source>Are you sure to delete %1 ?</source>
-        <translation>¿Esta seguro para borrar %1 ?</translation>
+        <translation>Наистина ли изтривате %1?</translation>
     </message>
     <message>
         <location filename="../app/desktopapp.cpp" line="113"/>
         <source>Are you sure to delete these %1 items?</source>
-        <translation>¿Esta seguro para borrar estos %1 elementos ?</translation>
+        <translation>Наистина ли изтривате тези %1 неща?</translation>
     </message>
     <message>
         <location filename="../app/desktopapp.cpp" line="149"/>
         <source>&quot;%1&quot; already exists, please select a different name.</source>
-        <translation>&quot;%1&quot; ya existe, por favor  elija un nombre diferente.</translation>
+        <translation>&quot;%1&quot; вече съществува, моля изберете различно име.</translation>
     </message>
     <message>
         <location filename="../app/desktopapp.cpp" line="150"/>
         <source>Confirm</source>
-        <translation>Confirmar</translation>
+        <translation>Потвърждение</translation>
     </message>
 </context>
 <context>
@@ -82,12 +82,12 @@
         <location filename="../views/desktopitemmanager.cpp" line="30"/>
         <location filename="../views/desktopitemmanager.cpp" line="31"/>
         <source>Computer</source>
-        <translation>Equipo</translation>
+        <translation>Компютър</translation>
     </message>
     <message>
         <location filename="../views/desktopitemmanager.cpp" line="65"/>
         <source>Trash</source>
-        <translation>Papelera</translation>
+        <translation>Кошче</translation>
     </message>
 </context>
 <context>
@@ -95,22 +95,22 @@
     <message>
         <location filename="../controllers/menucontroller.cpp" line="166"/>
         <source>Cut(_X)</source>
-        <translation>Cortar(_X)</translation>
+        <translation>Отрежи(_X)</translation>
     </message>
     <message>
         <location filename="../controllers/menucontroller.cpp" line="167"/>
         <source>Copy(_C)</source>
-        <translation>Copiar(_C)</translation>
+        <translation>Копирай(_C)</translation>
     </message>
     <message>
         <location filename="../controllers/menucontroller.cpp" line="168"/>
         <source>Paste(_V)</source>
-        <translation>Pegar(_V)</translation>
+        <translation>Приложи(_V)</translation>
     </message>
     <message>
         <location filename="../controllers/menucontroller.cpp" line="169"/>
         <source>Select All(_A)</source>
-        <translation>Seleccionar Todo(_A)</translation>
+        <translation>Избери всички(_A)</translation>
     </message>
 </context>
 <context>
@@ -118,22 +118,22 @@
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
         <source>Coexists</source>
-        <translation>Coexiste</translation>
+        <translation>Съвместно съществуване</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
         <source>Replace</source>
-        <translation>Reemplazar</translation>
+        <translation>Замяна</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
         <source>Skip</source>
-        <translation>Saltar</translation>
+        <translation>Пропусни</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="113"/>
         <source>no more ask</source>
-        <translation>no preguntar más</translation>
+        <translation>няма повече въпроси</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="114"/>
@@ -143,22 +143,23 @@
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="155"/>
         <source>copyed</source>
-        <translation>copiado</translation>
+        <translation>копирано</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="156"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt; is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
-        <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  es %2 para &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
+        <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt; е %2 от &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="162"/>
         <source>moved</source>
-        <translation>trasladado</translation>
+        <translation>преместено</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="163"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
-        <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  es %2 para &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
+        <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  е%2 до &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;
+</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="158"/>
@@ -166,12 +167,12 @@
         <location filename="../dialogs/dtaskdialog.cpp" line="172"/>
         <location filename="../dialogs/dtaskdialog.cpp" line="182"/>
         <source>current speed:%1 time Left:%2 </source>
-        <translation>velocidad actual:%1 tiempo restante:%2 </translation>
+        <translation>текуща скорост:%1 оставащо време:%2</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="170"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  is deleted </source>
-        <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  es eliminado</translation>
+        <translation>         &lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  е изтрит     </translation>
     </message>
 </context>
 </TS>
