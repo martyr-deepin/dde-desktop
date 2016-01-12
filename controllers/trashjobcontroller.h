@@ -7,6 +7,7 @@
 class TrashMonitorInterface;
 class TrashJobInterface;
 class EmptyTrashJobInterface;
+class FileConflictController;
 
 class TrashJobController : public QObject
 {
@@ -44,6 +45,7 @@ private:
     TrashMonitorInterface* m_trashMonitorInterface=NULL;
     TrashJobInterface* m_trashJobInterface = NULL;
     EmptyTrashJobInterface* m_emptyTrashJobInterface = NULL;
+    FileConflictController* m_conflictController = NULL;
     bool m_isTrashEmpty = true;
 };
 

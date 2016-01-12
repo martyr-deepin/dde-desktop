@@ -9,8 +9,8 @@
  * before re-generating it.
  */
 
-#ifndef CONFLICTDAPTOR_H_1447056728
-#define CONFLICTDAPTOR_H_1447056728
+#ifndef CONFLICTDAPTOR_H_1452566596
+#define CONFLICTDAPTOR_H_1452566596
 
 #include <QtCore/QObject>
 #include <QtDBus/QtDBus>
@@ -25,7 +25,7 @@ class QVariant;
 QT_END_NAMESPACE
 
 /*
- * Adaptor class for interface com.deepin.dde.Desktop
+ * Adaptor class for interface com.deepin.dde.Desktop.conflict
  */
 class ConflictAdaptor: public QDBusAbstractAdaptor
 {
@@ -33,11 +33,34 @@ class ConflictAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "com.deepin.dde.Desktop.conflict")
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"com.deepin.dde.Desktop.conflict\">\n"
+"    <method name=\"AskRetry\">\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"out\" type=\"{ibs}\"/>\n"
+"      <annotation value=\"ConflictInfo\" name=\"org.qtproject.QtDBus.QtTypeName.Out0\"/>\n"
+"    </method>\n"
+"    <method name=\"AskDeleteConfirmation\">\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"out\" type=\"b\"/>\n"
+"    </method>\n"
+"    <method name=\"AskDelete\">\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"      <arg direction=\"in\" type=\"b\"/>\n"
+"      <arg direction=\"in\" type=\"b\"/>\n"
+"      <arg direction=\"out\" type=\"{ibs}\"/>\n"
+"      <annotation value=\"ConflictInfo\" name=\"org.qtproject.QtDBus.QtTypeName.Out0\"/>\n"
+"    </method>\n"
 "    <method name=\"AskSkip\">\n"
 "      <arg direction=\"in\" type=\"s\"/>\n"
 "      <arg direction=\"in\" type=\"s\"/>\n"
 "      <arg direction=\"in\" type=\"s\"/>\n"
-"      <arg direction=\"in\" type=\"i\"/>\n"
+"      <arg direction=\"in\" type=\"b\"/>\n"
+"      <arg direction=\"in\" type=\"b\"/>\n"
 "      <arg direction=\"out\" type=\"{ibs}\"/>\n"
 "      <annotation value=\"ConflictInfo\" name=\"org.qtproject.QtDBus.QtTypeName.Out0\"/>\n"
 "    </method>\n"
@@ -52,19 +75,21 @@ class ConflictAdaptor: public QDBusAbstractAdaptor
 "  </interface>\n"
         "")
 public:
-    ConflictAdaptor(QObject *parent);
-    virtual ~ConflictAdaptor();
-
     static inline const char *staticServerPath()
     { return "com.deepin.dde.desktop"; }
     static inline const char *staticInterfacePath()
     { return "/com/deepin/dde/desktop/conflict"; }
     static inline const char *staticInterfaceName()
     { return "com.deepin.dde.Desktop.conflict"; }
+    ConflictAdaptor(QObject *parent);
+    virtual ~ConflictAdaptor();
 
 public: // PROPERTIES
 public Q_SLOTS: // METHODS
-    ConflictInfo AskSkip(const QString &in0, const QString &in1, const QString &in2, int in3);
+    ConflictInfo AskDelete(const QString &in0, const QString &in1, const QString &in2, bool in3, bool in4);
+    bool AskDeleteConfirmation(const QString &in0, const QString &in1, const QString &in2);
+    ConflictInfo AskRetry(const QString &in0, const QString &in1, const QString &in2);
+    ConflictInfo AskSkip(const QString &in0, const QString &in1, const QString &in2, bool in3, bool in4);
     ConflictInfo ConflictDialog();
 Q_SIGNALS: // SIGNALS
     void response(ConflictInfo in0);

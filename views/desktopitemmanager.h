@@ -80,6 +80,9 @@ public slots:
     void handleItemsChanged();
 
     void handlePinyinChanged(const QList<DesktopItemInfo>& items);
+
+    void handleFileMetaDataChanged(const QString& path);
+    void handleDesktopItemMetaChanged(const DesktopItemPointer& pItem);
 private:
     QSettings m_settings;
     DesktopItemPointer m_pComputerItem;

@@ -242,6 +242,9 @@ signals:
     /*active changed signal from dock dbus client*/
     void activeWindowChanged(uint windowId);
 
+    /*File metaDataChanged like readable or permission*/
+    void fileMetaDataChanged(const QString& path);
+
 private:
     Q_DISABLE_COPY(SignalManager)
 };

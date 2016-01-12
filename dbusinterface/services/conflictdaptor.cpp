@@ -24,9 +24,10 @@
 ConflictAdaptor::ConflictAdaptor(QObject *parent)
     : QDBusAbstractAdaptor(parent)
 {
+    // constructor
+
     qRegisterMetaType<ConflictInfo>("ConflictInfo");
     qDBusRegisterMetaType<ConflictInfo>();
-    // constructor
     setAutoRelaySignals(true);
 }
 
@@ -35,17 +36,41 @@ ConflictAdaptor::~ConflictAdaptor()
     // destructor
 }
 
-ConflictInfo ConflictAdaptor::AskSkip(const QString &in0, const QString &in1, const QString &in2, int in3)
+ConflictInfo ConflictAdaptor::AskDelete(const QString &in0, const QString &in1, const QString &in2, bool in3, bool in4)
 {
-    // handle method call com.deepin.dde.Desktop.AskSkip
+    // handle method call com.deepin.dde.Desktop.conflict.AskDelete
     ConflictInfo out0;
-    QMetaObject::invokeMethod(parent(), "AskSkip", Q_RETURN_ARG(ConflictInfo, out0), Q_ARG(QString, in0), Q_ARG(QString, in1), Q_ARG(QString, in2), Q_ARG(int, in3));
+    QMetaObject::invokeMethod(parent(), "AskDelete", Q_RETURN_ARG(ConflictInfo, out0), Q_ARG(QString, in0), Q_ARG(QString, in1), Q_ARG(QString, in2), Q_ARG(bool, in3), Q_ARG(bool, in4));
+    return out0;
+}
+
+bool ConflictAdaptor::AskDeleteConfirmation(const QString &in0, const QString &in1, const QString &in2)
+{
+    // handle method call com.deepin.dde.Desktop.conflict.AskDeleteConfirmation
+    bool out0;
+    QMetaObject::invokeMethod(parent(), "AskDeleteConfirmation", Q_RETURN_ARG(bool, out0), Q_ARG(QString, in0), Q_ARG(QString, in1), Q_ARG(QString, in2));
+    return out0;
+}
+
+ConflictInfo ConflictAdaptor::AskRetry(const QString &in0, const QString &in1, const QString &in2)
+{
+    // handle method call com.deepin.dde.Desktop.conflict.AskRetry
+    ConflictInfo out0;
+    QMetaObject::invokeMethod(parent(), "AskRetry", Q_RETURN_ARG(ConflictInfo, out0), Q_ARG(QString, in0), Q_ARG(QString, in1), Q_ARG(QString, in2));
+    return out0;
+}
+
+ConflictInfo ConflictAdaptor::AskSkip(const QString &in0, const QString &in1, const QString &in2, bool in3, bool in4)
+{
+    // handle method call com.deepin.dde.Desktop.conflict.AskSkip
+    ConflictInfo out0;
+    QMetaObject::invokeMethod(parent(), "AskSkip", Q_RETURN_ARG(ConflictInfo, out0), Q_ARG(QString, in0), Q_ARG(QString, in1), Q_ARG(QString, in2), Q_ARG(bool, in3), Q_ARG(bool, in4));
     return out0;
 }
 
 ConflictInfo ConflictAdaptor::ConflictDialog()
 {
-    // handle method call com.deepin.dde.Desktop.ConflictDialog
+    // handle method call com.deepin.dde.Desktop.conflict.ConflictDialog
     ConflictInfo out0;
     QMetaObject::invokeMethod(parent(), "ConflictDialog", Q_RETURN_ARG(ConflictInfo, out0));
     return out0;

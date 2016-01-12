@@ -88,6 +88,9 @@ void FileMonitorWoker::handleInotifyEvent(inotify_event *event){
 //        qDebug() << "IN_DELETE" << path;
         emit fileDeleted(event->cookie, path);
         unMonitor(path);
+    }else if (event->mask & IN_ATTRIB){
+//        qDebug() << event->mask << path;
+        emit metaDataChanged(event->cookie, path);
     }
 }
 

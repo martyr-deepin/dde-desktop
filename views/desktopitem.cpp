@@ -10,6 +10,7 @@
 #include <QSvgRenderer>
 #include <QImage>
 #include <QGraphicsEffect>
+#include <QSvgRenderer>
 #include <QPen>
 
 int DesktopItem::OneTextHeight = 26;
@@ -69,7 +70,6 @@ void DesktopItem::initUI(){
     m_iconLabel->setFixedSize(44, 44);
     m_iconLabel->setScaledContents(false);
 
-
     QVBoxLayout* iconLayout = new QVBoxLayout;
     iconLayout->addWidget(m_iconLabel, 0, Qt::AlignCenter);
     iconLayout->setSpacing(0);
@@ -89,6 +89,40 @@ void DesktopItem::initUI(){
     mainLayout->addStretch();
     mainLayout->setContentsMargins(0, 0, 0, 4);
     setLayout(mainLayout);
+
+    initPermissionLabel();
+    initReadableLabel();
+}
+
+void DesktopItem::initReadableLabel()
+{
+    m_unReadableIndicatorLabel = new QLabel(this);
+    m_unReadableIndicatorLabel->setFixedSize(24, 24);
+    m_unReadableIndicatorLabel->hide();
+    QPixmap pixmap(24, 24);
+    QSvgRenderer renderer(QString(":/images/skin/images/unreadable.svg"));
+    pixmap.fill(Qt::transparent);
+    QPainter painter;
+    painter.begin(&pixmap);
+    renderer.render(&painter);
+    painter.end();
+    pixmap.save("/tmp/1.png");
+    m_unReadableIndicatorLabel->setPixmap(pixmap);
+}
+
+void DesktopItem::initPermissionLabel()
+{
+    m_permissionIndicatorLabel = new QLabel(this);
+    m_permissionIndicatorLabel->setFixedSize(24, 24);
+    m_permissionIndicatorLabel->hide();
+    QPixmap pixmap(24, 24);
+    QSvgRenderer renderer(QString(":/images/skin/images/readonly.svg"));
+    pixmap.fill(Qt::transparent);
+    QPainter painter;
+    painter.begin(&pixmap);
+    renderer.render(&painter);
+    painter.end();
+    m_permissionIndicatorLabel->setPixmap(pixmap);
 }
 
 void DesktopItem::initConnect(){
@@ -585,6 +619,50 @@ void DesktopItem::handlePaste(QString url){
 void DesktopItem::handleSelectAll(QString url){
     if (url == m_url){
         m_textedit->selectAll();
+    }
+}
+
+void DesktopItem::setUserReadOnly(bool isUserReadOnly)
+{
+    m_isUserReadOnly = isUserReadOnly;
+}
+
+void DesktopItem::setUserReadPermisson_000(bool isUserPermisson_000)
+{
+    m_isUserPermisson_000 = isUserPermisson_000;
+}
+
+void DesktopItem::setReadable(bool isReadable)
+{
+    m_isReadable = isReadable;
+}
+
+void DesktopItem::show()
+{
+    QFrame::show();
+    if (m_url == ComputerUrl || m_url == TrashUrl){
+        return;
+    }
+    qDebug() << m_url << "m_isReadable"<< m_isReadable;
+    qDebug() << "m_isUserReadOnly:" << m_isUserReadOnly;
+    qDebug() << "m_isUserPermisson_000:" << m_isUserPermisson_000;
+    if (!m_isReadable){
+        m_unReadableIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, 23)));
+        m_unReadableIndicatorLabel->show();
+        if (m_isUserPermisson_000){
+            m_permissionIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, -3)));
+            m_permissionIndicatorLabel->show();
+        }else{
+            m_permissionIndicatorLabel->hide();
+        }
+    }else{
+        m_unReadableIndicatorLabel->hide();
+        if (m_isUserReadOnly){
+            m_permissionIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, 23)));
+            m_permissionIndicatorLabel->show();
+        }else{
+            m_permissionIndicatorLabel->hide();
+        }
     }
 }
 

@@ -26,10 +26,15 @@ void DBusWorker::stop(){
             this, SLOT(loadDesktopItems()));
     m_requestTimer->stop();
     qDebug() << "request desktop items from dbus finished";
+
 }
 
 void DBusWorker::loadDesktopItems(){
     m_count += 1;
     qDebug() << "loadDesktopItems" << m_count;
-    dbusController->loadDesktopItems();
+    if (m_count < 100){
+        dbusController->loadDesktopItems();
+    }else{
+        stop();
+    }
 }

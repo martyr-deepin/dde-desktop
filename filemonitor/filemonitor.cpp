@@ -34,6 +34,7 @@ void FileMonitor::initConnect(){
     connect(m_fileMonitorWorker, SIGNAL(fileMovedFrom(int,QString)), this, SLOT(handleMoveFrom(int,QString)));
     connect(m_fileMonitorWorker, SIGNAL(fileMovedTo(int,QString)), this, SLOT(handleMoveTo(int,QString)));
     connect(m_fileMonitorWorker, SIGNAL(fileDeleted(int,QString)), this, SLOT(handleDelete(int,QString)));
+    connect(m_fileMonitorWorker, SIGNAL(metaDataChanged(int,QString)), this, SLOT(handleMetaDataChanged(int,QString)));
 }
 
 bool FileMonitor::isGoutputstreamTempFile(QString path){
@@ -129,6 +130,12 @@ void FileMonitor::handleDelete(int cookie, QString path){
         qDebug() << "delete" << path;
         emit fileDeleted(path);
     }
+}
+
+void FileMonitor::handleMetaDataChanged(int cookie, QString path)
+{
+    Q_UNUSED(cookie)
+    emit fileMetaDataChanged(path);
 }
 
 void FileMonitor::delayHanleMoveFrom(){

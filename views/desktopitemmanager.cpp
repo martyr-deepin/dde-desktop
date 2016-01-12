@@ -149,6 +149,9 @@ void DesktopItemManager::initConnect(){
 
     connect(signalManager, SIGNAL(pinyinResultChanged(QList<DesktopItemInfo>)),
             this, SLOT(handlePinyinChanged(QList<DesktopItemInfo>)));
+
+    connect(signalManager, SIGNAL(fileMetaDataChanged(QString)),
+            this, SLOT(handleFileMetaDataChanged(QString)));
 }
 
 void DesktopItemManager::updateItems(QString url, const DesktopItemPointer &pItem){
@@ -168,6 +171,30 @@ void DesktopItemManager::handleItemsChanged(){
 
 void DesktopItemManager::handlePinyinChanged(const QList<DesktopItemInfo> &items){
     m_sortedPinyin_pItems = items;
+}
+
+void DesktopItemManager::handleFileMetaDataChanged(const QString &path)
+{
+    QString url = decodeUrl(path);
+    if (m_pItems.contains(url)){
+        DesktopItemPointer pItem = m_pItems.value(url);
+        handleDesktopItemMetaChanged(pItem);
+        pItem->show();
+    }
+}
+
+void DesktopItemManager::handleDesktopItemMetaChanged(const DesktopItemPointer &pItem)
+{
+    if (!pItem.isNull()){
+        QFileInfo info(pItem->getUrl());
+        pItem->setReadable(info.isReadable());
+
+        bool isUserReadOnly = info.permission(QFile::ReadUser) && !info.permission(QFile::WriteUser) && !info.permission(QFile::ExeUser);
+        pItem->setUserReadOnly(isUserReadOnly);
+
+        bool isUserPermisson_000 = !info.permission(QFile::ReadUser) && !info.permission(QFile::WriteUser) && !info.permission(QFile::ExeUser);
+        pItem->setUserReadPermisson_000(isUserPermisson_000);
+    }
 }
 
 void DesktopItemManager::loadComputerTrashItems(){
@@ -293,6 +320,8 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
     pDesktopItem->setDesktopIcon(icon);
     pDesktopItem->setDesktopItemInfo(fileInfo);
     pDesktopItem->resize(width, height);
+
+    handleDesktopItemMetaChanged(pDesktopItem);
     return pDesktopItem;
 }
 

@@ -31,6 +31,7 @@ signals:
     void fileMovedFrom(int cookie, QString path);
     void fileMovedTo(int cookie, QString out);
     void fileDeleted(int cookie, QString path);
+    void metaDataChanged(int cookie, QString path);
 
 public slots:
     void monitor(const QString& path);

@@ -110,6 +110,7 @@ public slots:
     void handleFileMovedIn(const QString& path);
     void handleFileMovedOut(const QString& path);
     void handleFileRenamed(const QString& oldPath, const QString& newPath);
+    void handleFileMetaDataChanged(const QString& path);
 
     void asyncRequestDesktopItems();
     void asyncRequestComputerIcon();

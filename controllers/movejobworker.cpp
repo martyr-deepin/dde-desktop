@@ -92,7 +92,7 @@ void MovejobWorker::moveFiles(QStringList files, QString destination){
 
 void MovejobWorker::connectMoveJobSignal(){
     if (m_moveJobInterface){
-        connect(m_moveJobInterface, SIGNAL(Done()), this, SLOT(moveJobExcuteFinished()));
+        connect(m_moveJobInterface, SIGNAL(Done(QString)), this, SLOT(moveJobExcuteFinished(QString)));
         connect(m_moveJobInterface, SIGNAL(Aborted()), this, SLOT(moveJobAbortFinished()));
         connect(m_moveJobInterface, SIGNAL(Moving(QString)), this, SLOT(onMovingFile(QString)));
         connect(m_moveJobInterface, SIGNAL(TotalAmount(qlonglong,ushort)),
@@ -105,7 +105,7 @@ void MovejobWorker::connectMoveJobSignal(){
 
 void MovejobWorker::disconnectMoveJobSignal(){
     if (m_moveJobInterface){
-        disconnect(m_moveJobInterface, SIGNAL(Done()), this, SLOT(moveJobExcuteFinished()));
+        disconnect(m_moveJobInterface, SIGNAL(Done(QString)), this, SLOT(moveJobExcuteFinished(QString)));
         disconnect(m_moveJobInterface, SIGNAL(Aborted()), this, SLOT(moveJobAbortFinished()));
         disconnect(m_moveJobInterface, SIGNAL(Moving(QString)), this, SLOT(onMovingFile(QString)));
         disconnect(m_moveJobInterface, SIGNAL(TotalAmount(qlonglong,ushort)),
@@ -116,13 +116,13 @@ void MovejobWorker::disconnectMoveJobSignal(){
 }
 
 
-void MovejobWorker::moveJobExcuteFinished(){
+void MovejobWorker::moveJobExcuteFinished(const QString& message){
     disconnectMoveJobSignal();
     m_moveJobInterface->deleteLater();
     m_moveJobInterface = NULL;
     m_progressTimer->stop();
     emit finished();
-    qDebug() << "move job finished";
+    qDebug() << "move job finished" << message;
 }
 
 void MovejobWorker::moveJobAbort(){
@@ -133,9 +133,8 @@ void MovejobWorker::moveJobAbort(){
 }
 
 void MovejobWorker::moveJobAbortFinished(){
-    moveJobExcuteFinished();
+    moveJobExcuteFinished("move job aborted");
 }
-
 
 void MovejobWorker::onMovingFile(QString file){
     emit signalManager->movingFileChaned(file);

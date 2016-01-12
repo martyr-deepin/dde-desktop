@@ -23,6 +23,7 @@ signals:
     void fileMovedOut(QString out);
     void fileRenamed(QString oldPath, QString newPath);
     void fileDeleted(QString path);
+    void fileMetaDataChanged(QString path);
 
     void appGroupUpdated(QString path);
 
@@ -31,6 +32,7 @@ public slots:
     void handleMoveFrom(int cookie, QString path);
     void handleMoveTo(int cookie, QString path);
     void handleDelete(int cookie, QString path);
+    void handleMetaDataChanged(int cookie, QString path);
 
     void delayHanleMoveFrom();
     void delayHandleAppGroupCreated();

@@ -33,6 +33,8 @@ public:
 
     void init();
     void initUI();
+    void initReadableLabel();
+    void initPermissionLabel();
     void initConnect();
 
     bool isInAppGroup();
@@ -99,6 +101,11 @@ public slots:
     void handlePaste(QString url);
     void handleSelectAll(QString url);
 
+    void setUserReadOnly(bool isUserReadOnly);
+    void setUserReadPermisson_000(bool isUserPermisson_000);
+    void setReadable(bool isReadable);
+    void show();
+
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
@@ -109,6 +116,8 @@ protected:
 
 private:
     QLabel* m_iconLabel;
+    QLabel* m_permissionIndicatorLabel;
+    QLabel* m_unReadableIndicatorLabel;
     GrowingElideTextEdit* m_textedit;
     QPixmap m_desktopIcon;
     QString m_desktopName = "";
@@ -121,6 +130,9 @@ private:
     bool m_hover = false;
     bool m_isEditing = false;
     bool m_isAllChecked = false;
+    bool m_isReadable = false;
+    bool m_isUserReadOnly = false;
+    bool m_isUserPermisson_000 = false;
     QString m_hoverObjectName = "Hover";
     DesktopItemInfo m_desktopItemInfo;
     QMap<QString, DesktopItemInfo> m_appGroupItems;

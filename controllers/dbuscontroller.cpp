@@ -109,6 +109,7 @@ void DBusController::initConnect(){
     connect(m_fileMonitor, SIGNAL(fileMovedIn(QString)), this, SLOT(handleFileMovedIn(QString)));
     connect(m_fileMonitor, SIGNAL(fileMovedOut(QString)), this, SLOT(handleFileMovedOut(QString)));
     connect(m_fileMonitor, SIGNAL(fileRenamed(QString,QString)), this, SLOT(handleFileRenamed(QString,QString)));
+    connect(m_fileMonitor, SIGNAL(fileMetaDataChanged(QString)), this, SLOT(handleFileMetaDataChanged(QString)));
 
     connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
     connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
@@ -200,6 +201,7 @@ void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *c
         m_requestFinished = true;
 
     }else{
+        emit signalManager->stopRequest();
         qCritical() << reply.error().message();
     }
 
@@ -650,6 +652,11 @@ void DBusController::handleFileRenamed(const QString &oldPath, const QString &ne
         asyncRenameDesktopItemByUrl(newPath);
     }
     m_pinyinTimer->start();
+}
+
+void DBusController::handleFileMetaDataChanged(const QString &path)
+{
+    emit signalManager->fileMetaDataChanged(path);
 }
 
 void DBusController::updateDesktopItemInfoMap(DesktopItemInfo desktopItemInfo){

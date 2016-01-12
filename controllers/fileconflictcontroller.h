@@ -22,7 +22,10 @@ public:
 signals:
 
 public slots:
-    ConflictInfo AskSkip(const QString &primaryText, const QString &secondaryText, const QString &detailText, int flags);
+    ConflictInfo AskDelete(const QString &primaryText, const QString &secondaryText, const QString &detailText, bool retry, bool multi);
+    bool AskDeleteConfirmation(const QString &primaryText, const QString &secondaryText, const QString &detailText);
+    ConflictInfo AskRetry(const QString &primaryText, const QString &secondaryText, const QString &detailText);
+    ConflictInfo AskSkip(const QString &primaryText, const QString &secondaryText, const QString &detailText, bool retry, bool multi);
     ConflictInfo ConflictDialog();
 
     void setJobDetail(const QMap<QString, QString>& detail);

@@ -23,15 +23,19 @@ void FileConflictController::registerDBusService(){
 ConflictInfo FileConflictController::AskSkip(const QString &primaryText,
                                      const QString &secondaryText,
                                      const QString &detailText,
-                                     int flags){
+                                     bool retry,
+                                     bool multi){
     Q_UNUSED(primaryText)
     Q_UNUSED(secondaryText)
     Q_UNUSED(detailText)
-    Q_UNUSED(flags)
+    Q_UNUSED(retry)
+    Q_UNUSED(multi)
+    qDebug() << "AskSkip";
     ConflictInfo obj;
     obj.code = 1;
     obj.applyToAll = false;
     obj.userData = "";
+    m_conflictAdaptor->response(obj);
     return obj;
 }
 
@@ -55,10 +59,49 @@ ConflictAdaptor* FileConflictController::getConflictAdaptor(){
     return m_conflictAdaptor;
 }
 
+ConflictInfo FileConflictController::AskDelete(const QString &primaryText, const QString &secondaryText, const QString &detailText, bool retry, bool multi)
+{
+    Q_UNUSED(primaryText)
+    Q_UNUSED(secondaryText)
+    Q_UNUSED(detailText)
+    Q_UNUSED(retry)
+    Q_UNUSED(multi)
+    qDebug() << "AskDelete";
+    ConflictInfo obj;
+    obj.code = 8;
+    obj.applyToAll = true;
+    obj.userData = "";
+    m_conflictAdaptor->response(obj);
+    return obj;
+}
+
+bool FileConflictController::AskDeleteConfirmation(const QString &primaryText, const QString &secondaryText, const QString &detailText)
+{
+    Q_UNUSED(primaryText)
+    Q_UNUSED(secondaryText)
+    Q_UNUSED(detailText)
+    qDebug() << "AskDeleteConfirmation";
+    return false;
+}
+
+ConflictInfo FileConflictController::AskRetry(const QString &primaryText, const QString &secondaryText, const QString &detailText)
+{
+    Q_UNUSED(primaryText)
+    Q_UNUSED(secondaryText)
+    Q_UNUSED(detailText)
+    qDebug() << "AskRetry";
+    ConflictInfo obj;
+    obj.code = 4;
+    obj.applyToAll = false;
+    obj.userData = "";
+    m_conflictAdaptor->response(obj);
+    return obj;
+}
+
 void FileConflictController::unRegisterDBusService(){
     QDBusConnection conn = QDBusConnection::sessionBus();
     conn.unregisterObject(m_objectPath);
-    conn.registerService(ConflictAdaptor::staticServerPath());
+    conn.unregisterService(ConflictAdaptor::staticServerPath());
 }
 
 void FileConflictController::setJobDetail(const QMap<QString, QString> &detail){

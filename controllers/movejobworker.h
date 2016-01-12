@@ -33,7 +33,7 @@ public slots:
     void moveFiles(QStringList files, QString destination);
     void connectMoveJobSignal();
     void disconnectMoveJobSignal();
-    void moveJobExcuteFinished();
+    void moveJobExcuteFinished(const QString& message);
     void moveJobAbort();
     void moveJobAbortFinished();
     void onMovingFile(QString file);

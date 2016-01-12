@@ -6,10 +6,14 @@
 #include "views/global.h"
 #include "dbuscontroller.h"
 #include "dialogs/cleartrashdialog.h"
+#include "fileconflictcontroller.h"
+#include "dbusinterface/services/conflictdaptor.h"
+
 
 TrashJobController::TrashJobController(QObject *parent) : QObject(parent)
 {
     m_trashMonitorInterface = new TrashMonitorInterface(FileMonitor_service, TrashMonitor_path, QDBusConnection::sessionBus(), this);
+    m_conflictController = new FileConflictController();
     initConnect();
 }
 
@@ -55,7 +59,20 @@ void TrashJobController::setTrashEmptyFlag(bool flag){
 
 void TrashJobController::trashJobExcute(const QStringList &files){
     qDebug() << files;
-    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewTrashJob(files, false, "", "", "");
+    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewTrashJob(
+                files,
+                false,
+                ConflictAdaptor::staticServerPath(),
+                m_conflictController->getObjectPath(),
+                ConflictAdaptor::staticInterfaceName()
+                );
+//    QDBusPendingReply<QString, QDBusObjectPath, QString> reply = dbusController->getFileOperationsInterface()->NewTrashJob(
+//                files,
+//                false,
+//                "",
+//                "",
+//                ""
+//                );
     reply.waitForFinished();
     if (!reply.isError()){
         QString service = reply.argumentAt(0).toString();

@@ -10,5 +10,7 @@
         <file>skin/images/textMask.svg</file>
         <file>skin/images/textMask.png</file>
         <file>skin/images/diban.svg</file>
+        <file>skin/images/unreadable.svg</file>
+        <file>skin/images/readonly.svg</file>
     </qresource>
 </RCC>
