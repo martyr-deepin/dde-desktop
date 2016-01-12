@@ -151,6 +151,7 @@ void MenuController::showMenu(const QString showmenu_path, QString menucontent) 
 
 void MenuController::handleMenuUnregistered(){
     emit signalManager->contextMenuShowed(false);
+    emit signalManager->appGroupItemRightClicked(false);
 }
 
 void MenuController::menuItemInvoked(QString itemId, bool flag){

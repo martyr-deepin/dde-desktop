@@ -789,6 +789,7 @@ void DesktopItemManager::closeAppGroupDetail(QPoint pos){
 
 void DesktopItemManager::closeAppGroupDetail(){
     if (m_appGroupBox){
+        qDebug() << "closeAppGroupDetail";
         m_appGroupBox->close();
         m_appGroupBox = NULL;
     }
