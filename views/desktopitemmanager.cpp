@@ -187,13 +187,17 @@ void DesktopItemManager::handleDesktopItemMetaChanged(const DesktopItemPointer &
 {
     if (!pItem.isNull()){
         QFileInfo info(pItem->getUrl());
-        pItem->setReadable(info.isReadable());
+        if (info.isSymLink()){
+            qDebug() << pItem->getUrl() << "is SymLink ";
+        }else{
+            pItem->setReadable(info.isReadable());
 
-        bool isUserReadOnly = info.permission(QFile::ReadUser) && !info.permission(QFile::WriteUser) && !info.permission(QFile::ExeUser);
-        pItem->setUserReadOnly(isUserReadOnly);
+            bool isUserReadOnly = info.permission(QFile::ReadUser) && !info.permission(QFile::WriteUser) && !info.permission(QFile::ExeUser);
+            pItem->setUserReadOnly(isUserReadOnly);
 
-        bool isUserPermisson_000 = !info.permission(QFile::ReadUser) && !info.permission(QFile::WriteUser) && !info.permission(QFile::ExeUser);
-        pItem->setUserReadPermisson_000(isUserPermisson_000);
+            bool isUserPermisson_000 = !info.permission(QFile::ReadUser) && !info.permission(QFile::WriteUser) && !info.permission(QFile::ExeUser);
+            pItem->setUserReadPermisson_000(isUserPermisson_000);
+        }
     }
 }
 
@@ -377,11 +381,15 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
         }
         updateItems(pDesktopItem->getUrl(), pDesktopItem);
     }
+    checkDesktopItemValid();
 }
 
 void DesktopItemManager::checkDesktopItemValid(){
     foreach (QString url, m_pItems.keys()) {
-        if (!QFile(url).exists() && url!=ComputerUrl && url!=TrashUrl){
+        QFileInfo info(url);
+        if (info.isSymLink()){
+
+        }else if (!info.exists() && url!=ComputerUrl && url!=TrashUrl){
             qDebug() << "delete invalid desktop item "<< url;
             deleteItem(url);
         }
@@ -428,6 +436,7 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
                 m_shoudbeMovedItem->setRaWUrl(desktopItemInfo.URI);
                 m_pItems.insert(iterator, newKey, m_shoudbeMovedItem);
                 m_pItems.remove(oldKey);
+                emit signalManager->fileMetaDataChanged(newKey);
 
                 if (m_shoudbeMovedItem->isCuted()){
                     QStringList files;
@@ -456,6 +465,7 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
         m_shoudbeMovedItem->deleteLater();
         addItem(desktopItemInfo);
     }
+    checkDesktopItemValid();
 }
 
 void DesktopItemManager::cutItems(QStringList urls){

@@ -49,7 +49,7 @@ void DesktopBox::setAppGroupRightClicked(bool flag){
 
 void DesktopBox::handleActiveWindowChanged(uint windowId)
 {
-    qDebug() << windowId << m_appGroupRightClicked;
+//    qDebug() << windowId << m_appGroupRightClicked;
     int desktopBoxWinId = winId();
     AppGroupBox* appGroupBox = m_desktopFrame->getDesktopItemManager()->getAppGroupBox();
     if (appGroupBox){

@@ -646,22 +646,27 @@ void DesktopItem::show()
     qDebug() << m_url << "m_isReadable"<< m_isReadable;
     qDebug() << "m_isUserReadOnly:" << m_isUserReadOnly;
     qDebug() << "m_isUserPermisson_000:" << m_isUserPermisson_000;
-    if (!m_isReadable){
-        m_unReadableIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, 23)));
-        m_unReadableIndicatorLabel->show();
-        if (m_isUserPermisson_000){
-            m_permissionIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, -3)));
-            m_permissionIndicatorLabel->show();
-        }else{
-            m_permissionIndicatorLabel->hide();
-        }
+
+    if (QFileInfo(m_url).isSymLink()){
+        qDebug() << m_url << "isSymLink";
     }else{
-        m_unReadableIndicatorLabel->hide();
-        if (m_isUserReadOnly){
-            m_permissionIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, 23)));
-            m_permissionIndicatorLabel->show();
+        if (!m_isReadable){
+            m_unReadableIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, 23)));
+            m_unReadableIndicatorLabel->show();
+            if (m_isUserPermisson_000){
+                m_permissionIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, -3)));
+                m_permissionIndicatorLabel->show();
+            }else{
+                m_permissionIndicatorLabel->hide();
+            }
         }else{
-            m_permissionIndicatorLabel->hide();
+            m_unReadableIndicatorLabel->hide();
+            if (m_isUserReadOnly){
+                m_permissionIndicatorLabel->move(m_iconLabel->mapToParent(QPoint(23, 23)));
+                m_permissionIndicatorLabel->show();
+            }else{
+                m_permissionIndicatorLabel->hide();
+            }
         }
     }
 }

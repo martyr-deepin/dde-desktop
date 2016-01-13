@@ -32,10 +32,10 @@ void FileMonitorWoker::addWatchFolder(const QString &path){
             m_path_wd.insert(path, wd);
             m_wd_path.insert(wd, path);
         }else{
-//            qDebug() <<"already watch for" << QString(path);
+            qDebug() <<"already watch for" << QString(path);
         }
     }else{
-//        qDebug() <<"Can't add watch for" << QString(path);
+        qDebug() <<"Can't add watch for" << QString(path);
     }
 }
 

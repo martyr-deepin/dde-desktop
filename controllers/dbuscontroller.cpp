@@ -648,8 +648,24 @@ void DBusController::handleFileRenamed(const QString &oldPath, const QString &ne
     if (isDesktopFile){
         qDebug() << "desktop file renamed";
         m_itemShoudBeMoved = oldPath;
-        emit signalManager->itemShoudBeMoved(oldPath);
-        asyncRenameDesktopItemByUrl(newPath);
+        qDebug() << m_desktopItemInfoMap.keys() << decodeUrl(oldPath);
+        bool flag(false);
+        foreach (QString key, m_desktopItemInfoMap.keys()) {
+            QString uri = decodeUrl(key);
+            if (uri == oldPath){
+                flag = true;
+            }
+        }
+        if (flag){
+            emit signalManager->itemShoudBeMoved(oldPath);
+            asyncRenameDesktopItemByUrl(newPath);
+        }else{
+            QTimer::singleShot(200, this, [=](){
+                qDebug() << "Delay handleFileRenamed action";
+                emit signalManager->itemShoudBeMoved(oldPath);
+                asyncRenameDesktopItemByUrl(newPath);
+            });
+        }
     }
     m_pinyinTimer->start();
 }
