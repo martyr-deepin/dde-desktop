@@ -418,7 +418,6 @@ void DBusController::sortPingyinEnglish(){
     emit signalManager->pinyinResultChanged(m_sortedPinyinInfos);
 }
 
-
 QMap<QString, DesktopItemInfoMap> DBusController::getAppGroups(){
     return m_appGroups;
 }
@@ -660,15 +659,26 @@ void DBusController::handleFileRenamed(const QString &oldPath, const QString &ne
             emit signalManager->itemShoudBeMoved(oldPath);
             asyncRenameDesktopItemByUrl(newPath);
         }else{
-            QTimer::singleShot(200, this, [=](){
-                qDebug() << "Delay handleFileRenamed action";
-                emit signalManager->itemShoudBeMoved(oldPath);
-                asyncRenameDesktopItemByUrl(newPath);
-            });
+            m_renameOldPath  = oldPath;
+            m_renameNewPath = newPath;
+            QTimer* delayTimer = new QTimer;
+            delayTimer->setSingleShot(true);
+            delayTimer->setInterval(200);
+            connect(delayTimer, SIGNAL(timeout()), this, SLOT(delayHandleRenameEvent()));
+            connect(delayTimer, SIGNAL(timeout()), delayTimer, SLOT(deleteLater()));
+            delayTimer->start();
         }
     }
     m_pinyinTimer->start();
 }
+
+void DBusController::delayHandleRenameEvent()
+{
+    qDebug() << "Delay handleFileRenamed action";
+    emit signalManager->itemShoudBeMoved(m_renameOldPath);
+    asyncRenameDesktopItemByUrl(m_renameNewPath);
+}
+
 
 void DBusController::handleFileMetaDataChanged(const QString &path)
 {

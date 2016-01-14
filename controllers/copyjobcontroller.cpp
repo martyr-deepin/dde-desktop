@@ -46,7 +46,7 @@ void CopyJobController::handleConflictConfirmResponse(const QMap<QString, QStrin
             }
             obj.applyToAll = response.value("applyToAll").toBool();
             obj.userData = "";
-            qDebug() << obj.code;
+            qDebug() << obj.code << obj.applyToAll;
             m_works.at(i)->handleResponse(obj);
             break;
         }

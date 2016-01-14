@@ -165,6 +165,8 @@ public slots:
     void convertNameToPinyin();
     void sortPingyinEnglish();
 
+    /*delay rename event from inotify*/
+    void delayHandleRenameEvent();
 private:
     FileMonitor* m_fileMonitor = NULL;
     FileMonitorInstanceInterface* m_desktopMonitorInterface = NULL;
@@ -197,6 +199,9 @@ private:
 
     bool m_requestFinished = false;
     int m_thumbnailCount = 0;
+
+    QString m_renameOldPath="";
+    QString m_renameNewPath="";
 
     Q_DISABLE_COPY(DBusController)
 
