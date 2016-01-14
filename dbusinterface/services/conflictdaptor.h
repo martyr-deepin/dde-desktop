@@ -25,14 +25,14 @@ class QVariant;
 QT_END_NAMESPACE
 
 /*
- * Adaptor class for interface com.deepin.dde.Desktop.conflict
+ * Adaptor class for interface com.deepin.dde.desktop.conflict
  */
 class ConflictAdaptor: public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.dde.Desktop.conflict")
+    Q_CLASSINFO("D-Bus Interface", "com.deepin.dde.desktop.conflict")
     Q_CLASSINFO("D-Bus Introspection", ""
-"  <interface name=\"com.deepin.dde.Desktop.conflict\">\n"
+"  <interface name=\"com.deepin.dde.desktop.conflict\">\n"
 "    <method name=\"AskRetry\">\n"
 "      <arg direction=\"in\" type=\"s\"/>\n"
 "      <arg direction=\"in\" type=\"s\"/>\n"
@@ -80,7 +80,7 @@ public:
     static inline const char *staticInterfacePath()
     { return "/com/deepin/dde/desktop/conflict"; }
     static inline const char *staticInterfaceName()
-    { return "com.deepin.dde.Desktop.conflict"; }
+    { return "com.deepin.dde.desktop.conflict"; }
     ConflictAdaptor(QObject *parent);
     virtual ~ConflictAdaptor();
 

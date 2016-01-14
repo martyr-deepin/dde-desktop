@@ -101,7 +101,6 @@ ConflictInfo FileConflictController::AskRetry(const QString &primaryText, const 
 void FileConflictController::unRegisterDBusService(){
     QDBusConnection conn = QDBusConnection::sessionBus();
     conn.unregisterObject(m_objectPath);
-    conn.unregisterService(ConflictAdaptor::staticServerPath());
 }
 
 void FileConflictController::setJobDetail(const QMap<QString, QString> &detail){

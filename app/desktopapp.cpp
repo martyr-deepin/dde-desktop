@@ -253,12 +253,6 @@ void DesktopApp::handleF1Pressed()
     QProcess::startDetached("dman dde");
 }
 
-void DesktopApp::unRegisterDbusService(){
-    QDBusConnection conn = QDBusConnection::sessionBus();
-    conn.unregisterObject(DesktopAdaptor::staticInterfacePath());
-    conn.unregisterService(DesktopAdaptor::staticServerPath());
-}
-
 DesktopApp::~DesktopApp()
 {
 
