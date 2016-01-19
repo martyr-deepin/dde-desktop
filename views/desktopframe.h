@@ -90,6 +90,8 @@ public slots:
 
     void setMenuShowed(bool flag);
 
+    void delayHandleDragMoveEvent();
+
 protected:
     void focusInEvent(QFocusEvent* event);
     void focusOutEvent(QFocusEvent* event);
@@ -120,6 +122,8 @@ private:
     bool m_isDragStarted = false;
     bool m_isGridBackgoundOn = false;
 
+    QList<QUrl> m_dragUrls;
+
     SizeType m_sizeType;
 
     QSharedPointer<DesktopItemManager> m_desktopItemManager;
@@ -140,6 +144,7 @@ private:
     QList<DesktopItemPointer> m_checkedDesktopItems;
 
     QTimer* m_mouseMoveCheckTimer;
+    QTimer* m_dragMoveTimer;
     WaterMaskFrame* m_waterMaskFrame;
 };
 

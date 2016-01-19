@@ -15,7 +15,7 @@ public:
 signals:
 
 public slots:
-    void handleDragMoveEvent(const QList<DesktopItemPointer>& items, QDragMoveEvent* event);
+    void handleDragMoveEvent(const QList<DesktopItemPointer>& items, const QList<QUrl>& urls, const QPoint& pos);
     void handleDropEvent(const QList<DesktopItemPointer>& items, QDropEvent* event);
 
 private:

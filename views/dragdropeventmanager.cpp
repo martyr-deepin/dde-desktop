@@ -7,36 +7,26 @@ DragDropEventManager::DragDropEventManager(QObject *parent) : QObject(parent)
 
 }
 
-void DragDropEventManager::handleDragMoveEvent(const QList<DesktopItemPointer>& items, QDragMoveEvent *event){
-    qDebug() << event;
-    DesktopFrame* m_parent = static_cast<DesktopFrame*>(parent());
-    if (event->source() == m_parent){
-        event->setDropAction(Qt::MoveAction);
-        event->accept();
-    }else{
-        event->acceptProposedAction();
+void DragDropEventManager::handleDragMoveEvent(const QList<DesktopItemPointer>& items, const QList<QUrl> &urls, const QPoint &pos){
+    QStringList stringUrls;
+    foreach (QUrl url, urls) {
+        stringUrls.append(url.toString());
     }
-
-    if (event->mimeData()->hasUrls()){
-        QStringList urls;
-        foreach (QUrl url, event->mimeData()->urls()) {
-            urls.append(url.toString());
-        }
-        foreach(DesktopItemPointer pItem, items){
-            if (pItem->geometry().contains(event->pos())){
-                if (isAllApp(urls) && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
-                    m_hoverDesktopItem = pItem;
-                    pItem->changeToBeAppGroupIcon();
-                }
-                pItem->setHover(true);
-            }else{
-                pItem->setHover(false);
-                if (pItem == m_hoverDesktopItem){
-                    pItem->changeBacktoNormal();
-                }
+    foreach(DesktopItemPointer pItem, items){
+        if (pItem->geometry().contains(pos)){
+            if (isAllApp(stringUrls) && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
+                m_hoverDesktopItem = pItem;
+                pItem->changeToBeAppGroupIcon();
+            }
+            pItem->setHover(true);
+        }else{
+            pItem->setHover(false);
+            if (pItem == m_hoverDesktopItem){
+                pItem->changeBacktoNormal();
             }
         }
     }
+
 }
 
 

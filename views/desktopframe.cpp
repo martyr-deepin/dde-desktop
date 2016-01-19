@@ -42,6 +42,10 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_mouseMoveCheckTimer->setSingleShot(true);
     m_mouseMoveCheckTimer->setInterval(10);
 
+    m_dragMoveTimer = new QTimer;
+    m_dragMoveTimer->setSingleShot(true);
+    m_dragMoveTimer->setInterval(10);
+
     QRect primaryRect =  QRect(dbusController->getDisplayInterface()->primaryRect());
     move(primaryRect.x(), primaryRect.y());
     setFixedSize(primaryRect.width(), primaryRect.height());
@@ -76,6 +80,7 @@ void DesktopFrame::initConnect(){
     connect(this, SIGNAL(multiCheckedByMouseChanged(bool)), this, SLOT(setMultiCheckedByMouse(bool)));
 
     connect(m_mouseMoveCheckTimer, SIGNAL(timeout()), this, SLOT(handleMouseMoveCheckItems()));
+    connect(m_dragMoveTimer, SIGNAL(timeout()), this, SLOT(delayHandleDragMoveEvent()));
 
     connect(signalManager, SIGNAL(contextMenuShowed(bool)), this ,SLOT(setMenuShowed(bool)));
     connect(signalManager, SIGNAL(returnEnterPressed()), this, SLOT(unCheckCheckedItems()));
@@ -342,6 +347,13 @@ void DesktopFrame::setMenuShowed(bool flag){
     DesktopFrame::IsMenuShowed = flag;
 }
 
+void DesktopFrame::delayHandleDragMoveEvent()
+{
+    if (m_dragUrls.count() > 0){
+        m_dragDropEventManager->handleDragMoveEvent(m_desktopItemManager->getItems(), m_dragUrls, m_dragMovePos);
+    }
+}
+
 void DesktopFrame::focusInEvent(QFocusEvent *event){
     QFrame::focusInEvent(event);
 }
@@ -353,7 +365,8 @@ void DesktopFrame::focusOutEvent(QFocusEvent *event){
 
 void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
     m_dragLeave = false;
-
+    m_dragUrls.clear();
+    m_dragMoveTimer->stop();
     if (event->source() == this){
         qDebug() << "dragEnterEvent event come from self"<< event->pos();
         event->setDropAction(Qt::MoveAction);
@@ -361,23 +374,37 @@ void DesktopFrame::dragEnterEvent(QDragEnterEvent *event){
     }else{
         qDebug() << "dragEnterEvent event come from outside"<< event->pos();
         event->acceptProposedAction();
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
     }
 }
 
 
 void DesktopFrame::dragMoveEvent(QDragMoveEvent *event){
     m_dragMovePos = event->pos();
-    m_dragDropEventManager->handleDragMoveEvent(m_desktopItemManager->getItems(), event);
+    if (event->source() == this){
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
+    }else{
+        event->acceptProposedAction();
+    }
+    if (event->mimeData()->hasUrls()){
+        m_dragUrls = event->mimeData()->urls();
+        m_dragMoveTimer->start();
+    }
 }
 
 void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
     m_dragLeave = true;
+    m_dragUrls.clear();
+    m_dragMoveTimer->stop();
     event->accept();
     qDebug() << "dragLeaveEvent come from outside";
 }
 
 void DesktopFrame::dropEvent(QDropEvent *event){
-
+    m_dragUrls.clear();
+    m_dragMoveTimer->stop();
     m_dragDropEventManager->handleDropEvent(m_desktopItemManager->getItems(), event);
 }
 
