@@ -131,7 +131,7 @@ void MoveCopyTaskWidget::initConnect(){
 
 void MoveCopyTaskWidget::updateMessage(const QMap<QString, QString> &data){
     QString file, destination, speed, remainTime, progress;
-    QString action("copyed");
+    QString action("copied");
     QString message, tipMessage;
     if (data.contains("file")){
         file = data.value("file");
@@ -152,7 +152,7 @@ void MoveCopyTaskWidget::updateMessage(const QMap<QString, QString> &data){
 
     if (m_jobDetail.contains("type")){
         if (m_jobDetail.value("type") == "copy"){
-            action = tr("copyed");
+            action = tr("copied");
             message = tr("<span style=\"color: #3cadff\"> %1 </span> is %2 to <span style=\"color: #3cadff\"> %3 </span>")
                     .arg(file, action, destination);
             tipMessage = tr("current speed:%1 time Left:%2 ")
