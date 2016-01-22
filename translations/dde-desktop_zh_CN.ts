@@ -73,7 +73,7 @@
     <message>
         <location filename="../app/desktopapp.cpp" line="150"/>
         <source>Confirm</source>
-        <translation>卸载</translation>
+        <translation>确定</translation>
     </message>
 </context>
 <context>

@@ -68,7 +68,7 @@
     <message>
         <location filename="../app/desktopapp.cpp" line="149"/>
         <source>&quot;%1&quot; already exists, please select a different name.</source>
-        <translation>&quot;%1&quot;(은)는 이미 존재합니다, 다른 이름을 선택해주세요.</translation>
+        <translation>&quot;%1&quot;(은)는 이미 존재합니다. 다른 이름을 선택해주세요.</translation>
     </message>
     <message>
         <location filename="../app/desktopapp.cpp" line="150"/>
@@ -123,7 +123,7 @@
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
         <source>Replace</source>
-        <translation>교체</translation>
+        <translation>바꾸기</translation>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
