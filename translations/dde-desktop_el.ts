@@ -56,22 +56,22 @@
 <context>
     <name>DesktopApp</name>
     <message>
-        <location filename="../app/desktopapp.cpp" line="111"/>
+        <location filename="../app/desktopapp.cpp" line="114"/>
         <source>Are you sure to delete %1 ?</source>
         <translation>Θέλετε σίγουρα να διαγράψετε το %1 ;</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="113"/>
+        <location filename="../app/desktopapp.cpp" line="116"/>
         <source>Are you sure to delete these %1 items?</source>
         <translation>Θέλετε σίγουρα να διαγράψετε αυτά τα %1 στοιχεία;</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="149"/>
+        <location filename="../app/desktopapp.cpp" line="152"/>
         <source>&quot;%1&quot; already exists, please select a different name.</source>
         <translation>&quot;%1&quot; υπάρχει ήδη, παρακαλώ επιλέξτε διαφορετικό όνομα.</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="150"/>
+        <location filename="../app/desktopapp.cpp" line="153"/>
         <source>Confirm</source>
         <translation>Επιβεβαίωση</translation>
     </message>
@@ -93,22 +93,22 @@
 <context>
     <name>MenuController</name>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="166"/>
+        <location filename="../controllers/menucontroller.cpp" line="167"/>
         <source>Cut(_X)</source>
         <translation>Αποκοπή(_X)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="167"/>
+        <location filename="../controllers/menucontroller.cpp" line="168"/>
         <source>Copy(_C)</source>
         <translation>Αντιγραφή(_C)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="168"/>
+        <location filename="../controllers/menucontroller.cpp" line="169"/>
         <source>Paste(_V)</source>
         <translation>Επικόλληση(_V)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="169"/>
+        <location filename="../controllers/menucontroller.cpp" line="170"/>
         <source>Select All(_A)</source>
         <translation>Επιλογή όλων(_A)</translation>
     </message>
@@ -141,11 +141,6 @@
         <translation>Εντάξει</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="155"/>
-        <source>copyed</source>
-        <translation>αντιγράφηκε-αν</translation>
-    </message>
-    <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="156"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt; is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
         <translation type="unfinished"/>
@@ -167,6 +162,11 @@
         <location filename="../dialogs/dtaskdialog.cpp" line="182"/>
         <source>current speed:%1 time Left:%2 </source>
         <translation>τρέχουσα ταχύτητα:%1 χρόνος Απομένων:%2 </translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="155"/>
+        <source>copied</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="170"/>

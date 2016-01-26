@@ -56,22 +56,22 @@
 <context>
     <name>DesktopApp</name>
     <message>
-        <location filename="../app/desktopapp.cpp" line="111"/>
+        <location filename="../app/desktopapp.cpp" line="114"/>
         <source>Are you sure to delete %1 ?</source>
         <translation>Tes a certeza de querer eliminar %1?</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="113"/>
+        <location filename="../app/desktopapp.cpp" line="116"/>
         <source>Are you sure to delete these %1 items?</source>
         <translation>Tes a certeza de querer eliminar estes %1 elementos?</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="149"/>
+        <location filename="../app/desktopapp.cpp" line="152"/>
         <source>&quot;%1&quot; already exists, please select a different name.</source>
         <translation>¨%1¨ xa existe, por favor escolle un nome diferente.</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="150"/>
+        <location filename="../app/desktopapp.cpp" line="153"/>
         <source>Confirm</source>
         <translation>Confirmar</translation>
     </message>
@@ -93,22 +93,22 @@
 <context>
     <name>MenuController</name>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="166"/>
+        <location filename="../controllers/menucontroller.cpp" line="167"/>
         <source>Cut(_X)</source>
         <translation>Cortar(_X)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="167"/>
+        <location filename="../controllers/menucontroller.cpp" line="168"/>
         <source>Copy(_C)</source>
         <translation>Copiar(_C)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="168"/>
+        <location filename="../controllers/menucontroller.cpp" line="169"/>
         <source>Paste(_V)</source>
         <translation>Pegar(_X)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="169"/>
+        <location filename="../controllers/menucontroller.cpp" line="170"/>
         <source>Select All(_A)</source>
         <translation>Seleccionar todo(_A)</translation>
     </message>
@@ -141,11 +141,6 @@
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="155"/>
-        <source>copyed</source>
-        <translation>Copiado</translation>
-    </message>
-    <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="156"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt; is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
         <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt; é %2 para &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
@@ -167,6 +162,11 @@
         <location filename="../dialogs/dtaskdialog.cpp" line="182"/>
         <source>current speed:%1 time Left:%2 </source>
         <translation>velocidade actual: %1  restan: %2</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dtaskdialog.cpp" line="155"/>
+        <source>copied</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../dialogs/dtaskdialog.cpp" line="170"/>
