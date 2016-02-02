@@ -14,12 +14,19 @@
 #include <QApplication>
 #include <QTranslator>
 
+
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
     QDBusConnection conn = QDBusConnection::sessionBus();
+
+#ifndef QT_DEBUG
     if(conn.registerService(DesktopAdaptor::staticServerPath())){
+#else
+    if(1){
+#endif
         qApp->setOrganizationName("deepin");
         qApp->setApplicationName("dde-desktop");
         qApp->setApplicationVersion("2015-1.0");
@@ -44,7 +51,6 @@ int main(int argc, char *argv[])
         emit signalManager->startRequest();
 
         RegisterDdeSession();
-        qDebug() << "Starting the application";
 
         gtk_init(NULL, NULL);
         gdk_error_trap_push();

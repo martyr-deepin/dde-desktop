@@ -210,7 +210,7 @@ QPixmap DesktopItem::getDesktopIcon(){
 }
 
 void DesktopItem::setDesktopIcon(QString icon){
-    qDebug() << icon;
+
     if (icon.endsWith(".svg")){
         m_desktopIcon = QPixmap(m_iconLabel->size());
         QSvgRenderer renderer(icon);
@@ -643,9 +643,7 @@ void DesktopItem::show()
     if (m_url == ComputerUrl || m_url == TrashUrl){
         return;
     }
-    qDebug() << m_url << "m_isReadable"<< m_isReadable;
-    qDebug() << "m_isUserReadOnly:" << m_isUserReadOnly;
-    qDebug() << "m_isUserPermisson_000:" << m_isUserPermisson_000;
+
 
     if (QFileInfo(m_url).isSymLink()){
         qDebug() << m_url << "isSymLink";

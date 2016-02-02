@@ -132,7 +132,6 @@ bool isDesktopAppFile(QString url){
 
 bool isRequestThumbnail(QString url){
     QString mimetypeName = getMimeTypeName(url);
-    qDebug() << mimetypeName;
     if (SupportMimeTypes.contains(mimetypeName)){
         return true;
     }else{

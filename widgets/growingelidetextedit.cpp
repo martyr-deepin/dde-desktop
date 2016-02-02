@@ -73,7 +73,6 @@ void GrowingElideTextEdit::elideText(){
         QStringList simpleList;
         simpleList << texts.at(0) << elidedText;
         simpleWrapText = simpleList.join("\n");
-        qDebug() << simpleList << simpleWrapText;
     }else{
         simpleWrapText = texts.at(0);
     }
@@ -90,7 +89,7 @@ void GrowingElideTextEdit::showSimpleElideText(){
     }else if (m_texts.length() > 2){
         setText(m_simpleWrapText);
     }
-    qDebug() << m_texts << m_simpleWrapText << m_fullText;
+
 }
 
 void GrowingElideTextEdit::showFullWrapText(){

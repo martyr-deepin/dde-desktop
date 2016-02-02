@@ -162,7 +162,7 @@ void DBusController::asyncRequestDesktopItems(){
 }
 
 void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *call){
-    qDebug() << "===============";
+
     if (m_requestFinished){
         emit signalManager->stopRequest();
         return;
@@ -176,8 +176,7 @@ void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *c
             QString key = desktopItems.keys().at(i);
             DesktopItemInfo info = desktopItems.values().at(i);
             bool isRequestThumbnailFlag = isRequestThumbnail(info.URI);
-            qDebug() << info.URI << info.BaseName << info.Icon << info.thumbnail;
-            qDebug() << "isRequestThumbnailFlag" << isRequestThumbnailFlag;
+
             if (info.thumbnail.length() > 0 && isRequestThumbnailFlag){
                 info.Icon = info.thumbnail;
             }else if(info.thumbnail.length() > 0 && !isRequestThumbnailFlag){
@@ -246,7 +245,7 @@ void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call
 }
 
 void DBusController::requestIconByUrl(QString url, uint size){
-    qDebug() << __func__ << url;
+
     if (isAppGroup(url)){
         return;
     }
@@ -267,7 +266,6 @@ void DBusController::requestIconByUrl(QString url, uint size){
     reply.waitForFinished();
     if (!reply.isError()){
         QString iconUrl = reply.argumentAt(0).toString();
-        qDebug() << url << iconUrl;
         if (iconUrl.length() == 0){
              iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
         }
@@ -438,12 +436,12 @@ void DBusController::getAppGroupItemsByUrl(QString group_url){
     }
     QString group_dir = group_url;
     QDir groupDir(group_dir);
-    qDebug() << group_url << groupDir << groupDir.exists();
+
     QFileInfoList fileInfoList  = groupDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
     if (groupDir.exists()){
         if (fileInfoList.count() == 0){
             bool flag = groupDir.removeRecursively();
-            qDebug() << decodeUrl(group_url) << "delete removeRecursively" << flag;
+
         }else if (fileInfoList.count() == 1){
             qDebug() << fileInfoList.at(0).filePath() << "only one .desktop file in app group";
             QFile f(fileInfoList.at(0).filePath());
@@ -452,14 +450,13 @@ void DBusController::getAppGroupItemsByUrl(QString group_url){
             QDir(fileInfoList.at(0).absoluteDir()).removeRecursively();
             emit signalManager->appGounpDetailClosed();
         }else{
-             qDebug() << "update app group icon==============1";
+
             QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetAppGroupItems(group_url);
             reply.waitForFinished();
             if (!reply.isError()){
                 DesktopItemInfoMap desktopItemInfos = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
 
                 if (desktopItemInfos.count() > 1){
-                    qDebug() << "update app group icon==============2" << desktopItemInfos.keys();
                     emit signalManager->appGounpItemsChanged(group_url, desktopItemInfos);
                     m_appGroups.insert(group_url, desktopItemInfos);
                 }else{
@@ -495,7 +492,7 @@ void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher
         updateDesktopItemInfoMap(desktopItemInfo);
 
         if (isAppGroup(desktopItemInfo.URI)){
-            qDebug() << "renamed file move in app group" << desktopItemInfo.URI;
+
             getAppGroupItemsByUrl(desktopItemInfo.URI);
         }
         requestIconByUrl(desktopItemInfo.URI, 48);
@@ -519,27 +516,28 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
     QDBusPendingReply<DesktopItemInfo> reply = *call;
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
-        qDebug() << desktopItemInfo.URI << desktopItemInfo.Icon << desktopItemInfo.thumbnail << desktopItemInfo.MIME << getMimeTypeName(desktopItemInfo.URI);
+
         /*ToDo desktop daemon settings judge*/
         bool isRequestThumbnailFlag = isRequestThumbnail(desktopItemInfo.URI);
         if (desktopItemInfo.thumbnail.length() > 0 && isRequestThumbnailFlag){
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;
         }
         m_thumbnails.append(desktopItemInfo.URI);
-        qDebug() << desktopItemInfo.URI << isRequestThumbnailFlag;
+
         if (isRequestThumbnailFlag){
             m_thumbnailTimer->start();
         }
+
         emit signalManager->itemCreated(desktopItemInfo);
-        qDebug() << "asyncCreateDesktopItemByUrlFinished" << desktopItemInfo.thumbnail <<"11111111111";
+
         updateDesktopItemInfoMap(desktopItemInfo);
-        qDebug() << "isAppGroup(desktopItemInfo.URI)" << isAppGroup(desktopItemInfo.URI);
+
         if (isAppGroup(desktopItemInfo.URI)){
             getAppGroupItemsByUrl(desktopItemInfo.URI);
         }
 
         if (desktopItemInfo.MIME != getMimeTypeName(desktopItemInfo.URI)){
-            qDebug() << "update icon because of mimetype" << getMimeTypeName(desktopItemInfo.URI);
+
             QString url = desktopItemInfo.URI;
             QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
             emit signalManager->desktoItemIconUpdated(url, iconUrl, 48);
@@ -553,13 +551,13 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
 
 
 void DBusController::handleFileCreated(const QString &path){
-    qDebug() << "handleFileCreated" << path;
+
     QFileInfo f(path);
     if (f.fileName().startsWith(".") && !isAppGroup(path)){
         return;
     }
     if (isDesktop(f.path())){
-        qDebug() << "create file in desktop" << path;
+
         asyncCreateDesktopItemByUrl(path);
         QTimer* refreshTimer = new QTimer;
         refreshTimer->setSingleShot(true);
@@ -571,7 +569,7 @@ void DBusController::handleFileCreated(const QString &path){
         refreshTimer->start();
     }else{
         if(isApp(path) && isAppGroup(f.path())){
-            qDebug() << "create file in app group" << path;
+
             getAppGroupItemsByUrl(f.path());
         }else{
             qDebug() << "*******" << "created invalid file(not .desktop file)"<< "*********";
@@ -581,10 +579,10 @@ void DBusController::handleFileCreated(const QString &path){
 }
 
 void DBusController::handleFileDeleted(const QString &path){
-    qDebug() << "handleFileDeleted" << path;
+
     QFileInfo f(path);
     if (isDesktop(f.path())){
-        qDebug() << "delete desktop file:" << path;
+
         removeDesktopItemInfoByUrl(path);
         emit signalManager->itemDeleted(path);
         if (isAppGroup(path)){
@@ -594,7 +592,7 @@ void DBusController::handleFileDeleted(const QString &path){
     }else if (isAppGroup(f.path())){
         removeDesktopItemInfoByUrl(path);
         emit signalManager->itemDeleted(path);
-        qDebug() << "delete desktop app group folder:" << path;
+
         getAppGroupItemsByUrl(f.path());
     }
     m_pinyinTimer->start();
@@ -602,13 +600,13 @@ void DBusController::handleFileDeleted(const QString &path){
 
 
 void DBusController::handleFileMovedIn(const QString &path){
-    qDebug() << "handleFileMovedIn";
+
     QFileInfo f(path);
     if (isDesktop(f.path())){
-        qDebug() << "move file in desktop" << path;
+
         asyncCreateDesktopItemByUrl(path);
     }else if (isAppGroup(f.path())){
-        qDebug() << "move file in App Group" << path;
+
        getAppGroupItemsByUrl(f.path());
    }
    m_pinyinTimer->start();
@@ -912,7 +910,7 @@ void DBusController::handelIconThemeChanged(){
     requestIconByUrl(ComputerUrl, 48);
     requestIconByUrl(TrashUrl, 48);
     foreach(QString url, m_desktopItemInfoMap.keys()){
-        qDebug() << getMimeTypeName(url);
+
         if (m_desktopItemInfoMap.value(url).thumbnail.length() == 0){
             requestIconByUrl(url, 48);
         }/*else if (m_desktopItemInfoMap.value(url).thumbnail.length() > 0 && getMimeTypeName(url) == "text/plain"){

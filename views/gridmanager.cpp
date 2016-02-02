@@ -75,7 +75,7 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
                                                  const int leftMargin, const int topMargin,
                                                  const int rightMargin, const int bottomMargin){
     const QRect primaryRect  =  QRect(dbusController->getDisplayInterface()->primaryRect());
-    qDebug() << primaryRect;
+
     int desktopWidth = primaryRect.width();
     int desktopHeight = primaryRect.height() - m_dockHeight;
 
@@ -95,8 +95,6 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
     int desktopColumn = getDesktopColumnCount(desktopWidth);
     int desktopRow = getDesktopRowCount(desktopHeight);
 
-    qDebug() << "desktopColumn:" << desktopColumn;
-    qDebug() << "desktopRow:" << desktopRow;
 
     m_columnCount = desktopColumn * width / desktopWidth;
     m_rowCount = desktopRow * height / desktopHeight;
@@ -105,7 +103,7 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
                                        m_topMargin,
                                        desktopWidth - m_leftMargin - m_rightMargin,
                                        desktopHeight - m_topMargin - m_bottomMargin);
-    qDebug() << desktopWidth << m_availableDesktopItemRect;
+
     m_xSpacing = (desktopWidth - m_leftMargin - m_rightMargin - m_itemWidth * desktopColumn)/ (desktopColumn - 1);
     m_ySpacing = (desktopHeight - m_topMargin - m_bottomMargin - m_itemHeight * desktopRow) / (desktopRow - 1);
     int x = m_leftMargin;

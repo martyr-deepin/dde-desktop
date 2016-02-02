@@ -17,7 +17,6 @@ void FileConflictController::registerDBusService(){
     QDBusConnection conn = QDBusConnection::sessionBus();
     conn.registerService(ConflictAdaptor::staticServerPath());
     bool flag = conn.registerObject(m_objectPath, this);
-    qDebug() << "register conflict DBusService"<<flag;
 }
 
 ConflictInfo FileConflictController::AskSkip(const QString &primaryText,

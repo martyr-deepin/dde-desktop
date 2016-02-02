@@ -27,7 +27,7 @@ void DesktopItemManager::initComputerItem(){
     QString url = ComputerUrl;
     int width = gridManager->getItemWidth();
     int height = gridManager->getItemHeight();
-    qDebug() << tr("Computer");
+
     m_pComputerItem  = DesktopItemPointer::create(defaut_computerIcon, tr("Computer"), m_parentWindow);
     m_pComputerItem->setUrl(url);
     m_pComputerItem->setRaWUrl(url);
@@ -50,7 +50,6 @@ void DesktopItemManager::initComputerItem(){
         pGridItem->setDesktopItem(true);
     }
 
-    qDebug() << url << m_settings.contains(url) << pGridItem.isNull() << pos;
     m_pComputerItem->move(pos);
     updateItems(url, m_pComputerItem);
 //    m_pItems.insert(url, m_pComputerItem);
@@ -85,7 +84,7 @@ void DesktopItemManager::initTrashItem(){
         pGridItem->setDesktopItem(true);
     }
 
-    qDebug() << url << m_settings.contains(url) << pGridItem.isNull() << pos;
+
     m_pTrashItem->move(pos);
     updateItems(url, m_pTrashItem);
 //    m_pItems.insert(url, m_pTrashItem);
@@ -161,7 +160,6 @@ void DesktopItemManager::updateItems(QString url, const DesktopItemPointer &pIte
 }
 
 void DesktopItemManager::handleItemsChanged(){
-    qDebug() << "Is gridManager is Full:"<< gridManager->isFull();
     if (gridManager->isFull()){
         emit signalManager->rightBottomItemChangedtoBeContainer(true);
     }else{
@@ -269,7 +267,7 @@ void DesktopItemManager::setShoudBeMovedItemByUrl(QString url){
 }
 
 void DesktopItemManager::addItems(DesktopItemInfoMap desktopInfoMap){
-    qDebug() << "start create desktop items";
+
     QSettings setting;
     setting.beginGroup("DesktopItems");
     DesktopItemInfoMap unSavedDesktopItemInfoMap;
@@ -289,12 +287,12 @@ void DesktopItemManager::addItems(DesktopItemInfoMap desktopInfoMap){
     foreach (DesktopItemPointer pItem, m_pItems.values()) {
         pItem->show();
     }
-    qDebug() << "create desktop items finished";
+
 }
 
 void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap appItemInfos){
     QString key = decodeUrl(group_url);
-    qDebug() << group_url << "updateAppGounpItem" << m_pItems.contains(key) << m_pItems.keys();
+
     if (m_pItems.contains(key)){
         m_pItems.value(key)->setAppGroupItems(appItemInfos);
         updateAppGroupDetail(m_pItems.value(key));
@@ -333,12 +331,9 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
     Q_UNUSED(index)
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
-    qDebug() << "add Item" << pDesktopItem->getUrl();
-//    m_pItems.insert(pDesktopItem->getUrl(), pDesktopItem);
-//    m_list_pItems.append(pDesktopItem);
 
     if (!pDesktopItem.isNull()){
-//        int row = gridManager->getRowCount();
+
         QSettings setting;
         setting.beginGroup("DesktopItems");
         QPoint defaultPos;
@@ -367,11 +362,12 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
         return;
     }
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
-    qDebug() << "add Item" << pDesktopItem->getUrl() << m_pItems.contains(pDesktopItem->getUrl());
+
     if (!pDesktopItem.isNull()){
+
         GridItemPointer pGridItem = gridManager->getBlankItem();
+
         if (!pGridItem.isNull()){
-            qDebug() << pGridItem->getRow() << pGridItem->getColumn() << pGridItem->hasDesktopItem();
             pDesktopItem->move(pGridItem->getPos());
             pDesktopItem->show();
             pGridItem->setDesktopItem(true);
@@ -404,27 +400,24 @@ void DesktopItemManager::updateDesktopItemIcon(QString url, QString iconUrl, uin
     }else{
         key = decodeUrl(url);
     }
-    qDebug() << m_pItems.contains(key) << url << key;
+
     if (m_pItems.contains(key)){
         m_pItems.value(key)->setDesktopIcon(iconUrl);
-        qDebug() << iconUrl;
+
     }
 }
 
 
 void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
-    qDebug() << "renameDesktopItem" << desktopItemInfo.URI;
-    qDebug() << m_shoudbeMovedItem.isNull();
+
     if (!m_shoudbeMovedItem.isNull()){
         QString desktopDisplayName = getDesktopDisplayName(desktopItemInfo);
-        qDebug() << desktopDisplayName << "============";
         m_shoudbeMovedItem->setDesktopName(desktopDisplayName);
         m_shoudbeMovedItem->setDesktopItemInfo(desktopItemInfo);
 
         QString oldKey = m_shoudbeMovedItem->getUrl();
         if (m_pItems.contains(oldKey)){
             QString newKey = decodeUrl(desktopItemInfo.URI);
-            qDebug() << newKey << m_pItems.contains(newKey);
 
             /*if desktopItem has exitsed, delete oldkey desktopItem*/
             if (m_pItems.contains(newKey)){

@@ -67,7 +67,6 @@ QString ThemeAppIcon::getThemeIconPath(QString iconName)
     char* aname = NULL;
     g_object_get(gs, "gtk-icon-theme-name", &aname, NULL);
 
-    qDebug() << "default gtk icon theme name:" << iconName << aname;
     auto theme = gtk_icon_theme_new();
     gtk_icon_theme_set_custom_theme(theme, aname);
 
