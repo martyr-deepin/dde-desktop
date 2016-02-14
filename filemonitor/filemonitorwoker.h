@@ -30,10 +30,23 @@ class FileMonitorWoker : public QObject
 public:
     explicit FileMonitorWoker(QObject *parent = 0);
     ~FileMonitorWoker();
-    void handleInotifyEvent(struct inotify_event* event);
+    void handleInotifyEvent(int event, QString path);
     void addWatchFolder(const QString& path);
+    void checkFilePath(const QString &path);
 
-    void monitorAppGroup(const QString &path);
+    void delWatchFile(const QString &path);
+    void delWatchFolder(const QString &path);
+
+
+    void addWatchGroup(const QString &path);
+    void addWatchDir(const QString &path);
+    void addWatchFile(const QString &path);
+    void addSingleWatchFile(const QString &path);
+
+    void checkingForChanges(const QString & path);
+    void checkingFiles(const QString & path);
+    void checkingDirs(const QString & path);
+
 signals:
     void monitorFolderChanged(const QString& path);
     void fileCreated(int cookie, QString path);
@@ -44,12 +57,18 @@ signals:
 
 public slots:
     void monitor(const QString& path);
-    void unMonitor(const QString& path);
+    //void unMonitor(const QString& path);
+    void handleDirectoryChanged(const QString & path);
+    void handleFileChanged(const QString & path);
 
 private:
     int m_fd;
     QMap<QString, int> m_path_wd;
     QMap<int, QString> m_wd_path;
+    QFileSystemWatcher m_fileWatcher;
+    QString m_currentFolder;
+    QString m_desktopFolder;
+    bool m_init_event;
 
 };
 
