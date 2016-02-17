@@ -14,8 +14,6 @@
 FileMonitorWoker::FileMonitorWoker(QObject *parent) : QObject(parent)
 {
     connect(this, SIGNAL(monitorFolderChanged(QString)), this, SLOT(monitor(QString)));
-    connect(&m_fileWatcher,SIGNAL(directoryChanged(QString)),this,SLOT(handleDirectoryChanged(QString)));
-    connect(&m_fileWatcher,SIGNAL(fileChanged(QString)),this,SLOT(handleFileChanged(QString)));
 }
 
 FileMonitorWoker::~FileMonitorWoker()
@@ -24,201 +22,93 @@ FileMonitorWoker::~FileMonitorWoker()
 }
 
 
-void FileMonitorWoker::monitor(const QString &path)
-{
-    m_init_event = false;
-    m_currentFolder = path;
-    addWatchFolder(path); //only desktop
-    addWatchFile(path); // under desktop files
-    addWatchGroup(path); // only under .deepin_rich_dir_* files
-
-}
-
-void FileMonitorWoker::addWatchFolder(const QString &path)
-{
-    m_desktopFolder = path;
-    m_fileWatcher.addPath(path);
-}
-
-void FileMonitorWoker::delWatchFile(const QString &path)
-{
-    //if the file is not exists, fileWatcher can remove path automatic, when this function return false
-    m_fileWatcher.removePath(path);
-    qDebug()<<"remove file:" << path;
-    handleInotifyEvent(IN_DELETE, path);
-}
-
-void FileMonitorWoker::delWatchFolder(const QString &path)
-{
-    delWatchFile(path);
-}
-
-
-void FileMonitorWoker::addWatchGroup(const QString &path){
+void FileMonitorWoker::monitorAppGroup(const QString &path){
     QDir dir(path);
     dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         if (isAppGroup(fileInfo.absoluteFilePath())){
-            addSingleWatchFile( list.at(i).absoluteFilePath() );
-            addWatchFile( list.at(i).absoluteFilePath() );
+            addWatchFolder(fileInfo.absoluteFilePath());
         }
     }
-
 }
 
-void FileMonitorWoker::addWatchDir(const QString &path)
-{
-    QDir dir(path);
-    dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-
-        if (isAppGroup(fileInfo.absoluteFilePath())){
-            addSingleWatchFile( list.at(i).absoluteFilePath() );
-            addWatchFile( list.at(i).absoluteFilePath() );
+void FileMonitorWoker::addWatchFolder(const QString &path){
+    int wd = inotify_add_watch(m_fd, path.toStdString().c_str(), IN_ALL_EVENTS);
+    if (wd >= 0){
+        if (!m_path_wd.contains(path)){
+            m_path_wd.insert(path, wd);
+            m_wd_path.insert(wd, path);
         }else{
-            addSingleWatchFile( list.at(i).absoluteFilePath() );
+            qDebug() <<"already watch for" << QString(path);
         }
-    }
-
-}
-
-
-
-
-void FileMonitorWoker::addWatchFile(const QString &path)
-{
-    QDir dir(path);
-    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
-    QFileInfoList list = dir.entryInfoList();
-
-    for (int i = 0; i < list.size(); ++i) {
-        addSingleWatchFile( list.at(i).absoluteFilePath() );
-    }
-
-}
-void FileMonitorWoker::addSingleWatchFile(const QString &path)
-{
-    if(m_fileWatcher.addPath(path))
-    {
-        handleInotifyEvent(IN_CREATE, path);
-    }
-
-}
-
-
-
-void FileMonitorWoker::handleFileChanged(const QString & path)
-{
-    m_init_event = true;
-    if(QFile(path).exists())
-    {
-        addSingleWatchFile(path);
     }else{
-         delWatchFile(path);
-    }
-
-}
-
-void FileMonitorWoker::handleDirectoryChanged(const QString & path)
-{
-    m_init_event = true;
-
-    if(QFile(path).exists())
-    {
-        checkingForChanges(path);
-    }else{
-        delWatchFile(path);
-    }
-
-}
-
-void FileMonitorWoker::checkingFiles(const QString & path)
-{
-
-    QDir dir(path);
-    dir.setFilter(QDir::Files | QDir::Hidden |QDir::NoDotAndDotDot);
-    QFileInfoList list = dir.entryInfoList();
-
-    while(!list.isEmpty())
-    {
-        QString filepath = list.takeLast().absoluteFilePath();
-
-        if(QFile(filepath).exists())
-        {
-            addSingleWatchFile(filepath);
-            continue;
-        }else{
-            delWatchFile(filepath);
-        }
+        qDebug() <<"Can't add watch for" << QString(path);
     }
 }
 
-void FileMonitorWoker::checkingDirs(const QString & path)
-{
+void FileMonitorWoker::monitor(const QString &path){
+    char buffer[1024];
+    char* offset = NULL;
+    struct inotify_event * event;
+    ssize_t numRead;
 
-    QDir dir(m_desktopFolder);
-    dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
-    QFileInfoList list = dir.entryInfoList();
-    int dirSize = list.size() + 1;
-
-    while(!list.isEmpty())
-    {
-        QString filepath = list.takeLast().absoluteFilePath();
-        if(QFile(filepath).exists())
-        {
-            if (isAppGroup(filepath)){
-                addSingleWatchFile( filepath );
-                addWatchFile( filepath );
-                continue;
-            }else{
-                addSingleWatchFile( filepath );
-            }
-
-        }else{
-           // qDebug() <<"!! move dir event";
-            delWatchFolder(filepath);
-        }
-    }
-
-}
-
-void FileMonitorWoker::checkingForChanges(const QString & path)
-{
-
-    if(path == m_desktopFolder || isAppGroup(path) )
-    {
-        checkingFiles(path);
-    }
-    checkingDirs(path);
-
-}
-
-void FileMonitorWoker::handleInotifyEvent(int event, QString path)
-{
-    if(!m_init_event)
+    m_fd = inotify_init();
+    if (m_fd < 0) {
+        qDebug() << "Fail to initialize inotify";
         return;
-    switch(event)
-    {
-    case IN_CREATE:
-        emit fileCreated(event, path);
-        break;
-    case IN_MOVED_FROM:
-        emit fileMovedFrom(event, path);
-        break;
-    case IN_MOVED_TO:
-        emit fileMovedTo(event, path);
-        break;
-    case IN_DELETE:
-        emit fileDeleted(event, path);
-        break;
-    case IN_ATTRIB:
-        emit metaDataChanged(event, path);
-        break;
     }
+
+    addWatchFolder(path);
+    monitorAppGroup(path);
+
+    while (true) {
+        numRead = read(m_fd, buffer, MAX_BUF_SIZE);
+        if (numRead == 0 || numRead == -1) {
+          fprintf(stderr, "Failed to read from inotify file descriptor\n");
+          exit(EXIT_FAILURE);
+        }
+
+        for (offset = buffer; offset < buffer + numRead; ) {
+          event = (struct inotify_event*) offset;
+          handleInotifyEvent(event);
+          offset += sizeof(struct inotify_event) + event->len;
+        }
+   }
 }
 
 
+void FileMonitorWoker::handleInotifyEvent(inotify_event *event){
+    QString path = joinPath(m_wd_path.value(event->wd), event->name);
+    if (event->mask & IN_CREATE) {
+//        qDebug() << "IN_CREATE" << path;
+        emit fileCreated(event->cookie, path);
+        addWatchFolder(path);
+    }else if (event->mask & IN_MOVED_FROM) {
+//        qDebug() << "IN_MOVED_FROM" << path;
+        emit fileMovedFrom(event->cookie, path);
+        unMonitor(path);
+    }else if (event->mask & IN_MOVED_TO) {
+//        qDebug() << "IN_MOVED_TO" << path;
+        emit fileMovedTo(event->cookie, path);
+        addWatchFolder(path);
+    }else if (event->mask & IN_DELETE) {
+//        qDebug() << "IN_DELETE" << path;
+        emit fileDeleted(event->cookie, path);
+        unMonitor(path);
+    }else if (event->mask & IN_ATTRIB){
+//        qDebug() << event->mask << path;
+        emit metaDataChanged(event->cookie, path);
+    }
+}
+
+void FileMonitorWoker::unMonitor(const QString &path){
+    if (m_path_wd.contains(path)){
+        int wd = m_path_wd.value(path);
+        inotify_rm_watch(m_fd, wd);
+        m_wd_path.remove(wd);
+        m_path_wd.remove(path);
+//        qDebug() << "unMonitor:" << path;
+    }
+}
