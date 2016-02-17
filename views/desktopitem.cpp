@@ -88,6 +88,7 @@ void DesktopItem::initUI(){
     m_textedit->setAlignment(Qt::AlignTop);
     m_textedit->setObjectName("GrowingElideTextEdit");
     m_textedit->setFixedWidth(100 - 10);
+    m_textedit->setAcceptRichText(false);
     addTextShadow();
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
