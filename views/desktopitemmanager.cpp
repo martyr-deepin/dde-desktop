@@ -671,11 +671,13 @@ QList<DesktopItemPointer> DesktopItemManager::getItemsByStartEnd(QPoint startPos
     return items;
 }
 
-void DesktopItemManager::sortedByFlags(QDir::SortFlags flag){
+void DesktopItemManager::sortedByFlags(QDir::SortFlags flag)
+{
     gridManager->clearDeskopItemsStatus();
     m_settings.clear();
     QDir desktopDir(desktopLocation);
-    QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden |QDir::System, flag);
+    QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden |QDir::System, flag | QDir::DirsFirst);
+
     m_list_pItems.clear();
     int mode = dbusController->getDockMode();
     if (mode != 0){
