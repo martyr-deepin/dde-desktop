@@ -295,6 +295,9 @@ void DBusController::delayGetThumbnail(){
 }
 
 void DBusController::refreshThumail(QString url, uint size){
+    if(!QFile(url).exists())
+        return;
+
     qDebug() << __func__ << url;
     if (isAppGroup(url)){
         return;
@@ -513,6 +516,8 @@ void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher
 
 
 void DBusController::asyncCreateDesktopItemByUrl(QString url){
+    if(!QFile(url).exists())
+        return;
     QDBusPendingReply<DesktopItemInfo> reply = m_desktopDaemonInterface->GetItemInfo(url);
 
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
@@ -523,8 +528,12 @@ void DBusController::asyncCreateDesktopItemByUrl(QString url){
 
 void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher *call){
     QDBusPendingReply<DesktopItemInfo> reply = *call;
+
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
+
+        if(!QFile(decodeUrl(desktopItemInfo.URI)).exists())
+            return;
 
         /*ToDo desktop daemon settings judge*/
         bool isRequestThumbnailFlag = isRequestThumbnail(desktopItemInfo.URI);
@@ -555,7 +564,9 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
     } else {
         qCritical() << reply.error().message();
     }
+
     call->deleteLater();
+
 }
 
 
