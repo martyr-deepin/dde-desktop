@@ -131,12 +131,27 @@ void DBusController::initConnect(){
     connect(m_dockClientManagerInterface, SIGNAL(ActiveWindowChanged(uint)), signalManager, SIGNAL(activeWindowChanged(uint)));
 }
 
+int DBusController::getDesktopFileCount()
+{
+    int fileCount = 0;
+    QFileInfoList desktopInfoList = QDir(desktopLocation).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::System);
+    fileCount += desktopInfoList.count();
+    QFileInfoList hiddenDesktopInfoList = QDir(desktopLocation).entryInfoList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
+    foreach (QFileInfo info, hiddenDesktopInfoList) {
+        if (isAppGroup(info.absoluteFilePath())){
+            fileCount += 1;
+        }
+    }
+    return fileCount;
+}
+
 void DBusController::loadDesktopSettings(){
 
 }
 
 void DBusController::loadDesktopItems(){
-    asyncRequestDesktopItems();
+    requestDesktopItems();
+//    asyncRequestDesktopItems();
     asyncRequestComputerIcon();
     asyncRequestTrashIcon();
     m_appController->getTrashJobController()->asyncRequestTrashCount();
@@ -167,7 +182,57 @@ void DBusController::asyncRequestDesktopItems(){
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
     connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
-                        this, SLOT(asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher*)));
+            this, SLOT(asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher*)));
+}
+
+void DBusController::requestDesktopItems()
+{
+    QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
+    reply.waitForFinished();
+    if (reply.isFinished()){
+        qDebug() << "reply finished";
+//        emit signalManager->stopRequest();
+        DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
+
+
+
+        qDebug() << "desktopItems.count()" << desktopItems.count() << getDesktopFileCount();;
+        if (desktopItems.count() != getDesktopFileCount()){
+            requestDesktopItems();
+        }
+
+        /*ToDo desktop daemon settings judge*/
+        for(int i=0; i < desktopItems.count(); i++){
+            QString key = desktopItems.keys().at(i);
+            DesktopItemInfo info = desktopItems.values().at(i);
+            bool isRequestThumbnailFlag = isRequestThumbnail(info.URI);
+
+            if (info.thumbnail.length() > 0 && isRequestThumbnailFlag){
+                info.Icon = info.thumbnail;
+            }else if(info.thumbnail.length() > 0 && !isRequestThumbnailFlag){
+                info.thumbnail = "";
+            }
+
+            desktopItems.insert(key, info);
+        }
+        emit signalManager->desktopItemsChanged(desktopItems);
+
+        m_desktopItemInfoMap = desktopItems;
+
+//        m_pinyinTimer->start();
+
+        foreach (QString url, desktopItems.keys()) {
+            if (isAppGroup(decodeUrl(url))){
+                getAppGroupItemsByUrl(url);
+            }
+        }
+
+        m_requestFinished = true;
+
+    }else{
+        emit signalManager->stopRequest();
+        qCritical() << reply.error().message();
+    }
 }
 
 void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *call){
@@ -180,7 +245,7 @@ void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *c
     if (!reply.isError()){
         emit signalManager->stopRequest();
         DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
-        /*ToDo desktop daemon settings judge*/
+         /*ToDo desktop daemon settings judge*/
         for(int i=0; i < desktopItems.count(); i++){
             QString key = desktopItems.keys().at(i);
             DesktopItemInfo info = desktopItems.values().at(i);

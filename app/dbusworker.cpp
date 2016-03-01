@@ -26,7 +26,7 @@ DBusWorker::DBusWorker(QObject *parent) :
 
 void DBusWorker::start(){
     loadDesktopItems();
-    m_requestTimer->start();
+//    m_requestTimer->start();
 }
 
 void DBusWorker::stop(){

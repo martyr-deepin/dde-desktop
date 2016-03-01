@@ -86,6 +86,7 @@ public:
     void initConnect();
 
     static int RequestThumailMaxCount;
+    static int getDesktopFileCount();
 
     FileOperationsInterface* getFileOperationsInterface();
     FileInfoInterface* getFileInfoInterface();
@@ -122,6 +123,8 @@ public slots:
     void handleFileMetaDataChanged(const QString& path);
 
     void asyncRequestDesktopItems();
+    void requestDesktopItems();
+
     void asyncRequestComputerIcon();
     void asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher *call);
     void asyncRequestTrashIcon();
