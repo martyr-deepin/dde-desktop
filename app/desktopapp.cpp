@@ -12,6 +12,7 @@
 #include "views/desktopbox.h"
 #include "views/desktopitemmanager.h"
 #include "views/desktopframe.h"
+
 #include "controllers/appcontroller.h"
 #include "dialogs/dtaskdialog.h"
 #include "dialogs/confirmdeletedialog.h"
@@ -33,6 +34,7 @@ DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
     m_desktopBox = new DesktopBox;
     m_taskDialog = new DTaskDialog;
+
     initConnect();
     registerDBusService();
     createLauncerInterface();

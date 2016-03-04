@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets svg dbus x11extras
+QT       += core gui widgets svg dbus x11extras core-private gui-private
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,11 +14,13 @@ TEMPLATE = app
 include(./widgets/widgets.pri)
 include(./dialogs/dialogs.pri)
 include(./background/background.pri)
+include(./xdnd/xdnd.pri)
 
 PKGCONFIG += x11 gtk+-2.0 xcb xcb-ewmh gsettings-qt dtkbase dtkutil dtkwidget
 CONFIG += c++11 link_pkgconfig
 #DEFINES += QT_NO_DEBUG_OUTPUT
 DEFINES += QT_MESSAGELOGCONTEXT
+
 
 SOURCES += main.cpp \
     views/desktopframe.cpp \

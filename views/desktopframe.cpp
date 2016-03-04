@@ -28,6 +28,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     setAcceptDrops(true);
     setFocus();
 
+
     QSettings settings;
     settings.beginGroup("Desktop");
     bool isGridOn = settings.value("isGridOn", true).toBool();
@@ -412,6 +413,8 @@ void DesktopFrame::dragLeaveEvent(QDragLeaveEvent *event){
 }
 
 void DesktopFrame::dropEvent(QDropEvent *event){
+
+
     m_dragUrls.clear();
     m_dragMoveTimer->stop();
     m_dragDropEventManager->handleDropEvent(m_desktopItemManager->getItems(), event);

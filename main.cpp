@@ -12,6 +12,7 @@
 #include "widgets/themeappicon.h"
 #include "app/define.h"
 #include "views/global.h"
+#include "xdnd/xdndworkaround.h"
 #include "dialogs/cleartrashdialog.h"
 
 #include "dbusinterface/services/desktopadaptor.h"
@@ -39,6 +40,9 @@ int main(int argc, char *argv[])
         qApp->setOrganizationName("deepin");
         qApp->setApplicationName("dde-desktop");
         qApp->setApplicationVersion("2015-1.0");
+
+
+
         // setup translator
         QTranslator translator;
         translator.load("/usr/share/dde-desktop/translations/dde-desktop_" + QLocale::system().name() + ".qm");
@@ -64,7 +68,7 @@ int main(int argc, char *argv[])
         gtk_init(NULL, NULL);
         gdk_error_trap_push();
         initGtkThemeWatcher();
-
+        XdndWorkaround workaround;
         int reslut = app.exec();
         qDebug() << "exits " << app.applicationName() << reslut;
     }else{
