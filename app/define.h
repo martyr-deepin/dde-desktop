@@ -10,11 +10,12 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 
-#include "logmanager.h"
 #include "daemon.h"
 #include "widgets/singleton.h"
 #include "widgets/commandlinemanager.h"
 #include "views/global.h"
+
+#include <DLog>
 
 #include <QDBusInterface>
 #include <QDBusConnection>
@@ -23,50 +24,52 @@
 
 #undef signals
 extern "C" {
-  #include <gtk/gtk.h>
+#include <gtk/gtk.h>
 }
 #define signals public
 
 static void requrestUpdateIcons()
 {
-    GtkIconTheme* gs = gtk_icon_theme_get_default();
+    GtkIconTheme *gs = gtk_icon_theme_get_default();
     auto a = gtk_icon_theme_get_example_icon_name(gs);
-    if (a != NULL) g_free(a);
+    if (a != NULL) { g_free(a); }
     //can not passing QObject to the callback function,so use signal
     emit signalManager->gtkIconThemeChanged();
 }
 
 void initGtkThemeWatcher()
 {
-    GtkIconTheme* gs = gtk_icon_theme_get_default();
+    GtkIconTheme *gs = gtk_icon_theme_get_default();
     g_signal_connect(gs, "changed",
                      G_CALLBACK(requrestUpdateIcons), NULL);
     auto a = gtk_icon_theme_get_example_icon_name(gs);
-    if (a != NULL) g_free(a);
+    if (a != NULL) { g_free(a); }
 }
 
-void debug_daemon_off(){
-    #if defined(QT_NO_DEBUG)
+void debug_daemon_off()
+{
+#if defined(QT_NO_DEBUG)
     daemonize();
-    #endif
+#endif
 }
 
-void RegisterLogger(){
+void RegisterLogger()
+{
     bool isSet =  CommandLineManager::instance()->isSet("logDestination");
     QString value = CommandLineManager::instance()->value("logDestination");
-    if (isSet){
-        if (value == "stdout"){
-            LogManager::instance()->initConsoleAppender();
-        }else if (value == "file"){
-            LogManager::instance()->initRollingFileAppender();
-        }else{
-            LogManager::instance()->initRollingFileAppender();
+    if (isSet) {
+        if (value == "stdout") {
+            DTK_UTIL_NAMESPACE::DLogManager::registerConsoleAppender();
+        } else if (value == "file") {
+            DTK_UTIL_NAMESPACE::DLogManager::registerFileAppender();
+        } else {
+            DTK_UTIL_NAMESPACE::DLogManager::registerFileAppender();
         }
-    }else{
+    } else {
 #if !defined(QT_NO_DEBUG)
-        LogManager::instance()->initConsoleAppender();
+        DTK_UTIL_NAMESPACE::DLogManager::registerConsoleAppender();
 #endif
-        LogManager::instance()->initRollingFileAppender();
+        DTK_UTIL_NAMESPACE::DLogManager::registerFileAppender();
     }
 }
 

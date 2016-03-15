@@ -12,6 +12,8 @@
 #include "global.h"
 #include "app/xcb_misc.h"
 
+DWIDGET_USE_NAMESPACE
+
 AppGroupBox::AppGroupBox(QWidget *parent) :
     DArrowRectangle(DArrowRectangle::ArrowTop, parent)
 {

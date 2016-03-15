@@ -18,14 +18,16 @@
 #include "dbusinterface/services/desktopadaptor.h"
 #include "dialogs/cleartrashdialog.h"
 #include "dialogs/dmovabledialog.h"
-#include "libdui/ddialog.h"
 #include "dbusinterface/launcher_interface.h"
+
+#include <ddialog.h>
+
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QStandardPaths>
 #include <QProcess>
 
-DUI_USE_NAMESPACE
+DWIDGET_USE_NAMESPACE
 
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
