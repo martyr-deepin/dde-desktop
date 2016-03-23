@@ -136,10 +136,17 @@ int DBusController::getDesktopFileCount()
     int fileCount = 0;
     QFileInfoList desktopInfoList = QDir(desktopLocation).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::System);
     fileCount += desktopInfoList.count();
+
     QFileInfoList hiddenDesktopInfoList = QDir(desktopLocation).entryInfoList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
     foreach (QFileInfo info, hiddenDesktopInfoList) {
         if (isAppGroup(info.absoluteFilePath())){
             fileCount += 1;
+        }
+    }
+    QFileInfoList filesDesktopInfoList = QDir(desktopLocation).entryInfoList(QDir::Files);
+    foreach (QFileInfo info, filesDesktopInfoList) {
+        if (info.absoluteFilePath().endsWith("~")){
+            fileCount -= 1;
         }
     }
     return fileCount;
