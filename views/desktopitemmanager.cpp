@@ -32,75 +32,6 @@ DesktopItemManager::DesktopItemManager(QObject* parent):QObject(parent){
     initConnect();
 }
 
-void DesktopItemManager::initComputerItem(){
-    QString url = ComputerUrl;
-    int width = gridManager->getItemWidth();
-    int height = gridManager->getItemHeight();
-
-    m_pComputerItem  = DesktopItemPointer::create(defaut_computerIcon, tr("Computer"), m_parentWindow);
-    m_pComputerItem->setUrl(url);
-    m_pComputerItem->setRaWUrl(url);
-    m_pComputerItem->resize(width, height);
-    m_pComputerItem->getDesktopItemInfo().URI = url;
-
-    QPoint pos;
-    GridItemPointer pGridItem = gridManager->getBlankItem();
-    if (pGridItem.isNull()){
-        pos = gridManager->getRightBottomItem()->getPos();
-    }else{
-        pos = pGridItem->getPos();
-    }
-    m_settings.beginGroup("DesktopItems");
-    pos = m_settings.value(url, pos).toPoint();
-    m_settings.endGroup();
-
-    pGridItem = gridManager->getItemByPos(pos);
-    if (!pGridItem.isNull()){
-        pGridItem->setDesktopItem(true);
-    }
-
-    m_pComputerItem->move(pos);
-    updateItems(url, m_pComputerItem);
-//    m_pItems.insert(url, m_pComputerItem);
-//    m_list_pItems.append(m_pComputerItem);
-    m_pComputerItem->show();
-}
-
-void DesktopItemManager::initTrashItem(){
-    QString url = TrashUrl;
-    int width = gridManager->getItemWidth();
-    int height = gridManager->getItemHeight();
-    m_pTrashItem  = DesktopItemPointer::create(defaut_trashIcon, tr("Trash"), m_parentWindow);
-    m_pTrashItem->setUrl(url);
-    m_pTrashItem->setRaWUrl(url);
-    m_pTrashItem->resize(width, height);
-    m_pTrashItem->getDesktopItemInfo().URI = url;
-    m_pTrashItem->getDesktopItemInfo().CanExecute = true;
-
-    QPoint pos;
-    GridItemPointer pGridItem = gridManager->getBlankItem();
-    if (pGridItem.isNull()){
-        pos = gridManager->getRightBottomItem()->getPos();
-    }else{
-        pos = pGridItem->getPos();
-    }
-    m_settings.beginGroup("DesktopItems");
-    pos = m_settings.value(url, pos).toPoint();
-    m_settings.endGroup();
-
-    pGridItem = gridManager->getItemByPos(pos);
-    if (!pGridItem.isNull()){
-        pGridItem->setDesktopItem(true);
-    }
-
-
-    m_pTrashItem->move(pos);
-    updateItems(url, m_pTrashItem);
-//    m_pItems.insert(url, m_pTrashItem);
-//    m_list_pItems.append(m_pTrashItem);
-    m_pTrashItem->show();
-}
-
 
 void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(unCheckedItem(QString)), this, SLOT(unCheckedItem(QString)));
@@ -140,8 +71,8 @@ void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(cancleFilesCuted()),
             this, SLOT(cancelCutedItems()));
 
-    connect(signalManager, SIGNAL(dockModeChanged(int)),
-            this, SLOT(handleDockModeChanged(int)));
+//    connect(signalManager, SIGNAL(dockModeChanged(int)),
+//            this, SLOT(handleDockModeChanged(int)));
 
     connect(signalManager, SIGNAL(fileCreated(QString)),
             this, SLOT(handleFileCreated(QString)));
@@ -208,30 +139,8 @@ void DesktopItemManager::handleDesktopItemMetaChanged(const DesktopItemPointer &
     }
 }
 
-void DesktopItemManager::loadComputerTrashItems(){
-    int mode = dbusController->getDockMode();
-    if (mode != 0){
-        if (!m_pItems.contains(ComputerUrl)){
-            initComputerItem();
-            dbusController->asyncRequestComputerIcon();
-        }else{
-            qDebug() << "ComputerItem is existed";
-        }
-        if (!m_pItems.contains(TrashUrl)){
-            initTrashItem();
-            dbusController->asyncRequestTrashIcon();
-        }else{
-            qDebug() << "TrashItem is existed";
-        }
-    }else{
-        qDebug() << "Don't show computer and trash under fashion mode";
-    }
-}
 
-void DesktopItemManager::clearComputerTrashItems(){
-    deleteItem(ComputerUrl);
-    deleteItem(TrashUrl);
-}
+
 
 void DesktopItemManager::unCheckedItem(QString url){
     DesktopItemPointer pItem = getItemByUrl(url);
@@ -336,6 +245,11 @@ DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
     return pDesktopItem;
 }
 
+/**
+ * @brief DesktopItemManager::addItem
+ * @param fileInfo
+ * @param index
+ */
 
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
     Q_UNUSED(index)
@@ -355,6 +269,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
         QString key = pDesktopItem->getUrl();
         QPoint pos = setting.value(key, defaultPos).toPoint();
         pDesktopItem->move(pos);
+
         GridItemPointer pGridItem = gridManager->getItemByPos(pos);
         if (!pGridItem.isNull()){
             pGridItem->setDesktopItem(true);
@@ -365,8 +280,12 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
     }
 }
 
+/**
+ * @brief DesktopItemManager::addItem
+ * @param fileInfo
+ */
 void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
-//    checkDesktopItemValid();
+
     if (m_pItems.contains(decodeUrl(fileInfo.URI))){
         return;
     }
@@ -501,14 +420,14 @@ void DesktopItemManager::cancelCutedItems()
     qDebug() << "cancel cuted";
 }
 
+/**
+ * @brief DesktopItemManager::deleteItem
+ * @param url
+ */
+
 void DesktopItemManager::deleteItem(QString url){
     QString _url(url);
-//    if (url!=ComputerUrl && url!=TrashUrl){
-//        if (!url.startsWith("file://")){
-//            url = "file://" + url;
-//        }
-//        _url = decodeUrl(url);
-//    }
+
     qDebug() << "deleteItem" << url << _url << m_pItems.contains(_url) << m_pItems.value(_url);
     if (m_pItems.contains(_url)){
         DesktopItemPointer pItem = m_pItems.value(_url);
@@ -531,7 +450,7 @@ void DesktopItemManager::deleteItem(QString url){
 
         handleItemsChanged();
     }
-//    checkPageCount();
+
     emit signalManager->desktopItemsSaved();
 }
 
@@ -671,19 +590,24 @@ QList<DesktopItemPointer> DesktopItemManager::getItemsByStartEnd(QPoint startPos
     return items;
 }
 
+/**
+ * @brief DesktopItemManager::sortedByFlags
+ * @param flag
+ */
+
 void DesktopItemManager::sortedByFlags(QDir::SortFlags flag)
 {
+    if(flag == QDir::Name)
+    {
+        sortedByName();
+        return;
+    }
     gridManager->clearDeskopItemsStatus();
     m_settings.clear();
     QDir desktopDir(desktopLocation);
     QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden |QDir::System, flag | QDir::DirsFirst);
 
     m_list_pItems.clear();
-    int mode = dbusController->getDockMode();
-    if (mode != 0){
-        m_list_pItems.append(m_pComputerItem);
-        m_list_pItems.append(m_pTrashItem);
-    }
 
 //    int row = gridManager->getRowCount();
     int size = desktopInfoList.size();
@@ -748,18 +672,18 @@ void DesktopItemManager::sortedItems(){
     emit signalManager->desktopItemsSaved();
 }
 
-void DesktopItemManager::sortedByName(){
+void DesktopItemManager::sortedByName()
+{
+    qDebug() << "sort by name";
     gridManager->clearDeskopItemsStatus();
     m_settings.clear();
     m_list_pItems.clear();
-    int mode = dbusController->getDockMode();
-    if (mode != 0){
-        m_list_pItems.append(m_pComputerItem);
-        m_list_pItems.append(m_pTrashItem);
-    }
+
+    qDebug() <<"m_sortedPinyin_pItems.count()" << m_sortedPinyin_pItems.count();
     for(int i=0; i<m_sortedPinyin_pItems.count(); i++){
         QString URI = m_sortedPinyin_pItems.at(i).URI;
         QString url = decodeUrl(URI);
+        qDebug() << url;
         if (m_pItems.contains(url)){
             m_list_pItems.append(m_pItems.value(url));
         }
@@ -770,7 +694,7 @@ void DesktopItemManager::sortedByName(){
 
 void DesktopItemManager::sortedByKey(QString key){
     if (key == "name"){
-        sortedByName();
+        sortedByFlags(QDir::Name);
     }else if (key == "size"){
         sortedByFlags(QDir::Size);
     }else if (key == "filetype"){
@@ -787,12 +711,7 @@ void DesktopItemManager::sortedByKey(QString key){
 }
 
 void DesktopItemManager::resort(){
-    if (m_sortFlag == QDir::Name){
-        sortedByName();
-    }else{
-        sortedByFlags(m_sortFlag);
-    }
-
+    sortedByFlags(m_sortFlag);
 }
 
 QDir::SortFlags DesktopItemManager::getSortFlag(){
@@ -846,13 +765,7 @@ bool DesktopItemManager::isAppGroupBoxShowed(){
 }
 
 void DesktopItemManager::handleDockModeChanged(int dockMode){
-    if (dockMode == 0){
-        qDebug() << "clearComputerTrashItems";
-        clearComputerTrashItems();
-    }else{
-        qDebug() << "loadComputerTrashItems";
-        loadComputerTrashItems();
-    }
+    qDebug() << "handleDockModeChanged:" << dockMode;
 }
 
 void DesktopItemManager::handleFileCreated(QString filename){
