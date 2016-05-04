@@ -157,11 +157,13 @@ void DBusController::loadDesktopSettings(){
 }
 
 void DBusController::loadDesktopItems(){
+    qDebug()<<"loadDesktopItems";
     requestDesktopItems();
+
 //    asyncRequestDesktopItems();
-    asyncRequestComputerIcon();
-    asyncRequestTrashIcon();
-    m_appController->getTrashJobController()->asyncRequestTrashCount();
+//    asyncRequestComputerIcon();
+//    asyncRequestTrashIcon();
+//    m_appController->getTrashJobController()->asyncRequestTrashCount();
     QTimer::singleShot(500, this, SLOT(handelIconThemeChanged()));
 }
 
@@ -194,6 +196,7 @@ void DBusController::asyncRequestDesktopItems(){
 
 void DBusController::requestDesktopItems()
 {
+    qDebug() <<"requestDesktopItems";
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
     reply.waitForFinished();
     if (reply.isFinished()){
@@ -226,7 +229,7 @@ void DBusController::requestDesktopItems()
 
         m_desktopItemInfoMap = desktopItems;
 
-//        m_pinyinTimer->start();
+        QTimer::singleShot(1000, this, SLOT(convertNameToPinyin()));
 
         foreach (QString url, desktopItems.keys()) {
             if (isAppGroup(decodeUrl(url))){
@@ -452,6 +455,7 @@ void DBusController::requestThumbnail(QString url, uint size){
 }
 
 void DBusController::convertNameToPinyin(){
+    qDebug() <<"convertNameToPinyin";
     QStringList names;
     for(int i=0; i< m_desktopItemInfoMap.count(); i++){
         names.append(m_desktopItemInfoMap.values()[i].DisplayName);

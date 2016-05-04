@@ -26,8 +26,6 @@ public:
     DesktopItemManager(QObject* parent=0);
     ~DesktopItemManager();
 
-    void initComputerItem();
-    void initTrashItem();
     void initConnect();
 
     DesktopItemPointer getItemByPos(QPoint pos);
@@ -49,8 +47,6 @@ public:
 signals:
 
 public slots:
-    void loadComputerTrashItems();
-    void clearComputerTrashItems();
     void unCheckedItem(QString url);
     void addItems(DesktopItemInfoMap desktopInfoMap);
     void addItem(DesktopItemInfo fileInfo, int index);
