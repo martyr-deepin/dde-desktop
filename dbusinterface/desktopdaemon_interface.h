@@ -118,24 +118,24 @@ public Q_SLOTS: // METHODS
         return asyncCallWithArgumentList(QStringLiteral("IsAppGroup"), argumentList);
     }
 
-    inline QDBusPendingReply<> RequestCreatingAppGroup(const QStringList &in0)
-    {
-        QList<QVariant> argumentList;
-        argumentList << QVariant::fromValue(in0);
-        return asyncCallWithArgumentList(QStringLiteral("RequestCreatingAppGroup"), argumentList);
-    }
+//    inline QDBusPendingReply<> RequestCreatingAppGroup(const QStringList &in0)
+//    {
+//        QList<QVariant> argumentList;
+//        argumentList << QVariant::fromValue(in0);
+//        return asyncCallWithArgumentList(QStringLiteral("RequestCreatingAppGroup"), argumentList);
+//    }
 
-    inline QDBusPendingReply<> RequestMergeIntoAppGroup(const QStringList &in0, const QString &in1)
-    {
-        QList<QVariant> argumentList;
-        argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1);
-        return asyncCallWithArgumentList(QStringLiteral("RequestMergeIntoAppGroup"), argumentList);
-    }
+//    inline QDBusPendingReply<> RequestMergeIntoAppGroup(const QStringList &in0, const QString &in1)
+//    {
+//        QList<QVariant> argumentList;
+//        argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1);
+//        return asyncCallWithArgumentList(QStringLiteral("RequestMergeIntoAppGroup"), argumentList);
+//    }
 
 Q_SIGNALS: // SIGNALS
-    void AppGroupCreated(const QString &in0, const QStringList &in1);
-    void AppGroupDeleted(const QString &in0);
-    void AppGroupMerged(const QString &in0, const QStringList &in1);
+//    void AppGroupCreated(const QString &in0, const QStringList &in1);
+//    void AppGroupDeleted(const QString &in0);
+//    void AppGroupMerged(const QString &in0, const QStringList &in1);
     void ItemCreated(const QString &in0);
     void ItemCut(const QStringList &in0);
     void ItemCopied(const QStringList &in0);

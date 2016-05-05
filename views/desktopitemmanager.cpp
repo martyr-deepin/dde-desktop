@@ -46,12 +46,12 @@ void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
     connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap)),
             this, SLOT(addItems(DesktopItemInfoMap)));
-    connect(signalManager, SIGNAL(appGounpItemsChanged(QString,DesktopItemInfoMap)),
-            this, SLOT(updateAppGounpItem(QString,DesktopItemInfoMap)));
-    connect(signalManager, SIGNAL(appGounpDetailShowed(DesktopItemPointer&,QPoint)),
-            this, SLOT(showAppGroupDetail(DesktopItemPointer&,QPoint)));
-    connect(signalManager, SIGNAL(appGounpDetailClosed(QPoint)), this, SLOT(closeAppGroupDetail(QPoint)));
-    connect(signalManager, SIGNAL(appGounpDetailClosed()), this, SLOT(closeAppGroupDetail()));
+//    connect(signalManager, SIGNAL(appGounpItemsChanged(QString,DesktopItemInfoMap)),
+//            this, SLOT(updateAppGounpItem(QString,DesktopItemInfoMap)));
+//    connect(signalManager, SIGNAL(appGounpDetailShowed(DesktopItemPointer&,QPoint)),
+//            this, SLOT(showAppGroupDetail(DesktopItemPointer&,QPoint)));
+//    connect(signalManager, SIGNAL(appGounpDetailClosed(QPoint)), this, SLOT(closeAppGroupDetail(QPoint)));
+//    connect(signalManager, SIGNAL(appGounpDetailClosed()), this, SLOT(closeAppGroupDetail()));
 
 
     connect(signalManager, SIGNAL(itemCreated(DesktopItemInfo)),
@@ -83,8 +83,8 @@ void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(gridStatusUpdated()),
             this, SLOT(delayUpdateGridStatus()));
 
-    connect(signalManager, SIGNAL(screenGeometryChanged()),
-            this, SLOT(closeAppGroupDetail()));
+//    connect(signalManager, SIGNAL(screenGeometryChanged()),
+//            this, SLOT(closeAppGroupDetail()));
 
     connect(signalManager, SIGNAL(pinyinResultChanged(QList<DesktopItemInfo>)),
             this, SLOT(handlePinyinChanged(QList<DesktopItemInfo>)));
@@ -152,19 +152,19 @@ void DesktopItemManager::unCheckedItem(QString url){
 QString DesktopItemManager::getDesktopDisplayName(DesktopItemInfo &desktopItemInfo){
     QString desktopDisplayName;
     QString displayName = desktopItemInfo.DisplayName;
-    if (displayName.startsWith(RichDirPrefix)){
-        int l = QString(RichDirPrefix).length();
-        desktopDisplayName = displayName.remove(0, l);
-    }else{
+//    if (displayName.startsWith(RichDirPrefix)){
+//        int l = QString(RichDirPrefix).length();
+//        desktopDisplayName = displayName.remove(0, l);
+//    }else{
         desktopDisplayName = displayName;
-    }
+//    }
     return desktopDisplayName;
 }
 
-AppGroupBox *DesktopItemManager::getAppGroupBox()
-{
-    return m_appGroupBox;
-}
+//AppGroupBox *DesktopItemManager::getAppGroupBox()
+//{
+//    return m_appGroupBox;
+//}
 
 DesktopItemPointer DesktopItemManager::getShoudBeMovedItem(){
     return m_shoudbeMovedItem;
@@ -208,20 +208,20 @@ void DesktopItemManager::addItems(DesktopItemInfoMap desktopInfoMap){
 
 }
 
-void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap appItemInfos){
-    QString key = decodeUrl(group_url);
+//void DesktopItemManager::updateAppGounpItem(QString group_url, DesktopItemInfoMap appItemInfos){
+//    QString key = decodeUrl(group_url);
 
-    if (m_pItems.contains(key)){
-        m_pItems.value(key)->setAppGroupItems(appItemInfos);
-        updateAppGroupDetail(m_pItems.value(key));
-        if (static_cast<DesktopFrame*>(this->parent())->getAppGroupDestinationPos() != QPoint(-1, -1)){
-            m_pItems.value(key)->move(static_cast<DesktopFrame*>(this->parent())->getAppGroupDestinationPos());
-            static_cast<DesktopFrame*>(this->parent())->setAppGroupDestinationPos(QPoint(-1, -1));
-        }
-    }else{
-        qCritical() << "Invalid key" << key;
-    }
-}
+//    if (m_pItems.contains(key)){
+//        m_pItems.value(key)->setAppGroupItems(appItemInfos);
+//        updateAppGroupDetail(m_pItems.value(key));
+//        if (static_cast<DesktopFrame*>(this->parent())->getAppGroupDestinationPos() != QPoint(-1, -1)){
+//            m_pItems.value(key)->move(static_cast<DesktopFrame*>(this->parent())->getAppGroupDestinationPos());
+//            static_cast<DesktopFrame*>(this->parent())->setAppGroupDestinationPos(QPoint(-1, -1));
+//        }
+//    }else{
+//        qCritical() << "Invalid key" << key;
+//    }
+//}
 
 DesktopItemPointer DesktopItemManager::createItem(DesktopItemInfo &fileInfo){
     emit signalManager->gridStatusUpdated();
@@ -718,51 +718,51 @@ QDir::SortFlags DesktopItemManager::getSortFlag(){
     return m_sortFlag;
 }
 
-void DesktopItemManager::showAppGroupDetail(DesktopItemPointer &pItem, QPoint pos){
-    Q_UNUSED(pos)
-    if (m_appGroupBox){
-        if (pItem->getUrl() == m_appGroupBox->property("url").toString()){
-            closeAppGroupDetail();
-            return;
-        }
-    }
+//void DesktopItemManager::showAppGroupDetail(DesktopItemPointer &pItem, QPoint pos){
+//    Q_UNUSED(pos)
+//    if (m_appGroupBox){
+//        if (pItem->getUrl() == m_appGroupBox->property("url").toString()){
+//            closeAppGroupDetail();
+//            return;
+//        }
+//    }
 
-    m_appGroupBox = new AppGroupBox(m_parentWindow);
-    m_appGroupBox->showDetailByDesktopItem(pItem);
-}
+//    m_appGroupBox = new AppGroupBox(m_parentWindow);
+//    m_appGroupBox->showDetailByDesktopItem(pItem);
+//}
 
-void DesktopItemManager::updateAppGroupDetail(DesktopItemPointer pItem){
-    if (m_appGroupBox){
-        if (m_appGroupBox->isVisible()){
-            closeAppGroupDetail();
-            m_appGroupBox = new AppGroupBox(m_parentWindow);
-            m_appGroupBox->showDetailByDesktopItem(pItem);
-        }
-    }
-}
+//void DesktopItemManager::updateAppGroupDetail(DesktopItemPointer pItem){
+//    if (m_appGroupBox){
+//        if (m_appGroupBox->isVisible()){
+//            closeAppGroupDetail();
+//            m_appGroupBox = new AppGroupBox(m_parentWindow);
+//            m_appGroupBox->showDetailByDesktopItem(pItem);
+//        }
+//    }
+//}
 
-void DesktopItemManager::closeAppGroupDetail(QPoint pos){
-    if (m_appGroupBox){
-        DesktopItemPointer pItem = getItemByPos(pos);
-        m_appGroupBox->close();
-        m_appGroupBox = NULL;
-    }
-}
+//void DesktopItemManager::closeAppGroupDetail(QPoint pos){
+//    if (m_appGroupBox){
+//        DesktopItemPointer pItem = getItemByPos(pos);
+//        m_appGroupBox->close();
+//        m_appGroupBox = NULL;
+//    }
+//}
 
-void DesktopItemManager::closeAppGroupDetail(){
-    if (m_appGroupBox){
-        qDebug() << "closeAppGroupDetail";
-        m_appGroupBox->close();
-        m_appGroupBox = NULL;
-    }
-}
+//void DesktopItemManager::closeAppGroupDetail(){
+//    if (m_appGroupBox){
+//        qDebug() << "closeAppGroupDetail";
+//        m_appGroupBox->close();
+//        m_appGroupBox = NULL;
+//    }
+//}
 
-bool DesktopItemManager::isAppGroupBoxShowed(){
-    if (m_appGroupBox){
-        return m_appGroupBox->isVisible();
-    }
-    return false;
-}
+//bool DesktopItemManager::isAppGroupBoxShowed(){
+//    if (m_appGroupBox){
+//        return m_appGroupBox->isVisible();
+//    }
+//    return false;
+//}
 
 void DesktopItemManager::handleDockModeChanged(int dockMode){
     qDebug() << "handleDockModeChanged:" << dockMode;

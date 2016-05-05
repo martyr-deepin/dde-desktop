@@ -47,18 +47,18 @@ bool isDesktop(QString url){
     return false;
 }
 
-bool isAppGroup(QString url){
-    if (url.startsWith(FilePrefix)){
-        url.replace(FilePrefix, "");
-    }
-    QFileInfo f(url);
-    if (decodeUrl(f.path()) == desktopLocation){
-        if (f.fileName().startsWith(RichDirPrefix)){
-            return true;
-        }
-    }
-    return false;
-}
+//bool isAppGroup(QString url){
+//    if (url.startsWith(FilePrefix)){
+//        url.replace(FilePrefix, "");
+//    }
+//    QFileInfo f(url);
+//    if (decodeUrl(f.path()) == desktopLocation){
+//        if (f.fileName().startsWith(RichDirPrefix)){
+//            return true;
+//        }
+//    }
+//    return false;
+//}
 
 
 bool isApp(QString url){
@@ -101,11 +101,11 @@ bool isTrash(QString url){
 bool isFolder(QString url){
     url.replace(FilePrefix, "");
     if (QDir(url).exists()){
-        if (decodeUrl(url).contains(desktopLocation)){
-            if (QDir(url).dirName().startsWith(RichDirPrefix)){
-                return false;
-            }
-        }
+//        if (decodeUrl(url).contains(desktopLocation)){
+//            if (QDir(url).dirName().startsWith(RichDirPrefix)){
+//                return false;
+//            }
+//        }
         return true;
     }
     return false;

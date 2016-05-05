@@ -156,9 +156,9 @@ void DesktopApp::confimConflict(const QMap<QString, QString> &jobDetail, const Q
 }
 
 void DesktopApp::confirmRenameDialog(QString name){
-    if (name.startsWith(RichDirPrefix)){
-        name = name.mid(QString(RichDirPrefix).length());
-    }
+//    if (name.startsWith(RichDirPrefix)){
+//        name = name.mid(QString(RichDirPrefix).length());
+//    }
     qDebug() << "confirmRenameDialog" << name;
     DDialog* d = new DDialog(m_desktopBox);
     d->setModal(false);
@@ -188,10 +188,11 @@ void DesktopApp::handleAppUninstalled(const QString &appKey){
     int size = desktopInfoList.size();
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
-        if (isAppGroup(fileInfo.filePath())){
-            qDebug() << fileInfo.filePath() << fileInfo.fileName();
-            removeInvalidDesktopFile(fileInfo.filePath(), appKey);
-        }
+        //app group
+//        if (isAppGroup(fileInfo.filePath())){
+//            qDebug() << fileInfo.filePath() << fileInfo.fileName();
+//            removeInvalidDesktopFile(fileInfo.filePath(), appKey);
+//        }
     }
 
 }

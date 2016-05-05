@@ -43,7 +43,7 @@ void DesktopBox::initConnect(){
     connect(signalManager, SIGNAL(renameFinished()), this, SLOT(renameFinished()));
     connect(signalManager, SIGNAL(requestRenamed(QString)), this, SLOT(handleRename()));
     connect(signalManager, SIGNAL(screenGeometryChanged()), m_screenChangedTimer, SLOT(start()));
-    connect(signalManager, SIGNAL(appGroupItemRightClicked(bool)), this, SLOT(setAppGroupRightClicked(bool)));
+//    connect(signalManager, SIGNAL(appGroupItemRightClicked(bool)), this, SLOT(setAppGroupRightClicked(bool)));
     connect(signalManager, SIGNAL(activeWindowChanged(uint)), this, SLOT(handleActiveWindowChanged(uint)));
     connect(m_screenChangedTimer, SIGNAL(timeout()), this, SLOT(handleScreenGeometryChanged()));
 }
@@ -52,25 +52,25 @@ DesktopFrame* DesktopBox::getDesktopFrame(){
     return m_desktopFrame;
 }
 
-void DesktopBox::setAppGroupRightClicked(bool flag){
-    m_appGroupRightClicked = flag;
-}
+//void DesktopBox::setAppGroupRightClicked(bool flag){
+//    m_appGroupRightClicked = flag;
+//}
 
 void DesktopBox::handleActiveWindowChanged(uint windowId)
 {
 //    qDebug() << windowId << m_appGroupRightClicked;
-    int desktopBoxWinId = winId();
-    AppGroupBox* appGroupBox = m_desktopFrame->getDesktopItemManager()->getAppGroupBox();
-    if (appGroupBox){
-        if (appGroupBox->isVisible()){
-            int appGroupBoxWinId = m_desktopFrame->getDesktopItemManager()->getAppGroupBox()->winId();
-            if (desktopBoxWinId != windowId && appGroupBoxWinId != windowId && m_appGroupRightClicked){
-                setAppGroupRightClicked(false);
-            }else if (desktopBoxWinId != windowId && appGroupBoxWinId != windowId){
-                emit signalManager->appGounpDetailClosed();
-            }
-        }
-    }
+//    int desktopBoxWinId = winId();
+//    AppGroupBox* appGroupBox = m_desktopFrame->getDesktopItemManager()->getAppGroupBox();
+//    if (appGroupBox){
+//        if (appGroupBox->isVisible()){
+//            int appGroupBoxWinId = m_desktopFrame->getDesktopItemManager()->getAppGroupBox()->winId();
+//            if (desktopBoxWinId != windowId && appGroupBoxWinId != windowId && m_appGroupRightClicked){
+//                setAppGroupRightClicked(false);
+//            }else if (desktopBoxWinId != windowId && appGroupBoxWinId != windowId){
+//                emit signalManager->appGounpDetailClosed();
+//            }
+//        }
+//    }
 }
 
 void DesktopBox::handleRename(){
@@ -92,12 +92,12 @@ void DesktopBox::renameFinished(){
     DesktopItemPointer pItem = m_desktopFrame->getLastCheckedDesktopItem();
     if (!pItem.isNull()){
         QString  fileName;
-        qDebug() << isAppGroup(pItem->getUrl()) << QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
-        if (isAppGroup(pItem->getUrl())){
-            fileName = QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
-        }else{
+//        qDebug() << isAppGroup(pItem->getUrl()) << QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
+//        if (isAppGroup(pItem->getUrl())){
+//            fileName = QString("%1%2").arg(RichDirPrefix, pItem->getTextEdit()->toPlainText());
+//        }else{
             fileName = pItem->getTextEdit()->toPlainText();
-        }
+//        }
         emit signalManager->renameJobCreated(pItem->getRawUrl(), fileName);
         pItem->getTextEdit()->showText();
         m_desktopFrame->setFocus();
@@ -262,14 +262,14 @@ void DesktopBox::closeEvent(QCloseEvent *event){
 
 bool DesktopBox::eventFilter(QObject *obj, QEvent *event)
 {
-    if(event->type() == QEvent::WindowDeactivate && !m_appGroupRightClicked){
-        emit signalManager->appGounpDetailClosed();
-        setAppGroupRightClicked(false);
-    }/*else if((event->type() == QEvent::Leave || event->type() == QEvent::WindowActivate) && m_appGroupRightClicked){
-        qDebug() << "event->type() == QEvent::Leave || event->type() == QEvent::WindowActivate) && m_appGroupRightClicked";
+//    if(event->type() == QEvent::WindowDeactivate && !m_appGroupRightClicked){
 //        emit signalManager->appGounpDetailClosed();
 //        setAppGroupRightClicked(false);
-    }*/
+//    }else if((event->type() == QEvent::Leave || event->type() == QEvent::WindowActivate) && m_appGroupRightClicked){
+//        qDebug() << "event->type() == QEvent::Leave || event->type() == QEvent::WindowActivate) && m_appGroupRightClicked";
+//        emit signalManager->appGounpDetailClosed();
+//        setAppGroupRightClicked(false);
+//    }
     return QObject::eventFilter(obj, event);
 }
 

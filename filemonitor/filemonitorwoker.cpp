@@ -36,9 +36,9 @@ void FileMonitorWoker::monitorAppGroup(const QString &path)
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
-        if (isAppGroup(fileInfo.absoluteFilePath())) {
-            addWatchFolder(fileInfo.absoluteFilePath());
-        }
+//        if (isAppGroup(fileInfo.absoluteFilePath())) {
+//            addWatchFolder(fileInfo.absoluteFilePath());
+//        }
     }
 }
 

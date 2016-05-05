@@ -62,7 +62,7 @@ public:
     QStringList getCheckedFiles();
     QMap<QString, QString> getCheckedFileDislpyNames();
 
-    QPoint getAppGroupDestinationPos();
+//    QPoint getAppGroupDestinationPos();
 
     QRect getCheckedBorderRect();
 
@@ -85,7 +85,7 @@ public slots:
     void removeCheckedDesktopItem(DesktopItemPointer pItem);
     void setMultiCheckedByMouse(bool flag);
     void checkAllDesktopItems();
-    void setAppGroupDestinationPos(QPoint pos);
+//    void setAppGroupDestinationPos(QPoint pos);
 
     void handleMouseMoveCheckItems();
 
@@ -148,7 +148,7 @@ private:
     DesktopItemPointer m_shiftPressFirstCheckedDesktopItem; // first checked item when shift pressed
 
     DesktopItemPointer m_destinationDesktopItem = DesktopItemPointer(); /*desktop item which will change to be app group*/
-    QPoint m_appGroupDestinationPos = QPoint(-1, -1);
+//    QPoint m_appGroupDestinationPos = QPoint(-1, -1);
 
     QList<DesktopItemPointer> m_checkedDesktopItems;
 

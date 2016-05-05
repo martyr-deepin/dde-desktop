@@ -155,10 +155,10 @@ public slots:
     void cutFiles(QStringList urls);
 
     /*app group*/
-    void requestCreatingAppGroup(QStringList urls);
-    void getAppGroupItemsByUrl(QString group_url);
-    void createAppGroup(QString group_url, QStringList urls);
-    void mergeIntoAppGroup(QStringList urls, QString group_url);
+//    void requestCreatingAppGroup(QStringList urls);
+//    void getAppGroupItemsByUrl(QString group_url);
+//    void createAppGroup(QString group_url, QStringList urls);
+//    void mergeIntoAppGroup(QStringList urls, QString group_url);
 
     /*paste files*/
     void pasteFilesToDesktop();
