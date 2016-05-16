@@ -18,6 +18,7 @@ class DesktopBox;
 class AppController;
 class DTaskDialog;
 class LauncherInterface;
+class SchemaWatcher;
 
 class DesktopApp : public QObject
 {
@@ -62,6 +63,7 @@ private:
     QDialog* m_renamDialog;
     QStringList m_deletefiles;
     LauncherInterface* m_launcherInterface;
+    SchemaWatcher *m_schemaWatcher;
 };
 
 #endif // DESKTOPAPP_H

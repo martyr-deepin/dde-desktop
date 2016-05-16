@@ -28,12 +28,15 @@
 #include <QStandardPaths>
 #include <QProcess>
 
+#include "schemawatcher.h"
+
 DWIDGET_USE_NAMESPACE
 
 DesktopApp::DesktopApp(QObject *parent) : QObject(parent)
 {
     m_desktopBox = new DesktopBox;
     m_taskDialog = new DTaskDialog;
+    m_schemaWatcher = new SchemaWatcher;
 
     initConnect();
     registerDBusService();

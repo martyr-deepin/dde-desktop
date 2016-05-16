@@ -81,7 +81,8 @@ SOURCES += main.cpp \
     controllers/deletejobworker.cpp \
     dbusinterface/pinyin_interface.cpp \
     dbusinterface/dbusclientmanager.cpp \
-    dbusinterface/launcher_interface.cpp
+    dbusinterface/launcher_interface.cpp \
+    app/schemawatcher.cpp
 
 
 HEADERS  += \
@@ -147,7 +148,8 @@ HEADERS  += \
     controllers/deletejobworker.h \
     dbusinterface/pinyin_interface.h \
     dbusinterface/dbusclientmanager.h \
-    dbusinterface/launcher_interface.h
+    dbusinterface/launcher_interface.h \
+    app/schemawatcher.h
 
 # Automating generation .qm files from .ts files
 system($$PWD/translate_generation.sh)
@@ -167,13 +169,16 @@ DISTFILES += \
 
 target.path = /usr/bin/
 
+desktop_files.files = data/applications/*
+desktop_files.path = /usr/share/applications/
+
 qm_files.files = translations/*.qm
 qm_files.path= /usr/share/dde-desktop/translations/
 
 services.path = /usr/share/dbus-1/services
 services.files = dbusservices/com.deepin.dde.desktop.service
 
-INSTALLS += target qm_files services
+INSTALLS += target qm_files services desktop_files
 
 OTHER_FILES += \
     dbusinterface/pinyin.xml
