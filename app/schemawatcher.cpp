@@ -30,10 +30,14 @@ void SchemaWatcher::onGSettingsChanged()
     QString desktopDir = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
 
     if (showComputer) {
-        QProcess::startDetached(QString("cp /usr/share/applications/dde-computer.desktop %1").arg(desktopDir));
+        //TODO: use Qt code instead shell commands.
+        QProcess::execute(QString("cp /usr/share/applications/dde-computer.desktop %1").arg(desktopDir));
+        QProcess::startDetached(QString("chmod +x %1/dde-computer.desktop").arg(desktopDir));
     }
 
     if (showTrash) {
-        QProcess::startDetached(QString("cp /usr/share/applications/dde-trash.desktop %1").arg(desktopDir));
+        //TODO: use Qt code instead shell commands.
+        QProcess::execute(QString("cp /usr/share/applications/dde-trash.desktop %1").arg(desktopDir));
+        QProcess::startDetached(QString("chmod +x %1/dde-trash.desktop").arg(desktopDir));
     }
 }
