@@ -154,7 +154,12 @@ void GrowingElideTextEdit::showEditing(){
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setReadOnly(false);
     setTextInteractionFlags(Qt::TextEditorInteraction);
-    selectAll();
+//    selectAll();
+    QTextCursor cur = this->textCursor();
+    int position = this->toPlainText().lastIndexOf(QChar('.'));
+    position >= 0 ? cur.setPosition(position, QTextCursor::KeepAnchor): cur.setPosition(this->toPlainText().size(), QTextCursor::KeepAnchor);
+    this->setTextCursor(cur);
+
     setStyleSheet("\
                   background-color: white;\
                   border:1px solid black;\
