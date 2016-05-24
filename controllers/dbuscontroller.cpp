@@ -74,6 +74,8 @@ void DBusController::init(){
     m_pinyinTimer->setInterval(1000);
 
     initConnect();
+
+    m_pinyinTimer->start();
 }
 
 void DBusController::initConnect(){
