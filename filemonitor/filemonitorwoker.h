@@ -20,7 +20,7 @@
 #include <fcntl.h>
 
 
-//#define RichDirPrefix ".deepin_rich_dir_"
+#define RichDirPrefix ".deepin_rich_dir_"
 #define desktopLocation QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0)
 
 #define EVENT_NUM 16

@@ -467,11 +467,11 @@ void DesktopItem::showSimpWrapName(){
 
 void DesktopItem::mousePressEvent(QMouseEvent *event){
     qDebug() << event;
-//    if (event->button() == Qt::RightButton){
-//        if (m_isInAppGroup){
-//            emit signalManager->contextMenuShowed(m_url, mapToGlobal(event->pos()));
-//        }
-//    }
+    if (event->button() == Qt::RightButton){
+        if (m_isInAppGroup){
+            emit signalManager->contextMenuShowed(m_url, mapToGlobal(event->pos()));
+        }
+    }
     QFrame::mousePressEvent(event);
 }
 

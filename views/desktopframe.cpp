@@ -68,7 +68,7 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 void DesktopFrame::initItems(){
     m_gridItems = gridManager->getItemsByType(m_sizeType);
     m_mapItems = gridManager->getMapItems();
-//    m_desktopItemManager->loadComputerTrashItems();
+    m_desktopItemManager->loadComputerTrashItems();
 }
 
 void DesktopFrame::initConnect(){
@@ -303,13 +303,13 @@ QList<DesktopItemPointer> DesktopFrame::getCheckedDesktopItems(){
     return m_checkedDesktopItems;
 }
 
-//QPoint DesktopFrame::getAppGroupDestinationPos(){
-//    return m_appGroupDestinationPos;
-//}
+QPoint DesktopFrame::getAppGroupDestinationPos(){
+    return m_appGroupDestinationPos;
+}
 
-//void DesktopFrame::setAppGroupDestinationPos(QPoint pos){
-//    m_appGroupDestinationPos = pos;
-//}
+void DesktopFrame::setAppGroupDestinationPos(QPoint pos){
+    m_appGroupDestinationPos = pos;
+}
 
 QStringList DesktopFrame::getCheckedFiles(){
     QStringList files;
@@ -438,7 +438,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
         setShiftPressed(false);
     }
 
-//    emit signalManager->appGroupItemRightClicked(false);
+    emit signalManager->appGroupItemRightClicked(false);
     m_isDragStarted = false;
     m_pressedEventPos = event->pos();
     DesktopItemPointer pTopDesktopItem  = getTopDesktopItemByPos(m_pressedEventPos);
@@ -504,10 +504,9 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
                 checkRaiseItem(pTopDesktopItem);
                 setLastPressedCheckedDesktopItem(pTopDesktopItem);
                 emit signalManager->contextMenuShowed(pTopDesktopItem, mapToGlobal(event->pos()));
-//app gourp
-                //                if(isAppGroup(pTopDesktopItem->getUrl())){
-//                    emit signalManager->appGounpDetailClosed();
-//                }
+                if(isAppGroup(pTopDesktopItem->getUrl())){
+                    emit signalManager->appGounpDetailClosed();
+                }
             }
         }
 
@@ -698,19 +697,18 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
     if (event->button() == Qt::LeftButton){
         if (!m_ctrlPressed){
             if (!pTopDesktopItem.isNull()){
-                //app group
-//                if (m_desktopItemManager->isAppGroupBoxShowed()){
-//                    emit signalManager->appGounpDetailClosed(event->pos());
-//                    if (isAppGroup(pTopDesktopItem->getUrl())){
-//                        pTopDesktopItem->setChecked(true);
-//                    }
-//                }else{
-//                    if (isAppGroup(pTopDesktopItem->getUrl()) && isMultiCheckedByMouseMove && !m_shiftPressed){
-//                        unCheckCheckedItems();
-//                        emit pTopDesktopItem->setHover(true);
-//                        emit signalManager->appGounpDetailShowed(pTopDesktopItem, event->pos());
-//                    }
-//                }
+                if (m_desktopItemManager->isAppGroupBoxShowed()){
+                    emit signalManager->appGounpDetailClosed(event->pos());
+                    if (isAppGroup(pTopDesktopItem->getUrl())){
+                        pTopDesktopItem->setChecked(true);
+                    }
+                }else{
+                    if (isAppGroup(pTopDesktopItem->getUrl()) && isMultiCheckedByMouseMove && !m_shiftPressed){
+                        unCheckCheckedItems();
+                        emit pTopDesktopItem->setHover(true);
+                        emit signalManager->appGounpDetailShowed(pTopDesktopItem, event->pos());
+                    }
+                }
 
                 if (!m_shiftPressed){
                     qDebug() << pTopDesktopItem->isChecked() << oldSelectRect << isMultiCheckedByMouseMove;
@@ -723,10 +721,9 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
                     }
                 }
 
+            }else{
+                emit signalManager->appGounpDetailClosed(event->pos());
             }
-//            else{
-//                emit signalManager->appGounpDetailClosed(event->pos());
-//            }
         }else{
             if (!pTopDesktopItem.isNull()){
                 if (pTopDesktopItem->isChecked()){
@@ -753,7 +750,7 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
 
 void DesktopFrame::mouseMoveEvent(QMouseEvent *event){
     if (m_isDragStarted){
-//        emit signalManager->appGounpDetailClosed();
+        emit signalManager->appGounpDetailClosed();
         foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
             pItem->showSimpWrapName();
         }
@@ -782,10 +779,10 @@ void DesktopFrame::mouseDoubleClickEvent(QMouseEvent *event){
     if (!pTopDesktopItem.isNull()){
         unCheckCheckedItems();
         checkRaiseItem(pTopDesktopItem);
-//        if (!isAppGroup(pTopDesktopItem->getUrl())){
+        if (!isAppGroup(pTopDesktopItem->getUrl())){
             qDebug() << "mouseDoubleClickEvent" << pTopDesktopItem->getDesktopItemInfo().URI;
             emit signalManager->openFile(pTopDesktopItem->getDesktopItemInfo());
-//        }
+        }
     }
     QFrame::mouseDoubleClickEvent(event);
 }

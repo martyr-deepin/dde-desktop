@@ -116,16 +116,16 @@ signals:
 
     /*update app group desktop icon*/
     void destinationAppGroupTryCreated(DesktopItemPointer& pItem);
-//    void requestCreatingAppGroup(QStringList urls);
-//    void requestMergeIntoAppGroup(QStringList urls, QString group_url);
+    void requestCreatingAppGroup(QStringList urls);
+    void requestMergeIntoAppGroup(QStringList urls, QString group_url);
 
     void desktopItemsChanged(DesktopItemInfoMap desktopnItems);
-//    void appGounpItemsChanged(QString group_url, DesktopItemInfoMap appItems);
+    void appGounpItemsChanged(QString group_url, DesktopItemInfoMap appItems);
 
     /*app group detail show*/
-//    void appGounpDetailShowed(DesktopItemPointer& pItem, QPoint pos);
-//    void appGounpDetailClosed(QPoint pos);
-//    void appGounpDetailClosed();
+    void appGounpDetailShowed(DesktopItemPointer& pItem, QPoint pos);
+    void appGounpDetailClosed(QPoint pos);
+    void appGounpDetailClosed();
 
     /*monitor desktop folder*/
     void itemCreated(DesktopItemInfo fileInfo);
@@ -220,7 +220,7 @@ signals:
     void shiftReleased(bool flag);
 
     /*app group right clicked*/
-//    void appGroupItemRightClicked(bool flag);
+    void appGroupItemRightClicked(bool flag);
 
     /*desktop textedit contextMenu show by conetnt*/
     void showTextEditMenuBySelectContent(QString url, QString fullText, QString selectText, QPoint pos);

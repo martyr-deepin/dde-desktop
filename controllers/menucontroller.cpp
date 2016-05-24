@@ -160,14 +160,14 @@ void MenuController::showMenu(const QString showmenu_path, QString menucontent) 
 
 void MenuController::handleMenuUnregistered(){
     emit signalManager->contextMenuShowed(false);
-//    emit signalManager->appGroupItemRightClicked(false);
+    emit signalManager->appGroupItemRightClicked(false);
 }
 
 void MenuController::menuItemInvoked(QString itemId, bool flag){
     Q_UNUSED(flag)
     qDebug() << itemId << flag;
     dbusController->getDesktopDaemonInterface()->HandleSelectedMenuItem(itemId);
-//    emit signalManager->appGounpDetailClosed();
+    emit signalManager->appGounpDetailClosed();
 }
 
 

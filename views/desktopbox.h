@@ -39,7 +39,7 @@ public slots:
 
     void handleScreenGeometryChanged();
 
-//    void setAppGroupRightClicked(bool flag);
+    void setAppGroupRightClicked(bool flag);
 
     void handleActiveWindowChanged(uint windowId);
 
@@ -56,7 +56,7 @@ private:
     DesktopFrame* m_desktopFrame;
     BackgroundLabel* m_backgroundLabel;
     QTimer* m_screenChangedTimer;
-//    bool m_appGroupRightClicked=false;
+    bool m_appGroupRightClicked=false;
 };
 
 #endif // DESKTOPBOX_H

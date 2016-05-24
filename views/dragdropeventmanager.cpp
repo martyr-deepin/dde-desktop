@@ -29,17 +29,16 @@ void DragDropEventManager::handleDragMoveEvent(const QList<DesktopItemPointer>& 
     }
     foreach(DesktopItemPointer pItem, items){
         if (pItem->geometry().contains(pos)){
-
-//            if (isAllApp(stringUrls) && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
-//                m_hoverDesktopItem = pItem;
-//                pItem->changeToBeAppGroupIcon();
-//            }
+            if (isAllApp(stringUrls) && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
+                m_hoverDesktopItem = pItem;
+                pItem->changeToBeAppGroupIcon();
+            }
             pItem->setHover(true);
         }else{
             pItem->setHover(false);
-//            if (pItem == m_hoverDesktopItem){
-//                pItem->changeBacktoNormal();
-//            }
+            if (pItem == m_hoverDesktopItem){
+                pItem->changeBacktoNormal();
+            }
         }
     }
 
@@ -63,7 +62,7 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
         if (pItem->geometry().contains(event->pos())){
             m_destinationDesktopItem = pItem;
             if (m_parent->isAllAppCheckedItems() && isApp(pItem->getUrl()) && !pItem->isChecked()){
-//                m_parent->setAppGroupDestinationPos(pItem->pos());
+                m_parent->setAppGroupDestinationPos(pItem->pos());
             }
             flag = flag && false;
             break;
@@ -88,15 +87,14 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
             qDebug() << isCanMoved << m_destinationDesktopItem->getRawUrl();
             if (isCanMoved){
                 if (isAllApp(urls) && isApp(m_destinationDesktopItem->getUrl())){
-//                    qDebug() << "requestCreatingAppGroup";
+                    qDebug() << "requestCreatingAppGroup";
                     urls.append(m_destinationDesktopItem->getUrl());
-//                    emit signalManager->requestCreatingAppGroup(urls);
-                }/* app group
-                    else if (isAllApp(urls) && isAppGroup(m_destinationDesktopItem->getUrl())){
+                    emit signalManager->requestCreatingAppGroup(urls);
+                }else if (isAllApp(urls) && isAppGroup(m_destinationDesktopItem->getUrl())){
                     qDebug() << "requestMergeIntoAppGroup";
                     urls.append(m_destinationDesktopItem->getUrl());
                     emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
-                }*/else if (isApp(m_destinationDesktopItem->getUrl())){
+                }else if (isApp(m_destinationDesktopItem->getUrl())){
                     qDebug() << "openFiles";
                     emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), urls);
                 }else if (isTrash(m_destinationDesktopItem->getUrl())){

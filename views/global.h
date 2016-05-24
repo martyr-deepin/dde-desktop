@@ -25,7 +25,7 @@
 #define defaut_icon ":/images/skin/images/default.png"
 #define defaut_computerIcon ":/images/skin/images/computer.png"
 #define defaut_trashIcon ":/images/skin/images/user-trash-full.png"
-//#define RichDirPrefix ".deepin_rich_dir_"
+#define RichDirPrefix ".deepin_rich_dir_"
 #define AppSuffix ".desktop"
 
 #define ComputerUrl "computer://"
