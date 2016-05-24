@@ -692,11 +692,6 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlags flag)
     QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden |QDir::System, flag | QDir::DirsFirst);
 
     m_list_pItems.clear();
-    int mode = dbusController->getDockMode();
-    if (mode != 0){
-        m_list_pItems.append(m_pComputerItem);
-        m_list_pItems.append(m_pTrashItem);
-    }
 
 //    int row = gridManager->getRowCount();
     int size = desktopInfoList.size();
@@ -704,6 +699,20 @@ void DesktopItemManager::sortedByFlags(QDir::SortFlags flag)
         QFileInfo fileInfo = desktopInfoList.at(i);
         QString url = decodeUrl(fileInfo.absoluteFilePath());
 //        qDebug() << fileInfo.absoluteFilePath() << url << m_pItems.keys() << m_pItems.keys().contains(url) << m_pItems.keys().contains(fileInfo.absoluteFilePath());
+        if (url.endsWith(ComputerDesktop)) {
+            if (!m_pItems.contains(ComputerUrl)) {
+                initComputerItem();
+            }
+            m_list_pItems.append(m_pComputerItem);
+            continue;
+        } else if (url.endsWith(TrashDesktop)) {
+            if (!m_pItems.contains(TrashUrl)) {
+                initTrashItem();
+            }
+            m_list_pItems.append(m_pTrashItem);
+            continue;
+        }
+
         if (m_pItems.contains(url)){
             DesktopItemPointer  pDesktopItem = m_pItems.value(url);
             m_list_pItems.append(pDesktopItem);
@@ -765,14 +774,25 @@ void DesktopItemManager::sortedByName(){
     gridManager->clearDeskopItemsStatus();
     m_settings.clear();
     m_list_pItems.clear();
-    int mode = dbusController->getDockMode();
-    if (mode != 0){
-        m_list_pItems.append(m_pComputerItem);
-        m_list_pItems.append(m_pTrashItem);
-    }
+
     for(int i=0; i<m_sortedPinyin_pItems.count(); i++){
         QString URI = m_sortedPinyin_pItems.at(i).URI;
         QString url = decodeUrl(URI);
+
+        if (url.endsWith(ComputerDesktop)) {
+            if (!m_pItems.contains(ComputerUrl)) {
+                initComputerItem();
+            }
+            m_list_pItems.append(m_pComputerItem);
+            continue;
+        } else if (url.endsWith(TrashDesktop)) {
+            if (!m_pItems.contains(TrashUrl)) {
+                initTrashItem();
+            }
+            m_list_pItems.append(m_pTrashItem);
+            continue;
+        }
+
         if (m_pItems.contains(url)){
             m_list_pItems.append(m_pItems.value(url));
         }
