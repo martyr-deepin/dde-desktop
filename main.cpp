@@ -26,6 +26,19 @@
 
 DWIDGET_USE_NAMESPACE
 
+// Rename app group magic dirs to dirs that's named by their app group name.
+static void AppGroupCompatibleWorkaround() {
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    QDir desktopDir(desktopPath);
+    QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllDirs | QDir::Hidden);
+    for (QFileInfo info : desktopInfoList) {
+        if (isAppGroup(info.filePath())) {
+            QString appGroupName = info.filePath().replace(FilePrefix, "").replace(RichDirPrefix, "");
+            QFile::rename(info.filePath(), desktopDir.filePath(appGroupName));
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     DApplication app(argc, argv);
@@ -41,8 +54,6 @@ int main(int argc, char *argv[])
         qApp->setApplicationName("dde-desktop");
         qApp->setApplicationVersion("2015-1.0");
 
-
-
         // setup translator
         QTranslator translator;
         translator.load("/usr/share/dde-desktop/translations/dde-desktop_" + QLocale::system().name() + ".qm");
@@ -53,6 +64,8 @@ int main(int argc, char *argv[])
 
         qRegisterMetaType<DesktopItemInfoMap>("DesktopItemInfoMap");
         qDBusRegisterMetaType<DesktopItemInfoMap>();
+
+        AppGroupCompatibleWorkaround();
 
         DesktopApp desktop;
         desktop.show();

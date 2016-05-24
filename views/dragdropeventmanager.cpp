@@ -29,26 +29,29 @@ void DragDropEventManager::handleDragMoveEvent(const QList<DesktopItemPointer>& 
     }
     foreach(DesktopItemPointer pItem, items){
         if (pItem->geometry().contains(pos)){
+            /* app group
             if (isAllApp(stringUrls) && isApp(pItem->getUrl()) && !pItem->isChecked() && !pItem->isHover()){
                 m_hoverDesktopItem = pItem;
                 pItem->changeToBeAppGroupIcon();
             }
+            */
+
             pItem->setHover(true);
         }else{
             pItem->setHover(false);
+
+            /* app group
             if (pItem == m_hoverDesktopItem){
                 pItem->changeBacktoNormal();
             }
+            */
         }
     }
-
 }
 
 
 void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& items, QDropEvent *event){
     DesktopFrame* m_parent = static_cast<DesktopFrame*>(parent());
-
-
 
     if (event->source() == m_parent){
         event->setDropAction(Qt::MoveAction);
@@ -86,6 +89,7 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
             bool isCanMoved = !urls.contains(m_destinationDesktopItem->getRawUrl());
             qDebug() << isCanMoved << m_destinationDesktopItem->getRawUrl();
             if (isCanMoved){
+                /* app group
                 if (isAllApp(urls) && isApp(m_destinationDesktopItem->getUrl())){
                     qDebug() << "requestCreatingAppGroup";
                     urls.append(m_destinationDesktopItem->getUrl());
@@ -94,7 +98,9 @@ void DragDropEventManager::handleDropEvent(const QList<DesktopItemPointer>& item
                     qDebug() << "requestMergeIntoAppGroup";
                     urls.append(m_destinationDesktopItem->getUrl());
                     emit signalManager->requestMergeIntoAppGroup(urls, m_destinationDesktopItem->getUrl());
-                }else if (isApp(m_destinationDesktopItem->getUrl())){
+                }else
+                */
+                if (isApp(m_destinationDesktopItem->getUrl())){
                     qDebug() << "openFiles";
                     emit signalManager->openFiles(m_destinationDesktopItem->getDesktopItemInfo(), urls);
                 }else if (isTrash(m_destinationDesktopItem->getUrl())){
