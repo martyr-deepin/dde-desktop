@@ -208,31 +208,6 @@ void DesktopItemManager::handleDesktopItemMetaChanged(const DesktopItemPointer &
     }
 }
 
-void DesktopItemManager::loadComputerTrashItems(){
-    int mode = dbusController->getDockMode();
-    if (mode != 0){
-        if (!m_pItems.contains(ComputerUrl)){
-            initComputerItem();
-            dbusController->asyncRequestComputerIcon();
-        }else{
-            qDebug() << "ComputerItem is existed";
-        }
-        if (!m_pItems.contains(TrashUrl)){
-            initTrashItem();
-            dbusController->asyncRequestTrashIcon();
-        }else{
-            qDebug() << "TrashItem is existed";
-        }
-    }else{
-        qDebug() << "Don't show computer and trash under fashion mode";
-    }
-}
-
-void DesktopItemManager::clearComputerTrashItems(){
-    deleteItem(ComputerUrl);
-    deleteItem(TrashUrl);
-}
-
 void DesktopItemManager::unCheckedItem(QString url){
     DesktopItemPointer pItem = getItemByUrl(url);
     if (!pItem.isNull()){
@@ -282,6 +257,7 @@ void DesktopItemManager::addItems(DesktopItemInfoMap desktopInfoMap){
     DesktopItemInfoMap unSavedDesktopItemInfoMap;
     for(int i=0; i< desktopInfoMap.values().count(); i++){
         QString url = decodeUrl(desktopInfoMap.values().at(i).URI);
+
         if (setting.contains(url)){
             addItem(desktopInfoMap.values().at(i), i);
         }else{
@@ -341,6 +317,20 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
     Q_UNUSED(index)
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
 
+    QString url = fileInfo.URI;
+    if (url.endsWith(ComputerDesktop)) {
+        if (!m_pItems.contains(ComputerUrl)) {
+            initComputerItem();
+        }
+        return;
+    }
+    if (url.endsWith(TrashDesktop)) {
+        if (!m_pItems.contains(TrashUrl)) {
+            initTrashItem();
+        }
+        return;
+    }
+
     if (!pDesktopItem.isNull()){
 
         QSettings setting;
@@ -371,6 +361,20 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
         return;
     }
     DesktopItemPointer pDesktopItem = createItem(fileInfo);
+
+    QString url = fileInfo.URI;
+    if (url.endsWith(ComputerDesktop)) {
+        if (!m_pItems.contains(ComputerUrl)) {
+            initComputerItem();
+        }
+        return;
+    }
+    if (url.endsWith(TrashDesktop)) {
+        if (!m_pItems.contains(TrashUrl)) {
+            initTrashItem();
+        }
+        return;
+    }
 
     if (!pDesktopItem.isNull()){
 
@@ -502,6 +506,15 @@ void DesktopItemManager::cancelCutedItems()
 }
 
 void DesktopItemManager::deleteItem(QString url){
+    if (url.endsWith(ComputerDesktop)) {
+        deleteItem(ComputerUrl);
+        return;
+    }
+    if (url.endsWith(TrashDesktop)) {
+        deleteItem(TrashUrl);
+        return;
+    }
+
     QString _url(url);
 //    if (url!=ComputerUrl && url!=TrashUrl){
 //        if (!url.startsWith("file://")){
@@ -845,7 +858,8 @@ bool DesktopItemManager::isAppGroupBoxShowed(){
     return false;
 }
 
-void DesktopItemManager::handleDockModeChanged(int dockMode){
+void DesktopItemManager::handleDockModeChanged(int){
+    /*
     if (dockMode == 0){
         qDebug() << "clearComputerTrashItems";
         clearComputerTrashItems();
@@ -853,6 +867,7 @@ void DesktopItemManager::handleDockModeChanged(int dockMode){
         qDebug() << "loadComputerTrashItems";
         loadComputerTrashItems();
     }
+    */
 }
 
 void DesktopItemManager::handleFileCreated(QString filename){

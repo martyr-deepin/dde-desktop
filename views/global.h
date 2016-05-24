@@ -31,6 +31,8 @@
 #define ComputerUrl "computer://"
 #define TrashUrl "trash://"
 #define FilePrefix "file://"
+#define ComputerDesktop "dde-computer.desktop"
+#define TrashDesktop "dde-trash.desktop"
 
 const QSet<QString> SupportMimeTypes{"image/png" ,"image/jpeg" , "image/gif"
                                       , "image/bmp", "image/tiff" , "image/svg+xml"

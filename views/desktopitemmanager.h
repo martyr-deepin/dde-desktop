@@ -49,8 +49,6 @@ public:
 signals:
 
 public slots:
-    void loadComputerTrashItems();
-    void clearComputerTrashItems();
     void unCheckedItem(QString url);
     void addItems(DesktopItemInfoMap desktopInfoMap);
     void addItem(DesktopItemInfo fileInfo, int index);

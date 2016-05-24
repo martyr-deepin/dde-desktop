@@ -68,7 +68,6 @@ DesktopFrame::DesktopFrame(QWidget *parent)
 void DesktopFrame::initItems(){
     m_gridItems = gridManager->getItemsByType(m_sizeType);
     m_mapItems = gridManager->getMapItems();
-    m_desktopItemManager->loadComputerTrashItems();
 }
 
 void DesktopFrame::initConnect(){
