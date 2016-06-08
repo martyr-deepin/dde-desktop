@@ -70,6 +70,7 @@ signals:
 
     /*double open file*/
     void openFile(DesktopItemInfo info);
+    void openExecutable(DesktopItemInfo info);
     /*drop open files*/
     void openFiles(DesktopItemInfo destinationDesktopItemInfo, QList<DesktopItemInfo> desktopItemInfos);
     void openFiles(DesktopItemInfo destinationDesktopItemInfo, QStringList urls);

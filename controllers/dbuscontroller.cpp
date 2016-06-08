@@ -799,25 +799,20 @@ void DBusController::removeDesktopItemInfoByUrl(QString url){
 }
 
 void DBusController::openFiles(QStringList files, IntList intFlags){
-    qDebug() << files << intFlags;
-
     foreach (QString file, files) {
         int index = files.indexOf(file);
-        if (intFlags.at(index) == 0){ //RequestOpenPolicyOpen = 0
-            QString key = QString(QUrl(file.toLocal8Bit()).toEncoded());
-            if (m_desktopItemInfoMap.contains(key)){
-                DesktopItemInfo desktopItemInfo = m_desktopItemInfoMap.value(key);
-                qDebug() << desktopItemInfo.URI << "open";
-                QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, 0);
-                reply.waitForFinished();
-                if (!reply.isError()){
+        int flag = intFlags.at(index);
 
-                }else{
-                    qCritical() << reply.error().message();
-                }
+        QString key = QString(QUrl(file.toLocal8Bit()).toEncoded());
+        if (m_desktopItemInfoMap.contains(key)){
+            DesktopItemInfo desktopItemInfo = m_desktopItemInfoMap.value(key);
+            QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, flag);
+            reply.waitForFinished();
+            if (!reply.isError()){
+
+            }else{
+                qCritical() << reply.error().message();
             }
-        }else{ //RequestOpenPolicyOpen = 1
-
         }
     }
 }
@@ -842,6 +837,11 @@ void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QStri
 }
 
 void DBusController::openFile(DesktopItemInfo desktopItemInfo){
+    if (IsExecutableScript(desktopItemInfo)) {
+        emit signalManager->openExecutable(desktopItemInfo);
+        return;
+    }
+
     //TODO query RequestOpenPolicyOpen or RequestOpenPolicyOpen
     QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFileWithTimestamp(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, 0, 0);
     reply.waitForFinished();

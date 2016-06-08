@@ -12,7 +12,13 @@
 
 #include <QtCore>
 
+#include "dbusinterface/dbustype.h"
+
 QString getQssFromFile(QString filename);
 QString joinPath(const QString& path, const QString& fileName);
+
+QString GetFileMimetype(const QString &path);
+bool IsExecutableScript(const DesktopItemInfo &info);
+
 #endif // UTIL_H
 

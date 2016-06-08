@@ -46,6 +46,7 @@ public slots:
 
     void confimConflict(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
     void confirmRenameDialog(QString name);
+    void chooseExecutableOpenOption(DesktopItemInfo info);
 
     void show();
     void hide();

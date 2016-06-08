@@ -20,6 +20,7 @@
 #include "dialogs/cleartrashdialog.h"
 #include "dialogs/dmovabledialog.h"
 #include "dbusinterface/launcher_interface.h"
+#include "dialogs/executableoptionsdialog.h"
 
 #include <ddialog.h>
 
@@ -94,6 +95,8 @@ void DesktopApp::initConnect(){
     connect(signalManager, SIGNAL(confimClear(int)), this, SLOT(confimClear(int)));
     connect(signalManager, SIGNAL(renameDialogShowed(QString)), this, SLOT(confirmRenameDialog(QString)));
     connect(signalManager, SIGNAL(f1Preesed()), this, SLOT(handleF1Pressed()));
+
+    connect(signalManager, SIGNAL(openExecutable(DesktopItemInfo)), this, SLOT(chooseExecutableOpenOption(DesktopItemInfo)));
 }
 
 void DesktopApp::confimClear(int count){
@@ -169,6 +172,31 @@ void DesktopApp::confirmRenameDialog(QString name){
     d->addButton(tr("Confirm"), true);
     d->setIconPixmap((QPixmap(":/images/skin/dialogs/images/dialog-warning.svg")));
     d->show();
+}
+
+void DesktopApp::chooseExecutableOpenOption(DesktopItemInfo info)
+{
+    ExecutableOptionsDialog d(info.Icon, info.DisplayName);
+
+    connect(&d, static_cast<void (ExecutableOptionsDialog::*) (QString)>(&ExecutableOptionsDialog::buttonClicked),
+            [&info](QString option){
+        if (option == ExecutableOptionsDialog::OptionCancel) {
+            return;
+        }
+
+        QList<int> flag;
+        if (option == ExecutableOptionsDialog::OptionRun) {
+            flag << 1;
+        } else if (option == ExecutableOptionsDialog::OptionRunInTerminal) {
+            flag << 2;
+        } else if (option == ExecutableOptionsDialog::OptionDisplay) {
+            flag << 3;
+        }
+
+        dbusController->openFiles(QStringList(info.URI), flag);
+    });
+
+    d.exec();
 }
 
 void DesktopApp::registerDBusService(){
