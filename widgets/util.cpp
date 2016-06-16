@@ -31,7 +31,7 @@ QString joinPath(const QString& path, const QString& fileName){
 bool IsExecutableScript(const DesktopItemInfo &info) {
     auto isFileExecutable = [](QString &path) {
         QFile file(path);
-        return file.permissions() & (QFile::ReadUser | QFile::ExeUser);
+        return (file.permissions() & QFile::ReadUser) && (file.permissions() & QFile::ExeUser);
     };
 
     QString mimetype = info.MIME;
