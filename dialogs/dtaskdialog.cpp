@@ -389,7 +389,7 @@ void DTaskDialog::addCopyMoveTask(const QMap<QString, QString> &jobDetail){
         m_jobPathItems.insert(jobDetail.value("jobPath"), item);
         setTitle(m_taskListWidget->count());
         adjustSize();
-        show();
+        delayShow();
     }
 }
 
@@ -414,7 +414,7 @@ void DTaskDialog::addConflictTask(const QMap<QString, QString> &jobDetail){
         m_jobPathItems.insert(jobDetail.value("jobPath"), item);
         setTitle(m_taskListWidget->count());
         adjustSize();
-        show();
+        delayShow();
     }
 }
 
@@ -461,6 +461,13 @@ void DTaskDialog::showConflictDiloagByJob(const QMap<QString, QString> &jobDetai
 
 void DTaskDialog::handleConflictResponse(const QMap<QString, QString> &jobDetail, const QMap<QString, QVariant> &response){
     emit conflictRepsonseConfirmed(jobDetail, response);
+}
+
+void DTaskDialog::delayShow()
+{
+    // If the task can be done in 1s, we should probably not show the dialog,
+    // otherwise it will flicker.
+    QTimer::singleShot(1000, this, SLOT(show()));
 }
 
 void DTaskDialog::handleTaskClose(const QMap<QString, QString> &jobDetail){
