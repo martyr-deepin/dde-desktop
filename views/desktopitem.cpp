@@ -280,7 +280,7 @@ void DesktopItem::setDesktopIcon(QString icon){
                 m_desktopIcon = QPixmap(ThemeAppIcon::getThemeIconPath("application-default-icon"));
             }
         }
-    }  
+    }
     emit desktopIconChanged(icon);
     m_desktopIcon = m_desktopIcon.scaled(m_iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     m_iconLabel->setPixmap(m_desktopIcon);
@@ -493,7 +493,8 @@ void DesktopItem::moveEvent(QMoveEvent *event){
     QPoint pos = event->pos();
     m_settings.beginGroup("DesktopItems");
     if (m_url.length() > 0){
-        m_settings.setValue(getUrl(), pos);
+        QPoint index = gridManager->mapPosToIndex(pos);
+        m_settings.setValue(getUrl(), index);
     }
     m_settings.endGroup();
 

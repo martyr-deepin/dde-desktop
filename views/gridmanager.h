@@ -36,6 +36,9 @@ public:
     bool isRectInGrid(QRect rect);
     bool isRightBottomContainer();
     bool isFull();
+    bool isVaildIndex(int col, int row);
+    QPoint mapIndexToPos(int col, int row);
+    QPoint mapPosToIndex(QPoint pos);
     GridItemPointer getBlankItem();
     GridItemPointer getRightBottomItem();
     GridItemPointer getItemByPos(QPoint pos);

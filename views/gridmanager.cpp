@@ -141,6 +141,29 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
     return m_list_items;
 }
 
+
+bool GridManager::isVaildIndex(int col, int row){
+    if (col <0 || col >= m_columnCount) {
+        return false;
+    }
+    if (row <0 || row >= m_rowCount) {
+        return false;
+    }
+    return true;
+}
+
+QPoint GridManager::mapIndexToPos(int col, int row){
+    int x = col * (m_itemWidth + m_xSpacing) + m_leftMargin;
+    int y = (m_itemHeight + m_ySpacing) * row + m_topMargin;
+    return QPoint(x,y);
+}
+
+QPoint GridManager::mapPosToIndex(QPoint pos){
+    int x = (pos.x()-m_leftMargin)/m_itemWidth;
+    int y = (pos.y()-m_topMargin)/(m_itemWidth + m_ySpacing);
+    return QPoint(x,y);
+}
+
 GridItemPointer GridManager::getBlankItem(){
     for(int column = 0; column < m_columnCount; column++){
         for (int row = 0; row < m_rowCount; row++){

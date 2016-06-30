@@ -42,27 +42,7 @@ void DesktopItemManager::initComputerItem(){
     m_pComputerItem->setRaWUrl(url);
     m_pComputerItem->resize(width, height);
     m_pComputerItem->getDesktopItemInfo().URI = url;
-
-    QPoint pos;
-    GridItemPointer pGridItem = gridManager->getBlankItem();
-    if (pGridItem.isNull()){
-        pos = gridManager->getRightBottomItem()->getPos();
-    }else{
-        pos = pGridItem->getPos();
-    }
-    m_settings.beginGroup("DesktopItems");
-    pos = m_settings.value(url, pos).toPoint();
-    m_settings.endGroup();
-
-    pGridItem = gridManager->getItemByPos(pos);
-    if (!pGridItem.isNull()){
-        pGridItem->setDesktopItem(true);
-    }
-
-    m_pComputerItem->move(pos);
-    updateItems(url, m_pComputerItem);
-//    m_pItems.insert(url, m_pComputerItem);
-//    m_list_pItems.append(m_pComputerItem);
+    loadItemPosition(m_pComputerItem);
     m_pComputerItem->show();
 }
 
@@ -76,35 +56,14 @@ void DesktopItemManager::initTrashItem(){
     m_pTrashItem->resize(width, height);
     m_pTrashItem->getDesktopItemInfo().URI = url;
     m_pTrashItem->getDesktopItemInfo().CanExecute = true;
-
-    QPoint pos;
-    GridItemPointer pGridItem = gridManager->getBlankItem();
-    if (pGridItem.isNull()){
-        pos = gridManager->getRightBottomItem()->getPos();
-    }else{
-        pos = pGridItem->getPos();
-    }
-    m_settings.beginGroup("DesktopItems");
-    pos = m_settings.value(url, pos).toPoint();
-    m_settings.endGroup();
-
-    pGridItem = gridManager->getItemByPos(pos);
-    if (!pGridItem.isNull()){
-        pGridItem->setDesktopItem(true);
-    }
-
-
-    m_pTrashItem->move(pos);
-    updateItems(url, m_pTrashItem);
-//    m_pItems.insert(url, m_pTrashItem);
-//    m_list_pItems.append(m_pTrashItem);
+    loadItemPosition(m_pTrashItem);
     m_pTrashItem->show();
 }
 
 
 void DesktopItemManager::initConnect(){
     connect(signalManager, SIGNAL(unCheckedItem(QString)), this, SLOT(unCheckedItem(QString)));
-    connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItems()));
+    connect(signalManager, SIGNAL(desktopItemsSaved()), this, SLOT(saveItemsPosition()));
     connect(signalManager, SIGNAL(desktoItemIconUpdated(QString,QString,uint)),
             this, SLOT(updateDesktopItemIcon(QString,QString,uint)));
     connect(signalManager, SIGNAL(sortedModeChanged(QDir::SortFlags)),
@@ -332,26 +291,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo, int index){
     }
 
     if (!pDesktopItem.isNull()){
-
-        QSettings setting;
-        setting.beginGroup("DesktopItems");
-        QPoint defaultPos;
-        GridItemPointer blankItem = gridManager->getBlankItem();
-        if (blankItem.isNull()){
-            defaultPos = gridManager->getRightBottomItem()->getPos();
-        }else{
-            defaultPos = blankItem->getPos();
-        }
-        QString key = pDesktopItem->getUrl();
-        QPoint pos = setting.value(key, defaultPos).toPoint();
-        pDesktopItem->move(pos);
-        GridItemPointer pGridItem = gridManager->getItemByPos(pos);
-        if (!pGridItem.isNull()){
-            pGridItem->setDesktopItem(true);
-        }
-        setting.endGroup();
-
-        updateItems(pDesktopItem->getUrl(), pDesktopItem);
+        loadItemPosition(pDesktopItem);
     }
 }
 
@@ -384,9 +324,7 @@ void DesktopItemManager::addItem(DesktopItemInfo fileInfo){
             pDesktopItem->move(pGridItem->getPos());
             pDesktopItem->show();
             pGridItem->setDesktopItem(true);
-            m_settings.beginGroup("DesktopItems");
-            m_settings.setValue(pDesktopItem->getUrl(), pDesktopItem->pos());
-            m_settings.endGroup();
+            saveItemPosition(pDesktopItem);
         }
         updateItems(pDesktopItem->getUrl(), pDesktopItem);
     }
@@ -453,16 +391,17 @@ void DesktopItemManager::renameDesktopItem(DesktopItemInfo &desktopItemInfo){
                 GridItemPointer pGridItem = gridManager->getItemByPos(m_shoudbeMovedItem->pos());
                 qDebug() << pGridItem.isNull();
                 if (!pGridItem.isNull()){
-                    qDebug() << pGridItem->hasDesktopItem();
                     pGridItem->setDesktopItem(true);
                 }
 
                 m_settings.beginGroup("DesktopItems");
                 if (m_settings.contains(oldKey)){
                     m_settings.remove(oldKey);
-                    m_settings.setValue(newKey, m_shoudbeMovedItem->pos());
                 }
                 m_settings.endGroup();
+
+                saveItemPosition(m_shoudbeMovedItem);
+
                 qDebug() << m_pItems.contains(newKey);
                 emit signalManager->thumbnailRequested(newKey);
             }
@@ -540,26 +479,11 @@ void DesktopItemManager::deleteItem(QString url){
         pItem->close();
         pItem.clear();
 
-
-
         handleItemsChanged();
     }
 //    checkPageCount();
     emit signalManager->desktopItemsSaved();
 }
-
-
-void DesktopItemManager::saveItems(){
-    m_settings.clear();
-    m_settings.beginGroup("DesktopItems");
-    foreach (DesktopItemPointer pItem, m_list_pItems) {
-        if (!pItem.isNull()){
-            m_settings.setValue(pItem->getUrl(), pItem->pos());
-        }
-    }
-    m_settings.endGroup();
-}
-
 
 void DesktopItemManager::changeSizeByGrid(SizeType type){
     int width = gridManager->getItemWidth();
@@ -687,7 +611,8 @@ QList<DesktopItemPointer> DesktopItemManager::getItemsByStartEnd(QPoint startPos
 void DesktopItemManager::sortedByFlags(QDir::SortFlags flag)
 {
     gridManager->clearDeskopItemsStatus();
-    m_settings.clear();
+    clearItemsPosition();
+
     QDir desktopDir(desktopLocation);
     QFileInfoList desktopInfoList = desktopDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden |QDir::System, flag | QDir::DirsFirst);
 
@@ -772,7 +697,7 @@ void DesktopItemManager::sortedItems(){
 
 void DesktopItemManager::sortedByName(){
     gridManager->clearDeskopItemsStatus();
-    m_settings.clear();
+    clearItemsPosition();
     m_list_pItems.clear();
 
     for(int i=0; i<m_sortedPinyin_pItems.count(); i++){
@@ -932,4 +857,76 @@ void DesktopItemManager::updateGridStatus(){
 DesktopItemManager::~DesktopItemManager()
 {
 
+}
+
+static QString pointString(const QPoint& p){
+    return QString("%1,%2").arg(p.x()).arg(p.y());
+}
+
+void DesktopItemManager::loadItemPosition(DesktopItemPointer pDesktopItem){
+    QSettings setting;
+    setting.beginGroup("DesktopItems");
+
+    QPoint defaultPos;
+    GridItemPointer blankItem = gridManager->getBlankItem();
+    if (blankItem.isNull()){
+        defaultPos = gridManager->getRightBottomItem()->getPos();
+    }else{
+        defaultPos = blankItem->getPos();
+    }
+
+    QPoint pos = defaultPos;
+    QString key = pDesktopItem->getUrl();
+    QPoint index = setting.value(key, defaultPos).toPoint();
+    if (gridManager->isVaildIndex(index.x(), index.y())) {
+        pos= gridManager->mapIndexToPos(index.x(), index.y());
+    } else {
+        index = gridManager->mapPosToIndex(pos);
+    }
+
+    namePosBimap.insert(ItemPosPosition(key.toStdString(), pointString(index).toStdString()));
+    if (namePosBimap.left.find(key.toStdString()) == namePosBimap.left.end()) {
+        //insert failed
+        qCritical()<< "this is dump k-v in config"<<index<<key;
+        pos=defaultPos;
+        index = gridManager->mapPosToIndex(pos);
+        namePosBimap.insert(ItemPosPosition(key.toStdString(), pointString(index).toStdString()));
+    }
+
+//    qDebug()<<"move to"<< index << pos << key;
+    pDesktopItem->move(pos);
+    GridItemPointer pGridItem = gridManager->getItemByPos(pos);
+    if (!pGridItem.isNull()){
+        pGridItem->setDesktopItem(true);
+    }
+    setting.endGroup();
+
+    updateItems(pDesktopItem->getUrl(), pDesktopItem);
+}
+
+bool DesktopItemManager::saveItemPosition(DesktopItemPointer pDesktopItem) {
+    m_settings.beginGroup("DesktopItems");
+    QPoint index = gridManager->mapPosToIndex(pDesktopItem->pos());
+    m_settings.setValue(pDesktopItem->getUrl(), index);
+    m_settings.endGroup();
+    return true;
+}
+
+void DesktopItemManager::saveItemsPosition(){
+    clearItemsPosition();
+    m_settings.beginGroup("DesktopItems");
+    foreach (DesktopItemPointer pItem, m_list_pItems) {
+        if (!pItem.isNull()){
+            QPoint index = gridManager->mapPosToIndex(pItem->pos());
+            m_settings.setValue(pItem->getUrl(),index);
+        }
+    }
+    m_settings.endGroup();
+    m_settings.sync();
+}
+
+void DesktopItemManager::clearItemsPosition(){
+    m_settings.clear();
+    namePosBimap.clear();
+    m_settings.sync();
 }

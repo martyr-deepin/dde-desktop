@@ -59,6 +59,9 @@ void GridItem::setDesktopItem(bool flag){
     if (m_isMultiDesktopItemsIn){
         m_isDesktopItemIn = false;
     }else{
+        if (m_isDesktopItemIn == true && flag) {
+            qCritical()<< "move multi item to same pos" << m_isDesktopItemIn;
+        }
         m_isDesktopItemIn = flag;
     }
 }

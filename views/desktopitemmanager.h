@@ -15,6 +15,9 @@
 #include "desktopenums.h"
 #include "dbusinterface/dbustype.h"
 
+#include <string>
+#include <boost/bimap.hpp>
+
 class AppGroupBox;
 class QTimer;
 class DesktopFrame;
@@ -63,7 +66,7 @@ public slots:
     void cutItems(QStringList urls);
     void cancelCutedItems(QStringList urls);
     void cancelCutedItems();
-    void saveItems();
+
     void changeSizeByGrid(SizeType type);
     void sortedByFlags(QDir::SortFlags flag);
     void sortedItems();
@@ -90,8 +93,19 @@ public slots:
 
     void handleFileMetaDataChanged(const QString& path);
     void handleDesktopItemMetaChanged(const DesktopItemPointer& pItem);
+
 private:
+    typedef boost::bimap<std::string, std::string> ItemPosBimap;
+    typedef ItemPosBimap::value_type ItemPosPosition;
+
+    void loadItemPosition(DesktopItemPointer pDesktopItem);
+    bool saveItemPosition(DesktopItemPointer pDesktopItem);
+    void removeItemPosition(DesktopItemPointer pDesktopItem);
+    void saveItemsPosition();
+    void clearItemsPosition();
+
     QSettings m_settings;
+    ItemPosBimap namePosBimap;
     DesktopItemPointer m_pComputerItem;
     DesktopItemPointer m_pTrashItem;
     DesktopItemPointer m_shoudbeMovedItem;
