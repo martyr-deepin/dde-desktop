@@ -442,7 +442,7 @@ void DTaskDialog::removeTaskWidget(QString jobPath){
         m_jobPathItems.remove(jobPath);
         setTitle(m_taskListWidget->count());
         if (m_taskListWidget->count() == 0){
-            hide();
+            quickHide();
         }
     }
 }
@@ -467,7 +467,20 @@ void DTaskDialog::delayShow()
 {
     // If the task can be done in 1s, we should probably not show the dialog,
     // otherwise it will flicker.
-    QTimer::singleShot(1000, this, SLOT(show()));
+    if (m_delayShowTimer == NULL) {
+        m_delayShowTimer = new QTimer(this);
+        m_delayShowTimer->setSingleShot(true);
+        m_delayShowTimer->setInterval(1000);
+        connect(m_delayShowTimer, &QTimer::timeout, this, &DTaskDialog::show);
+    }
+
+    m_delayShowTimer->start();
+}
+
+void DTaskDialog::quickHide()
+{
+    hide();
+    m_delayShowTimer->stop();
 }
 
 void DTaskDialog::handleTaskClose(const QMap<QString, QString> &jobDetail){
