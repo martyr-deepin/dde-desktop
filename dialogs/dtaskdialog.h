@@ -112,6 +112,7 @@ public slots:
     void handleConflictResponse(const QMap<QString, QString>& jobDetail, const QMap<QString, QVariant>& response);
 
     void delayShow();
+    void quickHide();
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -125,6 +126,8 @@ private:
     QPushButton* m_titleBarCloseButton;
     QListWidget* m_taskListWidget=NULL;
     QMap<QString, QListWidgetItem*> m_jobPathItems;
+
+    QTimer * m_delayShowTimer = NULL;
 };
 
 #endif // DTASKDIALOG_H
