@@ -2,22 +2,22 @@
 <context>
     <name>ClearTrashDialog</name>
     <message>
-        <location filename="../dialogs/cleartrashdialog.cpp" line="12"/>
+        <location filename="../dialogs/cleartrashdialog.cpp" line="21"/>
         <source>Are you sure to empty trash?</source>
         <translation>你確定要清空垃圾桶 ?</translation>
     </message>
     <message>
-        <location filename="../dialogs/cleartrashdialog.cpp" line="13"/>
+        <location filename="../dialogs/cleartrashdialog.cpp" line="22"/>
         <source>This action cannot be restored</source>
         <translation>此動作無法復原</translation>
     </message>
     <message>
-        <location filename="../dialogs/cleartrashdialog.cpp" line="16"/>
+        <location filename="../dialogs/cleartrashdialog.cpp" line="25"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../dialogs/cleartrashdialog.cpp" line="16"/>
+        <location filename="../dialogs/cleartrashdialog.cpp" line="25"/>
         <source>Empty</source>
         <translation>空白</translation>
     </message>
@@ -25,17 +25,17 @@
 <context>
     <name>ConfirmDeleteDialog</name>
     <message>
-        <location filename="../dialogs/confirmdeletedialog.cpp" line="11"/>
+        <location filename="../dialogs/confirmdeletedialog.cpp" line="20"/>
         <source>This action cannot be restored</source>
         <translation>此動作無法復原</translation>
     </message>
     <message>
-        <location filename="../dialogs/confirmdeletedialog.cpp" line="14"/>
+        <location filename="../dialogs/confirmdeletedialog.cpp" line="23"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../dialogs/confirmdeletedialog.cpp" line="14"/>
+        <location filename="../dialogs/confirmdeletedialog.cpp" line="23"/>
         <source>Delete</source>
         <translation>刪除</translation>
     </message>
@@ -43,12 +43,12 @@
 <context>
     <name>DTaskDialog</name>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="355"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="364"/>
         <source>There is %1 task in progress</source>
         <translation>有 %1 任務執行中</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="357"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="366"/>
         <source>There are %1 tasks in progress</source>
         <translation>有 %1 任務正在執行中</translation>
     </message>
@@ -56,22 +56,22 @@
 <context>
     <name>DesktopApp</name>
     <message>
-        <location filename="../app/desktopapp.cpp" line="114"/>
+        <location filename="../app/desktopapp.cpp" line="133"/>
         <source>Are you sure to delete %1 ?</source>
         <translation>你確定要刪除 %1 ?</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="116"/>
+        <location filename="../app/desktopapp.cpp" line="135"/>
         <source>Are you sure to delete these %1 items?</source>
         <translation>你確定要刪除 %1 個項目 ?</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="152"/>
+        <location filename="../app/desktopapp.cpp" line="171"/>
         <source>&quot;%1&quot; already exists, please select a different name.</source>
         <translation>「%1」已存在，請選擇一個不同的檔名。</translation>
     </message>
     <message>
-        <location filename="../app/desktopapp.cpp" line="153"/>
+        <location filename="../app/desktopapp.cpp" line="172"/>
         <source>Confirm</source>
         <translation>確定</translation>
     </message>
@@ -79,36 +79,68 @@
 <context>
     <name>DesktopItemManager</name>
     <message>
-        <location filename="../views/desktopitemmanager.cpp" line="30"/>
-        <location filename="../views/desktopitemmanager.cpp" line="31"/>
+        <location filename="../views/desktopitemmanager.cpp" line="40"/>
         <source>Computer</source>
         <translation>電腦</translation>
     </message>
     <message>
-        <location filename="../views/desktopitemmanager.cpp" line="65"/>
+        <location filename="../views/desktopitemmanager.cpp" line="53"/>
         <source>Trash</source>
         <translation>垃圾</translation>
     </message>
 </context>
 <context>
+    <name>ExecutableOptionsDialog</name>
+    <message>
+        <location filename="../dialogs/executableoptionsdialog.cpp" line="11"/>
+        <source>Do you wan to run %1 or display its content?</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../dialogs/executableoptionsdialog.cpp" line="12"/>
+        <source>It is an executable text file.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../dialogs/executableoptionsdialog.cpp" line="15"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/executableoptionsdialog.cpp" line="15"/>
+        <source>Run</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../dialogs/executableoptionsdialog.cpp" line="15"/>
+        <source>Run in terminal</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../dialogs/executableoptionsdialog.cpp" line="15"/>
+        <source>Display</source>
+        <translation>顯示</translation>
+    </message>
+</context>
+<context>
     <name>MenuController</name>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="167"/>
+        <location filename="../controllers/menucontroller.cpp" line="176"/>
         <source>Cut(_X)</source>
         <translation>剪下(_X)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="168"/>
+        <location filename="../controllers/menucontroller.cpp" line="177"/>
         <source>Copy(_C)</source>
         <translation>複製(_C)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="169"/>
+        <location filename="../controllers/menucontroller.cpp" line="178"/>
         <source>Paste(_V)</source>
         <translation>貼上(_V)</translation>
     </message>
     <message>
-        <location filename="../controllers/menucontroller.cpp" line="170"/>
+        <location filename="../controllers/menucontroller.cpp" line="179"/>
         <source>Select All(_A)</source>
         <translation>全選(_A)</translation>
     </message>
@@ -116,60 +148,60 @@
 <context>
     <name>MoveCopyTaskWidget</name>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="96"/>
         <source>Coexists</source>
         <translation>同時保留</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="96"/>
         <source>Replace</source>
         <translation>取代</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="87"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="96"/>
         <source>Skip</source>
         <translation>略過</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="113"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="122"/>
         <source>no more ask</source>
         <translation>不要再詢問</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="114"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="123"/>
         <source>Ok</source>
         <translation>確定</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="156"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="165"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt; is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
         <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;%2到&lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="162"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="171"/>
         <source>moved</source>
         <translation>已移動</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="163"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="172"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  is %2 to &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</source>
         <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;  是 %2 到 &lt;span style=&quot;color: #3cadff&quot;&gt; %3 &lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="158"/>
         <location filename="../dialogs/dtaskdialog.cpp" line="167"/>
-        <location filename="../dialogs/dtaskdialog.cpp" line="172"/>
-        <location filename="../dialogs/dtaskdialog.cpp" line="182"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="176"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="181"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="191"/>
         <source>current speed:%1 time Left:%2 </source>
         <translation>目前速度 : %1 剩餘時間 : %2</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="155"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="164"/>
         <source>copied</source>
-        <translation type="unfinished"/>
+        <translation>已複製</translation>
     </message>
     <message>
-        <location filename="../dialogs/dtaskdialog.cpp" line="170"/>
+        <location filename="../dialogs/dtaskdialog.cpp" line="179"/>
         <source>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;                                  is deleted </source>
         <translation>&lt;span style=&quot;color: #3cadff&quot;&gt; %1 &lt;/span&gt;被刪除</translation>
     </message>
