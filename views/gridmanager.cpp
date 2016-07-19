@@ -83,10 +83,9 @@ DoubleGridItemPointerList GridManager::generateItems(const int width, const int 
                                                  const int xMinimumSpacing, const int yMinimumSpacing,
                                                  const int leftMargin, const int topMargin,
                                                  const int rightMargin, const int bottomMargin){
-    const QRect primaryRect  =  QRect(dbusController->getDisplayInterface()->primaryRect());
-
-    int desktopWidth = primaryRect.width();
-    int desktopHeight = primaryRect.height() - m_dockHeight;
+    QRect desktopContentRect = dbusController->getDesktopContentRect();
+    int desktopWidth = desktopContentRect.width();
+    int desktopHeight = desktopContentRect.height();
 
     m_list_items.clear();
     m_map_items.clear();
@@ -358,27 +357,27 @@ DoubleGridItemPointerList GridManager::getItemsByType(SizeType type){
 }
 
 DoubleGridItemPointerList GridManager::getSmallItems(){
-    const QRect primaryRect = QRect(dbusController->getDisplayInterface()->primaryRect());
-    int desktopWidth = primaryRect.width() * m_pageCount;
-    int desktopHeight = primaryRect.height() - m_dockHeight;
+    QRect desktopContentRect = dbusController->getDesktopContentRect();
+    int desktopWidth = desktopContentRect.width();
+    int desktopHeight = desktopContentRect.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 72, 72, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 
 DoubleGridItemPointerList GridManager::getMiddleItems(){
-    const QRect primaryRect = QRect(dbusController->getDisplayInterface()->primaryRect());
-    int desktopWidth = primaryRect.width() * m_pageCount;
-    int desktopHeight = primaryRect.height() - m_dockHeight;
+    QRect desktopContentRect = dbusController->getDesktopContentRect();
+    int desktopWidth = desktopContentRect.width();
+    int desktopHeight = desktopContentRect.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 100, 100, 10, 10, 10, 10, 0, 10);
     return ret;
 }
 
 DoubleGridItemPointerList GridManager::getLargeItems(){
-    const QRect primaryRect = QRect(dbusController->getDisplayInterface()->primaryRect());
-    int desktopWidth = primaryRect.width() * m_pageCount;
-    int desktopHeight = primaryRect.height() - m_dockHeight;
+    QRect desktopContentRect = dbusController->getDesktopContentRect();
+    int desktopWidth = desktopContentRect.width();
+    int desktopHeight = desktopContentRect.height();
     DoubleGridItemPointerList ret;
     ret = generateItems(desktopWidth, desktopHeight, 140, 140, 10, 10, 10, 10, 0, 10);
     return ret;

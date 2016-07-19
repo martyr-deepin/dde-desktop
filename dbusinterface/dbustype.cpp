@@ -81,3 +81,25 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, ConflictInfo &obj
     argument.endStructure();
     return argument;
 }
+
+QDBusArgument &operator<<(QDBusArgument &argument, const DockRect &rect)
+{
+    argument.beginStructure();
+    argument << rect.x << rect.y << rect.width << rect.height;
+    argument.endStructure();
+    return argument;
+}
+
+const QDBusArgument &operator>>(const QDBusArgument &argument, DockRect &rect)
+{
+    argument.beginStructure();
+    argument >> rect.x >> rect.y >> rect.width >> rect.height;
+    argument.endStructure();
+    return argument;
+}
+
+void DockRect::registerMetaType()
+{
+    qRegisterMetaType<DockRect>("DockRect");
+    qDBusRegisterMetaType<DockRect>();
+}

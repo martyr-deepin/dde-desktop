@@ -33,6 +33,7 @@ class FileMonitor;
 class QTimer;
 class DBusDockSetting;
 class AppController;
+class DBusDock;
 
 #define FileMonitor_service "com.deepin.filemanager.Backend.Monitor"
 #define FileMonitor_path "/com/deepin/filemanager/Backend/MonitorManager"
@@ -99,12 +100,14 @@ public:
 
     DesktopDaemonInterface* getDesktopDaemonInterface();
     DisplayInterface* getDisplayInterface();
+    DBusDock* getDockInterface();
 
     void updateDesktopItemInfoMap(DesktopItemInfo desktopItemInfo);
     void updateDesktopItemInfoMap_moved(DesktopItemInfo desktopItemInfo);
     void removeDesktopItemInfoByUrl(QString url);
 
     int getDockMode();
+    QRect getDesktopContentRect() const;
 
 signals:
 
@@ -193,6 +196,7 @@ private:
     CreateFileFromTemplateJobInterface* m_createFileFromTemplateJobInterface = NULL;
     DisplayInterface* m_displayInterface;
     PinyinInterface* m_pinyinInterface;
+    DBusDock* m_dbusDock = NULL;
     DBusDockSetting* m_dockSettingInterface = NULL;
     AppearanceDaemonInterface* m_appearanceInterface;
     DBusClientManager* m_dockClientManagerInterface;

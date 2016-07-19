@@ -18,6 +18,7 @@
 #include "background/backgroundlabel.h"
 #include "app/xcb_misc.h"
 #include "dbusinterface/displayinterface.h"
+#include "dbusinterface/dbusdock.h"
 #include "appgroupbox.h"
 
 #include <QApplication>
@@ -28,6 +29,7 @@ DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
     setGeometry(qApp->desktop()->geometry());
 //    m_backgroundLabel = new BackgroundLabel(false, this);
     m_desktopFrame = new DesktopFrame(this);
+    handleScreenGeometryChanged(); // for desktop frame initialization.
     XcbMisc::instance()->set_window_type(winId(),
                                          XcbMisc::Desktop);
 
@@ -46,6 +48,7 @@ void DesktopBox::initConnect(){
     connect(signalManager, SIGNAL(appGroupItemRightClicked(bool)), this, SLOT(setAppGroupRightClicked(bool)));
     connect(signalManager, SIGNAL(activeWindowChanged(uint)), this, SLOT(handleActiveWindowChanged(uint)));
     connect(m_screenChangedTimer, SIGNAL(timeout()), this, SLOT(handleScreenGeometryChanged()));
+    connect(signalManager, SIGNAL(dockPositionChanged()), this, SLOT(handleDockPositionChanged()));
 }
 
 DesktopFrame* DesktopBox::getDesktopFrame(){
@@ -107,11 +110,23 @@ void DesktopBox::renameFinished(){
 void DesktopBox::handleScreenGeometryChanged(){
     qDebug() << "handleScreenGeometryChanged" << qApp->desktop()->geometry();
     setGeometry(qApp->desktop()->geometry());
-    QRect primaryRect =  QRect(dbusController->getDisplayInterface()->primaryRect());
-    qDebug() << "primaryRect" << primaryRect;
-    m_desktopFrame->move(primaryRect.x(), primaryRect.y());
-    m_desktopFrame->setFixedSize(primaryRect.width(), primaryRect.height());
-    emit signalManager->desktopFrameRectChanged(primaryRect);
+
+    QRect desktopContectRect = dbusController->getDesktopContentRect();
+    m_desktopFrame->move(desktopContectRect.x(), desktopContectRect.y());
+    m_desktopFrame->setFixedSize(desktopContectRect.width(), desktopContectRect.height());
+    emit signalManager->desktopFrameRectChanged(desktopContectRect);
+    emit signalManager->gridSizeTypeChanged(SizeType::Middle);
+    emit signalManager->gridOnResorted();
+    emit signalManager->desktopItemsSaved();
+}
+
+void DesktopBox::handleDockPositionChanged()
+{
+    QRect desktopContectRect = dbusController->getDesktopContentRect();
+
+    m_desktopFrame->move(desktopContectRect.x(), desktopContectRect.y());
+    m_desktopFrame->setFixedSize(desktopContectRect.width(), desktopContectRect.height());
+    emit signalManager->desktopFrameRectChanged(desktopContectRect);
     emit signalManager->gridSizeTypeChanged(SizeType::Middle);
     emit signalManager->gridOnResorted();
     emit signalManager->desktopItemsSaved();

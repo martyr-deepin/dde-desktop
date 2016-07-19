@@ -73,12 +73,27 @@ public:
     static void registerMetaType();
 };
 
+struct DockRect
+{
+    int x;
+    int y;
+    uint width;
+    uint height;
+
+    friend QDBusArgument &operator<<(QDBusArgument &argument, const DockRect &rect);
+
+    friend const QDBusArgument &operator>>(const QDBusArgument &argument, DockRect &rect);
+
+    static void registerMetaType();
+};
 
 typedef QMap<QString, DesktopItemInfo> DesktopItemInfoMap;
 Q_DECLARE_METATYPE(DesktopItemInfo)
 Q_DECLARE_METATYPE(DesktopItemInfoMap)
 
 Q_DECLARE_METATYPE(ConflictInfo)
+
+Q_DECLARE_METATYPE(DockRect)
 
 typedef QList<int> IntList;
 Q_DECLARE_METATYPE(IntList)

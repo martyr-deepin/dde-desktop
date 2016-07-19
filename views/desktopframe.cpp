@@ -56,9 +56,6 @@ DesktopFrame::DesktopFrame(QWidget *parent)
     m_dragMoveTimer->setSingleShot(true);
     m_dragMoveTimer->setInterval(10);
 
-    QRect primaryRect =  QRect(dbusController->getDisplayInterface()->primaryRect());
-    move(primaryRect.x(), primaryRect.y());
-    setFixedSize(primaryRect.width(), primaryRect.height());
     loadWaterMask();
     initItems();
     initConnect();

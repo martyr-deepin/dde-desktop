@@ -34,6 +34,7 @@ SOURCES += main.cpp \
     views/desktopitemmanager.cpp \
     controllers/dbuscontroller.cpp \
     dbusinterface/trashmonitor_interface.cpp \
+    dbusinterface/dbusdock.cpp \
     dbusinterface/dbustype.cpp \
     dbusinterface/filemonitorInstance_interface.cpp \
     dbusinterface/monitormanager_interface.cpp \
@@ -100,6 +101,7 @@ HEADERS  += \
     dbusinterface/trashmonitor_interface.h \
     controllers/dbuscontroller.h \
     dbusinterface/dbustype.h \
+    dbusinterface/dbusdock.h \
     dbusinterface/filemonitorInstance_interface.h \
     dbusinterface/monitormanager_interface.h \
     views/keyeventmanager.h\

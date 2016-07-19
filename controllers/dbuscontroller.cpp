@@ -23,6 +23,7 @@
 #include "dbusinterface/dbusdocksetting.h"
 #include "dbusinterface/appearancedaemon_interface.h"
 #include "dbusinterface/pinyin_interface.h"
+#include "dbusinterface/dbusdock.h"
 #include "widgets/themeappicon.h"
 
 #include "views/global.h"
@@ -65,6 +66,7 @@ void DBusController::init(){
     m_dockClientManagerInterface = new DBusClientManager(this);
     m_fileMonitor = new FileMonitor(this);
     m_appController = new AppController(this);
+    m_dbusDock = new DBusDock(this);
 
     m_thumbnailTimer = new QTimer(this);
     m_thumbnailTimer->setInterval(1000);
@@ -122,6 +124,7 @@ void DBusController::initConnect(){
     connect(m_fileMonitor, SIGNAL(fileRenamed(QString,QString)), this, SLOT(handleFileRenamed(QString,QString)));
     connect(m_fileMonitor, SIGNAL(fileMetaDataChanged(QString)), this, SLOT(handleFileMetaDataChanged(QString)));
 
+    connect(m_dbusDock, SIGNAL(PositionChanged()), signalManager, SIGNAL(dockPositionChanged()));
     connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
     connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
     connect(m_pinyinTimer, SIGNAL(timeout()), this, SLOT(convertNameToPinyin()));
@@ -179,12 +182,44 @@ int DBusController::getDockMode(){
     return mode;
 }
 
+QRect DBusController::getDesktopContentRect() const
+{
+    const DockRect dockArea = m_dbusDock->frontendWindowRect();
+    const int dockPosition = m_dbusDock->position();
+
+    QRect primaryRect =  m_displayInterface->primaryRect();
+
+    switch (dockPosition) {
+    case 0:// top
+        primaryRect.adjust(0, dockArea.height, 0, 0);
+        break;
+    case 1:// right
+        primaryRect.adjust(0, 0, -dockArea.width, 0);
+        break;
+    case 2:// bottom
+        primaryRect.adjust(0, 0, 0, -dockArea.height);
+        break;
+    case 3:// left
+        primaryRect.adjust(dockArea.width, 0, 0, 0);
+        break;
+    default:
+        break;
+    }
+
+    return primaryRect;
+}
+
 DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
     return m_desktopDaemonInterface;
 }
 
 DisplayInterface* DBusController::getDisplayInterface(){
     return m_displayInterface;
+}
+
+DBusDock *DBusController::getDockInterface()
+{
+    return m_dbusDock;
 }
 
 void DBusController::asyncRequestDesktopItems(){

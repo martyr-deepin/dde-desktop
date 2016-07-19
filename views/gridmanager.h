@@ -81,7 +81,6 @@ private:
     int m_columnCount = 0;
     int m_rowCount = 0;
     int m_pageCount = 1;
-    int m_dockHeight = 70;
     bool m_isRightBottomContainer = false;
     QRect m_availableDesktopItemRect;
     SizeType m_sizeType;
