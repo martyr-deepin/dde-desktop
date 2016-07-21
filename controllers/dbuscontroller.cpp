@@ -884,6 +884,10 @@ void DBusController::openFile(DesktopItemInfo desktopItemInfo){
 
     }else{
         qCritical() << reply.error().message() << desktopItemInfo.URI;
+        // TODO: do not merage to main branch
+        if (desktopItemInfo.URI == ComputerUrl) {
+            QProcess::startDetached("nautilus", QStringList()<< ComputerUrl);
+        }
     }
     emit signalManager->appGounpDetailClosed();
 }
