@@ -807,13 +807,30 @@ void DBusController::delayHandleRenameEvent()
 }
 
 
-void DBusController::handleFileMetaDataChanged(const QString &path)
+void DBusController::handleFileMetaDataChanged(const QString &url)
 {
-    emit signalManager->fileMetaDataChanged(path);
+    emit signalManager->fileMetaDataChanged(url);
+
+    qDebug() << QString("%1 is modified, refetch information.").arg(url);
+    QDBusPendingReply<DesktopItemInfo> reply = m_desktopDaemonInterface->GetItemInfo(url);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+
+    connect(watcher, &QDBusPendingCallWatcher::finished, [this](QDBusPendingCallWatcher *call) {
+        QDBusPendingReply<DesktopItemInfo> reply = *call;
+        if (!reply.isError()) {
+            DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
+            updateDesktopItemInfoMap(desktopItemInfo);
+        } else {
+            qCritical() << reply.error().message();
+        }
+        call->deleteLater();
+    });
 }
 
 void DBusController::updateDesktopItemInfoMap(DesktopItemInfo desktopItemInfo){
+    qDebug() << m_desktopItemInfoMap.contains(desktopItemInfo.URI) << m_desktopItemInfoMap.count();
     m_desktopItemInfoMap.insert(desktopItemInfo.URI, desktopItemInfo);
+    qDebug() << m_desktopItemInfoMap.contains(desktopItemInfo.URI) << m_desktopItemInfoMap.count();
 }
 
 

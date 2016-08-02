@@ -140,6 +140,7 @@ Q_SIGNALS: // SIGNALS
     void ItemCut(const QStringList &in0);
     void ItemCopied(const QStringList &in0);
     void ItemDeleted(const QString &in0);
+    // NOTE(hualet): this signal is not implemented, so don't use it!
     void ItemModified(const QString &in0);
     void ReqeustAutoArrange();
     void RequestCleanup();
