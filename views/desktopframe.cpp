@@ -507,7 +507,7 @@ void DesktopFrame::mousePressEvent(QMouseEvent *event){
         }
 
     }
-    QFrame::mousePressEvent(event);
+    event->accept();
 }
 
 void DesktopFrame::startDrag(){
@@ -741,7 +741,7 @@ void DesktopFrame::mouseReleaseEvent(QMouseEvent *event){
             }
         }
     }
-    QFrame::mouseReleaseEvent(event);
+    event->accept();
 }
 
 void DesktopFrame::mouseMoveEvent(QMouseEvent *event){

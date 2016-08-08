@@ -76,6 +76,24 @@ void DesktopBox::handleActiveWindowChanged(uint windowId)
     }
 }
 
+void DesktopBox::mousePressEvent(QMouseEvent *event)
+{
+    QPoint pos(event->x() - m_desktopFrame->x(), event->y() - m_desktopFrame->y());
+    QMouseEvent * ev = new QMouseEvent(event->type(), pos, event->button(), event->buttons(), event->modifiers());
+    QApplication::postEvent(m_desktopFrame, ev);
+
+    event->accept();
+}
+
+void DesktopBox::mouseReleaseEvent(QMouseEvent *event)
+{
+    QPoint pos(event->x() - m_desktopFrame->x(), event->y() - m_desktopFrame->y());
+    QMouseEvent * ev = new QMouseEvent(event->type(), pos, event->button(), event->buttons(), event->modifiers());
+    QApplication::postEvent(m_desktopFrame, ev);
+
+    event->accept();
+}
+
 void DesktopBox::handleRename(){
     qDebug() << !m_desktopFrame->getLastCheckedDesktopItem().isNull() << m_desktopFrame->getCheckedDesktopItems().length();
     if (!m_desktopFrame->getLastCheckedDesktopItem().isNull() &&\

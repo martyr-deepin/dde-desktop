@@ -45,6 +45,8 @@ public slots:
     void handleActiveWindowChanged(uint windowId);
 
 protected:
+    void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
     void closeEvent(QCloseEvent* event);
