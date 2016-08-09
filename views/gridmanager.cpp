@@ -158,8 +158,8 @@ QPoint GridManager::mapIndexToPos(int col, int row){
 }
 
 QPoint GridManager::mapPosToIndex(QPoint pos){
-    int x = (pos.x()-m_leftMargin)/m_itemWidth;
-    int y = (pos.y()-m_topMargin)/(m_itemWidth + m_ySpacing);
+    int x = (pos.x()-m_leftMargin)/(m_itemWidth + m_xSpacing);
+    int y = (pos.y()-m_topMargin)/(m_itemHeight + m_ySpacing);
     return QPoint(x,y);
 }
 
