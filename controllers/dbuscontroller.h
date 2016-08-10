@@ -119,6 +119,7 @@ public slots:
     void requestThumbnail(QString url, uint size = 48);
 
     void handleFileCreated(const QString& path);
+    void handleFileModify(const QString& path);
     void handleFileDeleted(const QString& path);
     void handleFileMovedIn(const QString& path);
     void handleFileMovedOut(const QString& path);
@@ -127,6 +128,8 @@ public slots:
 
     void asyncRequestDesktopItems();
     void requestDesktopItems();
+
+    void asyncRequestDesktopItemChangeFinihsed(QDBusPendingCallWatcher *call);
 
     void asyncRequestComputerIcon();
     void asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher *call);
@@ -220,8 +223,8 @@ private:
     QString m_renameNewPath="";
 
     Q_DISABLE_COPY(DBusController)
-
-
 };
+
+
 
 #endif // DBUSCONTROLLER_H

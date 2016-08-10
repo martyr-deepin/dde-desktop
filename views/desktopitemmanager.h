@@ -56,6 +56,7 @@ public slots:
     void addItems(DesktopItemInfoMap desktopInfoMap);
     void addItem(DesktopItemInfo fileInfo, int index);
     void addItem(DesktopItemInfo fileInfo);
+    void modifyItem(QString url, DesktopItemInfo fileInfo);
     void updateDesktopItemIcon(QString url, QString iconUl, uint size);
     void updateAppGounpItem(QString group_url, DesktopItemInfoMap appItems);
     void showAppGroupDetail(DesktopItemPointer& pItem, QPoint pos);

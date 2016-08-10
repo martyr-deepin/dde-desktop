@@ -35,7 +35,7 @@
 #include "trashjobcontroller.h"
 
 
-inline bool compareByName(const QString& name1, const QString& name2)
+inline bool compareByName(const QString &name1, const QString &name2)
 {
     return name1 < name2;
 }
@@ -53,7 +53,8 @@ DBusController::DBusController(QObject *parent) : QObject(parent)
     init();
 }
 
-void DBusController::init(){
+void DBusController::init()
+{
     QDBusConnection bus = QDBusConnection::sessionBus();
     m_fileInfoInterface = new FileInfoInterface(FileInfo_service, FileInfo_path, bus, this);
     m_desktopDaemonInterface = new DesktopDaemonInterface(DesktopDaemon_service, DesktopDaemon_path, bus, this);
@@ -80,22 +81,23 @@ void DBusController::init(){
     m_pinyinTimer->start();
 }
 
-void DBusController::initConnect(){
-    connect(m_desktopDaemonInterface, SIGNAL(RequestOpen(QStringList,IntList)),
+void DBusController::initConnect()
+{
+    connect(m_desktopDaemonInterface, SIGNAL(RequestOpen(QStringList, IntList)),
             this, SLOT(openFiles(QStringList, IntList)));
-    connect(signalManager, SIGNAL(openFiles(DesktopItemInfo,QList<DesktopItemInfo>)),
-            this, SLOT(openFiles(DesktopItemInfo,QList<DesktopItemInfo>)));
-    connect(signalManager, SIGNAL(openFiles(DesktopItemInfo,QStringList)),
-            this, SLOT(openFiles(DesktopItemInfo,QStringList)));
+    connect(signalManager, SIGNAL(openFiles(DesktopItemInfo, QList<DesktopItemInfo>)),
+            this, SLOT(openFiles(DesktopItemInfo, QList<DesktopItemInfo>)));
+    connect(signalManager, SIGNAL(openFiles(DesktopItemInfo, QStringList)),
+            this, SLOT(openFiles(DesktopItemInfo, QStringList)));
     connect(signalManager, SIGNAL(openFile(DesktopItemInfo)), this, SLOT(openFile(DesktopItemInfo)));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateDirectory()), this, SLOT(createDirectory()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFile()), this, SLOT(createFile()));
     connect(m_desktopDaemonInterface, SIGNAL(RequestCreateFileFromTemplate(QString)),
             this, SLOT(createFileFromTemplate(QString)));
-    connect(m_desktopDaemonInterface, SIGNAL(RequestSort(QString)),this, SLOT(sortByKey(QString)));
+    connect(m_desktopDaemonInterface, SIGNAL(RequestSort(QString)), this, SLOT(sortByKey(QString)));
 
-    connect(m_desktopDaemonInterface, SIGNAL(AppGroupCreated(QString,QStringList)),
-            this, SLOT(createAppGroup(QString,QStringList)));
+    connect(m_desktopDaemonInterface, SIGNAL(AppGroupCreated(QString, QStringList)),
+            this, SLOT(createAppGroup(QString, QStringList)));
 
     connect(m_desktopDaemonInterface, SIGNAL(ItemCut(QStringList)),
             signalManager, SIGNAL(filesCuted(QStringList)));
@@ -109,19 +111,20 @@ void DBusController::initConnect(){
     connect(signalManager, SIGNAL(filesCopied(QStringList)), this, SLOT(copyFiles(QStringList)));
     connect(signalManager, SIGNAL(filesCuted(QStringList)), this, SLOT(cutFiles(QStringList)));
     connect(signalManager, SIGNAL(pasteFilesToDesktop()), this, SLOT(pasteFilesToDesktop()));
-    connect(m_clipboardInterface, SIGNAL(RequestPaste(QString,QStringList,QString)),
-            this, SLOT(pasteFiles(QString,QStringList,QString)));
+    connect(m_clipboardInterface, SIGNAL(RequestPaste(QString, QStringList, QString)),
+            this, SLOT(pasteFiles(QString, QStringList, QString)));
 
     connect(signalManager, SIGNAL(requestCreatingAppGroup(QStringList)),
             this, SLOT(requestCreatingAppGroup(QStringList)));
-    connect(signalManager, SIGNAL(requestMergeIntoAppGroup(QStringList,QString)),
-            this, SLOT(mergeIntoAppGroup(QStringList,QString)));
+    connect(signalManager, SIGNAL(requestMergeIntoAppGroup(QStringList, QString)),
+            this, SLOT(mergeIntoAppGroup(QStringList, QString)));
 
     connect(m_fileMonitor, SIGNAL(fileCreated(QString)), this, SLOT(handleFileCreated(QString)));
+    connect(m_fileMonitor, SIGNAL(fileModify(QString)), this, SLOT(handleFileModify(QString)));
     connect(m_fileMonitor, SIGNAL(fileDeleted(QString)), this, SLOT(handleFileDeleted(QString)));
     connect(m_fileMonitor, SIGNAL(fileMovedIn(QString)), this, SLOT(handleFileMovedIn(QString)));
     connect(m_fileMonitor, SIGNAL(fileMovedOut(QString)), this, SLOT(handleFileMovedOut(QString)));
-    connect(m_fileMonitor, SIGNAL(fileRenamed(QString,QString)), this, SLOT(handleFileRenamed(QString,QString)));
+    connect(m_fileMonitor, SIGNAL(fileRenamed(QString, QString)), this, SLOT(handleFileRenamed(QString, QString)));
     connect(m_fileMonitor, SIGNAL(fileMetaDataChanged(QString)), this, SLOT(handleFileMetaDataChanged(QString)));
 
     connect(m_dbusDock, SIGNAL(FrontendWindowRectChanged()), signalManager, SIGNAL(dockAreaChanged()));
@@ -139,29 +142,31 @@ void DBusController::initConnect(){
 int DBusController::getDesktopFileCount()
 {
     int fileCount = 0;
-    QFileInfoList desktopInfoList = QDir(desktopLocation).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot |QDir::System);
+    QFileInfoList desktopInfoList = QDir(desktopLocation).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::System);
     fileCount += desktopInfoList.count();
 
     QFileInfoList hiddenDesktopInfoList = QDir(desktopLocation).entryInfoList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
-    foreach (QFileInfo info, hiddenDesktopInfoList) {
-        if (isAppGroup(info.absoluteFilePath())){
+    foreach(QFileInfo info, hiddenDesktopInfoList) {
+        if (isAppGroup(info.absoluteFilePath())) {
             fileCount += 1;
         }
     }
     QFileInfoList filesDesktopInfoList = QDir(desktopLocation).entryInfoList(QDir::Files);
-    foreach (QFileInfo info, filesDesktopInfoList) {
-        if (info.absoluteFilePath().endsWith("~")){
+    foreach(QFileInfo info, filesDesktopInfoList) {
+        if (info.absoluteFilePath().endsWith("~")) {
             fileCount -= 1;
         }
     }
     return fileCount;
 }
 
-void DBusController::loadDesktopSettings(){
+void DBusController::loadDesktopSettings()
+{
 
 }
 
-void DBusController::loadDesktopItems(){
+void DBusController::loadDesktopItems()
+{
     requestDesktopItems();
 //    asyncRequestDesktopItems();
     asyncRequestComputerIcon();
@@ -170,13 +175,14 @@ void DBusController::loadDesktopItems(){
     QTimer::singleShot(500, this, SLOT(handelIconThemeChanged()));
 }
 
-int DBusController::getDockMode(){
+int DBusController::getDockMode()
+{
     int mode = 0;
     QDBusPendingReply<int> reply = m_dockSettingInterface->GetDisplayMode();
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
         mode = reply.argumentAt(0).toInt();
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
     return mode;
@@ -213,11 +219,13 @@ QRect DBusController::getDesktopContentRect() const
     return primaryRect;
 }
 
-DesktopDaemonInterface* DBusController::getDesktopDaemonInterface(){
+DesktopDaemonInterface *DBusController::getDesktopDaemonInterface()
+{
     return m_desktopDaemonInterface;
 }
 
-DisplayInterface* DBusController::getDisplayInterface(){
+DisplayInterface *DBusController::getDisplayInterface()
+{
     return m_displayInterface;
 }
 
@@ -226,38 +234,37 @@ DBusDock *DBusController::getDockInterface()
     return m_dbusDock;
 }
 
-void DBusController::asyncRequestDesktopItems(){
+void DBusController::asyncRequestDesktopItems()
+{
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
-    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
-            this, SLOT(asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher*)));
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher *)),
+            this, SLOT(asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *)));
 }
 
 void DBusController::requestDesktopItems()
 {
     QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetDesktopItems();
     reply.waitForFinished();
-    if (reply.isFinished()){
+    if (reply.isFinished()) {
         qDebug() << "reply finished";
 //        emit signalManager->stopRequest();
         DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
 
-
-
         qDebug() << "desktopItems.count()" << desktopItems.count() << getDesktopFileCount();;
-        if (desktopItems.count() != getDesktopFileCount()){
+        if (desktopItems.count() != getDesktopFileCount()) {
             requestDesktopItems();
         }
 
         /*ToDo desktop daemon settings judge*/
-        for(int i=0; i < desktopItems.count(); i++){
+        for (int i = 0; i < desktopItems.count(); i++) {
             QString key = desktopItems.keys().at(i);
             DesktopItemInfo info = desktopItems.values().at(i);
             bool isRequestThumbnailFlag = isRequestThumbnail(info.URI);
 
-            if (info.thumbnail.length() > 0 && isRequestThumbnailFlag){
+            if (info.thumbnail.length() > 0 && isRequestThumbnailFlag) {
                 info.Icon = info.thumbnail;
-            }else if(info.thumbnail.length() > 0 && !isRequestThumbnailFlag){
+            } else if (info.thumbnail.length() > 0 && !isRequestThumbnailFlag) {
                 info.thumbnail = "";
             }
 
@@ -269,39 +276,69 @@ void DBusController::requestDesktopItems()
 
 //        m_pinyinTimer->start();
 
-        foreach (QString url, desktopItems.keys()) {
-            if (isAppGroup(decodeUrl(url))){
+        foreach(QString url, desktopItems.keys()) {
+            if (isAppGroup(decodeUrl(url))) {
                 getAppGroupItemsByUrl(url);
             }
         }
 
         m_requestFinished = true;
 
-    }else{
+    } else {
         emit signalManager->stopRequest();
         qCritical() << reply.error().message();
     }
 }
 
-void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *call){
+void DBusController::asyncRequestDesktopItemChangeFinihsed(QDBusPendingCallWatcher *call)
+{
+    QDBusPendingReply<DesktopItemInfo> reply = *call;
+    if (!reply.isError()) {
+        DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
 
-    if (m_requestFinished){
+        // TODO work around
+        if (isApp(desktopItemInfo.URI)
+                && (desktopItemInfo.MIME != getMimeTypeName(desktopItemInfo.URI))) {
+            qCritical() << "get desktop file mine failed"
+                     << desktopItemInfo.MIME
+                     << desktopItemInfo.DisplayName
+                     << desktopItemInfo.URI
+                     << desktopItemInfo.Icon;
+        } else {
+            emit signalManager->itemModify(desktopItemInfo.URI, desktopItemInfo);
+//            qDebug() << "async send desktopItemInfo"
+//                     << desktopItemInfo.MIME
+//                     << desktopItemInfo.DisplayName
+//                     << desktopItemInfo.URI
+//                     << desktopItemInfo.Icon;
+        }
+    } else {
+        qCritical() << reply.error().message();
+    }
+    call->deleteLater();
+
+}
+
+void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *call)
+{
+
+    if (m_requestFinished) {
         emit signalManager->stopRequest();
         return;
     }
     QDBusPendingReply<DesktopItemInfoMap> reply = *call;
-    if (!reply.isError()){
+    if (!reply.isError()) {
         emit signalManager->stopRequest();
         DesktopItemInfoMap desktopItems = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
-         /*ToDo desktop daemon settings judge*/
-        for(int i=0; i < desktopItems.count(); i++){
+        /*ToDo desktop daemon settings judge*/
+        for (int i = 0; i < desktopItems.count(); i++) {
             QString key = desktopItems.keys().at(i);
             DesktopItemInfo info = desktopItems.values().at(i);
             bool isRequestThumbnailFlag = isRequestThumbnail(info.URI);
 
-            if (info.thumbnail.length() > 0 && isRequestThumbnailFlag){
+            if (info.thumbnail.length() > 0 && isRequestThumbnailFlag) {
                 info.Icon = info.thumbnail;
-            }else if(info.thumbnail.length() > 0 && !isRequestThumbnailFlag){
+            } else if (info.thumbnail.length() > 0 && !isRequestThumbnailFlag) {
                 info.thumbnail = "";
             }
 
@@ -313,15 +350,15 @@ void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *c
 
         m_pinyinTimer->start();
 
-        foreach (QString url, desktopItems.keys()) {
-            if (isAppGroup(decodeUrl(url))){
+        foreach(QString url, desktopItems.keys()) {
+            if (isAppGroup(decodeUrl(url))) {
                 getAppGroupItemsByUrl(url);
             }
         }
 
         m_requestFinished = true;
 
-    }else{
+    } else {
         emit signalManager->stopRequest();
         qCritical() << reply.error().message();
     }
@@ -330,115 +367,124 @@ void DBusController::asyncRequestDesktopItemsFinished(QDBusPendingCallWatcher *c
 }
 
 
-void DBusController::asyncRequestComputerIcon(){
+void DBusController::asyncRequestComputerIcon()
+{
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(ComputerUrl, 48);
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
-    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
-                        this, SLOT(asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher*)));
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher *)),
+            this, SLOT(asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher *)));
 }
 
-void DBusController::asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher *call){
+void DBusController::asyncRequestComputerIconFinihsed(QDBusPendingCallWatcher *call)
+{
     QDBusPendingReply<QString> reply = *call;
-    if (!reply.isError()){
+    if (!reply.isError()) {
         QString iconUrl = reply.argumentAt(0).toString();
         emit signalManager->desktoItemIconUpdated(ComputerUrl, iconUrl, 48);
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
     call->deleteLater();
 }
 
-void DBusController::asyncRequestTrashIcon(){
+void DBusController::asyncRequestTrashIcon()
+{
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(TrashUrl, 48);
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
-    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
-                        this, SLOT(asyncRequestTrashIconFinished(QDBusPendingCallWatcher*)));
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher *)),
+            this, SLOT(asyncRequestTrashIconFinished(QDBusPendingCallWatcher *)));
 }
 
-void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call){
+void DBusController::asyncRequestTrashIconFinished(QDBusPendingCallWatcher *call)
+{
     QDBusPendingReply<QString> reply = *call;
-    if (!reply.isError()){
+    if (!reply.isError()) {
         QString iconUrl = reply.argumentAt(0).toString();
         emit signalManager->desktoItemIconUpdated(TrashUrl, iconUrl, 48);
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
     call->deleteLater();
 }
 
-void DBusController::requestIconByUrl(QString url, uint size){
+void DBusController::requestIconByUrl(QString url, uint size)
+{
 
-    if (isAppGroup(url)){
+    if (isAppGroup(url)) {
         return;
     }
     QString _url(url);
-    if (url == ComputerUrl || url == TrashUrl){
+    if (url == ComputerUrl || url == TrashUrl) {
 
-    }else if (!url.startsWith(FilePrefix)){
+    } else if (!url.startsWith(FilePrefix)) {
         _url = FilePrefix + url;
     }
 
-    if (m_desktopItemInfoMap.contains(_url)){
-        if (m_desktopItemInfoMap.value(_url).thumbnail.length() > 0){
+    if (m_desktopItemInfoMap.contains(_url)) {
+        if (m_desktopItemInfoMap.value(_url).thumbnail.length() > 0) {
             return;
         }
     }
 
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThemeIcon(_url, size);
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
         QString iconUrl = reply.argumentAt(0).toString();
-        if (iconUrl.length() == 0){
-             iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+        if (iconUrl.length() == 0) {
+            iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
         }
         emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
 }
 
-void DBusController::delayGetThumbnail(){
-    foreach(QString url, m_thumbnails){
+void DBusController::delayGetThumbnail()
+{
+    foreach(QString url, m_thumbnails) {
         requestThumbnail(url, 48);
     }
-    if (m_thumbnails.count() == 0 || m_thumbnailCount > DBusController::RequestThumailMaxCount){
+    if (m_thumbnails.count() == 0 || m_thumbnailCount > DBusController::RequestThumailMaxCount) {
         m_thumbnailTimer->stop();
         m_thumbnailCount = 0;
     }
 }
 
-void DBusController::refreshThumail(QString url, uint size){
-    if(!QFile(url).exists())
+void DBusController::refreshThumail(QString url, uint size)
+{
+    if (!QFile(QUrl(url).toLocalFile()).exists()) {
         return;
+    }
 
-    qDebug() << __func__ << url;
-    if (isAppGroup(url)){
+    qDebug() << "Get thunail:" << url;
+
+    if (isAppGroup(url)) {
         return;
     }
     QString _url(url);
-    if (!url.startsWith(FilePrefix)){
+    if (!url.startsWith(FilePrefix)) {
         _url = FilePrefix + url;
     }
 
-    if(!isRequestThumbnail(url)){
+    if (!isRequestThumbnail(url)) {
         return;
     }
 
     QString mimetype = getMimeTypeName(url);
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
         QString iconUrl = reply.argumentAt(0).toString();
         qDebug() << iconUrl;
-        if (iconUrl.length() == 0){
+        if (iconUrl.length() == 0) {
             QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
             emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
-        }else{
+        } else {
             emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
         }
-    }else{
+    } else {
         qCritical() << reply.error().message();
-        if (!isAppGroup(url)){
+        if (!isAppGroup(url)) {
             QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
             emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
             requestIconByUrl(url, size);
@@ -446,42 +492,43 @@ void DBusController::refreshThumail(QString url, uint size){
     }
 }
 
-void DBusController::requestThumbnail(QString url, uint size){
-    qDebug() << __func__<< url << m_thumbnailCount;
+void DBusController::requestThumbnail(QString url, uint size)
+{
+    qDebug() << __func__ << url << m_thumbnailCount;
 
-    if (m_thumbnailCount > DBusController::RequestThumailMaxCount){
+    if (m_thumbnailCount > DBusController::RequestThumailMaxCount) {
         m_thumbnails.clear();
         m_thumbnailTimer->stop();
         m_thumbnailCount = 0;
     }
-    if (isAppGroup(url)){
+    if (isAppGroup(url)) {
         return;
     }
     QString _url(url);
-    if (!url.startsWith(FilePrefix)){
+    if (!url.startsWith(FilePrefix)) {
         _url = FilePrefix + url;
     }
 
     QString mimetype = getMimeTypeName(url);
-    if(!isRequestThumbnail(url)){
-        if (m_thumbnails.contains(url)){
+    if (!isRequestThumbnail(url)) {
+        if (m_thumbnails.contains(url)) {
             m_thumbnails.removeOne(url);
         }
         qDebug() << "Unsupport request thumbail" << url << mimetype;
-    }else{
+    } else {
         qDebug() << _url << size << mimetype;
         QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
         reply.waitForFinished();
-        if (!reply.isError()){
+        if (!reply.isError()) {
             QString iconUrl = reply.argumentAt(0).toString();
             qDebug() << iconUrl;
-            if (m_thumbnails.contains(url)){
+            if (m_thumbnails.contains(url)) {
                 m_thumbnails.removeOne(url);
             }
             emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
-        }else{
+        } else {
             qCritical() << reply.error().message();
-            if (m_thumbnails.contains(url)){
+            if (m_thumbnails.contains(url)) {
                 m_thumbnails.removeOne(url);
             }
             requestIconByUrl(url, size);
@@ -492,44 +539,46 @@ void DBusController::requestThumbnail(QString url, uint size){
     m_thumbnailCount += 1;
 }
 
-void DBusController::convertNameToPinyin(){
+void DBusController::convertNameToPinyin()
+{
     QStringList names;
-    for(int i=0; i< m_desktopItemInfoMap.count(); i++){
+    for (int i = 0; i < m_desktopItemInfoMap.count(); i++) {
         names.append(m_desktopItemInfoMap.values()[i].DisplayName);
     }
 
     QDBusPendingReply<QString> reply = m_pinyinInterface->QueryList(names);
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
         QString result = reply.argumentAt(0).toString();
         QJsonObject obj = QJsonObject::fromVariantMap(QJsonDocument::fromJson(result.toLocal8Bit()).toVariant().toMap());
-        foreach(QString key, m_desktopItemInfoMap.keys()){
+        foreach(QString key, m_desktopItemInfoMap.keys()) {
             QString displayName = m_desktopItemInfoMap.value(key).DisplayName;
             QString uri = m_desktopItemInfoMap.value(key).URI;
-            if (obj.contains(displayName)){
-                  QList<QVariant> pinyins  = obj.value(displayName).toVariant().toList();
+            if (obj.contains(displayName)) {
+                QList<QVariant> pinyins  = obj.value(displayName).toVariant().toList();
 //                  qDebug() << displayName << pinyins;
-                  if (pinyins.length() > 0){
-                        m_desktopItemInfoMap[key].pinyinName = pinyins.at(0).toString();
-                        m_desktopItemInfoMap[key].lowerPinyinName = m_desktopItemInfoMap[key].pinyinName.toLower();
-                  }
+                if (pinyins.length() > 0) {
+                    m_desktopItemInfoMap[key].pinyinName = pinyins.at(0).toString();
+                    m_desktopItemInfoMap[key].lowerPinyinName = m_desktopItemInfoMap[key].pinyinName.toLower();
+                }
             }
         }
         sortPingyinEnglish();
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
 }
 
 
-void DBusController::sortPingyinEnglish(){
+void DBusController::sortPingyinEnglish()
+{
     QList<DesktopItemInfo> pinyinInfos;
     QList<DesktopItemInfo> englishInfos;
-    foreach (DesktopItemInfo info, m_desktopItemInfoMap.values()) {
-        if (info.pinyinName.length() > 0 && info.DisplayName.length() > 0){
-            if (info.lowerPinyinName.at(0) == info.DisplayName.toLower().at(0)){
+    foreach(DesktopItemInfo info, m_desktopItemInfoMap.values()) {
+        if (info.pinyinName.length() > 0 && info.DisplayName.length() > 0) {
+            if (info.lowerPinyinName.at(0) == info.DisplayName.toLower().at(0)) {
                 englishInfos.append(info);
-            }else{
+            } else {
                 pinyinInfos.append(info);
             }
         }
@@ -541,82 +590,89 @@ void DBusController::sortPingyinEnglish(){
     emit signalManager->pinyinResultChanged(m_sortedPinyinInfos);
 }
 
-QMap<QString, DesktopItemInfoMap> DBusController::getAppGroups(){
+QMap<QString, DesktopItemInfoMap> DBusController::getAppGroups()
+{
     return m_appGroups;
 }
 
-FileOperationsInterface* DBusController::getFileOperationsInterface(){
+FileOperationsInterface *DBusController::getFileOperationsInterface()
+{
     return m_fileOperationsInterface;
 }
 
-FileInfoInterface* DBusController::getFileInfoInterface(){
+FileInfoInterface *DBusController::getFileInfoInterface()
+{
     return m_fileInfoInterface;
 }
 
-void DBusController::getAppGroupItemsByUrl(QString group_url){
-    if (!group_url.startsWith(FilePrefix)){
-         group_url =  group_url;
-    }else{
-         group_url = decodeUrl(group_url);
+void DBusController::getAppGroupItemsByUrl(QString group_url)
+{
+    if (!group_url.startsWith(FilePrefix)) {
+        group_url =  group_url;
+    } else {
+        group_url = decodeUrl(group_url);
     }
     QString group_dir = group_url;
     QDir groupDir(group_dir);
 
     QFileInfoList fileInfoList  = groupDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
-    if (groupDir.exists()){
-        if (fileInfoList.count() == 0){
+    if (groupDir.exists()) {
+        if (fileInfoList.count() == 0) {
             bool flag = groupDir.removeRecursively();
 
-        }else if (fileInfoList.count() == 1){
+        } else if (fileInfoList.count() == 1) {
             qDebug() << fileInfoList.at(0).filePath() << "only one .desktop file in app group";
             QFile f(fileInfoList.at(0).filePath());
             QString newFileName = desktopLocation + QString(QDir::separator()) + fileInfoList.at(0).fileName();
             f.rename(newFileName);
             QDir(fileInfoList.at(0).absoluteDir()).removeRecursively();
             emit signalManager->appGounpDetailClosed();
-        }else{
+        } else {
 
             QDBusPendingReply<DesktopItemInfoMap> reply = m_desktopDaemonInterface->GetAppGroupItems(group_url);
             reply.waitForFinished();
-            if (!reply.isError()){
+            if (!reply.isError()) {
                 DesktopItemInfoMap desktopItemInfos = qdbus_cast<DesktopItemInfoMap>(reply.argumentAt(0));
 
-                if (desktopItemInfos.count() > 1){
+                if (desktopItemInfos.count() > 1) {
                     emit signalManager->appGounpItemsChanged(group_url, desktopItemInfos);
                     m_appGroups.insert(group_url, desktopItemInfos);
-                }else{
+                } else {
                     m_appGroups.remove(group_url);
                 }
-            }else{
+            } else {
                 qCritical() << reply.error().message();
             }
         }
-    }else{
+    } else {
         qCritical() << "App Group Dir isn't exists" << groupDir;
     }
 }
 
-DesktopItemInfoMap DBusController::getDesktopItemInfoMap(){
+DesktopItemInfoMap DBusController::getDesktopItemInfoMap()
+{
     return m_desktopItemInfoMap;
 }
 
 
-void DBusController::asyncRenameDesktopItemByUrl(QString url){
+void DBusController::asyncRenameDesktopItemByUrl(QString url)
+{
     QDBusPendingReply<DesktopItemInfo> reply = m_desktopDaemonInterface->GetItemInfo(url);
 
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
-    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
-                        this, SLOT(asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher*)));
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher *)),
+            this, SLOT(asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher *)));
 }
 
-void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher *call){
+void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher *call)
+{
     QDBusPendingReply<DesktopItemInfo> reply = *call;
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
         emit signalManager->itemMoved(desktopItemInfo);
         updateDesktopItemInfoMap(desktopItemInfo);
 
-        if (isAppGroup(desktopItemInfo.URI)){
+        if (isAppGroup(desktopItemInfo.URI)) {
 
             getAppGroupItemsByUrl(desktopItemInfo.URI);
         }
@@ -628,34 +684,40 @@ void DBusController::asyncRenameDesktopItemByUrlFinished(QDBusPendingCallWatcher
 }
 
 
-void DBusController::asyncCreateDesktopItemByUrl(QString url){
-    if(!QFile(url).exists())
+void DBusController::asyncCreateDesktopItemByUrl(QString url)
+{
+    if (!QFile(url).exists()) {
         return;
+    }
+
+    //
     QDBusPendingReply<DesktopItemInfo> reply = m_desktopDaemonInterface->GetItemInfo(url);
 
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
-    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
-                        this, SLOT(asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher*)));
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher *)),
+            this, SLOT(asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher *)));
 }
 
 
-void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher *call){
+void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher *call)
+{
     QDBusPendingReply<DesktopItemInfo> reply = *call;
 
     if (!reply.isError()) {
         DesktopItemInfo desktopItemInfo = qdbus_cast<DesktopItemInfo>(reply.argumentAt(0));
 
-        if(!QFile(decodeUrl(desktopItemInfo.URI)).exists())
+        if (!QFile(decodeUrl(desktopItemInfo.URI)).exists()) {
             return;
+        }
 
         /*ToDo desktop daemon settings judge*/
         bool isRequestThumbnailFlag = isRequestThumbnail(desktopItemInfo.URI);
-        if (desktopItemInfo.thumbnail.length() > 0 && isRequestThumbnailFlag){
+        if (desktopItemInfo.thumbnail.length() > 0 && isRequestThumbnailFlag) {
             desktopItemInfo.Icon = desktopItemInfo.thumbnail;
         }
         m_thumbnails.append(desktopItemInfo.URI);
 
-        if (isRequestThumbnailFlag){
+        if (isRequestThumbnailFlag) {
             m_thumbnailTimer->start();
         }
 
@@ -663,14 +725,14 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
 
         updateDesktopItemInfoMap(desktopItemInfo);
 
-        if (isAppGroup(desktopItemInfo.URI)){
+        if (isAppGroup(desktopItemInfo.URI)) {
             getAppGroupItemsByUrl(desktopItemInfo.URI);
         }
 
-        if (desktopItemInfo.MIME != getMimeTypeName(desktopItemInfo.URI)){
-
+        if (desktopItemInfo.MIME != getMimeTypeName(desktopItemInfo.URI)) {
             QString url = desktopItemInfo.URI;
             QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+            iconUrl = desktopItemInfo.Icon;
             emit signalManager->desktoItemIconUpdated(url, iconUrl, 48);
         }
 
@@ -683,46 +745,59 @@ void DBusController::asyncCreateDesktopItemByUrlFinished(QDBusPendingCallWatcher
 }
 
 
-void DBusController::handleFileCreated(const QString &path){
+void DBusController::handleFileCreated(const QString &path)
+{
 
     QFileInfo f(path);
-    if (f.fileName().startsWith(".") && !isAppGroup(path)){
+    if (f.fileName().startsWith(".") && !isAppGroup(path)) {
         return;
     }
-    if (isDesktop(f.path())){
+    if (isDesktop(f.path())) {
 
         asyncCreateDesktopItemByUrl(path);
-        QTimer* refreshTimer = new QTimer;
+        QTimer *refreshTimer = new QTimer;
         refreshTimer->setSingleShot(true);
         refreshTimer->setInterval(500);
-        connect(refreshTimer, &QTimer::timeout, [=](){
+        connect(refreshTimer, &QTimer::timeout, [ = ]() {
             this->refreshThumail("file://" + path);
         });
         connect(refreshTimer, SIGNAL(timeout()), refreshTimer, SLOT(deleteLater()));
         refreshTimer->start();
-    }else{
-        if(isApp(path) && isAppGroup(f.path())){
+    } else {
+        if (isApp(path) && isAppGroup(f.path())) {
 
             getAppGroupItemsByUrl(f.path());
-        }else{
-            qDebug() << "*******" << "created invalid file(not .desktop file)"<< "*********";
+        } else {
+            qDebug() << "*******" << "created invalid file(not .desktop file)" << "*********";
         }
     }
     m_pinyinTimer->start();
 }
 
-void DBusController::handleFileDeleted(const QString &path){
+void DBusController::handleFileModify(const QString &path)
+{
+    QFileInfo f(path);
+//    qDebug()<< "send dbus"<<f.absoluteFilePath();
+    QDBusPendingReply<DesktopItemInfo> reply = m_desktopDaemonInterface->GetItemInfo(f.absoluteFilePath());
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher *)),
+            this, SLOT(asyncRequestDesktopItemChangeFinihsed(QDBusPendingCallWatcher *)));
+
+}
+
+void DBusController::handleFileDeleted(const QString &path)
+{
 
     QFileInfo f(path);
-    if (isDesktop(f.path())){
+    if (isDesktop(f.path())) {
 
         removeDesktopItemInfoByUrl(path);
         emit signalManager->itemDeleted(path);
-        if (isAppGroup(path)){
+        if (isAppGroup(path)) {
             getAppGroupItemsByUrl(path);
             emit signalManager->appGounpDetailClosed();
         }
-    }else if (isAppGroup(f.path())){
+    } else if (isAppGroup(f.path())) {
         removeDesktopItemInfoByUrl(path);
         emit signalManager->itemDeleted(path);
 
@@ -732,67 +807,70 @@ void DBusController::handleFileDeleted(const QString &path){
 }
 
 
-void DBusController::handleFileMovedIn(const QString &path){
+void DBusController::handleFileMovedIn(const QString &path)
+{
 
     QFileInfo f(path);
-    if (isDesktop(f.path())){
+    if (isDesktop(f.path())) {
 
         asyncCreateDesktopItemByUrl(path);
-    }else if (isAppGroup(f.path())){
+    } else if (isAppGroup(f.path())) {
 
-       getAppGroupItemsByUrl(f.path());
-   }
-   m_pinyinTimer->start();
+        getAppGroupItemsByUrl(f.path());
+    }
+    m_pinyinTimer->start();
 }
 
 
-void DBusController::handleFileMovedOut(const QString &path){
+void DBusController::handleFileMovedOut(const QString &path)
+{
     qDebug() << "handleFileMovedOut" << path;
     QFileInfo f(path);
-    if (isDesktop(f.path())){
+    if (isDesktop(f.path())) {
         qDebug() << "move file out desktop" << path;
         removeDesktopItemInfoByUrl(path);
         emit signalManager->itemDeleted(path);
-    }else if (isAppGroup(f.path())){
-         qDebug() << "move file out App Group" << path;
+    } else if (isAppGroup(f.path())) {
+        qDebug() << "move file out App Group" << path;
         getAppGroupItemsByUrl(f.path());
     }
     m_pinyinTimer->start();
 }
 
 
-void DBusController::handleFileRenamed(const QString &oldPath, const QString &newPath){
+void DBusController::handleFileRenamed(const QString &oldPath, const QString &newPath)
+{
     QFileInfo oldFileInfo(oldPath);
     QFileInfo newFileInfo(newPath);
     qDebug() << oldPath << newPath;
-    qDebug() <<oldFileInfo.filePath() << isInDesktopFolder(oldFileInfo.filePath()) << newFileInfo.filePath()<<isInDesktopFolder(newFileInfo.path());
+    qDebug() << oldFileInfo.filePath() << isInDesktopFolder(oldFileInfo.filePath()) << newFileInfo.filePath() << isInDesktopFolder(newFileInfo.path());
 
     bool isAppGroupFolder = isAppGroup(oldFileInfo.filePath()) && isAppGroup(newFileInfo.filePath());
     bool isDesktopFile = isInDesktopFolder(oldFileInfo.filePath()) && isInDesktopFolder(newFileInfo.filePath());
-    qDebug() << "isAppGroupFolder" << isAppGroupFolder<< "isDesktopFile" << isDesktopFile;
+    qDebug() << "isAppGroupFolder" << isAppGroupFolder << "isDesktopFile" << isDesktopFile;
 
-    if (newFileInfo.fileName().startsWith(".") && !isAppGroupFolder){
+    if (newFileInfo.fileName().startsWith(".") && !isAppGroupFolder) {
         emit signalManager->itemDeleted(oldPath);
         return;
     }
-    if (isDesktopFile){
+    if (isDesktopFile) {
         qDebug() << "desktop file renamed";
         m_itemShoudBeMoved = oldPath;
         qDebug() << m_desktopItemInfoMap.keys() << decodeUrl(oldPath);
         bool flag(false);
-        foreach (QString key, m_desktopItemInfoMap.keys()) {
+        foreach(QString key, m_desktopItemInfoMap.keys()) {
             QString uri = decodeUrl(key);
-            if (uri == oldPath){
+            if (uri == oldPath) {
                 flag = true;
             }
         }
-        if (flag){
+        if (flag) {
             emit signalManager->itemShoudBeMoved(oldPath);
             asyncRenameDesktopItemByUrl(newPath);
-        }else{
+        } else {
             m_renameOldPath  = oldPath;
             m_renameNewPath = newPath;
-            QTimer* delayTimer = new QTimer;
+            QTimer *delayTimer = new QTimer;
             delayTimer->setSingleShot(true);
             delayTimer->setInterval(200);
             connect(delayTimer, SIGNAL(timeout()), this, SLOT(delayHandleRenameEvent()));
@@ -831,68 +909,73 @@ void DBusController::handleFileMetaDataChanged(const QString &url)
     });
 }
 
-void DBusController::updateDesktopItemInfoMap(DesktopItemInfo desktopItemInfo){
-    qDebug() << m_desktopItemInfoMap.contains(desktopItemInfo.URI) << m_desktopItemInfoMap.count();
+void DBusController::updateDesktopItemInfoMap(DesktopItemInfo desktopItemInfo)
+{
     m_desktopItemInfoMap.insert(desktopItemInfo.URI, desktopItemInfo);
-    qDebug() << m_desktopItemInfoMap.contains(desktopItemInfo.URI) << m_desktopItemInfoMap.count();
 }
 
 
-void DBusController::updateDesktopItemInfoMap_moved(DesktopItemInfo desktopItemInfo){
+void DBusController::updateDesktopItemInfoMap_moved(DesktopItemInfo desktopItemInfo)
+{
     QString oldKey = m_itemShoudBeMoved;
     QString newKey = desktopItemInfo.URI;
 
     DesktopItemInfoMap::Iterator iterator = m_desktopItemInfoMap.find(oldKey);
-    if (iterator!=m_desktopItemInfoMap.end()){
+    if (iterator != m_desktopItemInfoMap.end()) {
         m_desktopItemInfoMap.insert(iterator, newKey, desktopItemInfo);
     }
 }
 
-void DBusController::removeDesktopItemInfoByUrl(QString url){
-    if (m_desktopItemInfoMap.contains(url)){
+void DBusController::removeDesktopItemInfoByUrl(QString url)
+{
+    if (m_desktopItemInfoMap.contains(url)) {
         m_desktopItemInfoMap.remove(url);
     }
 }
 
-void DBusController::openFiles(QStringList files, IntList intFlags){
-    foreach (QString file, files) {
+void DBusController::openFiles(QStringList files, IntList intFlags)
+{
+    foreach(QString file, files) {
         int index = files.indexOf(file);
         int flag = intFlags.at(index);
 
         QString key = QString(QUrl(file.toLocal8Bit()).toEncoded());
-        if (m_desktopItemInfoMap.contains(key)){
+        if (m_desktopItemInfoMap.contains(key)) {
             DesktopItemInfo desktopItemInfo = m_desktopItemInfoMap.value(key);
             QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(desktopItemInfo.URI, QStringList(), desktopItemInfo.CanExecute, flag);
             reply.waitForFinished();
-            if (!reply.isError()){
+            if (!reply.isError()) {
 
-            }else{
+            } else {
                 qCritical() << reply.error().message();
             }
         }
     }
 }
 
-void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QList<DesktopItemInfo> desktopItemInfos){
+void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QList<DesktopItemInfo> desktopItemInfos)
+{
     QStringList urls;
-    foreach (DesktopItemInfo info, desktopItemInfos){
+    foreach(DesktopItemInfo info, desktopItemInfos) {
         urls.append(info.URI);
     }
     openFiles(destinationDesktopItemInfo, urls);
 }
 
 
-void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QStringList urls){
+void DBusController::openFiles(DesktopItemInfo destinationDesktopItemInfo, QStringList urls)
+{
     QDBusPendingReply<> reply = m_desktopDaemonInterface->ActivateFile(destinationDesktopItemInfo.URI, urls, destinationDesktopItemInfo.CanExecute, 0);
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
 
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
 }
 
-void DBusController::openFile(DesktopItemInfo desktopItemInfo){
+void DBusController::openFile(DesktopItemInfo desktopItemInfo)
+{
     if (IsExecutableScript(desktopItemInfo)) {
         emit signalManager->openExecutable(desktopItemInfo);
         return;
@@ -905,6 +988,14 @@ void DBusController::openFile(DesktopItemInfo desktopItemInfo){
 
     }else{
         qCritical() << reply.error().message() << desktopItemInfo.URI;
+        if (desktopItemInfo.URI == ComputerUrl) {
+            const QString dde_file_manager = "/usr/bin/dde-file-manager";
+            if (QFile::exists(dde_file_manager)) {
+                QProcess::startDetached(dde_file_manager, QStringList()<< ComputerUrl);
+            } else {
+                QProcess::startDetached("nautilus", QStringList()<< ComputerUrl);
+            }
+        }
     }
     emit signalManager->appGounpDetailClosed();
 }
@@ -934,22 +1025,24 @@ void DBusController::createDirectoryFinished(QString dirName, QString error){
     emit signalManager->fileCreated(dirName);
 }
 
-void DBusController::createFile(){
+void DBusController::createFile()
+{
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_fileOperationsInterface->NewCreateFileJob(desktopLocation, "", "", "", "", "");
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
         m_createFileJobInterface = new CreateFileJobInterface(service, path, QDBusConnection::sessionBus(), this);
-        connect(m_createFileJobInterface, SIGNAL(Done(QString,QString)),
+        connect(m_createFileJobInterface, SIGNAL(Done(QString, QString)),
                 this, SLOT(createFileFinished(QString, QString)));
         m_createFileJobInterface->Execute();
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
 }
 
-void DBusController::createFileFinished(QString filename, QString error){
+void DBusController::createFileFinished(QString filename, QString error)
+{
     Q_UNUSED(filename)
     Q_UNUSED(error)
     disconnect(m_createFileJobInterface, SIGNAL(Done(QString, QString)), this, SLOT(createFileFinished(QString, QString)));
@@ -958,23 +1051,25 @@ void DBusController::createFileFinished(QString filename, QString error){
 }
 
 
-void DBusController::createFileFromTemplate(QString templatefile){
+void DBusController::createFileFromTemplate(QString templatefile)
+{
     QDBusPendingReply<QString, QDBusObjectPath, QString> reply = m_fileOperationsInterface->NewCreateFileFromTemplateJob(desktopLocation, templatefile, "", "", "");
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
         QString service = reply.argumentAt(0).toString();
         QString path = qdbus_cast<QDBusObjectPath>(reply.argumentAt(1)).path();
         m_createFileFromTemplateJobInterface = new CreateFileFromTemplateJobInterface(service, path, QDBusConnection::sessionBus(), this);
-        connect(m_createFileFromTemplateJobInterface, SIGNAL(Done(QString,QString)),
+        connect(m_createFileFromTemplateJobInterface, SIGNAL(Done(QString, QString)),
                 this, SLOT(createFileFromTemplateFinished(QString, QString)));
         m_createFileFromTemplateJobInterface->Execute();
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
 }
 
 
-void DBusController::createFileFromTemplateFinished(QString filename, QString error){
+void DBusController::createFileFromTemplateFinished(QString filename, QString error)
+{
     Q_UNUSED(filename)
     Q_UNUSED(error)
     disconnect(m_createFileFromTemplateJobInterface, SIGNAL(Done(QString, QString)), this, SLOT(createFileFromTemplateFinished(QString, QString)));
@@ -983,23 +1078,26 @@ void DBusController::createFileFromTemplateFinished(QString filename, QString er
 }
 
 
-void DBusController::sortByKey(QString key){
+void DBusController::sortByKey(QString key)
+{
     qDebug() << key;
     emit signalManager->sortByKey(key);
 }
 
 
-void DBusController::requestCreatingAppGroup(QStringList urls){
+void DBusController::requestCreatingAppGroup(QStringList urls)
+{
     QDBusPendingReply<> reply = m_desktopDaemonInterface->RequestCreatingAppGroup(urls);
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
 
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
 }
 
-void DBusController::createAppGroup(QString group_url, QStringList urls){
+void DBusController::createAppGroup(QString group_url, QStringList urls)
+{
     Q_UNUSED(group_url)
     Q_UNUSED(urls)
 //    qDebug() << group_url << urls;
@@ -1008,60 +1106,66 @@ void DBusController::createAppGroup(QString group_url, QStringList urls){
 //    }
 }
 
-void DBusController::mergeIntoAppGroup(QStringList urls, QString group_url){
+void DBusController::mergeIntoAppGroup(QStringList urls, QString group_url)
+{
     qDebug() << urls << "merge into" << group_url;
     QDBusPendingReply<> reply = m_desktopDaemonInterface->RequestMergeIntoAppGroup(urls, group_url);
     reply.waitForFinished();
-    if (!reply.isError()){
+    if (!reply.isError()) {
         getAppGroupItemsByUrl(group_url);
-    }else{
+    } else {
         qCritical() << reply.error().message();
     }
 }
 
-void DBusController::copyFiles(QStringList urls){
+void DBusController::copyFiles(QStringList urls)
+{
     emit signalManager->cancleFilesCuted();
     m_clipboardInterface->CopyToClipboard(urls);
 }
 
-void DBusController::cutFiles(QStringList urls){
+void DBusController::cutFiles(QStringList urls)
+{
     m_clipboardInterface->CutToClipboard(urls);
 }
 
-void DBusController::pasteFilesToDesktop(){
+void DBusController::pasteFilesToDesktop()
+{
     m_clipboardInterface->EmitPaste(desktopLocation);
 }
 
-void DBusController::pasteFiles(QString action, QStringList files, QString destination){
+void DBusController::pasteFiles(QString action, QStringList files, QString destination)
+{
     qDebug() << action << files << destination;
-    if (action == "cut"){
+    if (action == "cut") {
         bool isFilesFromDesktop = true;
-        foreach (QString fpath, files) {
+        foreach(QString fpath, files) {
             QString url = decodeUrl(fpath);
             QFileInfo f(url);
             bool flag = (f.absolutePath() == destination);
             isFilesFromDesktop = isFilesFromDesktop && flag;
         }
-        if (isFilesFromDesktop){
+        if (isFilesFromDesktop) {
             emit signalManager->cancelFilesCuted(files);
-        }else{
+        } else {
             emit signalManager->moveFilesExcuted(files, destination);
         }
         qApp->clipboard()->clear();
-    }else if (action == "copy"){
+    } else if (action == "copy") {
         emit signalManager->copyFilesExcuted(files, destination);
     }
 }
 
 
-void DBusController::handelIconThemeChanged(){
+void DBusController::handelIconThemeChanged()
+{
 //    bool rmFlag = QDir(getThumbnailsPath()).removeRecursively();
 //    qDebug() << "Remove cache" << rmFlag;
     requestIconByUrl(ComputerUrl, 48);
     requestIconByUrl(TrashUrl, 48);
-    foreach(QString url, m_desktopItemInfoMap.keys()){
+    foreach(QString url, m_desktopItemInfoMap.keys()) {
 
-        if (m_desktopItemInfoMap.value(url).thumbnail.length() == 0){
+        if (m_desktopItemInfoMap.value(url).thumbnail.length() == 0) {
             requestIconByUrl(url, 48);
         }/*else if (m_desktopItemInfoMap.value(url).thumbnail.length() > 0 && getMimeTypeName(url) == "text/plain"){
             requestIconByUrl(url, 48);

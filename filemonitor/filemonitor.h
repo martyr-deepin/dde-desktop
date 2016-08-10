@@ -28,6 +28,7 @@ public:
 
 signals:
     void fileCreated(QString path);
+    void fileModify(QString path);
     void fileMovedIn(QString path);
     void fileMovedOut(QString out);
     void fileRenamed(QString oldPath, QString newPath);
@@ -38,6 +39,7 @@ signals:
 
 public slots:
     void handleCreated(int cookie, QString path);
+    void handleModify(int cookie, QString path);
     void handleMoveFrom(int cookie, QString path);
     void handleMoveTo(int cookie, QString path);
     void handleDelete(int cookie, QString path);

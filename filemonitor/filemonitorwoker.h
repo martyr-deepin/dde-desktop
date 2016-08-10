@@ -54,6 +54,7 @@ public:
 signals:
     void monitorFolderChanged(const QString& path);
     void fileCreated(int cookie, QString path);
+    void fileModify(int cookie, QString path);
     void fileMovedFrom(int cookie, QString path);
     void fileMovedTo(int cookie, QString out);
     void fileDeleted(int cookie, QString path);

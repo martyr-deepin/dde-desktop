@@ -130,6 +130,7 @@ signals:
 
     /*monitor desktop folder*/
     void itemCreated(DesktopItemInfo fileInfo);
+    void itemModify(QString url, DesktopItemInfo fileInfo);
     void itemDeleted(QString url);
 
     void itemShoudBeMoved(QString url);

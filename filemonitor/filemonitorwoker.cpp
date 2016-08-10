@@ -140,6 +140,8 @@ QStringList FileMonitorWoker::addPathsAction(const QStringList &paths)
                                        )
                                     : (0
                                        | IN_ATTRIB
+                                       | IN_CLOSE_WRITE
+                                       | IN_CLOSE_NOWRITE
                                        | IN_MODIFY
                                        | IN_MOVE
                                        | IN_MOVE_SELF
@@ -322,7 +324,7 @@ void FileMonitorWoker::directoryChanged(const QString &path, bool removed)
 QString FileMonitorWoker::getPathFromID(int id) const
 {
     QHash<int, QString>::const_iterator i = m_idToPath.find(id);
-    qDebug() << m_idToPath;
+//    qDebug() << m_idToPath;
     while (i != m_idToPath.constEnd() && i.key() == id) {
         if ((i + 1) == m_idToPath.constEnd() || (i + 1).key() != id) {
             return i.value();
@@ -361,6 +363,8 @@ void FileMonitorWoker::handleInotifyEvent(const inotify_event *event)
 //        qDebug() << "IN_CREATE" << path;
         emit fileCreated(event->cookie, path);
         addWatchFolder(path);
+    }else if (event->mask & IN_CLOSE_WRITE) {
+        emit this->fileModify(event->cookie, path);
     }else if (event->mask & IN_MOVED_FROM) {
 //        qDebug() << "IN_MOVED_FROM" << path;
         emit fileMovedFrom(event->cookie, path);
@@ -377,7 +381,7 @@ void FileMonitorWoker::handleInotifyEvent(const inotify_event *event)
 //        qDebug() << event->mask << path;
         emit metaDataChanged(event->cookie, path);
     }else{
-        qDebug() << "unknown event";
+//        qDebug() << "unknown event";
     }
 }
 
