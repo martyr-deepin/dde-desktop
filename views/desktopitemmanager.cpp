@@ -692,6 +692,7 @@ void DesktopItemManager::sortedItems(){
             }
         }
     }
+
     emit signalManager->desktopItemsSaved();
 }
 
@@ -728,13 +729,13 @@ void DesktopItemManager::sortedByName(){
 
 void DesktopItemManager::sortedByKey(QString key){
     if (key == "name"){
-        sortedByName();
+        emit signalManager->sortedModeChanged(QDir::Name);
     }else if (key == "size"){
-        sortedByFlags(QDir::Size);
+        emit signalManager->sortedModeChanged(QDir::Size);
     }else if (key == "filetype"){
-        sortedByFlags(QDir::Type);
+        emit signalManager->sortedModeChanged(QDir::Type);
     }else if (key == "mtime"){
-        sortedByFlags(QDir::Time | QDir::Reversed);
+        emit signalManager->sortedModeChanged(QDir::Time | QDir::Reversed);
     }else if (key == "atime"){
 
     }else if (key == "open-with"){
@@ -893,7 +894,7 @@ void DesktopItemManager::loadItemPosition(DesktopItemPointer pDesktopItem){
         namePosBimap.insert(ItemPosPosition(key.toStdString(), pointString(index).toStdString()));
     }
 
-//    qDebug()<<"move to"<< index << pos << key;
+//    qDebug() << "move to" << index << pos << key;
     pDesktopItem->move(pos);
     GridItemPointer pGridItem = gridManager->getItemByPos(pos);
     if (!pGridItem.isNull()){
@@ -912,12 +913,13 @@ bool DesktopItemManager::saveItemPosition(DesktopItemPointer pDesktopItem) {
     return true;
 }
 
-void DesktopItemManager::saveItemsPosition(){
+void DesktopItemManager::saveItemsPosition() {
     clearItemsPosition();
     m_settings.beginGroup("DesktopItems");
     foreach (DesktopItemPointer pItem, m_list_pItems) {
         if (!pItem.isNull()){
             QPoint index = gridManager->mapPosToIndex(pItem->pos());
+//            qDebug() << pItem->getDesktopName() << pItem->pos() << index;
             m_settings.setValue(pItem->getUrl(),index);
         }
     }

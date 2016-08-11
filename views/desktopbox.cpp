@@ -29,13 +29,13 @@ DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
     setGeometry(qApp->desktop()->geometry());
 //    m_backgroundLabel = new BackgroundLabel(false, this);
     m_desktopFrame = new DesktopFrame(this);
-    handleScreenGeometryChanged(); // for desktop frame initialization.
     XcbMisc::instance()->set_window_type(winId(),
                                          XcbMisc::Desktop);
 
     m_screenChangedTimer = new QTimer;
     m_screenChangedTimer->setSingleShot(true);
-    m_screenChangedTimer->setInterval(2000);
+    m_screenChangedTimer->setInterval(1000);
+    m_screenChangedTimer->start(); // start for once, to initialize frame size according to dock strut.
 
     initConnect();
     installEventFilter(this);

@@ -94,6 +94,10 @@ public slots:
     void handleFileMetaDataChanged(const QString& path);
     void handleDesktopItemMetaChanged(const DesktopItemPointer& pItem);
 
+private slots:
+    void saveItemsPosition();
+    void clearItemsPosition();
+
 private:
     typedef boost::bimap<std::string, std::string> ItemPosBimap;
     typedef ItemPosBimap::value_type ItemPosPosition;
@@ -101,8 +105,6 @@ private:
     void loadItemPosition(DesktopItemPointer pDesktopItem);
     bool saveItemPosition(DesktopItemPointer pDesktopItem);
     void removeItemPosition(DesktopItemPointer pDesktopItem);
-    void saveItemsPosition();
-    void clearItemsPosition();
 
     QSettings m_settings;
     ItemPosBimap namePosBimap;
