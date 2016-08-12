@@ -7,6 +7,6 @@ GenericName=Computer
 Icon=computer
 Terminal=false
 Categories=System;
-Exec=nautilus
+Exec=gvfs-open computer://
 OnlyShowIn=Deepin;
 X-AppStream-Ignore=true
