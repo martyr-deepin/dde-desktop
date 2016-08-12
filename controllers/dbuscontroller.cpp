@@ -124,7 +124,7 @@ void DBusController::initConnect(){
     connect(m_fileMonitor, SIGNAL(fileRenamed(QString,QString)), this, SLOT(handleFileRenamed(QString,QString)));
     connect(m_fileMonitor, SIGNAL(fileMetaDataChanged(QString)), this, SLOT(handleFileMetaDataChanged(QString)));
 
-    connect(m_dbusDock, SIGNAL(PositionChanged()), signalManager, SIGNAL(dockPositionChanged()));
+    connect(m_dbusDock, SIGNAL(FrontendWindowRectChanged()), signalManager, SIGNAL(dockAreaChanged()));
     connect(m_dockSettingInterface, SIGNAL(DisplayModeChanged(int)), signalManager, SIGNAL(dockModeChanged(int)));
     connect(m_thumbnailTimer, SIGNAL(timeout()), this, SLOT(delayGetThumbnail()));
     connect(m_pinyinTimer, SIGNAL(timeout()), this, SLOT(convertNameToPinyin()));
@@ -184,26 +184,30 @@ int DBusController::getDockMode(){
 
 QRect DBusController::getDesktopContentRect() const
 {
-    const DockRect dockArea = m_dbusDock->frontendWindowRect();
-    const int dockPosition = m_dbusDock->position();
-
     QRect primaryRect =  m_displayInterface->primaryRect();
 
-    switch (dockPosition) {
-    case 0:// top
-        primaryRect.adjust(0, dockArea.height, 0, 0);
-        break;
-    case 1:// right
-        primaryRect.adjust(0, 0, -dockArea.width, 0);
-        break;
-    case 2:// bottom
-        primaryRect.adjust(0, 0, 0, -dockArea.height);
-        break;
-    case 3:// left
-        primaryRect.adjust(dockArea.width, 0, 0, 0);
-        break;
-    default:
-        break;
+    if (m_dbusDock->isValid()) {
+        const DockRect dockArea = m_dbusDock->frontendWindowRect();
+        const int dockPosition = m_dbusDock->position();
+
+        switch (dockPosition) {
+        case 0:// top
+            primaryRect.adjust(0, dockArea.height, 0, 0);
+            break;
+        case 1:// right
+            primaryRect.adjust(0, 0, -dockArea.width, 0);
+            break;
+        case 2:// bottom
+            primaryRect.adjust(0, 0, 0, -dockArea.height);
+            break;
+        case 3:// left
+            primaryRect.adjust(dockArea.width, 0, 0, 0);
+            break;
+        default:
+            break;
+        }
+    } else {
+        qDebug() << "dock dbus interface is not avaiable now.";
     }
 
     return primaryRect;

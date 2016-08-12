@@ -145,7 +145,7 @@ signals:
 
     /*dock mode change*/
     void dockModeChanged(int dockMode);
-    void dockPositionChanged();
+    void dockAreaChanged();
 
     /*create folder/file/template finised*/
     void fileCreated(QString filename);

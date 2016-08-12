@@ -38,7 +38,7 @@ public slots:
     void renameFinished();
 
     void handleScreenGeometryChanged();
-    void handleDockPositionChanged();
+    void handleDockAreaChanged();
 
     void setAppGroupRightClicked(bool flag);
 

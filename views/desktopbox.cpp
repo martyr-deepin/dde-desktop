@@ -48,7 +48,7 @@ void DesktopBox::initConnect(){
     connect(signalManager, SIGNAL(appGroupItemRightClicked(bool)), this, SLOT(setAppGroupRightClicked(bool)));
     connect(signalManager, SIGNAL(activeWindowChanged(uint)), this, SLOT(handleActiveWindowChanged(uint)));
     connect(m_screenChangedTimer, SIGNAL(timeout()), this, SLOT(handleScreenGeometryChanged()));
-    connect(signalManager, SIGNAL(dockPositionChanged()), this, SLOT(handleDockPositionChanged()));
+    connect(signalManager, SIGNAL(dockAreaChanged()), this, SLOT(handleDockAreaChanged()));
 }
 
 DesktopFrame* DesktopBox::getDesktopFrame(){
@@ -138,7 +138,7 @@ void DesktopBox::handleScreenGeometryChanged(){
     emit signalManager->desktopItemsSaved();
 }
 
-void DesktopBox::handleDockPositionChanged()
+void DesktopBox::handleDockAreaChanged()
 {
     QRect desktopContectRect = dbusController->getDesktopContentRect();
 
