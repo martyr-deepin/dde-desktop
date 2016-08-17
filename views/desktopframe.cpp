@@ -524,7 +524,8 @@ void DesktopFrame::startDrag(){
         pDrag->setMimeData(mimeData);
         pDrag->setPixmap(dragPixmap);
         QRect borderRect = getCheckedBorderRect();
-        pDrag->setHotSpot(QPoint(-borderRect.x() + QCursor::pos().x(), -borderRect.y() + QCursor::pos().y() ));
+        pDrag->setHotSpot(QPoint(-borderRect.x() + QCursor::pos().x() - x(),
+                                 -borderRect.y() + QCursor::pos().y() - y()));
         Qt::DropAction action = pDrag->exec(Qt::MoveAction | Qt::CopyAction, Qt::CopyAction);
         if (action == Qt::MoveAction){
             if (!m_isGridOn){
@@ -627,7 +628,7 @@ QPixmap DesktopFrame::getCheckedPixmap(){
         QFrame* F = new QFrame(this);
         F->setAttribute(Qt::WA_DeleteOnClose);
         F->setObjectName("DesktopFrame");
-        F->setGeometry(qApp->desktop()->availableGeometry());
+        F->setGeometry(this->geometry());
         foreach (DesktopItemPointer pItem, m_checkedDesktopItems) {
             DesktopItem* item = new DesktopItem(pItem->getDesktopIcon(),
                                            pItem->getDesktopName(), F);
@@ -642,7 +643,7 @@ QPixmap DesktopFrame::getCheckedPixmap(){
             }else{
                 pItem->showFullWrapName();
             }
-            item->move(mapToGlobal(pItem->pos()));
+            item->move(mapTo(this, pItem->pos()));
             item->setObjectName("DragChecked");
         }
         F->setStyleSheet(qApp->styleSheet());
