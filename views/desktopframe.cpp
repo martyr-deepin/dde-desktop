@@ -148,13 +148,18 @@ void DesktopFrame::changeGridMode(bool mode){
     }
 }
 
-DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint pos){
-    for (int i=m_desktopItemManager->getItems().count() - 1; i >= 0; i--){
-        if (m_desktopItemManager->getItems().at(i)->geometry().contains(pos)){
-            m_TopDesktopItem = m_desktopItemManager->getItems().at(i);
+DesktopItemPointer DesktopFrame::getTopDesktopItemByPos(QPoint){
+    const QPoint pos = QCursor::pos();
+    const int count = m_desktopItemManager->getItems().count();
+    for (int i=count - 1; i >= 0; i--){
+        DesktopItemPointer item = m_desktopItemManager->getItems().at(i);
+        QPoint itemTopLeftGlobal = item->mapToGlobal(QPoint(0, 0));
+        if (QRect(itemTopLeftGlobal, item->size()).contains(pos)){
+            m_TopDesktopItem = item;
             return m_TopDesktopItem;
         }
     }
+
     return DesktopItemPointer();
 }
 
