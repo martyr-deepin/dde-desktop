@@ -765,6 +765,11 @@ void DesktopItemManager::sortedItems()
 
 void DesktopItemManager::sortedByName()
 {
+    if (m_sortedPinyin_pItems.isEmpty()) {
+        qDebug() << "m_sortedPinyin_pItems is empty, skip this sort operation.";
+        return;
+    }
+
     gridManager->clearDeskopItemsStatus();
     clearItemsPosition();
     m_list_pItems.clear();
