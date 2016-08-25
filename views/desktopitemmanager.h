@@ -73,7 +73,7 @@ public slots:
     void sortedItems();
     void sortedByName();
     void sortedByKey(QString key);
-    void resort();
+    void rearrange();
 
     void setShoudBeMovedItem(DesktopItemPointer pItem);
     void setShoudBeMovedItemByUrl(QString url);

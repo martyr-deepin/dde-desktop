@@ -13,6 +13,11 @@
 #include "controllers/dbuscontroller.h"
 #include "desktopframe.h"
 
+static QString pointString(const QPoint &p)
+{
+    return QString("%1,%2").arg(p.x()).arg(p.y());
+}
+
 DesktopItemManager::DesktopItemManager(QObject *parent): QObject(parent)
 {
 
@@ -23,6 +28,7 @@ DesktopItemManager::DesktopItemManager(QObject *parent): QObject(parent)
     int flag = settings.value("sortFlag", QDir::Name).toInt();
     settings.endGroup();
     m_sortFlag = static_cast<QDir::SortFlags>(flag);
+    qDebug() << "load sort flag from config file: " << m_sortFlag;
 
     m_shoudbeMovedItem = DesktopItemPointer();
 
@@ -75,7 +81,7 @@ void DesktopItemManager::initConnect()
     connect(signalManager, SIGNAL(sortByKey(QString)),
             this, SLOT(sortedByKey(QString)));
 
-    connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(resort()));
+    connect(signalManager, SIGNAL(gridOnResorted()), this, SLOT(rearrange()));
     connect(signalManager, SIGNAL(desktopItemsChanged(DesktopItemInfoMap)),
             this, SLOT(addItems(DesktopItemInfoMap)));
     connect(signalManager, SIGNAL(appGounpItemsChanged(QString, DesktopItemInfoMap)),
@@ -676,6 +682,8 @@ QList<DesktopItemPointer> DesktopItemManager::getItemsByStartEnd(QPoint startPos
 
 void DesktopItemManager::sortedByFlags(QDir::SortFlags flag)
 {
+    qDebug() << "sort by flag: " << flag;
+
     gridManager->clearDeskopItemsStatus();
     clearItemsPosition();
 
@@ -765,6 +773,8 @@ void DesktopItemManager::sortedItems()
 
 void DesktopItemManager::sortedByName()
 {
+    qDebug() << "sort by name";
+
     if (m_sortedPinyin_pItems.isEmpty()) {
         qDebug() << "m_sortedPinyin_pItems is empty, skip this sort operation.";
         return;
@@ -818,14 +828,33 @@ void DesktopItemManager::sortedByKey(QString key){
     }
 }
 
-void DesktopItemManager::resort()
+void DesktopItemManager::rearrange()
 {
-    if (m_sortFlag == QDir::Name) {
-        sortedByName();
-    } else {
-        sortedByFlags(m_sortFlag);
+    qDebug() << "rearrange items.";
+
+    gridManager->clearDeskopItemsStatus();
+    m_settings.clear();
+    namePosBimap.clear();
+    m_list_pItems.clear();
+
+    QList<DesktopItem*> children = m_parentWindow->findChildren<DesktopItem*>();
+
+    QMap<QString, QString> map;
+    for (DesktopItem * item : children) {
+        QPoint p = item->pos();
+        QString url = item->getUrl();
+
+        map[pointString(p)] = url;
     }
 
+    QStringList poses = map.keys();
+    std::sort(poses.begin(), poses.end());
+
+    for (QString pos : poses) {
+        m_list_pItems.append(m_pItems.value(map.value(pos)));
+    }
+
+    sortedItems();
 }
 
 QDir::SortFlags DesktopItemManager::getSortFlag()
@@ -944,16 +973,8 @@ DesktopItemManager::~DesktopItemManager()
 
 }
 
-static QString pointString(const QPoint &p)
-{
-    return QString("%1,%2").arg(p.x()).arg(p.y());
-}
-
 void DesktopItemManager::loadItemPosition(DesktopItemPointer pDesktopItem)
 {
-    QSettings setting;
-    setting.beginGroup("DesktopItems");
-
     QPoint defaultPos;
     GridItemPointer blankItem = gridManager->getBlankItem();
     if (blankItem.isNull()) {
@@ -962,9 +983,14 @@ void DesktopItemManager::loadItemPosition(DesktopItemPointer pDesktopItem)
         defaultPos = blankItem->getPos();
     }
 
+    QSettings setting;
+    setting.beginGroup("DesktopItems");
     QPoint pos = defaultPos;
     QString key = pDesktopItem->getUrl();
     QPoint index = setting.value(key, defaultPos).toPoint();
+    setting.endGroup();
+//    qDebug() << "load item position from config file: " << pDesktopItem->getUrl() << index;
+
     if (gridManager->isVaildIndex(index.x(), index.y())) {
         pos = gridManager->mapIndexToPos(index.x(), index.y());
     } else {
@@ -986,7 +1012,6 @@ void DesktopItemManager::loadItemPosition(DesktopItemPointer pDesktopItem)
     if (!pGridItem.isNull()) {
         pGridItem->setDesktopItem(true);
     }
-    setting.endGroup();
 
     updateItems(pDesktopItem->getUrl(), pDesktopItem);
 }
