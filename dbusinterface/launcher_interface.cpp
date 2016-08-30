@@ -18,6 +18,8 @@
 LauncherInterface::LauncherInterface(QObject *parent)
     : QDBusAbstractInterface(staticServiceName(), staticPathName(), staticInterfaceName(), QDBusConnection::sessionBus(), parent)
 {
+    qRegisterMetaType<ItemInfo>();
+    qDBusRegisterMetaType<ItemInfo>();
 }
 
 LauncherInterface::~LauncherInterface()

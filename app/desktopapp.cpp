@@ -208,7 +208,11 @@ void DesktopApp::registerDBusService(){
 void DesktopApp::createLauncerInterface()
 {
     m_launcherInterface = new LauncherInterface(this);
-    connect(m_launcherInterface, SIGNAL(UninstallSuccess(QString)), this, SLOT(handleAppUninstalled(QString)));
+    connect(m_launcherInterface, &LauncherInterface::ItemChanged, [this] (QString status, ItemInfo info, qlonglong) {
+        if (status == "deleted") {
+            handleAppUninstalled(info.m_key);
+        }
+    });
 }
 
 void DesktopApp::handleAppUninstalled(const QString &appKey){
@@ -234,18 +238,9 @@ void DesktopApp::removeInvalidDesktopFile(const QString &path, const QString &ap
     int size = desktopInfoList.size();
     for (int i = 0; i < size; i++) {
         QFileInfo fileInfo = desktopInfoList.at(i);
-        qDebug() << fileInfo.filePath() << fileInfo.fileName();
-        if (fileInfo.fileName().endsWith(".desktop")){
-            QSettings desktopFileSettings(fileInfo.filePath(), QSettings::IniFormat);
-            desktopFileSettings.beginGroup("Desktop Entry");
-            qDebug() << desktopFileSettings.contains("X-Deepin-AppID");
-            if (desktopFileSettings.contains("X-Deepin-AppID")){
-                if (desktopFileSettings.value("X-Deepin-AppID") == appKey){
-                    bool removeFileFlag = QFile(fileInfo.filePath()).remove();
-                    qDebug() << "Remove" << fileInfo.filePath() << removeFileFlag;
-                }
-            }
-            desktopFileSettings.endGroup();
+        qDebug() << appKey << fileInfo.fileName();
+        if (fileInfo.fileName().contains(appKey)) {
+            QFile(fileInfo.filePath()).remove();
         }
     }
 }

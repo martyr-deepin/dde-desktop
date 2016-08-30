@@ -20,6 +20,38 @@
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
 
+struct ItemInfo
+{
+    QString m_desktop;
+    QString m_name;
+    QString m_key;
+    QString m_iconKey;
+    qlonglong m_categoryId;
+    qlonglong m_installedTime;
+
+    friend QDBusArgument &operator<<(QDBusArgument &argument, const ItemInfo &info)
+    {
+        argument.beginStructure();
+        argument << info.m_desktop << info.m_name << info.m_key << info.m_iconKey;
+        argument << info.m_categoryId << info.m_installedTime;
+        argument.endStructure();
+
+        return argument;
+    }
+
+    friend const QDBusArgument &operator>>(const QDBusArgument &argument, ItemInfo &info)
+    {
+        argument.beginStructure();
+        argument >> info.m_desktop >> info.m_name >> info.m_key >> info.m_iconKey;
+        argument >> info.m_categoryId >> info.m_installedTime;
+        argument.endStructure();
+
+        return argument;
+    }
+};
+
+Q_DECLARE_METATYPE(ItemInfo)
+
 /*
  * Proxy class for interface com.deepin.dde.daemon.Launcher
  */
@@ -42,6 +74,7 @@ public:
 
 Q_SIGNALS: // SIGNALS
     void UninstallSuccess(const QString &in0);
+    void ItemChanged(const QString &in0, ItemInfo in1, qlonglong in2);
 };
 
 #endif
