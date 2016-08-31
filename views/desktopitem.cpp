@@ -116,7 +116,6 @@ void DesktopItem::initReadableLabel()
     painter.begin(&pixmap);
     renderer.render(&painter);
     painter.end();
-    pixmap.save("/tmp/1.png");
     m_unReadableIndicatorLabel->setPixmap(pixmap);
 }
 
