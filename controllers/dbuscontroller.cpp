@@ -466,10 +466,6 @@ void DBusController::refreshThumail(QString url, uint size)
         _url = FilePrefix + url;
     }
 
-    if (!isRequestThumbnail(url)) {
-        return;
-    }
-
     QString mimetype = getMimeTypeName(url);
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
     reply.waitForFinished();
@@ -487,7 +483,6 @@ void DBusController::refreshThumail(QString url, uint size)
         if (!isAppGroup(url)) {
             QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
             emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
-            requestIconByUrl(url, size);
         }
     }
 }

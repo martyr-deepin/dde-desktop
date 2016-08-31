@@ -209,7 +209,7 @@ void CopyjobWorker::handleFinished(){
     if (m_jobDataDetail.contains("file")){
         QString f = joinPath(desktopLocation, m_jobDataDetail.value("file"));
         if (QFile(f).exists()){
-            qDebug() << f;
+            qDebug() << "refresh copy file icon of file: " << f;
             emit signalManager->refreshCopyFileIcon(f);
         }
     }
