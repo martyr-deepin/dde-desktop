@@ -480,8 +480,28 @@ void DBusController::refreshThumail(QString url, uint size)
         }
     } else {
         qCritical() << reply.error().message();
+
         if (!isAppGroup(url)) {
-            QString iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+            QString iconUrl;
+
+            // Workaround for desktop files.
+            if (mimetype == "application/x-desktop") {
+                QSettings desktopFileSettings(decodeUrl(_url), QSettings::IniFormat);
+                desktopFileSettings.setIniCodec("UTF-8");
+                desktopFileSettings.beginGroup("Desktop Entry");
+                QString iconName = desktopFileSettings.value("Icon", "text/plain").toString();
+                if (iconName.startsWith("/") && QFile::exists(iconName)) {
+                    iconUrl = iconName;
+                } else if (iconName.endsWith(".png") || iconName.endsWith(".svg")) {
+                    iconName = iconName.remove(".png").remove(".svg");
+                    iconUrl = ThemeAppIcon::getThemeIconPath(iconName);
+                } else {
+                    iconUrl = ThemeAppIcon::getThemeIconPath(iconName);
+                }
+            } else {
+                iconUrl = ThemeAppIcon::getThemeIconPath(getMimeTypeIconName(url));
+            }
+
             emit signalManager->desktoItemIconUpdated(url, iconUrl, size);
         }
     }
