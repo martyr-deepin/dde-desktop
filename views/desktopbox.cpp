@@ -81,20 +81,25 @@ void DesktopBox::handleActiveWindowChanged(uint windowId)
 
 void DesktopBox::mousePressEvent(QMouseEvent *event)
 {
-    QPoint pos(event->x() - m_desktopFrame->x(), event->y() - m_desktopFrame->y());
-    QMouseEvent * ev = new QMouseEvent(event->type(), pos, event->button(), event->buttons(), event->modifiers());
-    QApplication::postEvent(m_desktopFrame, ev);
+    // Just take care of mouse clicks inside primary screen.
+    if (qApp->primaryScreen() && qApp->primaryScreen()->geometry().contains(event->globalPos())) {
+        QPoint pos(event->x() - m_desktopFrame->x(), event->y() - m_desktopFrame->y());
+        QMouseEvent * ev = new QMouseEvent(event->type(), pos, event->button(), event->buttons(), event->modifiers());
+        QApplication::postEvent(m_desktopFrame, ev);
 
-    event->accept();
+        event->accept();
+    }
 }
 
 void DesktopBox::mouseReleaseEvent(QMouseEvent *event)
 {
-    QPoint pos(event->x() - m_desktopFrame->x(), event->y() - m_desktopFrame->y());
-    QMouseEvent * ev = new QMouseEvent(event->type(), pos, event->button(), event->buttons(), event->modifiers());
-    QApplication::postEvent(m_desktopFrame, ev);
+    if (qApp->primaryScreen() && qApp->primaryScreen()->geometry().contains(event->globalPos())) {
+        QPoint pos(event->x() - m_desktopFrame->x(), event->y() - m_desktopFrame->y());
+        QMouseEvent * ev = new QMouseEvent(event->type(), pos, event->button(), event->buttons(), event->modifiers());
+        QApplication::postEvent(m_desktopFrame, ev);
 
-    event->accept();
+        event->accept();
+    }
 }
 
 void DesktopBox::handleRename(){
