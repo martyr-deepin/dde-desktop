@@ -467,6 +467,12 @@ void DBusController::refreshThumail(QString url, uint size)
     }
 
     QString mimetype = getMimeTypeName(url);
+
+    // Default icon is text-plain, so no need to update.
+    if (mimetype == "text/plain") {
+        return;
+    }
+
     QDBusPendingReply<QString> reply = m_fileInfoInterface->GetThumbnailWithMIME(_url, size, mimetype);
     reply.waitForFinished();
     if (!reply.isError()) {
