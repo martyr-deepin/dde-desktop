@@ -9,6 +9,8 @@
 
 #include "dbuscontroller.h"
 
+#include <XdgDesktopFile>
+
 #include "dbusinterface/monitormanager_interface.h"
 #include "dbusinterface/clipboard_interface.h"
 #include "dbusinterface/watcherinstance_interface.h"
@@ -492,10 +494,10 @@ void DBusController::refreshThumail(QString url, uint size)
 
             // Workaround for desktop files.
             if (mimetype == "application/x-desktop") {
-                QSettings desktopFileSettings(decodeUrl(_url), QSettings::IniFormat);
-                desktopFileSettings.setIniCodec("UTF-8");
-                desktopFileSettings.beginGroup("Desktop Entry");
-                QString iconName = desktopFileSettings.value("Icon", "text/plain").toString();
+                XdgDesktopFile desktopFile;
+                desktopFile.load(decodeUrl(_url));
+                QString iconName = desktopFile.iconName();
+
                 if (iconName.startsWith("/") && QFile::exists(iconName)) {
                     iconUrl = iconName;
                 } else if (iconName.endsWith(".png") || iconName.endsWith(".svg")) {
