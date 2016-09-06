@@ -150,6 +150,12 @@ void DesktopBox::handleDockAreaChanged()
 {
     QRect desktopContectRect = dbusController->getDesktopContentRect();
 
+    // rearrange will change user customized desktop item positions.
+    // so try to prevent rearrange from happening as possible as we can.
+    if (desktopContectRect.size() == m_desktopFrame->size()) {
+        return;
+    }
+
     m_desktopFrame->move(desktopContectRect.x(), desktopContectRect.y());
     m_desktopFrame->setFixedSize(desktopContectRect.width(), desktopContectRect.height());
     emit signalManager->desktopFrameRectChanged(desktopContectRect);
