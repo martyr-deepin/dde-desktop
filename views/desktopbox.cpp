@@ -140,6 +140,11 @@ void DesktopBox::handleScreenGeometryChanged(){
 
     QRect desktopContectRect = dbusController->getDesktopContentRect();
     m_desktopFrame->move(desktopContectRect.x(), desktopContectRect.y());
+
+    if (desktopContectRect.size() == m_desktopFrame->size()) {
+        return;
+    }
+
     m_desktopFrame->setFixedSize(desktopContectRect.width(), desktopContectRect.height());
     emit signalManager->desktopFrameRectChanged(desktopContectRect);
     emit signalManager->gridSizeTypeChanged(SizeType::Middle);
@@ -150,6 +155,9 @@ void DesktopBox::handleScreenGeometryChanged(){
 void DesktopBox::handleDockAreaChanged()
 {
     QRect desktopContectRect = dbusController->getDesktopContentRect();
+    m_desktopFrame->move(desktopContectRect.x(), desktopContectRect.y());
+
+    qDebug() << "handleDockAreaChanged" << desktopContectRect;
 
     // rearrange will change user customized desktop item positions.
     // so try to prevent rearrange from happening as possible as we can.
@@ -157,7 +165,6 @@ void DesktopBox::handleDockAreaChanged()
         return;
     }
 
-    m_desktopFrame->move(desktopContectRect.x(), desktopContectRect.y());
     m_desktopFrame->setFixedSize(desktopContectRect.width(), desktopContectRect.height());
     emit signalManager->desktopFrameRectChanged(desktopContectRect);
     emit signalManager->gridSizeTypeChanged(SizeType::Middle);

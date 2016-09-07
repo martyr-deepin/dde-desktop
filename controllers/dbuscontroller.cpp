@@ -10,6 +10,7 @@
 #include "dbuscontroller.h"
 
 #include <XdgDesktopFile>
+#include <QGSettings>
 
 #include "dbusinterface/monitormanager_interface.h"
 #include "dbusinterface/clipboard_interface.h"
@@ -201,29 +202,63 @@ QRect DBusController::getDesktopContentRect() const
 {
     QRect primaryRect =  m_displayInterface->primaryRect();
 
-    if (m_dbusDock->isValid()) {
-        const DockRect dockArea = m_dbusDock->frontendWindowRect();
-        const int dockPosition = m_dbusDock->position();
+    QGSettings gs("com.deepin.dde.dock");
 
-        switch (dockPosition) {
-        case 0:// top
-            primaryRect.adjust(0, dockArea.height, 0, 0);
+    const int DockHeight = 70;
+    QString dockPosition = gs.get("position").toString();
+
+    if (m_dbusDock->isValid()) {
+        switch (m_dbusDock->position()) {
+        case 0:
+            dockPosition = "top";
             break;
-        case 1:// right
-            primaryRect.adjust(0, 0, -dockArea.width, 0);
+        case 1:
+            dockPosition = "right";
             break;
-        case 2:// bottom
-            primaryRect.adjust(0, 0, 0, -dockArea.height);
+        case 2:
+            dockPosition = "bottom";
             break;
-        case 3:// left
-            primaryRect.adjust(dockArea.width, 0, 0, 0);
+        case 3:
+            dockPosition = "left";
             break;
         default:
             break;
         }
-    } else {
-        qDebug() << "dock dbus interface is not avaiable now.";
     }
+
+    if (dockPosition == "top") {
+        primaryRect.adjust(0, DockHeight, 0, 0);
+    } else if (dockPosition == "right") {
+        primaryRect.adjust(0, 0, -DockHeight, 0);
+    } else if (dockPosition == "bottom") {
+        primaryRect.adjust(0, 0, 0, -DockHeight);
+    } else if (dockPosition == "left") {
+        primaryRect.adjust(DockHeight, 0, 0, 0);
+    }
+
+//    if (m_dbusDock->isValid()) {
+//        const DockRect dockArea = m_dbusDock->frontendWindowRect();
+//        const int dockPosition = m_dbusDock->position();
+
+//        switch (dockPosition) {
+//        case 0:// top
+//            primaryRect.adjust(0, dockArea.height, 0, 0);
+//            break;
+//        case 1:// right
+//            primaryRect.adjust(0, 0, -dockArea.width, 0);
+//            break;
+//        case 2:// bottom
+//            primaryRect.adjust(0, 0, 0, -dockArea.height);
+//            break;
+//        case 3:// left
+//            primaryRect.adjust(dockArea.width, 0, 0, 0);
+//            break;
+//        default:
+//            break;
+//        }
+//    } else {
+//        qDebug() << "dock dbus interface is not avaiable now.";
+//    }
 
     return primaryRect;
 }
