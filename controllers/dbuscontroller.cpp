@@ -190,6 +190,13 @@ int DBusController::getDockMode()
     return mode;
 }
 
+QRect DBusController::getScreenGeometry() const
+{
+    return QRect(0, 0,
+                 m_displayInterface->screenWidth(),
+                 m_displayInterface->screenHeight());
+}
+
 QRect DBusController::getDesktopContentRect() const
 {
     QRect primaryRect =  m_displayInterface->primaryRect();

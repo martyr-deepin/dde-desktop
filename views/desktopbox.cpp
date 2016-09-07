@@ -26,7 +26,8 @@
 
 DesktopBox::DesktopBox(QWidget *parent) : TranslucentFrame(parent)
 {
-    setGeometry(qApp->desktop()->geometry());
+    setGeometry(dbusController->getScreenGeometry());
+
 //    m_backgroundLabel = new BackgroundLabel(false, this);
     m_desktopFrame = new DesktopFrame(this);
     QRect desktopContectRect = dbusController->getDesktopContentRect();
@@ -135,7 +136,7 @@ void DesktopBox::renameFinished(){
 
 void DesktopBox::handleScreenGeometryChanged(){
     qDebug() << "handleScreenGeometryChanged" << qApp->desktop()->geometry();
-    setGeometry(qApp->desktop()->geometry());
+    setGeometry(dbusController->getScreenGeometry());
 
     QRect desktopContectRect = dbusController->getDesktopContentRect();
     m_desktopFrame->move(desktopContectRect.x(), desktopContectRect.y());

@@ -107,6 +107,7 @@ public:
     void removeDesktopItemInfoByUrl(QString url);
 
     int getDockMode();
+    QRect getScreenGeometry() const;
     QRect getDesktopContentRect() const;
 
 signals:
