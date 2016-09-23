@@ -202,17 +202,11 @@ void CopyjobWorker::handleTimeout(){
 
 void CopyjobWorker::handleFinished(){
     qDebug() << m_jobDetail << m_jobDataDetail;
-    if (m_jobDetail.contains("jobPath")){
-        emit signalManager->copyJobRemoved(m_jobDetail);
-    }
-    m_conflictController->unRegisterDBusService();
-    if (m_jobDataDetail.contains("file")){
-        QString f = joinPath(desktopLocation, m_jobDataDetail.value("file"));
-        if (QFile(f).exists()){
-            qDebug() << "refresh copy file icon of file: " << f;
-            emit signalManager->refreshCopyFileIcon(f);
-        }
-    }
+
+    m_jobDataDetail["progress"] = "100";
+    emit signalManager->copyJobDataUpdated(m_jobDetail, m_jobDataDetail);
+
+    QTimer::singleShot(500, this, &CopyjobWorker::removeJob);
 }
 
 void CopyjobWorker::handleTaskAborted(const QMap<QString, QString> &jobDetail){
@@ -232,4 +226,19 @@ void CopyjobWorker::stopTimer(){
 
 void CopyjobWorker::restartTimer(){
     m_progressTimer->start();
+}
+
+void CopyjobWorker::removeJob()
+{
+    if (m_jobDetail.contains("jobPath")){
+        emit signalManager->copyJobRemoved(m_jobDetail);
+    }
+    m_conflictController->unRegisterDBusService();
+    if (m_jobDataDetail.contains("file")){
+        QString f = joinPath(desktopLocation, m_jobDataDetail.value("file"));
+        if (QFile(f).exists()){
+            qDebug() << "refresh copy file icon of file: " << f;
+            emit signalManager->refreshCopyFileIcon(f);
+        }
+    }
 }

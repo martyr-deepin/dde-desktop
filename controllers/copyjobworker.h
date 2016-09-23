@@ -59,6 +59,8 @@ public slots:
     void stopTimer();
     void restartTimer();
 private:
+    void removeJob();
+
     QStringList m_files;
     QString m_destination;
     QString m_copyjobPath;
