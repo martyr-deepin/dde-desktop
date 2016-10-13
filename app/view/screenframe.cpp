@@ -10,41 +10,43 @@
 
 #include <QApplication>
 #include <QScreen>
-#include <QLabel>
-#include <QListView>
-#include <QStringListModel>
 #include <QDebug>
 
 #include "util/xcb/xcb.h"
 
+#include "widgetcanvas.h"
+
 ScreenFrame::ScreenFrame(QWidget *parent) : QWidget(parent)
 {
     setAttribute(Qt::WA_TranslucentBackground);
-    setGeometry(qApp->primaryScreen()->availableGeometry());
-
     Xcb::XcbMisc::instance().set_window_type(winId(), Xcb::XcbMisc::Desktop);
 
-    QListView *a = new QListView(this);
-    a->setViewMode(QListView::IconMode);
+    setGeometry(qApp->primaryScreen()->geometry());
 
-    auto model = new QStringListModel(this);
+    wc = new WidgetCanvas(this);
+    wc->setGeometry(qApp->primaryScreen()->availableGeometry());
+    wc->setCellSize(DDE::Desktop::CellSize128);
 
-    // Make data
-    QStringList List;
-    List << "Test" << "Module" << "Iceyer";
-
-    // Populate our model
-    model->setStringList(List);
-
-    // Glue model and view together
-    a->setModel(model);
-    a->resize(size());
-    a->setAutoFillBackground(false);
-    a->setStyleSheet("background-color: transparent;font-size: 128px; color:red;");
-
-    connect(qApp->primaryScreen(), &QScreen::availableGeometryChanged, this, [=](const QRect &geometry) {
-        qDebug() << geometry;
+    connect(qApp->primaryScreen(), &QScreen::availableGeometryChanged, this, [ = ](const QRect & geometry) {
+        qDebug() << "Screen geometry changed" << geometry;
+        qDebug() << qApp->primaryScreen()->geometry()
+                 << qApp->primaryScreen()->availableGeometry();
         setGeometry(qApp->primaryScreen()->availableGeometry());
-        a->resize(size());
+        wc->resize(size());
     });
+}
+
+QSize ScreenFrame::canvasSize()
+{
+    return wc->size();
+}
+
+void ScreenFrame::bindPresenter(WidgetPresenter *)
+{
+
+}
+
+void ScreenFrame::setModel(QAbstractItemModel *model)
+{
+    wc->setModel(model);
 }

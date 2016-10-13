@@ -1,0 +1,137 @@
+dde-desktop (3.0.11-1) unstable; urgency=low
+
+  * Autobuild Tag 3.0.11 
+
+ -- TagBuilder <tagbuilder@deepin.com>  Fri, 12 Aug 2016 17:30:16 +0000
+
+dde-desktop (3.0.10-1) unstable; urgency=low
+
+  * Autobuild Tag 3.0.10 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Fri, 27 May 2016 03:22:20 +0000
+
+dde-desktop (3.0.9-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.9 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Thu, 26 May 2016 17:23:08 +0000
+
+dde-desktop (3.0.6.1-2) stable; urgency=low
+
+  * Rebuild Version 3.0.6.1 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 23 May 2016 17:57:29 +0000
+
+dde-desktop (3.0.6.1-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.6.1 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 23 May 2016 17:48:27 +0000
+
+dde-desktop (3.0.8-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.8 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 23 May 2016 16:27:36 +0000
+
+dde-desktop (3.0.6.1-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.6.1 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 23 May 2016 12:35:02 +0000
+
+dde-desktop (3.0.6-3) stable; urgency=low
+
+  * Rebuild Version 3.0.6 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 25 Apr 2016 11:20:41 +0000
+
+dde-desktop (3.0.6-2) stable; urgency=low
+
+  * Rebuild Version 3.0.6 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Thu, 21 Apr 2016 16:18:36 +0000
+
+dde-desktop (3.0.6-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.6 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 07 Mar 2016 15:48:50 +0000
+
+dde-desktop (3.0.5-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.5 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 22 Feb 2016 16:39:31 +0000
+
+dde-desktop (3.0.4-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.4 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Fri, 22 Jan 2016 19:59:43 +0000
+
+dde-desktop (3.0.3-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.3 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Tue, 12 Jan 2016 18:33:46 +0000
+
+dde-desktop (3.0.2-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.2 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Wed, 30 Dec 2015 15:15:18 +0000
+
+dde-desktop (3.0.1-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.1 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Tue, 29 Dec 2015 21:28:56 +0000
+
+dde-desktop (3.0.0-1) stable; urgency=low
+
+  * Autobuild Tag 3.0.0 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 28 Dec 2015 20:51:58 +0000
+
+dde-desktop (2.90.4-4) stable; urgency=low
+
+  * Rebuild Version 2.90.4 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Tue, 22 Dec 2015 13:21:13 +0000
+
+dde-desktop (2.90.4-3) stable; urgency=low
+
+  * Rebuild Version 2.90.4 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 21 Dec 2015 22:41:58 +0000
+
+dde-desktop (2.90.4-2) stable; urgency=low
+
+  * Rebuild Version 2.90.4 
+
+ -- TagBuilder <tabbuilder@linuxdeepin.com>  Sun, 20 Dec 2015 11:08:04 +0000
+
+dde-desktop (2.90.4-1) stable; urgency=low
+
+  * Autobuild Tag 2.90.4 
+
+ -- TagBuilder <tabbuilder@linuxdeepin.com>  Sat, 19 Dec 2015 15:59:01 +0000
+
+dde-desktop (2.90.3-1) stable; urgency=low
+
+  * Autobuild Tag 2.90.3 
+
+ -- TagBuilder <tabbuilder@linuxdeepin.com>  Wed, 09 Dec 2015 22:04:54 +0000
+
+dde-desktop (2.90.2-1) stable; urgency=low
+
+  * Autobuild Tag 2.90.2 
+
+ -- TagBuilder <tabbuilder@linuxdeepin.com>  Fri, 20 Nov 2015 09:46:23 +0000
+
+dde-desktop (0.0~git20150824-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Mon, 24 Aug 2015 19:03:01 +0800

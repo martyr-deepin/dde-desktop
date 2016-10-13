@@ -15,7 +15,8 @@
 #include "util/dde/ddesession.h"
 #include "util/gtk/gtkworkaround.h"
 
-#include "view/screenframe.h"
+#include "config/config.h"
+#include "desktop.h"
 
 using namespace Dtk::Util;
 using namespace Dtk::Widget;
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
 
     QDBusConnection conn = QDBusConnection::sessionBus();
 
+    Config::instance();
     // TODO: Gtk Workaround
     Gtk::Init();
 //    app.connect(&Gtk::GtkWorkaround::instance(),
@@ -43,8 +45,9 @@ int main(int argc, char *argv[])
 //        qApp->exit(100);
 //    });
 
-    ScreenFrame qsf;
-    qsf.show();
+    Desktop::instance().loadPlugins();
+    Desktop::instance().loadData();
+    Desktop::instance().show();
 
     // Notify dde-desktop start up
     Dde::Session::RegisterDdeSession();

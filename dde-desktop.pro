@@ -4,6 +4,6 @@
 #
 #-------------------------------------------------
 
-DEFINES     += QT_MESSAGELOGCONTEXT
 TEMPLATE    = subdirs
-SUBDIRS     += app
+SUBDIRS     += app \
+               plugin

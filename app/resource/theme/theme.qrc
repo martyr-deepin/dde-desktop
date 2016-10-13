@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>dark/WidgetCanvas.theme</file>
+    </qresource>
+</RCC>

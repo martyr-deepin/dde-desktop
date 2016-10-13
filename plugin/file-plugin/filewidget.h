@@ -6,31 +6,21 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  **/
-#ifndef QSCREENFRAME_H
-#define QSCREENFRAME_H
+
+#pragma once
 
 #include <QWidget>
 
-class QAbstractItemModel;
-class WidgetCanvas;
-class WidgetPresenter;
+#include "../interface/widget.h"
 
-class ScreenFrame : public QWidget
+class FileWidget : public QWidget, public WidgetInterface
 {
     Q_OBJECT
 public:
-    explicit ScreenFrame(QWidget *parent = 0);
+    explicit FileWidget(QWidget *parent = 0);
 
-    QSize canvasSize();
-
-    void bindPresenter(WidgetPresenter *);
 signals:
 
 public slots:
-    void setModel(QAbstractItemModel *model);
-
-private:
-    WidgetCanvas *wc = nullptr;
 };
 
-#endif // QSCREENFRAME_H

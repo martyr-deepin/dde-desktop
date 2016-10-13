@@ -1,0 +1,5 @@
+{
+    "id": "file-plugin",
+    "name": "deepin file system desktop widget",
+    "api_version" : 1.0
+}
