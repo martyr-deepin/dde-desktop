@@ -7,6 +7,6 @@ GenericName=Open Trash.
 Icon=user-trash
 Terminal=false
 Categories=System;
-Exec=gvfs-open trash://
+Exec=gvfs-open trash:///
 OnlyShowIn=Deepin;
 X-AppStream-Ignore=true
