@@ -12,7 +12,7 @@
 #include <QStandardItemModel>
 #include <QDebug>
 
-#include "../view/widgetcanvas.h"
+#include "../view/canvasview.h"
 #include "../../plugin/interface/presenterproxy.h"
 
 WidgetPresenter::WidgetPresenter(QObject *parent) : QObject(parent)
@@ -22,17 +22,7 @@ WidgetPresenter::WidgetPresenter(QObject *parent) : QObject(parent)
 
 void WidgetPresenter::initModel(const QSize &canvasSize)
 {
-    auto cellSize = DDE::Desktop::CellSize128;
 
-    auto rowCount = canvasSize.width() / cellSize.width();
-    auto colCount = canvasSize.height() / cellSize.height();
-
-    m_model = new QStandardItemModel(rowCount, colCount, this);
-}
-
-QStandardItemModel *WidgetPresenter::model()
-{
-    return m_model;
 }
 
 PresenterProxy &WidgetPresenter::proxy()
@@ -43,20 +33,8 @@ PresenterProxy &WidgetPresenter::proxy()
 void WidgetPresenter::registerPresenterProxy(PresenterProxy *proxy)
 {
     qDebug() << proxy;
-    connect(proxy, &PresenterProxy::addWidget, this, &WidgetPresenter::addWidget);
+//    connect(proxy, &PresenterProxy::addWidget, this, &WidgetPresenter::addWidget);
     qDebug() << proxy;
-}
-#include <QTimer>
-void WidgetPresenter::addWidget(QVariant data, QWidget *w)
-{
-//    m_model->free();
-    qDebug() << data << w;
-    m_model->setData(m_model->index(0, 1), QVariant::fromValue(w));
-
-    QTimer::singleShot(2000, this, [ = ]() {
-        m_model->setData(m_model->index(1, 1), QVariant::fromValue(w));
-    });
-
 }
 
 void WidgetPresenter::updateModelWithSizeChanged(const QSize &cell, const QSize &canvas)

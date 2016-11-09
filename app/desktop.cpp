@@ -51,7 +51,6 @@ void Desktop::loadPlugins()
 void Desktop::loadData()
 {
     d->presenter.initModel(d->screenFrame.canvasSize());
-    d->screenFrame.setModel(d->presenter.model());
 }
 
 void Desktop::show()

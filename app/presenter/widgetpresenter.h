@@ -25,8 +25,6 @@ public:
 
     void initModel(const QSize &canvasSize);
 
-    QStandardItemModel *model();
-
     PresenterProxy &proxy();
     void registerPresenterProxy(PresenterProxy *proxy);
 
@@ -34,7 +32,6 @@ signals:
 
     // presenter proxy
 public slots:
-    void addWidget(QVariant data, QWidget *w);
 //    void removeWidget(QWidget *);
 //    void updateWidget(QWidget *);
 
@@ -42,7 +39,6 @@ public slots:
     void updateModelWithSizeChanged(const QSize &cell, const QSize &canvas);
 
 private:
-    QStandardItemModel  *m_model = nullptr;
     PresenterProxy      *m_proxy = nullptr;
 };
 

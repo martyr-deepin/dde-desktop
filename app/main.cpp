@@ -17,6 +17,7 @@
 
 #include "config/config.h"
 #include "desktop.h"
+#include "view/canvasview.h"
 
 using namespace Dtk::Util;
 using namespace Dtk::Widget;

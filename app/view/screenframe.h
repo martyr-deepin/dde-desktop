@@ -12,7 +12,7 @@
 #include <QWidget>
 
 class QAbstractItemModel;
-class WidgetCanvas;
+class CanvasGridView;
 class WidgetPresenter;
 
 class ScreenFrame : public QWidget
@@ -30,7 +30,7 @@ public slots:
     void setModel(QAbstractItemModel *model);
 
 private:
-    WidgetCanvas *wc = nullptr;
+    CanvasGridView *wc = nullptr;
 };
 
 #endif // QSCREENFRAME_H

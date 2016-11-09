@@ -14,7 +14,11 @@
 
 #include "util/xcb/xcb.h"
 
-#include "widgetcanvas.h"
+#include "canvasgridview.h"
+
+#include <durl.h>
+#include <diconitemdelegate.h>
+#include "canvasviewhelper.h"
 
 ScreenFrame::ScreenFrame(QWidget *parent) : QWidget(parent)
 {
@@ -23,9 +27,9 @@ ScreenFrame::ScreenFrame(QWidget *parent) : QWidget(parent)
 
     setGeometry(qApp->primaryScreen()->geometry());
 
-    wc = new WidgetCanvas(this);
+    wc = new CanvasGridView(this);;
     wc->setGeometry(qApp->primaryScreen()->availableGeometry());
-    wc->setCellSize(DDE::Desktop::CellSize128);
+    wc->setRootUrl(DUrl::fromLocalFile("/home/iceyer/Desktop"));
 
     connect(qApp->primaryScreen(), &QScreen::availableGeometryChanged, this, [ = ](const QRect & geometry) {
         qDebug() << "Screen geometry changed" << geometry;
@@ -48,5 +52,5 @@ void ScreenFrame::bindPresenter(WidgetPresenter *)
 
 void ScreenFrame::setModel(QAbstractItemModel *model)
 {
-    wc->setModel(model);
+//    wc->setModel(model);
 }
