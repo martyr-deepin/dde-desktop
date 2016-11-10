@@ -16,7 +16,8 @@
 class DUrl;
 class DStyledItemDelegate;
 class DFileSystemModel;
-class WidgetCanvasLogic;
+class DFileSelectionModel;
+class CanvasViewPrivate;
 class CanvasGridView: public QAbstractItemView
 {
     Q_OBJECT
@@ -38,8 +39,16 @@ public:
                               QItemSelectionModel::SelectionFlags command) Q_DECL_OVERRIDE;
     virtual QRegion visualRegionForSelection(const QItemSelection &selection) const Q_DECL_OVERRIDE;
 
+    // event override
+    void dragEnterEvent(QDragEnterEvent *event) Q_DECL_OVERRIDE;
+    void dragMoveEvent(QDragMoveEvent *event) Q_DECL_OVERRIDE;
+    void dragLeaveEvent(QDragLeaveEvent *event) Q_DECL_OVERRIDE;
+    void dropEvent(QDropEvent *event) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+
+    // list view function
+    QRect rectForIndex(const QModelIndex &index) const;
 
     DUrl currentUrl() const;
     bool setCurrentUrl(const DUrl &url);
@@ -47,12 +56,19 @@ public:
     // draw cell
 
     DFileSystemModel *model() const;
+    DFileSelectionModel *selectionModel() const;
     DStyledItemDelegate *itemDelegate() const;
     void setItemDelegate(DStyledItemDelegate *delegate);
 private:
+    bool isIndexEmpty();
+
+    inline bool isIndexValid(int index);
+
+    QModelIndex moveCursorGrid(CursorAction cursorAction, Qt::KeyboardModifiers modifiers);
+
     Q_DISABLE_COPY(CanvasGridView)
 
-    QScopedPointer<WidgetCanvasLogic> d;
+    QScopedPointer<CanvasViewPrivate> d;
 };
 
 

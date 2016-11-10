@@ -29,7 +29,8 @@ SOURCES += \
     view/canvasviewhelper.cpp \
 #    view/canvasview.cpp \
     model/dfileselectionmodel.cpp \
-    view/canvasgridview.cpp
+    view/canvasgridview.cpp \
+    view/private/canvasviewprivate.cpp
 
 # Automating generation .qm files from .ts files
 #system($$PWD/translate_generation.sh)
@@ -46,7 +47,8 @@ HEADERS += \
     view/canvasviewhelper.h \
 #    view/canvasview.h \
     model/dfileselectionmodel.h \
-    view/canvasgridview.h
+    view/canvasgridview.h \
+    view/private/canvasviewprivate.h
 
 RESOURCES += \
     resource/theme/theme.qrc
