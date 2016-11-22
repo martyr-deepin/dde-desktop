@@ -20,7 +20,6 @@ class DesktopPrivate;
 class Desktop : public Singleton<Desktop>
 {
 public:
-    void loadPlugins();
     void loadData();
     void loadView();
 

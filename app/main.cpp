@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
 //        qApp->exit(100);
 //    });
 
-    Desktop::instance()->loadPlugins();
     Desktop::instance()->loadData();
     Desktop::instance()->loadView();
     Desktop::instance()->show();

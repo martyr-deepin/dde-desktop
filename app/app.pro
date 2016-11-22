@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 include($$PWD/../build.pri)
-include($$PWD/../plugin/interface/interface.pri)
 include($$PWD/development.pri)
 
 QT       += core gui widgets svg dbus x11extras
@@ -23,7 +22,6 @@ SOURCES += \
     view/screenframe.cpp \
     config/config.cpp \
     desktop.cpp \
-    pluginloader.cpp \
     view/canvasviewhelper.cpp \
 #    view/canvasview.cpp \
     model/dfileselectionmodel.cpp \
@@ -41,7 +39,6 @@ HEADERS += \
     view/screenframe.h \
     config/config.h \
     desktop.h \
-    pluginloader.h \
     view/canvasviewhelper.h \
 #    view/canvasview.h \
     model/dfileselectionmodel.h \

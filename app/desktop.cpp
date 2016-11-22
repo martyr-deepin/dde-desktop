@@ -11,7 +11,6 @@
 
 #include "view/screenframe.h"
 #include "presenter/canvasgridpresenter.h"
-#include "pluginloader.h"
 
 #include <QPushButton>
 #include <QListView>
@@ -24,7 +23,6 @@ class DesktopPrivate
 {
 public:
     CanvasGridPresenter presenter;
-    PluginLoader    pluginLoader;
     ScreenFrame     screenFrame;
 };
 
@@ -36,11 +34,6 @@ Desktop::Desktop()
 Desktop::~Desktop()
 {
 
-}
-
-void Desktop::loadPlugins()
-{
-    d->pluginLoader.loadPlugins();
 }
 
 void Desktop::loadData()

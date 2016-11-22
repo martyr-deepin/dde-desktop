@@ -5,5 +5,4 @@
 #-------------------------------------------------
 
 TEMPLATE    = subdirs
-SUBDIRS     += app \
-               plugin
+SUBDIRS     += app
