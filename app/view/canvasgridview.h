@@ -12,6 +12,7 @@
 
 #include <QAbstractItemView>
 #include <QScopedPointer>
+#include <dfilemenumanager.h>
 
 class DUrl;
 class DStyledItemDelegate;
@@ -24,6 +25,13 @@ class CanvasGridView: public QAbstractItemView
 public:
     explicit CanvasGridView(QWidget *parent);
     ~CanvasGridView();
+
+    enum ContextMenuAction {
+        DisplaySettings = MenuAction::Unknow + 1,
+        CornerSettings,
+        WallpaperSettings,
+    };
+    Q_ENUM(ContextMenuAction)
 
     // inherint prue virtual function of QAbstractItemView
     virtual QRect visualRect(const QModelIndex &index) const Q_DECL_OVERRIDE;
@@ -40,6 +48,10 @@ public:
     virtual QRegion visualRegionForSelection(const QItemSelection &selection) const Q_DECL_OVERRIDE;
 
     // event override
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void dragEnterEvent(QDragEnterEvent *event) Q_DECL_OVERRIDE;
     void dragMoveEvent(QDragMoveEvent *event) Q_DECL_OVERRIDE;
     void dragLeaveEvent(QDragLeaveEvent *event) Q_DECL_OVERRIDE;
@@ -47,6 +59,7 @@ public:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
+    void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
     // list view function
     QRect rectForIndex(const QModelIndex &index) const;
 
@@ -55,18 +68,26 @@ public:
     bool setRootUrl(const DUrl &url);
     // draw cell
 
+    int selectedIndexCount() const;
+
     DFileSystemModel *model() const;
     DFileSelectionModel *selectionModel() const;
     DStyledItemDelegate *itemDelegate() const;
     void setItemDelegate(DStyledItemDelegate *delegate);
+
+public slots:
+    bool edit(const QModelIndex &index, EditTrigger trigger, QEvent *event) Q_DECL_OVERRIDE;
+
 private:
-    bool isIndexEmpty();
-
-    inline bool isIndexValid(int index);
-
-    QModelIndex moveCursorGrid(CursorAction cursorAction, Qt::KeyboardModifiers modifiers);
-
     Q_DISABLE_COPY(CanvasGridView)
+
+    void handleContextMenuAction(int action);
+
+    void showEmptyAreaMenu(const Qt::ItemFlags &indexFlags);
+    void showNormalMenu(const QModelIndex &index, const Qt::ItemFlags &indexFlags);
+    bool isIndexEmpty();
+    inline bool isIndexValid(int index);
+    QModelIndex moveCursorGrid(CursorAction cursorAction, Qt::KeyboardModifiers modifiers);
 
     QScopedPointer<CanvasViewPrivate> d;
 };

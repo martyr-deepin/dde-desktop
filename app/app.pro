@@ -22,15 +22,15 @@ SOURCES += \
     main.cpp \
     view/screenframe.cpp \
     config/config.cpp \
-    model/widgetmodel.cpp \
-    presenter/widgetpresenter.cpp \
     desktop.cpp \
     pluginloader.cpp \
     view/canvasviewhelper.cpp \
 #    view/canvasview.cpp \
     model/dfileselectionmodel.cpp \
     view/canvasgridview.cpp \
-    view/private/canvasviewprivate.cpp
+    view/private/canvasviewprivate.cpp \
+    presenter/positionmanager.cpp \
+    presenter/canvasgridpresenter.cpp
 
 # Automating generation .qm files from .ts files
 #system($$PWD/translate_generation.sh)
@@ -40,15 +40,17 @@ include($$PWD/util/util.pri)
 HEADERS += \
     view/screenframe.h \
     config/config.h \
-    model/widgetmodel.h \
-    presenter/widgetpresenter.h \
     desktop.h \
     pluginloader.h \
     view/canvasviewhelper.h \
 #    view/canvasview.h \
     model/dfileselectionmodel.h \
     view/canvasgridview.h \
-    view/private/canvasviewprivate.h
+    view/private/canvasviewprivate.h \
+    presenter/positionmanager.h \
+    global/coorinate.h \
+    global/singleton.h \
+    presenter/canvasgridpresenter.h
 
 RESOURCES += \
     resource/theme/theme.qrc

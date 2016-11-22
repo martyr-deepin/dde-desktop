@@ -20,24 +20,30 @@
 #include <diconitemdelegate.h>
 #include "canvasviewhelper.h"
 
-ScreenFrame::ScreenFrame(QWidget *parent) : QWidget(parent)
+ScreenFrame::ScreenFrame(QWidget *parent) : QFrame(parent)
 {
     setAttribute(Qt::WA_TranslucentBackground);
     Xcb::XcbMisc::instance().set_window_type(winId(), Xcb::XcbMisc::Desktop);
 
     setGeometry(qApp->primaryScreen()->geometry());
+    qDebug() << qApp->primaryScreen()->geometry()
+             << qApp->primaryScreen()->availableGeometry();
 
     wc = new CanvasGridView(this);;
     wc->setGeometry(qApp->primaryScreen()->availableGeometry());
     wc->setRootUrl(DUrl::fromLocalFile("/home/iceyer/Desktop"));
 
-    connect(qApp->primaryScreen(), &QScreen::availableGeometryChanged, this, [ = ](const QRect & geometry) {
+    connect(qApp->primaryScreen(), &QScreen::availableGeometryChanged,
+    this, [ = ](const QRect & geometry) {
         qDebug() << "Screen geometry changed" << geometry;
         qDebug() << qApp->primaryScreen()->geometry()
                  << qApp->primaryScreen()->availableGeometry();
-        setGeometry(qApp->primaryScreen()->availableGeometry());
-        wc->resize(size());
+        setGeometry(qApp->primaryScreen()->geometry());
+        wc->setGeometry(qApp->primaryScreen()->availableGeometry());
     });
+
+    this->setStyleSheet("QFrame{background-color: rgba(0, 255, 0, 1);}");
+    qDebug() << this->size() << this->geometry();
 }
 
 QSize ScreenFrame::canvasSize()
@@ -45,12 +51,7 @@ QSize ScreenFrame::canvasSize()
     return wc->size();
 }
 
-void ScreenFrame::bindPresenter(WidgetPresenter *)
+void ScreenFrame::bindPresenter(CanvasGridPresenter *)
 {
 
-}
-
-void ScreenFrame::setModel(QAbstractItemModel *model)
-{
-//    wc->setModel(model);
 }

@@ -8,20 +8,25 @@
  **/
 #pragma once
 
+#include <QObject>
 #include <QSettings>
 
-class Config: public QSettings
+#include "../global/singleton.h"
+
+class Config: public QObject, public Singleton<Config>
 {
     Q_OBJECT
 public:
+    QSettings *settings()  {return m_settings;}
 
-    static Config &instance()
-    {
-        static Config cfg;
-        return cfg;
-    }
+public slots:
+    void setItem(const QString &group, const QString &key, const QVariant &value);
+    void removeItem(const QString &group, const QString &key);
+
 private:
     Q_DISABLE_COPY(Config)
-
     explicit Config();
+    friend Singleton<Config>;
+
+    QSettings   *m_settings = nullptr;
 };

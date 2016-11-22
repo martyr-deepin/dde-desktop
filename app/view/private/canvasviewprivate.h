@@ -15,36 +15,9 @@
 #include <QPoint>
 #include <QMargins>
 
+#include "../../global/coorinate.h"
+
 class CanvasViewHelper;
-class Coordinate
-{
-public:
-    int x;
-    int y;
-
-    Coordinate(int _x, int _y): x(_x), y(_y) {}
-
-    Coordinate moveLeft(int offset = 1) const
-    {
-        return Coordinate(x - offset, y);
-    }
-
-    Coordinate moveRight(int offset = 1) const
-    {
-        return Coordinate(x + offset, y);
-    }
-
-    Coordinate moveUp(int offset = 1) const
-    {
-        return Coordinate(x, y - offset);
-    }
-
-    Coordinate moveDown(int offset = 1) const
-    {
-        return Coordinate(x, y + offset);
-    }
-
-};
 
 class CanvasViewPrivate
 {
@@ -75,13 +48,13 @@ public:
 
     int corrdinateIndex(Coordinate coord)
     {
-        return coord.x * rowCount + coord.y;
+        return coord.position().x() * rowCount + coord.position().y();
     }
 
     bool isVaildCoordinate(Coordinate coord)
     {
-        return (coord.x >= 0 && coord.x < colCount)
-               && (coord.y >= 0 && coord.y < rowCount);
+        return (coord.position().x() >= 0 && coord.position().x() < colCount)
+               && (coord.position().y() >= 0 && coord.position().y() < rowCount);
     }
 public:
     QMargins viewMargins;

@@ -46,9 +46,10 @@ int main(int argc, char *argv[])
 //        qApp->exit(100);
 //    });
 
-    Desktop::instance().loadPlugins();
-    Desktop::instance().loadData();
-    Desktop::instance().show();
+    Desktop::instance()->loadPlugins();
+    Desktop::instance()->loadData();
+    Desktop::instance()->loadView();
+    Desktop::instance()->show();
 
     // Notify dde-desktop start up
     Dde::Session::RegisterDdeSession();

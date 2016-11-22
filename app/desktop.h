@@ -13,30 +13,26 @@
 #include <QObject>
 #include <QScopedPointer>
 
-class WidgetPresenter;
+#include "global/singleton.h"
+
+class CanvasGridPresenter;
 class DesktopPrivate;
-class Desktop : public QObject
+class Desktop : public Singleton<Desktop>
 {
-    Q_OBJECT
 public:
-    ~Desktop();
-
-    static Desktop& instance() {
-        static Desktop s_desktop;
-        return s_desktop;
-    }
-
-    WidgetPresenter* presenter();
-
     void loadPlugins();
     void loadData();
+    void loadView();
+
 signals:
 
 public slots:
     void show();
 
 private:
-    explicit Desktop(QObject *parent = 0);
+    explicit Desktop();
+    ~Desktop();
+    friend class Singleton<Desktop>;
     Q_DISABLE_COPY(Desktop)
 
     QScopedPointer<DesktopPrivate> d;

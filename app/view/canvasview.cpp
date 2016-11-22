@@ -218,7 +218,6 @@ void CanvasView::setItemDelegate(DStyledItemDelegate *delegate)
     DListView::setItemDelegate(delegate);
 
     connect(delegate, &DStyledItemDelegate::commitData, this, &CanvasView::handleCommitData);
-
 }
 
 

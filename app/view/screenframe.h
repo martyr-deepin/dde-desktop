@@ -9,13 +9,13 @@
 #ifndef QSCREENFRAME_H
 #define QSCREENFRAME_H
 
-#include <QWidget>
+#include <QFrame>
 
 class QAbstractItemModel;
 class CanvasGridView;
-class WidgetPresenter;
+class CanvasGridPresenter;
 
-class ScreenFrame : public QWidget
+class ScreenFrame : public QFrame
 {
     Q_OBJECT
 public:
@@ -23,11 +23,8 @@ public:
 
     QSize canvasSize();
 
-    void bindPresenter(WidgetPresenter *);
+    void bindPresenter(CanvasGridPresenter *);
 signals:
-
-public slots:
-    void setModel(QAbstractItemModel *model);
 
 private:
     CanvasGridView *wc = nullptr;

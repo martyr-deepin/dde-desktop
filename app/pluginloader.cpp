@@ -15,7 +15,7 @@
 #include <QDebug>
 
 #include "../plugin/interface/interface.h"
-#include "presenter/widgetpresenter.h"
+#include "presenter/canvasgridpresenter.h"
 #include "desktop.h"
 
 static const QString DesktopSystemPluginDir = "/usr/lib/dde-desktop/plugin";
@@ -51,7 +51,7 @@ void PluginLoader::loadPlugins()
 
         auto plugin = qobject_cast<PluginInterface *>(pluginLoader.instance());
 
-        Desktop::instance().presenter()->registerPresenterProxy(plugin->presenterProxy());
+//        Desktop::instance()->presenter()->registerPresenterProxy(plugin->presenterProxy());
 
         emit pluginLoad(plugin);
     };

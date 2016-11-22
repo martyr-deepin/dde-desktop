@@ -10,7 +10,7 @@
 #include "desktop.h"
 
 #include "view/screenframe.h"
-#include "presenter/widgetpresenter.h"
+#include "presenter/canvasgridpresenter.h"
 #include "pluginloader.h"
 
 #include <QPushButton>
@@ -23,24 +23,19 @@
 class DesktopPrivate
 {
 public:
-    WidgetPresenter presenter;
+    CanvasGridPresenter presenter;
     PluginLoader    pluginLoader;
     ScreenFrame     screenFrame;
 };
 
-Desktop::Desktop(QObject *parent)
-    : QObject(parent), d(new DesktopPrivate)
+Desktop::Desktop()
+    : d(new DesktopPrivate)
 {
 }
 
 Desktop::~Desktop()
 {
 
-}
-
-WidgetPresenter *Desktop::presenter()
-{
-    return &d->presenter;
 }
 
 void Desktop::loadPlugins()
@@ -50,7 +45,12 @@ void Desktop::loadPlugins()
 
 void Desktop::loadData()
 {
-    d->presenter.initModel(d->screenFrame.canvasSize());
+    d->presenter.init();
+}
+
+void Desktop::loadView()
+{
+
 }
 
 void Desktop::show()

@@ -21,6 +21,7 @@
 #include <QContextMenuEvent>
 #include <QHeaderView>
 #include <QMimeData>
+#include <QProcess>
 
 #include <dthememanager.h>
 #include <dscrollbar.h>
@@ -43,9 +44,10 @@
 #include "private/canvasviewprivate.h"
 #include "canvasviewhelper.h"
 
+
+#include "../presenter/positionmanager.h"
+
 DWIDGET_USE_NAMESPACE
-
-
 
 CanvasGridView::CanvasGridView(QWidget *parent)
     : QAbstractItemView(parent), d(new CanvasViewPrivate)
@@ -64,6 +66,61 @@ CanvasGridView::CanvasGridView(QWidget *parent)
     setModel(new DFileSystemModel(d->fileViewHelper));
     setSelectionModel(new DFileSelectionModel(model(), this));
     setItemDelegate(new DIconItemDelegate(d->fileViewHelper));
+
+    connect(this->model(), &QAbstractItemModel::rowsInserted,
+    this, [ = ](const QModelIndex & parent, int first, int last) {
+        qDebug() << parent << first << last;
+        for (int i = first; i <= last; ++i) {
+            auto index = model()->index(i, 0, parent);
+            auto localFile = model()->getUrlByIndex(index).toLocalFile();
+            GridManager::instance()->insert(localFile);
+        }
+        this->repaint();
+    });
+    connect(this->model(), &QAbstractItemModel::rowsAboutToBeRemoved,
+    this, [ = ](const QModelIndex & parent, int first, int last) {
+        qDebug() << parent << first << last;
+        qDebug() << model()->getUrlByIndex(parent).toLocalFile();
+        for (int i = first; i <= last; ++i) {
+            auto index = model()->index(i, 0, parent);
+            auto localFile = model()->getUrlByIndex(index).toLocalFile();
+            qDebug() << "remove" << localFile;
+            GridManager::instance()->remove(localFile);
+        }
+    });
+    connect(this->model(), &QAbstractItemModel::rowsRemoved,
+    this, [ = ](const QModelIndex & parent, int first, int last) {
+        this->repaint();
+    });
+    connect(this->model(), &QAbstractItemModel::dataChanged,
+    this, [ = ](const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> &roles) {
+
+        this->repaint();
+        qDebug() << topLeft << bottomRight << roles;
+    });
+
+    connect(this, &CanvasGridView::doubleClicked,
+    this, [this](const QModelIndex & index) {
+        DFMEvent event;
+        DUrl url = model()->getUrlByIndex(index);
+
+        DUrlList urls;
+        urls << url;
+        event << url;
+        event << urls;
+        event << DFMEvent::FileView;
+        event << this->winId();
+
+        qDebug() << index << url <<
+                 url.isValid();
+
+        QFileInfo info(url.toLocalFile());
+        if (info.isDir()) {
+            QProcess::startDetached("gvfs-open", QStringList() << url.toLocalFile());
+        } else {
+            DFileService::instance()->openFile(url);
+        }
+    }, Qt::QueuedConnection);
 }
 
 CanvasGridView::~CanvasGridView()
@@ -73,9 +130,12 @@ CanvasGridView::~CanvasGridView()
 
 QRect CanvasGridView::visualRect(const QModelIndex &index) const
 {
-    auto  coord = d->indexCoordinate(index.row());
-    auto x = coord.x * d->cellWidth + d->viewMargins.left();
-    auto y = coord.y * d->cellHeight + d->viewMargins.top();
+    auto url = model()->getUrlByIndex(index);
+    auto pos = GridManager::instance()->position(url.toLocalFile());
+
+    auto x = pos.x() * d->cellWidth + d->viewMargins.left();
+    auto y = pos.y() * d->cellHeight + d->viewMargins.top();
+
     return QRect(x, y, d->cellWidth, d->cellHeight).marginsRemoved(d->cellMargins);
 }
 
@@ -83,11 +143,12 @@ QModelIndex CanvasGridView::indexAt(const QPoint &point) const
 {
     auto row = (point.x() - d->viewMargins.left()) / d->cellWidth;
     auto col = (point.y() - d->viewMargins.top()) / d->cellHeight;
-    auto rowIndex = d->corrdinateIndex(Coordinate(row, col));
-    auto viewRect = visualRect(model()->index(rowIndex, 0));
+    auto localFile =  GridManager::instance()->id(row, col);
+    auto rowIndex = model()->index(DUrl::fromLocalFile(localFile));
+    auto viewRect = visualRect(rowIndex);
 
     if (viewRect.contains(point)) {
-        return model()->index(rowIndex, 0);
+        return rowIndex;
     }
     return QModelIndex();
 }
@@ -262,6 +323,36 @@ QRegion CanvasGridView::visualRegionForSelection(const QItemSelection &selection
     return region;
 }
 
+void CanvasGridView::mouseMoveEvent(QMouseEvent *event)
+{
+
+    QAbstractItemView::mouseMoveEvent(event);
+}
+
+void CanvasGridView::mousePressEvent(QMouseEvent *event)
+{
+    auto selectIndex = indexAt(event->pos());
+    d->lastCursorIndex = selectIndex;
+
+    QAbstractItemView::mousePressEvent(event);
+}
+
+void CanvasGridView::mouseReleaseEvent(QMouseEvent *event)
+{
+    QAbstractItemView::mouseReleaseEvent(event);
+}
+
+void CanvasGridView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    QModelIndex index = indexAt(event->pos());
+    QPersistentModelIndex persistent = index;
+    emit doubleClicked(persistent);
+    if ((event->button() == Qt::LeftButton) && !edit(persistent, DoubleClicked, event)
+            && !style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, this)) {
+        emit activated(persistent);
+    }
+}
+
 void CanvasGridView::dragEnterEvent(QDragEnterEvent *event)
 {
     for (const DUrl &url : event->mimeData()->urls()) {
@@ -341,7 +432,6 @@ void CanvasGridView::dragLeaveEvent(QDragLeaveEvent *event)
 void CanvasGridView::dropEvent(QDropEvent *event)
 {
     d->dragMoveHoverIndex = QModelIndex();
-
     if (event->source() == this && !DFMGlobal::keyCtrlIsPressed()) {
         event->setDropAction(Qt::MoveAction);
     } else {
@@ -383,18 +473,26 @@ void CanvasGridView::dropEvent(QDropEvent *event)
         event->accept(); // yeah! we've done with XDS so stop Qt from further event propagation.
     } else {
         QModelIndex index = indexAt(event->pos());
-
-        if (!index.isValid()) {
-            index = rootIndex();
-        }
-
-        if (!index.isValid()) {
+        if (!index.isValid() || selectionModel()->isSelected(index)) {
+            // move pos
+            QStringList selectLocalFiles;
+            auto selects = selectionModel()->selectedIndexes();
+            for (auto index : selects) {
+                auto info = model()->fileInfo(index);
+                selectLocalFiles << info->fileUrl().toLocalFile();
+            }
+            auto point = event->pos();
+            auto row = (point.x() - d->viewMargins.left()) / d->cellWidth;
+            auto col = (point.y() - d->viewMargins.top()) / d->cellHeight;
+            auto current = model()->fileInfo(d->lastCursorIndex)->fileUrl().toLocalFile();
+            GridManager::instance()->move(selectLocalFiles, current, row, col);
+            setState(NoState);
+            viewport()->update();
             return;
+
         }
 
-        if (static_cast<DFileSelectionModel *>(selectionModel())->isSelected(index)) {
-            return;
-        }
+        index = rootIndex();
 
         if (model()->supportedDropActions() & event->dropAction() && model()->flags(index) & Qt::ItemIsDropEnabled) {
             const Qt::DropAction action = dragDropMode() == InternalMove ? Qt::MoveAction : event->dropAction();
@@ -434,13 +532,27 @@ void CanvasGridView::paintEvent(QPaintEvent *)
 
     int maxSize = viewport()->size().width();
 
+    painter.setBrush(QColor(255, 0, 0, 0));
+    if (model()) {
+        for (int i = 0; i < d->colCount * d->rowCount; ++i) {
+            auto  pos = d->indexCoordinate(i).position();
+            auto x = pos.x() * d->cellWidth + d->viewMargins.left();
+            auto y = pos.y() * d->cellHeight + d->viewMargins.top();
+            auto rect =  QRect(x, y, d->cellWidth, d->cellHeight);
+
+            int rowMode = pos.x() % 2;
+            int colMode = pos.y() % 2;
+            auto color = (colMode == rowMode) ? QColor(0, 0, 255, 32) : QColor(255, 0, 0, 32);
+            painter.fillRect(rect, color);
+        }
+    }
+
     for (int i = 0; i < this->model()->rowCount(); ++i) {
         auto index = this->model()->index(i, 0) ;
         Q_ASSERT(index.isValid());
         option.rect = visualRect(index);
         QPainterPath path;
-        path.addRect(option.rect);
-        painter.strokePath(path, QColor(255, 0, 0));
+        path.addRect(option.rect.marginsAdded(QMargins(1, 1, 1, 1)));
         option.rect.marginsRemoved(QMargins(5, 5, 5, 5));
         option.state = state;
 //        if (selections && selections->isSelected(*it)) {
@@ -468,24 +580,9 @@ void CanvasGridView::paintEvent(QPaintEvent *)
 //            option.state &= ~QStyle::State_MouseOver;
 //        }
 
+        painter.fillPath(path, QColor(0, 0, 0, 16));
         this->itemDelegate()->paint(&painter, option, index);
     }
-
-    painter.setBrush(QColor(255, 0, 0, 0));
-    if (model()) {
-        for (int i = 0; i < d->colCount * d->rowCount; ++i) {
-            auto  coord = d->indexCoordinate(i);
-            auto x = coord.x * d->cellWidth + d->viewMargins.left();
-            auto y = coord.y * d->cellHeight + d->viewMargins.top();
-            auto rect =  QRect(x, y, d->cellWidth, d->cellHeight);
-
-            int rowMode = coord.x % 2;
-            int colMode = coord.y % 2;
-            auto color = (colMode == rowMode) ? QColor(0, 0, 255, 25) : QColor(255, 0, 0, 25);
-            painter.fillRect(rect, color);
-        }
-    }
-
 }
 
 void CanvasGridView::resizeEvent(QResizeEvent *event)
@@ -497,10 +594,49 @@ void CanvasGridView::resizeEvent(QResizeEvent *event)
     d->cellWidth = cellSize.width();
     d->cellHeight = cellSize.height();
 
+    qDebug() << d->cellWidth << d->cellHeight;
     d->updateSize(event->size());
+    GridManager::instance()->setCoordinateSize(d->colCount, d->rowCount);
     setContentsMargins(d->viewMargins);
     // todo restore
 }
+
+void CanvasGridView::contextMenuEvent(QContextMenuEvent *event)
+{
+
+    const QModelIndex &index = indexAt(event->pos());
+    bool indexIsSelected = selectionModel()->isSelected(index);
+    bool isEmptyArea = d->fileViewHelper->isEmptyArea(event->pos()) && !indexIsSelected;
+    Qt::ItemFlags flags;
+
+    if (isEmptyArea) {
+        flags = model()->flags(rootIndex());
+
+        if (!flags.testFlag(Qt::ItemIsEnabled)) {
+            return;
+        }
+    } else {
+        flags = model()->flags(index);
+
+        if (!flags.testFlag(Qt::ItemIsEnabled)) {
+            isEmptyArea = true;
+            flags = rootIndex().flags();
+        }
+    }
+
+    if (isEmptyArea) {
+        itemDelegate()->hideNotEditingIndexWidget();
+        clearSelection();
+        showEmptyAreaMenu(flags);
+    } else {
+        if (!selectionModel()->isSelected(index)) {
+            setCurrentIndex(index);
+        }
+
+        showNormalMenu(index, flags);
+    }
+}
+
 
 QRect CanvasGridView::rectForIndex(const QModelIndex &index) const
 {
@@ -537,6 +673,9 @@ void CanvasGridView::setItemDelegate(DStyledItemDelegate *delegate)
 
     QAbstractItemView::setItemDelegate(delegate);
 
+    connect(delegate, &DStyledItemDelegate::commitData, this, [ = ](QWidget * editor) {
+        qDebug() << editor;
+    });
     //    connect(delegate, &DStyledItemDelegate::commitData, this, &CanvasGridView::handleCommitData);
 }
 
@@ -593,4 +732,268 @@ bool CanvasGridView::setRootUrl(const DUrl &url)
     }
 
     return setCurrentUrl(url);
+}
+
+int CanvasGridView::selectedIndexCount() const
+{
+    return static_cast<const DFileSelectionModel *>(selectionModel())->selectedCount();
+}
+
+bool CanvasGridView::edit(const QModelIndex &index, QAbstractItemView::EditTrigger trigger, QEvent *event)
+{
+    DUrl fileUrl = model()->getUrlByIndex(index);
+
+    if (fileUrl.isEmpty() || selectedIndexCount() > 1 || (trigger == SelectedClicked && DFMGlobal::keyShiftIsPressed())) {
+        return false;
+    }
+
+    if (trigger == SelectedClicked) {
+        QStyleOptionViewItem option = viewOptions();
+
+        option.rect = visualRect(index);
+
+        const QRect &file_name_rect = itemDelegate()->fileNameRect(option, index);
+
+        if (!file_name_rect.contains(static_cast<QMouseEvent *>(event)->pos())) {
+            return false;
+        }
+    }
+
+    return false;
+
+    return QAbstractItemView::edit(index, trigger, event);
+}
+
+void CanvasGridView::handleContextMenuAction(int action)
+{
+    switch (action) {
+    case DisplaySettings:
+        QProcess::startDetached("/usr/bin/dde-control-center",
+                                QStringList() << "-s" << "dispaly");
+        break;
+    case CornerSettings:
+        QProcess::startDetached("/usr/lib/deepin-daemon/dde-zone");
+        break;
+    case WallpaperSettings:
+        QProcess::startDetached("/usr/lib/deepin-daemon/dde-wallpaper-chooser");
+
+    case MenuAction::SelectAll:
+        this->selectAll();
+        break;
+    case MenuAction::Property:
+//        this->selectAll();
+        break;
+    }
+}
+
+void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
+{
+    const QModelIndex &index = rootIndex();
+    const DAbstractFileInfoPointer &info = model()->fileInfo(index);
+    QVector<MenuAction> actions;
+    actions << MenuAction::NewFolder << MenuAction::NewDocument
+            << MenuAction::SortBy << MenuAction::Paste
+            << MenuAction::SelectAll << MenuAction::Property
+            << MenuAction::Separator;
+
+    if (actions.isEmpty()) {
+        return;
+    }
+
+    const QMap<MenuAction, QVector<MenuAction> > &subActions = info->subMenuActionList();
+
+    QSet<MenuAction> disableList = DFileMenuManager::getDisableActionList(model()->getUrlByIndex(index));
+
+    if (model()->state() != DFileSystemModel::Idle) {
+        disableList << MenuAction::SortBy;
+    }
+
+    if (!indexFlags.testFlag(Qt::ItemIsEditable)) {
+        disableList << MenuAction::NewDocument << MenuAction::NewFolder << MenuAction::Paste;
+    }
+
+
+    if (!model()->rowCount()) {
+        disableList << MenuAction::SelectAll;
+    }
+
+    DFileMenu *menu = DFileMenuManager::genereteMenuByKeys(actions, disableList, true, subActions);
+
+    DAction display(menu);
+    display.setText(tr("Display Settings"));
+    display.setData(DisplaySettings);
+    menu->addAction(&display);
+
+    DAction corner(menu);
+    corner.setText(tr("Corner Settings"));
+    corner.setData(CornerSettings);
+    menu->addAction(&corner);
+
+    DAction wallpaper(menu);
+    wallpaper.setText(tr("Wallpaper Settings"));
+    wallpaper.setData(WallpaperSettings);
+    menu->addAction(&wallpaper);
+
+//    DAction *tmp_action = menu->actionAt(fileMenuManger->getActionString(MenuAction::SortBy));
+//    DFileMenu *sortBySubMenu = static_cast<DFileMenu*>(tmp_action ? tmp_action->menu() : Q_NULLPTR);
+
+//    for (QAction *action : d->sortByActionGroup->actions()) {
+//        d->sortByActionGroup->removeAction(action);
+//    }
+
+//    if (sortBySubMenu){
+//        foreach (DAction* action, sortBySubMenu->actionList()) {
+//            action->setActionGroup(d->sortByActionGroup);
+//        }
+
+//        DAction *action = sortBySubMenu->actionAt(model()->sortColumn());
+
+//        if (action)
+//            action->setChecked(true);
+//    }
+
+    DUrlList urls;
+    urls.append(model()->rootUrl());
+
+    DFMEvent event;
+    event << model()->rootUrl();
+    event << urls;
+    event << winId();
+    event << DFMEvent::FileView;
+    menu->setEvent(event);
+
+    connect(menu, &DFileMenu::triggered, this, [ = ](DAction * action) {
+        if (!action->data().isValid()) {
+            return;
+        }
+
+        auto menuAction = (action->data().toInt());
+        qDebug() << menuAction;
+        handleContextMenuAction(menuAction);
+    });
+
+    menu->exec();
+    menu->deleteLater();
+}
+
+void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlags &indexFlags)
+{
+    if (!index.isValid()) {
+        return;
+    }
+
+    DUrlList list;
+
+    for (const QModelIndex &index : selectedIndexes()) {
+        list << model()->getUrlByIndex(index);
+    }
+
+    DFileMenu *menu;
+
+    const DAbstractFileInfoPointer &info = model()->fileInfo(index);
+    QSet<MenuAction> disableList;
+
+    if (!indexFlags.testFlag(Qt::ItemIsEditable)) {
+        disableList << MenuAction::Cut << MenuAction::Rename << MenuAction::Remove << MenuAction::Delete;
+    }
+
+    if (list.length() == 1) {
+        QVector<MenuAction> actions = info->menuActionList(DAbstractFileInfo::SingleFile);
+//Vector(DFMGlobal::MenuAction(Open), DFMGlobal::MenuAction(OpenInNewWindow), DFMGlobal::MenuAction(OpenInNewTab), DFMGlobal::MenuAction(Separator), DFMGlobal::MenuAction(Cut), DFMGlobal::MenuAction(Copy), DFMGlobal::MenuAction(Rename), DFMGlobal::MenuAction(Compress), DFMGlobal::MenuAction(Share), DFMGlobal::MenuAction(CreateSymlink), DFMGlobal::MenuAction(SendToDesktop), DFMGlobal::MenuAction(AddToBookMark), DFMGlobal::MenuAction(OpenInTerminal), DFMGlobal::MenuAction(Delete), DFMGlobal::MenuAction(Separator), DFMGlobal::MenuAction(Property))
+        qDebug() << actions;
+        if (actions.contains(MenuAction::OpenInNewWindow)) {
+            actions.remove(actions.indexOf(MenuAction::OpenInNewWindow));
+        }
+        if (actions.contains(MenuAction::OpenInNewTab)) {
+            actions.remove(actions.indexOf(MenuAction::OpenInNewTab));
+        }
+        if (actions.contains(MenuAction::SendToDesktop)) {
+            actions.remove(actions.indexOf(MenuAction::SendToDesktop));
+        }
+        if (actions.contains(MenuAction::AddToBookMark)) {
+            actions.remove(actions.indexOf(MenuAction::AddToBookMark));
+        }
+
+        if (actions.isEmpty()) {
+            return;
+        }
+
+        const QMap<MenuAction, QVector<MenuAction> > &subActions = info->subMenuActionList();
+        disableList += DFileMenuManager::getDisableActionList(list);
+
+        qDebug() << disableList;
+
+        menu = DFileMenuManager::genereteMenuByKeys(actions, disableList, true, subActions);
+
+        DAction *openWithAction = menu->actionAt(DFileMenuManager::getActionString(DFMGlobal::OpenWith));
+        DFileMenu *openWithMenu = openWithAction ? qobject_cast<DFileMenu *>(openWithAction->menu()) : Q_NULLPTR;
+
+        if (openWithMenu) {
+//            QMimeType mimeType = info->mimeType();
+//            QStringList recommendApps = mimeAppsManager->MimeApps.value(mimeType.name());
+
+//            foreach (QString name, mimeType.aliases()) {
+//                QStringList apps = mimeAppsManager->MimeApps.value(name);
+//                foreach (QString app, apps) {
+//                    if (!recommendApps.contains(app)){
+//                        recommendApps.append(app);
+//                    }
+//                }
+//            }
+
+//            for (QAction *action : d->openWithActionGroup->actions()) {
+//                d->openWithActionGroup->removeAction(action);
+//            }
+
+//            foreach (QString app, recommendApps) {
+//                DAction* action = new DAction(mimeAppsManager->DesktopObjs.value(app).getLocalName(), 0);
+//                action->setProperty("app", app);
+//                action->setProperty("url", info->fileUrl());
+//                openWithMenu->addAction(action);
+//                d->openWithActionGroup->addAction(action);
+//            }
+
+//            DAction* action = new DAction(fileMenuManger->getActionString(MenuAction::OpenWithCustom), 0);
+//            action->setData((int)MenuAction::OpenWithCustom);
+//            openWithMenu->addAction(action);
+        }
+    } else {
+        bool isAllCompressedFiles = true;
+
+        foreach(DUrl url, list) {
+            const DAbstractFileInfoPointer &fileInfo = DFileService::instance()->createFileInfo(url);
+
+            if (!fileInfo->isActive()) {
+                isAllCompressedFiles = false;
+            }
+        }
+
+        QVector<MenuAction> actions;
+        actions = info->menuActionList(DAbstractFileInfo::MultiFiles);
+
+        if (actions.isEmpty()) {
+            return;
+        }
+
+        if (isAllCompressedFiles) {
+            int index = actions.indexOf(MenuAction::Compress);
+            actions.insert(index + 1, MenuAction::Decompress);
+            actions.insert(index + 2, MenuAction::DecompressHere);
+        }
+
+        const QMap<MenuAction, QVector<MenuAction> > subActions;
+        disableList += DFileMenuManager::getDisableActionList(list);
+        menu = DFileMenuManager::genereteMenuByKeys(actions, disableList, true, subActions);
+    }
+
+    DFMEvent event;
+
+    event << info->fileUrl();
+    event << list;
+    event << winId();
+    event << DFMEvent::FileView;
+
+    menu->setEvent(event);
+    menu->exec();
+    menu->deleteLater();
 }
