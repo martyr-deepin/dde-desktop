@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("deepin");
     app.setApplicationName("dde-desktop");
     app.setApplicationVersion((GIT_VERSION));
+    app.loadTranslator();
 
     DLogManager::registerConsoleAppender();
     DLogManager::registerFileAppender();

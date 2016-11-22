@@ -776,7 +776,7 @@ void CanvasGridView::handleContextMenuAction(int action)
         break;
     case WallpaperSettings:
         QProcess::startDetached("/usr/lib/deepin-daemon/dde-wallpaper-chooser");
-
+        break;
     case MenuAction::SelectAll:
         this->selectAll();
         break;
@@ -866,10 +866,7 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
         if (!action->data().isValid()) {
             return;
         }
-
-        auto menuAction = (action->data().toInt());
-        qDebug() << menuAction;
-        handleContextMenuAction(menuAction);
+        handleContextMenuAction(action->data().toInt());
     });
 
     menu->exec();
@@ -899,8 +896,7 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
 
     if (list.length() == 1) {
         QVector<MenuAction> actions = info->menuActionList(DAbstractFileInfo::SingleFile);
-//Vector(DFMGlobal::MenuAction(Open), DFMGlobal::MenuAction(OpenInNewWindow), DFMGlobal::MenuAction(OpenInNewTab), DFMGlobal::MenuAction(Separator), DFMGlobal::MenuAction(Cut), DFMGlobal::MenuAction(Copy), DFMGlobal::MenuAction(Rename), DFMGlobal::MenuAction(Compress), DFMGlobal::MenuAction(Share), DFMGlobal::MenuAction(CreateSymlink), DFMGlobal::MenuAction(SendToDesktop), DFMGlobal::MenuAction(AddToBookMark), DFMGlobal::MenuAction(OpenInTerminal), DFMGlobal::MenuAction(Delete), DFMGlobal::MenuAction(Separator), DFMGlobal::MenuAction(Property))
-        qDebug() << actions;
+
         if (actions.contains(MenuAction::OpenInNewWindow)) {
             actions.remove(actions.indexOf(MenuAction::OpenInNewWindow));
         }
@@ -920,8 +916,6 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
 
         const QMap<MenuAction, QVector<MenuAction> > &subActions = info->subMenuActionList();
         disableList += DFileMenuManager::getDisableActionList(list);
-
-        qDebug() << disableList;
 
         menu = DFileMenuManager::genereteMenuByKeys(actions, disableList, true, subActions);
 
@@ -994,6 +988,23 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
     event << DFMEvent::FileView;
 
     menu->setEvent(event);
+
+    connect(menu, &DFileMenu::triggered, this, [ = ](DAction * action) {
+        if (!action->data().isValid()) {
+            return;
+        }
+
+        if (action->data().toInt() == MenuAction::Open) {
+            // TODO: Workaround
+            for (auto &url : list) {
+                const DAbstractFileInfoPointer &fileInfo = DFileService::instance()->createFileInfo(url);
+                if (fileInfo && fileInfo->isDir()) {
+                    QProcess::startDetached("gvfs-open", QStringList() << url.toString());
+                }
+            }
+        }
+    });
+
     menu->exec();
     menu->deleteLater();
 }

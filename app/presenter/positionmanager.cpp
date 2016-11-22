@@ -91,7 +91,7 @@ public:
         freePosList.clear();
         for (int i = 0; i < coordWidth; ++i) {
             for (int j = 0; j < coordHeight; ++j) {
-                qDebug() << "add " << i << j;
+//                qDebug() << "add " << i << j;
                 freePosList.push_back(positionValue(i, j));
             }
         }
@@ -156,7 +156,7 @@ bool GridManager::insert(const QString &id)
 
     d->freePosList.removeAll(freeValue);
 
-    qDebug() << "insert" << id << freePos.x() << freePos.y() << d->freePosList.length();
+//    qDebug() << "insert" << id << freePos.x() << freePos.y() << d->freePosList.length();
     return insert(freePos.x(), freePos.y(), id);
 }
 

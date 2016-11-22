@@ -31,7 +31,7 @@ SOURCES += \
     presenter/canvasgridpresenter.cpp
 
 # Automating generation .qm files from .ts files
-#system($$PWD/translate_generation.sh)
+system($$PWD/translate_generation.sh)
 
 include($$PWD/util/util.pri)
 
@@ -40,7 +40,6 @@ HEADERS += \
     config/config.h \
     desktop.h \
     view/canvasviewhelper.h \
-#    view/canvasview.h \
     model/dfileselectionmodel.h \
     view/canvasgridview.h \
     view/private/canvasviewprivate.h \
@@ -51,3 +50,15 @@ HEADERS += \
 
 RESOURCES += \
     resource/theme/theme.qrc
+
+TRANSLATIONS += $$PWD/translations/$${TARGET}.ts \
+                $$PWD/translations/$${TARGET}_zh_CN.ts
+
+isEmpty(PREFIX){
+    PREFIX = /usr
+}
+
+translations.path = $${PREFIX}/share/$${TARGET}/translations
+translations.files = translations/*.qm
+
+INSTALLS += target translations
