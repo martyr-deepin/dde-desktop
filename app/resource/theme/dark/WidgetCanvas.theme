@@ -1,7 +1,0 @@
-WidgetCanvas {
-    border: 1px solid darkgray;
-    background-color: rgba(64,128,0,50%);
-    color:gray;
-    selection-background-color: rgba(0,0,255,50%);
-    selection-color: rgba(0,255,0,50%);
-}

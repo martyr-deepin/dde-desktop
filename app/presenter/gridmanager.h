@@ -22,34 +22,31 @@ class GridManager: public QObject, public Singleton<GridManager>
 {
     Q_OBJECT
 public:
-    bool insert(const QString &id);
-    bool insert(int x, int y, const QString &id);
-    bool move(const QString &id, int x, int y);
+    bool add(const QString &id);
+    bool add(QPoint pos, const QString &id);
     bool move(const QStringList &selectedIds, const QString &id, int x, int y);
     bool remove(const QString &id);
     bool remove(int x, int y, const QString &id);
-    bool remove(int64_t value, const QString &id);
+    bool remove(QPoint pos, const QString &id);
+
+    bool clear();
 
     bool contains(const QString &id);
     QPoint position(const QString &id);
     QString id(int x, int y);
 
-    QPoint emptyCoordPos() const;
-    QPoint takeEmptyCoordPos();
-    CoordValue emptyCoordValue() const;
-    CoordValue takeEmptyCoordValue();
+    bool autoAlign();
+    void toggleAlign();
+    void reAlign();
 
     void setCoordinateSize(int w, int h);
-
-signals:
-    void setConfig(const QString &group, const QString &key, const QVariant &value);
-    void removeConfig(const QString &group, const QString &key);
 
 protected:
     friend Singleton<GridManager>;
 
     GridManager();
     ~GridManager();
+
 
     QScopedPointer<GridManagerPrivate> d;
 };

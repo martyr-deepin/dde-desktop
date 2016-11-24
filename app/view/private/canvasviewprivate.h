@@ -13,32 +13,54 @@
 #include <QModelIndex>
 #include <QSize>
 #include <QPoint>
+#include <QRect>
 #include <QMargins>
+#include <QDebug>
 
 #include "../../global/coorinate.h"
 
+class QFrame;
 class CanvasViewHelper;
 
 class CanvasViewPrivate
 {
+private:
+    inline void updateCellMargins(const QSize &szItem, const QSize &szCell)
+    {
+        auto horizontalMargin = (szCell.width() - szItem.width());
+        auto verticalMargin = (szCell.height() - szItem.height());
+        auto leftMargin = horizontalMargin / 2;
+        auto rightMargin = horizontalMargin - leftMargin;
+        auto topMargin = verticalMargin / 2;
+        auto bottom = verticalMargin - topMargin;
+
+        cellMargins = QMargins(leftMargin, topMargin, rightMargin, bottom);
+    }
+
 public:
     CanvasViewPrivate();
 
-    void updateSize(const QSize &sz)
+    void updateCanvasSize(const QSize &szCanvas, const QMargins &geometryMargins, const QSize &szItem)
     {
-        Q_ASSERT(cellHeight != 0);
-        Q_ASSERT(cellWidth != 0);
-        rowCount = sz.height() / cellHeight;
-        auto verticalMargin = (sz.height() % cellHeight) / 2;
-        colCount = sz.width() / cellWidth;
-        auto horizontalMargin = (sz.width() % cellWidth) / 2;
-        viewMargins = QMargins(horizontalMargin, verticalMargin, horizontalMargin, verticalMargin);
-    }
+        QMargins miniMargin(3, 3, 3, 3);
+        auto miniCellWidth = szItem.width() + miniMargin.left() + miniMargin.right();
+        colCount = szCanvas.width() / miniCellWidth;
+        cellWidth = szCanvas.width() / colCount;
 
-    void updateCellSize(const QSize &sz)
-    {
-        cellWidth = sz.width();
-        cellHeight = sz.height();
+        auto miniCellHeigh = szItem.height() + miniMargin.top() + miniMargin.bottom();
+        rowCount = szCanvas.height() / miniCellHeigh;
+        cellHeight = szCanvas.height() / rowCount;
+
+        updateCellMargins(szItem, QSize(cellWidth, cellHeight));
+
+        auto horizontalMargin = (szCanvas.width() - cellWidth * colCount);
+        auto verticalMargin = (szCanvas.height() - cellHeight * rowCount);
+        auto leftMargin = horizontalMargin / 2;
+        auto rightMargin = horizontalMargin - leftMargin;
+        auto topMargin = verticalMargin / 2;
+        auto bottom = verticalMargin - topMargin;
+
+        viewMargins = geometryMargins + QMargins(leftMargin, topMargin, rightMargin, bottom);
     }
 
     Coordinate indexCoordinate(int index)
@@ -46,7 +68,7 @@ public:
         return Coordinate(index / rowCount, index % rowCount);
     }
 
-    int corrdinateIndex(Coordinate coord)
+    int coordinateIndex(Coordinate coord)
     {
         return coord.position().x() * rowCount + coord.position().y();
     }
@@ -57,8 +79,10 @@ public:
                && (coord.position().y() >= 0 && coord.position().y() < rowCount);
     }
 public:
+
     QMargins viewMargins;
     QMargins cellMargins;
+
     int rowCount;
     int colCount;
     int cellWidth;
@@ -67,5 +91,10 @@ public:
     QModelIndex         dragMoveHoverIndex;
     QModelIndex         lastCursorIndex;
 
+    QPoint              lastPos;
+    QFrame              *selectFrame = nullptr;
+    QRect               selectRect;
+
+    QRect               canvasRect;
     CanvasViewHelper    *fileViewHelper = nullptr;
 };

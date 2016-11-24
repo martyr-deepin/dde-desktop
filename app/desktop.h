@@ -15,10 +15,11 @@
 
 #include "global/singleton.h"
 
-class CanvasGridPresenter;
+class AppPresenter;
 class DesktopPrivate;
-class Desktop : public Singleton<Desktop>
+class Desktop : public QObject, public Singleton<Desktop>
 {
+    Q_OBJECT
 public:
     void loadData();
     void loadView();
@@ -31,6 +32,7 @@ public slots:
 private:
     explicit Desktop();
     ~Desktop();
+
     friend class Singleton<Desktop>;
     Q_DISABLE_COPY(Desktop)
 

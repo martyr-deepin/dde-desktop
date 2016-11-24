@@ -9,8 +9,8 @@
 
 #include "desktop.h"
 
-#include "view/screenframe.h"
-#include "presenter/canvasgridpresenter.h"
+#include "view/canvasgridview.h"
+#include "presenter/apppresenter.h"
 
 #include <QPushButton>
 #include <QListView>
@@ -22,13 +22,14 @@
 class DesktopPrivate
 {
 public:
-    CanvasGridPresenter presenter;
-    ScreenFrame     screenFrame;
+    AppPresenter        presenter;
+    CanvasGridView      screenFrame;
 };
 
 Desktop::Desktop()
     : d(new DesktopPrivate)
 {
+
 }
 
 Desktop::~Desktop()

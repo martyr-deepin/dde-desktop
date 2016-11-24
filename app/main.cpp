@@ -17,7 +17,6 @@
 
 #include "config/config.h"
 #include "desktop.h"
-#include "view/canvasview.h"
 
 using namespace Dtk::Util;
 using namespace Dtk::Widget;
@@ -28,8 +27,9 @@ int main(int argc, char *argv[])
     app.setOrganizationName("deepin");
     app.setApplicationName("dde-desktop");
     app.setApplicationVersion((GIT_VERSION));
-    app.loadTranslator();
+    app.setTheme("light");
 
+    app.loadTranslator();
     DLogManager::registerConsoleAppender();
     DLogManager::registerFileAppender();
 

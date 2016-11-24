@@ -23,13 +23,15 @@ class CanvasGridView: public QAbstractItemView
 {
     Q_OBJECT
 public:
-    explicit CanvasGridView(QWidget *parent);
+    explicit CanvasGridView(QWidget *parent = nullptr);
     ~CanvasGridView();
 
     enum ContextMenuAction {
         DisplaySettings = MenuAction::Unknow + 1,
         CornerSettings,
         WallpaperSettings,
+
+        AutoSort,
     };
     Q_ENUM(ContextMenuAction)
 
@@ -52,12 +54,14 @@ public:
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
     void dragEnterEvent(QDragEnterEvent *event) Q_DECL_OVERRIDE;
     void dragMoveEvent(QDragMoveEvent *event) Q_DECL_OVERRIDE;
     void dragLeaveEvent(QDragLeaveEvent *event) Q_DECL_OVERRIDE;
     void dropEvent(QDropEvent *event) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void focusInEvent(QFocusEvent *event) Q_DECL_OVERRIDE;
 
     void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
     // list view function
@@ -75,11 +79,26 @@ public:
     DStyledItemDelegate *itemDelegate() const;
     void setItemDelegate(DStyledItemDelegate *delegate);
 
+signals:
+    void sortRoleChanged(int role, Qt::SortOrder order);
+    void autoAlignToggled();
+
 public slots:
     bool edit(const QModelIndex &index, EditTrigger trigger, QEvent *event) Q_DECL_OVERRIDE;
 
 private:
     Q_DISABLE_COPY(CanvasGridView)
+
+    void initUI();
+    void initConnection();
+
+    void updateCanvas();
+
+    void increaseIcon();
+    void decreaseIcon();
+
+    inline QPoint gridAt(const QPoint &pos) const;
+    inline QList<QRect> itemPaintGeomertys(const QModelIndex &index) const;
 
     void handleContextMenuAction(int action);
 

@@ -19,16 +19,15 @@ PKGCONFIG   += x11 gtk+-2.0 xcb xcb-ewmh gsettings-qt gio-2.0 \
 
 SOURCES += \
     main.cpp \
-    view/screenframe.cpp \
     config/config.cpp \
     desktop.cpp \
     view/canvasviewhelper.cpp \
 #    view/canvasview.cpp \
     model/dfileselectionmodel.cpp \
-    view/canvasgridview.cpp \
     view/private/canvasviewprivate.cpp \
-    presenter/positionmanager.cpp \
-    presenter/canvasgridpresenter.cpp
+    view/canvasgridview.cpp \
+    presenter/apppresenter.cpp \
+    presenter/gridmanager.cpp
 
 # Automating generation .qm files from .ts files
 system($$PWD/translate_generation.sh)
@@ -36,17 +35,16 @@ system($$PWD/translate_generation.sh)
 include($$PWD/util/util.pri)
 
 HEADERS += \
-    view/screenframe.h \
     config/config.h \
     desktop.h \
     view/canvasviewhelper.h \
     model/dfileselectionmodel.h \
-    view/canvasgridview.h \
     view/private/canvasviewprivate.h \
-    presenter/positionmanager.h \
     global/coorinate.h \
     global/singleton.h \
-    presenter/canvasgridpresenter.h
+    view/canvasgridview.h \
+    presenter/apppresenter.h \
+    presenter/gridmanager.h
 
 RESOURCES += \
     resource/theme/theme.qrc
@@ -54,11 +52,3 @@ RESOURCES += \
 TRANSLATIONS += $$PWD/translations/$${TARGET}.ts \
                 $$PWD/translations/$${TARGET}_zh_CN.ts
 
-isEmpty(PREFIX){
-    PREFIX = /usr
-}
-
-translations.path = $${PREFIX}/share/$${TARGET}/translations
-translations.files = translations/*.qm
-
-INSTALLS += target translations

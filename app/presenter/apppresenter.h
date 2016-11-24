@@ -6,33 +6,30 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  **/
+
 #pragma once
 
 #include <QObject>
-#include <QSettings>
-
 #include "../global/singleton.h"
 
-class Config: public QObject, public Singleton<Config>
+class DFileSystemModel;
+class AppPresenter : public QObject, public Singleton<AppPresenter>
 {
     Q_OBJECT
 public:
-    QSettings *settings()  {return m_settings;}
+    explicit AppPresenter(QObject *parent = 0);
 
-    static const QString groupGeneral;
-    static const QString keyProfile;
-    static const QString keySortBy;
-    static const QString keySortOrder;
-    static const QString keyAutoAlign;
+    void init();
 
-public slots:
+signals:
     void setConfig(const QString &group, const QString &key, const QVariant &value);
     void removeConfig(const QString &group, const QString &key);
 
-private:
-    Q_DISABLE_COPY(Config)
-    explicit Config();
-    friend Singleton<Config>;
+public slots:
+    void onSortRoleChanged(int role, Qt::SortOrder order);
+    void onAutoAlignToggled();
 
-    QSettings   *m_settings = nullptr;
+private:
+    friend Singleton<AppPresenter>;
 };
+

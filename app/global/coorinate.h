@@ -12,8 +12,6 @@
 #include <QtGlobal>
 #include <QPoint>
 
-typedef int64_t CoordValue;
-
 class Coordinate
 {
 public:
@@ -27,19 +25,6 @@ public:
     {
         d.x = pos.x();
         d.y = pos.y();
-    }
-
-    Coordinate(CoordValue val)
-    {
-        d.x = val >> 32;
-        d.y = val & 0x00000000FFFFFFFF;
-    }
-
-    CoordValue value() const
-    {
-        CoordValue v;
-        v = (CoordValue(d.x) << 32) + CoordValue(d.y);
-        return v;
     }
 
     QPoint position()
