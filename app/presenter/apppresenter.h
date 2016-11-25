@@ -28,6 +28,7 @@ signals:
 public slots:
     void onSortRoleChanged(int role, Qt::SortOrder order);
     void onAutoAlignToggled();
+    void OnIconLevelChanged(int iconLevel);
 
 private:
     friend Singleton<AppPresenter>;

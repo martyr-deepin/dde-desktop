@@ -95,34 +95,15 @@ QModelIndex CanvasGridView::indexAt(const QPoint &point) const
         }
     }
 
-//    FileIconItem *item = qobject_cast<FileIconItem *>(itemDelegate()->editingIndexWidget());
-
-//    if (item) {
-//        QRect geometry = item->icon->geometry();
-
-//        geometry.moveTopLeft(geometry.topLeft() + item->pos());
-
-//        if (geometry.contains(point)) {
-//            return itemDelegate()->editingIndex();
-//        }
-
-//        geometry = item->edit->geometry();
-//        geometry.moveTopLeft(geometry.topLeft() + item->pos());
-//        geometry.setTop(item->icon->y() + item->icon->height() + item->y());
-
-//        if (geometry.contains(point)) {
-//            return itemDelegate()->editingIndex();
-//        }
-//    }
-
     QPoint pos = QPoint(point.x() + horizontalOffset(), point.y() + verticalOffset());
 
     auto list = itemPaintGeomertys(rowIndex);
 
-    for (const QRect &rect : list)
+    for (const QRect &rect : list) {
         if (rect.contains(pos)) {
             return rowIndex;
         }
+    }
 
     return QModelIndex();
 }
@@ -282,40 +263,7 @@ bool CanvasGridView::isIndexHidden(const QModelIndex &index) const
 
 void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command)
 {
-    auto byIconRect = true;
-    if (DFMGlobal::keyShiftIsPressed()) {
-        byIconRect = true;
-    } else {
-        byIconRect = false;
-    }
-
-    auto selectRect = rect.normalized();
-    auto topLeftGridPos = gridAt(selectRect.topLeft());
-    auto bottomRightGridPos = gridAt(selectRect.bottomRight());
-
-    QItemSelection selection;
-    for (auto x = topLeftGridPos.x(); x <= bottomRightGridPos.x(); ++x) {
-        for (auto y = topLeftGridPos.y(); y <= bottomRightGridPos.y(); ++y) {
-            auto localFile = GridManager::instance()->id(x, y);
-            if (localFile.isEmpty()) {
-                continue;
-            }
-            auto index = model()->index(DUrl::fromLocalFile(localFile));
-            auto list = itemPaintGeomertys(index);
-            for (const QRect &r : list) {
-                if (selectRect.intersects(r)) {
-                    QItemSelectionRange selectionRange(index);
-                    selection.push_back(selectionRange);
-                    break;
-                }
-                if (byIconRect) {
-                    break;
-                }
-            }
-        }
-    }
-
-    QAbstractItemView::selectionModel()->select(selection, command);
+    setSelection(rect, command, false);
 }
 
 QRegion CanvasGridView::visualRegionForSelection(const QItemSelection &selection) const
@@ -330,6 +278,11 @@ QRegion CanvasGridView::visualRegionForSelection(const QItemSelection &selection
 
 void CanvasGridView::mouseMoveEvent(QMouseEvent *event)
 {
+    if (dragEnabled() || event->buttons() != Qt::LeftButton
+            || selectionMode() == NoSelection || selectionMode() == SingleSelection) {
+        QAbstractItemView::mouseMoveEvent(event);
+    }
+
     auto curPos = event->pos();
     QRect selectRect;
 
@@ -351,19 +304,16 @@ void CanvasGridView::mouseMoveEvent(QMouseEvent *event)
 //                || bottomRightGridPos != d->selectRect.bottomRight()) {
         d->selectRect = QRect(topLeftGridPos, bottomRightGridPos);
         auto flag = QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect;
-        setSelection(selectRect, flag);
+        setSelection(selectRect, flag, true);
 //    }
     }
 
-    if (dragEnabled() || event->buttons() != Qt::LeftButton
-            || selectionMode() == NoSelection || selectionMode() == SingleSelection) {
-        QAbstractItemView::mouseMoveEvent(event);
-    }
 }
 
 void CanvasGridView::mousePressEvent(QMouseEvent *event)
 {
     QAbstractItemView::mousePressEvent(event);
+
     auto selectIndex = indexAt(event->pos());
 
     d->selectFrame->resize(0, 0);
@@ -735,7 +685,6 @@ void CanvasGridView::setItemDelegate(DStyledItemDelegate *delegate)
     connect(delegate, &DStyledItemDelegate::commitData, this, [ = ](QWidget * editor) {
         qDebug() << editor;
     });
-    //    connect(delegate, &DStyledItemDelegate::commitData, this, &CanvasGridView::handleCommitData);
 }
 
 bool CanvasGridView::isIndexValid(int index)
@@ -818,7 +767,6 @@ bool CanvasGridView::edit(const QModelIndex &index, QAbstractItemView::EditTrigg
         }
     }
 
-    return false;
 
     return QAbstractItemView::edit(index, trigger, event);
 }
@@ -835,6 +783,7 @@ void CanvasGridView::initUI()
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setAcceptDrops(true);
     setDragDropMode(QAbstractItemView::DragDrop);
+    setEditTriggers(QAbstractItemView::EditKeyPressed | QAbstractItemView::SelectedClicked);
 
     d->selectFrame = new QFrame(this);
     d->selectFrame->setVisible(false);
@@ -844,6 +793,17 @@ void CanvasGridView::initUI()
     d->fileViewHelper = new CanvasViewHelper(this);
 
     setModel(new DFileSystemModel(d->fileViewHelper));
+    setSelectionModel(new DFileSelectionModel(model(), this));
+    setItemDelegate(new DIconItemDelegate(d->fileViewHelper));
+
+    auto settings = Config::instance()->settings();
+    settings->beginGroup(Config::groupGeneral);
+    if (settings->contains(Config::keyIconLevel)) {
+        auto iconSizeLevel = settings->value(Config::keyIconLevel).toInt();
+        itemDelegate()->setIconSizeByIconSizeLevel(iconSizeLevel);
+        qDebug() << "current icon size level" << itemDelegate()->iconSizeLevel();
+    }
+    settings->endGroup();
 
 //    int role = model()->sortRole();
 //    int order = model()->sortOrder();
@@ -856,12 +816,9 @@ void CanvasGridView::initUI()
 //    if (settings->contains(Config::keySortOrder)) {
 //        order = settings->value(Config::keySortOrder).toInt();
 //    }
-//    settings->endGroup();
 
 //    model()->setSortRole(role, static_cast<Qt::SortOrder>(order));
 
-    setSelectionModel(new DFileSelectionModel(model(), this));
-    setItemDelegate(new DIconItemDelegate(d->fileViewHelper));
 }
 
 void CanvasGridView::initConnection()
@@ -906,7 +863,7 @@ void CanvasGridView::initConnection()
             this, [ = ](const QModelIndex & topLeft,
                         const QModelIndex & bottomRight,
     const QVector<int> &roles) {
-        qDebug() << topLeft << bottomRight << roles;
+        qDebug() << "dataChanged" << topLeft << bottomRight << roles;
 
         GridManager::instance()->clear();
         QStringList list;
@@ -947,6 +904,8 @@ void CanvasGridView::initConnection()
             AppPresenter::instance(), &AppPresenter::onAutoAlignToggled);
     connect(this, &CanvasGridView::sortRoleChanged,
             AppPresenter::instance(), &AppPresenter::onSortRoleChanged);
+    connect(this, &CanvasGridView::changeIconLevel,
+            AppPresenter::instance(), &AppPresenter::OnIconLevelChanged);
 }
 
 void CanvasGridView::updateCanvas()
@@ -969,15 +928,19 @@ void CanvasGridView::updateCanvas()
 
 void CanvasGridView::increaseIcon()
 {
-    int iconSizeLevel = itemDelegate()->increaseIcon();
-    qDebug() << iconSizeLevel;
+    // TODO: 3 is 128*128, 0,1,2,3
+    if (itemDelegate()->iconSizeLevel() >= 3) {
+        return;
+    }
+    itemDelegate()->increaseIcon();
+    emit this->changeIconLevel(itemDelegate()->iconSizeLevel());
     updateCanvas();
 }
 
 void CanvasGridView::decreaseIcon()
 {
-    int iconSizeLevel = itemDelegate()->decreaseIcon(); qDebug() << iconSizeLevel;
-
+    itemDelegate()->decreaseIcon();
+    emit this->changeIconLevel(itemDelegate()->iconSizeLevel());
     updateCanvas();
 }
 
@@ -993,6 +956,37 @@ inline QList<QRect> CanvasGridView::itemPaintGeomertys(const QModelIndex &index)
     QStyleOptionViewItem option = viewOptions();
     option.rect = visualRect(index);
     return itemDelegate()->paintGeomertys(option, index);
+}
+
+void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command, bool byIconRect)
+{
+    auto selectRect = rect.normalized();
+    auto topLeftGridPos = gridAt(selectRect.topLeft());
+    auto bottomRightGridPos = gridAt(selectRect.bottomRight());
+
+    QItemSelection selection;
+    for (auto x = topLeftGridPos.x(); x <= bottomRightGridPos.x(); ++x) {
+        for (auto y = topLeftGridPos.y(); y <= bottomRightGridPos.y(); ++y) {
+            auto localFile = GridManager::instance()->id(x, y);
+            if (localFile.isEmpty()) {
+                continue;
+            }
+            auto index = model()->index(DUrl::fromLocalFile(localFile));
+            auto list = itemPaintGeomertys(index);
+            for (const QRect &r : list) {
+                if (selectRect.intersects(r)) {
+                    QItemSelectionRange selectionRange(index);
+                    selection.push_back(selectionRange);
+                    break;
+                }
+                if (byIconRect) {
+                    break;
+                }
+            }
+        }
+    }
+
+    QAbstractItemView::selectionModel()->select(selection, command);
 }
 
 void CanvasGridView::handleContextMenuAction(int action)

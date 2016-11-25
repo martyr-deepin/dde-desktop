@@ -36,3 +36,8 @@ void AppPresenter::onAutoAlignToggled()
     emit setConfig(Config::groupGeneral, Config::keyAutoAlign, GridManager::instance()->autoAlign());
 }
 
+void AppPresenter::OnIconLevelChanged(int iconLevel)
+{
+    emit setConfig(Config::groupGeneral, Config::keyIconLevel, iconLevel);
+}
+

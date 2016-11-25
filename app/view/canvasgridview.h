@@ -82,6 +82,7 @@ public:
 signals:
     void sortRoleChanged(int role, Qt::SortOrder order);
     void autoAlignToggled();
+    void changeIconLevel(int iconLevel);
 
 public slots:
     bool edit(const QModelIndex &index, EditTrigger trigger, QEvent *event) Q_DECL_OVERRIDE;
@@ -99,6 +100,10 @@ private:
 
     inline QPoint gridAt(const QPoint &pos) const;
     inline QList<QRect> itemPaintGeomertys(const QModelIndex &index) const;
+
+    void setSelection(const QRect &rect,
+                      QItemSelectionModel::SelectionFlags command,
+                      bool byIconRect);
 
     void handleContextMenuAction(int action);
 
