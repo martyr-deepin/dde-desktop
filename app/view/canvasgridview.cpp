@@ -58,6 +58,8 @@ CanvasGridView::CanvasGridView(QWidget *parent)
 {
     D_THEME_INIT_WIDGET(CanvasGridView);
 
+    qRegisterMetaType<QList<DAbstractFileInfoPointer>>(QT_STRINGIFY(QList<DAbstractFileInfoPointer>));
+
     initUI();
     initConnection();
     setRootUrl(DUrl::fromLocalFile("/home/iceyer/Desktop"));
@@ -82,6 +84,8 @@ QModelIndex CanvasGridView::indexAt(const QPoint &point) const
     auto gridPos = gridAt(point);
     auto localFile =  GridManager::instance()->id(gridPos.x(), gridPos.y());
     auto rowIndex = model()->index(DUrl::fromLocalFile(localFile));
+    QPoint pos = QPoint(point.x() + horizontalOffset(), point.y() + verticalOffset());
+    auto list = itemPaintGeomertys(rowIndex);
 
     for (QModelIndex &index : itemDelegate()->hasWidgetIndexs()) {
         if (index == itemDelegate()->editingIndex()) {
@@ -94,10 +98,6 @@ QModelIndex CanvasGridView::indexAt(const QPoint &point) const
             return index;
         }
     }
-
-    QPoint pos = QPoint(point.x() + horizontalOffset(), point.y() + verticalOffset());
-
-    auto list = itemPaintGeomertys(rowIndex);
 
     for (const QRect &rect : list) {
         if (rect.contains(pos)) {
@@ -312,9 +312,13 @@ void CanvasGridView::mouseMoveEvent(QMouseEvent *event)
 
 void CanvasGridView::mousePressEvent(QMouseEvent *event)
 {
-    QAbstractItemView::mousePressEvent(event);
-
     auto selectIndex = indexAt(event->pos());
+
+    if (!selectIndex.isValid()) {
+        itemDelegate()->hideNotEditingIndexWidget();
+        clearSelection();
+    }
+
 
     d->selectFrame->resize(0, 0);
     bool showSelectFrame = event->button() == Qt::LeftButton;
@@ -323,6 +327,7 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
 
     d->lastPos = event->pos();
     d->lastCursorIndex = selectIndex;
+    QAbstractItemView::mousePressEvent(event);
 }
 
 void CanvasGridView::mouseReleaseEvent(QMouseEvent *event)
@@ -413,7 +418,6 @@ void CanvasGridView::dragMoveEvent(QDragMoveEvent *event)
                 d->dragMoveHoverIndex = QModelIndex();
             } else if (!fileInfo->supportedDropActions().testFlag(event->dropAction())) {
                 d->dragMoveHoverIndex = QModelIndex();
-
                 update();
                 return event->ignore();
             }
@@ -426,6 +430,7 @@ void CanvasGridView::dragMoveEvent(QDragMoveEvent *event)
             && (event->source() != this || !(event->possibleActions() & Qt::MoveAction))) {
         QAbstractItemView::dragMoveEvent(event);
     }
+    QAbstractItemView::dragMoveEvent(event);
 }
 
 void CanvasGridView::dragLeaveEvent(QDragLeaveEvent *event)
@@ -436,7 +441,7 @@ void CanvasGridView::dragLeaveEvent(QDragLeaveEvent *event)
 
 void CanvasGridView::dropEvent(QDropEvent *event)
 {
-    d->dragMoveHoverIndex = QModelIndex();
+//    d->dragMoveHoverIndex = QModelIndex();
     if (event->source() == this && !DFMGlobal::keyCtrlIsPressed()) {
         event->setDropAction(Qt::MoveAction);
     } else {
@@ -478,26 +483,31 @@ void CanvasGridView::dropEvent(QDropEvent *event)
         event->accept(); // yeah! we've done with XDS so stop Qt from further event propagation.
     } else {
         QModelIndex index = indexAt(event->pos());
-        if (!index.isValid() || selectionModel()->isSelected(index)) {
-            // move pos
-            QStringList selectLocalFiles;
-            auto selects = selectionModel()->selectedIndexes();
-            for (auto index : selects) {
-                auto info = model()->fileInfo(index);
-                selectLocalFiles << info->fileUrl().toLocalFile();
+        if (!index.isValid()) {
+            if (event->source() == this) {
+                // move pos
+                QStringList selectLocalFiles;
+                auto selects = selectionModel()->selectedIndexes();
+                for (auto index : selects) {
+                    auto info = model()->fileInfo(index);
+                    selectLocalFiles << info->fileUrl().toLocalFile();
+                }
+                auto point = event->pos();
+                auto row = (point.x() - d->viewMargins.left()) / d->cellWidth;
+                auto col = (point.y() - d->viewMargins.top()) / d->cellHeight;
+                auto current = model()->fileInfo(d->lastCursorIndex)->fileUrl().toLocalFile();
+                GridManager::instance()->move(selectLocalFiles, current, row, col);
+                setState(NoState);
+
+                itemDelegate()->hideNotEditingIndexWidget();
+                update();
+
+                return;
+            } else {
+                index = rootIndex();
             }
-            auto point = event->pos();
-            auto row = (point.x() - d->viewMargins.left()) / d->cellWidth;
-            auto col = (point.y() - d->viewMargins.top()) / d->cellHeight;
-            auto current = model()->fileInfo(d->lastCursorIndex)->fileUrl().toLocalFile();
-            GridManager::instance()->move(selectLocalFiles, current, row, col);
-            setState(NoState);
-            viewport()->update();
-            return;
 
         }
-
-        index = rootIndex();
 
         if (model()->supportedDropActions() & event->dropAction() && model()->flags(index) & Qt::ItemIsDropEnabled) {
             const Qt::DropAction action = dragDropMode() == InternalMove ? Qt::MoveAction : event->dropAction();
@@ -532,10 +542,10 @@ void CanvasGridView::paintEvent(QPaintEvent *)
     const QAbstractItemView::State viewState = this->state();
     const bool enabled = (state & QStyle::State_Enabled) != 0;
 
-    bool alternateBase = false;
-    int previousRow = -2; // trigger the alternateBase adjustment on first pass
+//    bool alternateBase = false;
+//    int previousRow = -2; // trigger the alternateBase adjustment on first pass
 
-    int maxSize = viewport()->size().width();
+//    int maxSize = viewport()->size().width();
 
     painter.setBrush(QColor(255, 0, 0, 0));
     if (model()) {
@@ -715,7 +725,6 @@ bool CanvasGridView::setCurrentUrl(const DUrl &url)
     if (!model()->canFetchMore(index)) {
         qDebug() << "updateContentLabel()";
     }
-    // TODO: set sort
 
     if (focusWidget() && focusWidget()->window() == window() && fileUrl.isLocalFile()) {
         QDir::setCurrent(fileUrl.toLocalFile());
@@ -763,12 +772,45 @@ bool CanvasGridView::edit(const QModelIndex &index, QAbstractItemView::EditTrigg
         const QRect &file_name_rect = itemDelegate()->fileNameRect(option, index);
 
         if (!file_name_rect.contains(static_cast<QMouseEvent *>(event)->pos())) {
+            qDebug() << "false";
             return false;
         }
     }
 
+    if (QWidget *w = indexWidget(index)) {
+        Qt::ItemFlags flags = model()->flags(index);
 
-    return QAbstractItemView::edit(index, trigger, event);
+        qDebug() << flags << editTriggers();
+        if (((flags & Qt::ItemIsEditable) == 0) || ((flags & Qt::ItemIsEnabled) == 0)) {
+            qDebug() << "false";
+            return false;
+        }
+        if (state() == QAbstractItemView::EditingState) {
+            qDebug() << "false";
+            return false;
+        }
+        if (trigger == QAbstractItemView::AllEditTriggers) { // force editing
+            qDebug() << "true";
+            return true;
+        }
+        if ((trigger & editTriggers()) == QAbstractItemView::SelectedClicked
+                && !selectionModel()->isSelected(index)) {
+            qDebug() << "false";
+            return false;
+        }
+
+        if (trigger & editTriggers()) {
+            qDebug() << "true" << w;
+            w->setFocus();
+            return true;
+        }
+    }
+
+    bool tmp = QAbstractItemView::edit(index, trigger, event);
+
+//    qDebug() << "callc QAbstractItemView" << tmp;
+
+    return tmp;
 }
 
 void CanvasGridView::initUI()
