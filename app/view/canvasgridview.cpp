@@ -24,6 +24,7 @@
 #include <QProcess>
 #include <QApplication>
 #include <QScreen>
+#include <QStandardPaths>
 
 #include <dthememanager.h>
 #include <dscrollbar.h>
@@ -62,7 +63,9 @@ CanvasGridView::CanvasGridView(QWidget *parent)
 
     initUI();
     initConnection();
-    setRootUrl(DUrl::fromLocalFile("/home/iceyer/Desktop"));
+
+    auto desktopPath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first();
+    setRootUrl(DUrl::fromLocalFile(desktopPath));
 }
 
 CanvasGridView::~CanvasGridView()
