@@ -32,7 +32,7 @@ Config::Config()
                  + "/" + QApplication::applicationName() + ".conf";
 
     qDebug() << configPath;
-    configPath = "/var/run/user/1000/desktop.conf";
+    configPath = "/var/run/shm/desktop.conf";
 
     QFileInfo configFile(configPath);
     if (!configFile.exists()) {

@@ -95,6 +95,8 @@ public:
     QFrame              *selectFrame = nullptr;
     QRect               selectRect;
 
+    bool                mousePressed;
+
     QRect               canvasRect;
     CanvasViewHelper    *fileViewHelper = nullptr;
 };

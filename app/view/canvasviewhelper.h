@@ -25,6 +25,7 @@ public:
     virtual DStyledItemDelegate *itemDelegate() const;
     virtual DFileSystemModel *model() const;
     virtual const DUrlList selectedUrls() const;
+
 };
 
 #endif // CANVASVIEWHELPER_H

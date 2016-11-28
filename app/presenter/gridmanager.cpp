@@ -332,6 +332,11 @@ QString GridManager::id(int x, int y)
     return d->gridItems.value(QPoint(x, y));
 }
 
+bool GridManager::isEmpty(int x, int y)
+{
+    return !d->usedGrids.value(d->indexOfGridPos(QPoint(x,y)));
+}
+
 bool GridManager::autoAlign()
 {
     return d->autoAlign;

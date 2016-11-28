@@ -34,6 +34,7 @@ public:
     bool contains(const QString &id);
     QPoint position(const QString &id);
     QString id(int x, int y);
+    bool isEmpty(int x, int y);
 
     bool autoAlign();
     void toggleAlign();

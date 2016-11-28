@@ -7,10 +7,14 @@
  * (at your option) any later version.
  **/
 
+#include <QDebug>
+#include <QDBusError>
 #include <QDBusConnection>
 
 #include <DLog>
 #include <DApplication>
+
+#include "dfmglobal.h"
 
 #include "util/dde/ddesession.h"
 #include "util/gtk/gtkworkaround.h"
@@ -29,23 +33,29 @@ int main(int argc, char *argv[])
     app.setApplicationVersion((GIT_VERSION));
     app.setTheme("light");
 
-    app.loadTranslator();
     DLogManager::registerConsoleAppender();
     DLogManager::registerFileAppender();
 
-    qDebug() << app.applicationVersion();
-    app.loadTranslator();
+    qDebug() << "start "<< app.applicationName() << app.applicationVersion();
 
     QDBusConnection conn = QDBusConnection::sessionBus();
 
+    if (!conn.registerService(DesktopServiceName)) {
+        qDebug() << "registerService Failed, maybe service exist" << conn.lastError();
+        exit(0x0002);
+    }
+
+    if (!conn.registerObject(DesktopServicePath, Desktop::instance(),
+            QDBusConnection::ExportAllSlots |
+            QDBusConnection::ExportAllSignals |
+            QDBusConnection::ExportAllProperties)) {
+        qDebug() << "registerObject Failed" << conn.lastError();
+        exit(0x0003);
+    }
+
+    app.loadTranslator();
+
     Config::instance();
-    // TODO: Gtk Workaround
-    Gtk::Init();
-//    app.connect(&Gtk::GtkWorkaround::instance(),
-//    &Gtk::GtkWorkaround::gtkIconThemeChange,
-//                qApp, [=](const QString&){
-//        qApp->exit(100);
-//    });
 
     Desktop::instance()->loadData();
     Desktop::instance()->loadView();
@@ -53,6 +63,8 @@ int main(int argc, char *argv[])
 
     // Notify dde-desktop start up
     Dde::Session::RegisterDdeSession();
+
+    DFMGlobal::initDialogManager();
 
     return app.exec();
 }

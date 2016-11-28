@@ -15,16 +15,19 @@
 
 #include "global/singleton.h"
 
+#define DesktopServiceName          "com.deepin.dde.Desktop"
+#define DesktopServicePath          "/com/deepin/dde/Desktop"
+#define DesktopServiceInterface     "com.deepin.dde.Desktop"
+
 class AppPresenter;
 class DesktopPrivate;
 class Desktop : public QObject, public Singleton<Desktop>
 {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", DesktopServiceName)
 public:
     void loadData();
     void loadView();
-
-signals:
 
 public slots:
     void show();

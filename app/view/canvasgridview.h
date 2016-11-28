@@ -70,6 +70,7 @@ public:
     DUrl currentUrl() const;
     bool setCurrentUrl(const DUrl &url);
     bool setRootUrl(const DUrl &url);
+    const DUrlList selectedUrls() const;
     // draw cell
 
     int selectedIndexCount() const;

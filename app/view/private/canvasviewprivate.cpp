@@ -13,4 +13,5 @@ CanvasViewPrivate::CanvasViewPrivate()
 {
     cellMargins = QMargins(5,5,5,5);
     selectRect = QRect(-1, -1, 1, 1);
+    mousePressed = false;
 }

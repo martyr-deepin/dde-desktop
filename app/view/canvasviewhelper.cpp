@@ -42,11 +42,6 @@ DFileSystemModel *CanvasViewHelper::model() const
 
 const DUrlList CanvasViewHelper::selectedUrls() const
 {
-    DUrlList list;
-    QDir desktopDir("/home/iceyer/Desktop");
-    for (auto &entry : desktopDir.entryList()) {
-        list << DUrl::fromLocalFile(entry);
-    }
-    qDebug() << list;
-    return list;
+    qDebug() << parent()->selectedUrls();
+    return parent()->selectedUrls();
 }

@@ -75,6 +75,9 @@ CanvasGridView::~CanvasGridView()
 
 QRect CanvasGridView::visualRect(const QModelIndex &index) const
 {
+    if (DFMGlobal::keyShiftIsPressed())
+        qDebug() << index;
+
     auto url = model()->getUrlByIndex(index);
     auto gridPos = GridManager::instance()->position(url.toLocalFile());
     auto x = gridPos.x() * d->cellWidth + d->viewMargins.left();
@@ -84,6 +87,9 @@ QRect CanvasGridView::visualRect(const QModelIndex &index) const
 
 QModelIndex CanvasGridView::indexAt(const QPoint &point) const
 {
+    if (DFMGlobal::keyShiftIsPressed())
+        qDebug() << point;
+
     auto gridPos = gridAt(point);
     auto localFile =  GridManager::instance()->id(gridPos.x(), gridPos.y());
     auto rowIndex = model()->index(DUrl::fromLocalFile(localFile));
@@ -140,7 +146,6 @@ void CanvasGridView::scrollTo(const QModelIndex &index, QAbstractItemView::Scrol
 
 QModelIndex CanvasGridView::moveCursorGrid(CursorAction cursorAction, Qt::KeyboardModifiers modifiers)
 {
-    qDebug() << cursorAction;
     Q_UNUSED(modifiers);
 
     auto selections = this->selectionModel();
@@ -151,35 +156,53 @@ QModelIndex CanvasGridView::moveCursorGrid(CursorAction cursorAction, Qt::Keyboa
     if (!current.isValid() || !selections->isSelected(current)) {
         return headIndex;
     }
-
-    auto currentRow = current.row();
-
-    auto coord = d->indexCoordinate(currentRow);
-    auto newCoord = coord;
+    auto url = model()->getUrlByIndex(current);
+    auto pos = GridManager::instance()->position(url.toLocalFile());
+    auto newCoord = Coordinate(pos);
 
     switch (cursorAction) {
     case MoveLeft:
-        newCoord = coord.moveLeft();
+        while (pos.x() >=0) {
+            newCoord = newCoord.moveLeft();
+            pos = newCoord.position();
+            if (!GridManager::instance()->isEmpty(pos.x(), pos.y()))
+                break;
+        }
         break;
     case MoveRight:
-        newCoord = coord.moveRight();
-        break;
-    case MoveUp:
-        newCoord = coord.moveUp();
-        break;
-    case MoveDown:
-        newCoord = coord.moveDown();
+        while (pos.x() < d->colCount) {
+            newCoord = newCoord.moveRight();
+            pos = newCoord.position();
+            if (!GridManager::instance()->isEmpty(pos.x(), pos.y()))
+                break;
+        }
         break;
     case MovePrevious:
-        if (isIndexValid(currentRow - 1)) {
-            return model()->index(currentRow - 1, 0, root);
+    case MoveUp:
+        while (pos.y() >=0 && pos.x() >=0) {
+            newCoord = newCoord.moveUp();
+            pos = newCoord.position();
+            if (pos.y() < 0) {
+                newCoord = Coordinate(pos.x()-1, d->rowCount-1);
+                pos = newCoord.position();
+            }
+            if (!GridManager::instance()->isEmpty(pos.x(), pos.y()))
+                break;
         }
-        return headIndex;
-    case MoveNext:
-        if (isIndexValid(currentRow + 1)) {
-            return model()->index(currentRow + 1, 0, root);
+        break;
+        case MoveNext:
+    case MoveDown:
+        while (pos.y() < d->rowCount && pos.x() < d->colCount) {
+            newCoord = newCoord.moveDown();
+            pos = newCoord.position();
+            if (pos.y() >= d->rowCount) {
+                newCoord = Coordinate(pos.x()+1, 0);
+                pos = newCoord.position();
+            }
+            if (!GridManager::instance()->isEmpty(pos.x(), pos.y()))
+                break;
         }
-        return tailIndex;
+        break;
     case MoveHome:
     case MovePageUp:
         return headIndex;
@@ -192,11 +215,13 @@ QModelIndex CanvasGridView::moveCursorGrid(CursorAction cursorAction, Qt::Keyboa
         return current;
     }
 
-    auto newIndex = d->coordinateIndex(newCoord);
-    if (isIndexValid(newIndex)) {
-        return model()->index(newIndex, 0, root);
+    auto localFile =  GridManager::instance()->id(pos.x(), pos.y());
+    auto newIndex = model()->index(DUrl::fromLocalFile(localFile));
+    if (newIndex.isValid()) {
+        return newIndex;
     }
 
+    qDebug() << pos;
     return current;
 }
 
@@ -213,38 +238,14 @@ QModelIndex CanvasGridView::moveCursor(QAbstractItemView::CursorAction cursorAct
         return d->lastCursorIndex;
     }
 
-    QModelIndex index;
-
-    switch (cursorAction) {
-    case MoveLeft:
-        if (DFMGlobal::keyShiftIsPressed()) {
-            index = moveCursorGrid(cursorAction, modifiers);
-        } else {
-            index = moveCursorGrid(cursorAction, modifiers);
-        }
-
-        break;
-    case MoveRight:
-        if (DFMGlobal::keyShiftIsPressed()) {
-            index = moveCursorGrid(cursorAction, modifiers);
-        } else {
-            index = moveCursorGrid(cursorAction, modifiers);
-        }
-
-        break;
-    default:
-        index = moveCursorGrid(cursorAction, modifiers);
-        break;
-    }
+    QModelIndex index = moveCursorGrid(cursorAction, modifiers);
 
     if (index.isValid()) {
         d->lastCursorIndex = index;
-
         return index;
     }
 
     d->lastCursorIndex = current;
-
     return current;
 }
 
@@ -315,26 +316,107 @@ void CanvasGridView::mouseMoveEvent(QMouseEvent *event)
 
 void CanvasGridView::mousePressEvent(QMouseEvent *event)
 {
-    auto selectIndex = indexAt(event->pos());
+    auto index = indexAt(event->pos());
 
-    if (!selectIndex.isValid()) {
-        itemDelegate()->hideNotEditingIndexWidget();
-        clearSelection();
-    }
-
+    d->mousePressed = true;
 
     d->selectFrame->resize(0, 0);
     bool showSelectFrame = event->button() == Qt::LeftButton;
-    showSelectFrame &= !selectIndex.isValid();
+    showSelectFrame &= !index.isValid();
     d->selectFrame->setVisible(showSelectFrame);
 
     d->lastPos = event->pos();
-    d->lastCursorIndex = selectIndex;
+    d->lastCursorIndex = index;
+
+    bool isEmptyArea = !index.isValid();
+
+    if (isEmptyArea) {
+        if (!DFMGlobal::keyCtrlIsPressed()) {
+            itemDelegate()->hideNotEditingIndexWidget();
+            clearSelection();
+        }
+    }
+
+    d->lastCursorIndex = index;
+
+
+    if (DFMGlobal::keyShiftIsPressed()) {
+
+        return;
+    }
+
     QAbstractItemView::mousePressEvent(event);
+
+    d->lastCursorIndex = QModelIndex();
+
+
 }
+
+
+#ifdef AAAAAA
+/*!
+    This function is called with the given \a event when a mouse button is pressed
+    while the cursor is inside the widget. If a valid item is pressed on it is made
+    into the current item. This function emits the pressed() signal.
+*/
+void QAbstractItemView::mousePressEvent(QMouseEvent *event)
+{
+    Q_D(QAbstractItemView);
+    d->delayedAutoScroll.stop(); //any interaction with the view cancel the auto scrolling
+    QPoint pos = event->pos();
+    QPersistentModelIndex index = indexAt(pos);
+
+    if (!d->selectionModel
+        || (d->state == EditingState && d->hasEditor(index)))
+        return;
+
+    d->pressedAlreadySelected = d->selectionModel->isSelected(index);
+    d->pressedIndex = index;
+    d->pressedModifiers = event->modifiers();
+    QItemSelectionModel::SelectionFlags command = selectionCommand(index, event);
+    d->noSelectionOnMousePress = command == QItemSelectionModel::NoUpdate || !index.isValid();
+    QPoint offset = d->offset();
+    if ((command & QItemSelectionModel::Current) == 0)
+        d->pressedPosition = pos + offset;
+    else if (!indexAt(d->pressedPosition - offset).isValid())
+        d->pressedPosition = visualRect(currentIndex()).center() + offset;
+
+    if (edit(index, NoEditTriggers, event))
+        return;
+
+    if (index.isValid() && d->isIndexEnabled(index)) {
+        // we disable scrollTo for mouse press so the item doesn't change position
+        // when the user is interacting with it (ie. clicking on it)
+        bool autoScroll = d->autoScroll;
+        d->autoScroll = false;
+        d->selectionModel->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
+        d->autoScroll = autoScroll;
+        QRect rect(d->pressedPosition - offset, pos);
+        if (command.testFlag(QItemSelectionModel::Toggle)) {
+            command &= ~QItemSelectionModel::Toggle;
+            d->ctrlDragSelectionFlag = d->selectionModel->isSelected(index) ? QItemSelectionModel::Deselect : QItemSelectionModel::Select;
+            command |= d->ctrlDragSelectionFlag;
+        }
+        setSelection(rect, command);
+
+        // signal handlers may change the model
+        emit pressed(index);
+        if (d->autoScroll) {
+            //we delay the autoscrolling to filter out double click event
+            //100 is to be sure that there won't be a double-click misinterpreted as a 2 single clicks
+            d->delayedAutoScroll.start(QApplication::doubleClickInterval()+100, this);
+        }
+
+    } else {
+        // Forces a finalize() even if mouse is pressed, but not on a item
+        d->selectionModel->select(QModelIndex(), QItemSelectionModel::Select);
+    }
+}
+#endif
 
 void CanvasGridView::mouseReleaseEvent(QMouseEvent *event)
 {
+    d->mousePressed = false;
     d->selectFrame->setVisible(false);
     if (dragEnabled()) {
         return QAbstractItemView::mouseReleaseEvent(event);
@@ -754,6 +836,17 @@ bool CanvasGridView::setRootUrl(const DUrl &url)
     return setCurrentUrl(url);
 }
 
+const DUrlList CanvasGridView::selectedUrls() const
+{
+    auto selects = selectionModel()->selectedIndexes();
+    DUrlList urls;
+    for (auto index : selects) {
+        auto info = model()->fileInfo(index);
+        urls << info->fileUrl();
+    }
+    return urls;
+}
+
 int CanvasGridView::selectedIndexCount() const
 {
     return static_cast<const DFileSelectionModel *>(selectionModel())->selectedCount();
@@ -849,21 +942,6 @@ void CanvasGridView::initUI()
         qDebug() << "current icon size level" << itemDelegate()->iconSizeLevel();
     }
     settings->endGroup();
-
-//    int role = model()->sortRole();
-//    int order = model()->sortOrder();
-
-//    auto settings = Config::instance()->settings();
-//    settings->beginGroup(Config::groupGeneral);
-//    if (settings->contains(Config::keySortBy)) {
-//        role = settings->value(Config::keySortBy).toInt();
-//    }
-//    if (settings->contains(Config::keySortOrder)) {
-//        order = settings->value(Config::keySortOrder).toInt();
-//    }
-
-//    model()->setSortRole(role, static_cast<Qt::SortOrder>(order));
-
 }
 
 void CanvasGridView::initConnection()
@@ -1005,11 +1083,28 @@ inline QList<QRect> CanvasGridView::itemPaintGeomertys(const QModelIndex &index)
 
 void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command, bool byIconRect)
 {
+    qDebug() << rect << command<< byIconRect;
     auto selectRect = rect.normalized();
     auto topLeftGridPos = gridAt(selectRect.topLeft());
     auto bottomRightGridPos = gridAt(selectRect.bottomRight());
 
     QItemSelection selection;
+
+    if (!d->lastCursorIndex.isValid())
+        return;
+
+    qDebug() <<  d->mousePressed << d->lastCursorIndex << DFMGlobal::keyShiftIsPressed();
+    if (!d->mousePressed && d->lastCursorIndex.isValid()&&DFMGlobal::keyShiftIsPressed()) {
+        qDebug() <<  "shift select signle";
+        QItemSelectionRange selectionRange(d->lastCursorIndex);
+        selection.push_back(selectionRange);
+         QAbstractItemView::selectionModel()->select(selection, command);
+         return;
+    }
+
+
+    qDebug() << "select rect" << topLeftGridPos << bottomRightGridPos;
+
     for (auto x = topLeftGridPos.x(); x <= bottomRightGridPos.x(); ++x) {
         for (auto y = topLeftGridPos.y(); y <= bottomRightGridPos.y(); ++y) {
             auto localFile = GridManager::instance()->id(x, y);
@@ -1030,6 +1125,7 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
             }
         }
     }
+
 
     QAbstractItemView::selectionModel()->select(selection, command);
 }
