@@ -43,6 +43,9 @@ public:
         positionProfile = settings->value(Config::keyProfile).toString();
         autoAlign = settings->value(Config::keyAutoAlign).toBool();
         settings->endGroup();
+
+        coordWidth = 0;
+        coordHeight = 0;
     }
 
     inline int gridCount() const
@@ -94,6 +97,21 @@ public:
         return overlapPosition();
     }
 
+    inline bool add(QPoint pos, const QString &id)
+    {
+        if (gridItems.contains(pos) && pos != overlapPosition()) {
+            qDebug() << "grid exist item" << gridItems.value(pos) << pos;
+            return false;
+        }
+
+        gridItems.insert(pos, id);
+        itemGrids.insert(id, pos);
+        cacheItemGrids.insert(id, pos);
+        usedGrids[indexOfGridPos(pos)] = true;
+
+        return true;
+    }
+
     void createProfile()
     {
         usedGrids.clear();
@@ -119,11 +137,9 @@ public:
         settings->endGroup();
     }
 
-    void setSizeProfile(int w, int h)
+    inline void loadSizeProfile(int w, int h)
     {
-        if (coordHeight == h && coordWidth == w) {
-            return;
-        }
+        Q_ASSERT(!(coordHeight == h && coordWidth == w));
         coordWidth = w;
         coordHeight = h;
 
@@ -134,6 +150,56 @@ public:
             positionProfile = profile;
         } else {
             loadProfile();
+        }
+    }
+
+    inline void changeSizeProfile(int w, int h)
+    {
+        Q_ASSERT(!(coordHeight == h && coordWidth == w));
+
+        auto oldGridCount = coordHeight * coordWidth;
+        auto newGridCount = w * h;
+
+        QVector<int> preferNewIndex;
+        QVector<QString> itemIds;
+
+        for (int i = 0; i < usedGrids.length(); ++i) {
+            if (usedGrids.value(i)) {
+                auto newIndex = i * newGridCount / oldGridCount;
+                preferNewIndex.push_back(newIndex);
+                itemIds.push_back(gridItems.value(gridPosAt(i)));
+            }
+        }
+
+        createProfile();
+        auto profile = QString("Position_%1x%2").arg(w).arg(h);
+        if (profile != positionProfile) {
+            positionProfile = profile;
+        }
+
+
+        for (int i = 0; i < preferNewIndex.length(); ++i) {
+            auto index = preferNewIndex.value(i);
+            if (usedGrids.size() > index && !usedGrids.value(index)) {
+                add(gridPosAt(index), itemIds.value(i));
+            } else {
+                auto freePos = takeEmptyCoordPos();
+                add(freePos, itemIds.value(i));
+            }
+        }
+    }
+
+
+    void updateGridProfile(int w, int h)
+    {
+        if (coordHeight == h && coordWidth == w) {
+            return;
+        }
+
+        if (0 == coordWidth && 0 == coordHeight)  {
+            loadSizeProfile(w, h);
+        } else {
+            changeSizeProfile(w, h);
         }
     }
 
@@ -177,19 +243,11 @@ bool GridManager::add(const QString &id)
 
 bool GridManager::add(QPoint pos, const QString &id)
 {
-    if (d->gridItems.contains(pos) && pos != d->overlapPosition()) {
-        qDebug() << "grid exist item" << d->gridItems.value(pos) << pos;
-        return false;
+    auto ret = d->add(pos, id);
+    if (ret) {
+        emit AppPresenter::instance()->setConfig(d->positionProfile, positionKey(pos), id);
     }
-
-    d->gridItems.insert(pos, id);
-    d->itemGrids.insert(id, pos);
-    d->cacheItemGrids.insert(id, pos);
-    d->usedGrids[d->indexOfGridPos(pos)] = true;
-
-    emit AppPresenter::instance()->setConfig(d->positionProfile, positionKey(pos), id);
-
-    return true;
+    return ret;
 }
 
 bool GridManager::move(const QStringList &selecteds, const QString &current, int x, int y)
@@ -244,7 +302,7 @@ bool GridManager::move(const QStringList &selecteds, const QString &current, int
         auto destTailCount = emptyIndexList.length() - destGridHeadCount;
         auto selectedTailCount = selecteds.length() - selectedHeadCount;
         if (destTailCount <= selectedTailCount) {
-            startIndex =emptyIndexList.length() - selecteds.length();
+            startIndex = emptyIndexList.length() - selecteds.length();
         }
 
         destPosList.clear();
@@ -369,10 +427,11 @@ void GridManager::reAlign()
     }
 }
 
-void GridManager::setCoordinateSize(int w, int h)
+void GridManager::updateGridSize(int w, int h)
 {
-    d->setSizeProfile(w, h);
+    d->updateGridProfile(w, h);
     emit AppPresenter::instance()->setConfig(Config::groupGeneral,
             Config::keyProfile,
             d->positionProfile);
 }
+

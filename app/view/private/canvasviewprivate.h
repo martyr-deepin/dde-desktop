@@ -90,6 +90,7 @@ public:
 
     QModelIndex         dragMoveHoverIndex;
     QModelIndex         lastCursorIndex;
+    QModelIndex         lastMoveCursorIndex;
 
     QPoint              lastPos;
     QFrame              *selectFrame = nullptr;

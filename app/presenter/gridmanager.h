@@ -40,7 +40,7 @@ public:
     void toggleAlign();
     void reAlign();
 
-    void setCoordinateSize(int w, int h);
+    void updateGridSize(int w, int h);
 
 protected:
     friend Singleton<GridManager>;

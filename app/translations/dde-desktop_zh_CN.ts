@@ -4,18 +4,23 @@
 <context>
     <name>CanvasGridView</name>
     <message>
-        <location filename="../view/canvasgridview.cpp" line="823"/>
+        <location filename="../view/canvasgridview.cpp" line="1123"/>
+        <source>Auto arrangement</source>
+        <translation>自动排列</translation>
+    </message>
+    <message>
+        <location filename="../view/canvasgridview.cpp" line="1130"/>
         <source>Display Settings</source>
         <translation>显示设置</translation>
     </message>
     <message>
-        <location filename="../view/canvasgridview.cpp" line="828"/>
+        <location filename="../view/canvasgridview.cpp" line="1135"/>
         <source>Corner Settings</source>
         <translation>热区设置</translation>
     </message>
     <message>
-        <location filename="../view/canvasgridview.cpp" line="833"/>
-        <source>Wallpaper Settings</source>
+        <location filename="../view/canvasgridview.cpp" line="1140"/>
+        <source>Set Wallpaper</source>
         <translation>设置壁纸</translation>
     </message>
 </context>

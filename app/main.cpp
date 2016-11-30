@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QDBusError>
 #include <QDBusConnection>
+#include <QThreadPool>
 
 #include <DLog>
 #include <DApplication>
@@ -34,6 +35,8 @@ int main(int argc, char *argv[])
     app.setApplicationVersion((GIT_VERSION));
     app.setTheme("light");
 
+    QThreadPool::globalInstance()->setMaxThreadCount(MAX_THREAD_COUNT);
+
     DLogManager::registerConsoleAppender();
     DLogManager::registerFileAppender();
 
@@ -54,6 +57,7 @@ int main(int argc, char *argv[])
         exit(0x0003);
     }
 
+    DFMGlobal::installTranslator();
     app.loadTranslator();
 
     Config::instance();
@@ -65,10 +69,10 @@ int main(int argc, char *argv[])
     // Notify dde-desktop start up
     Dde::Session::RegisterDdeSession();
 
-
     DFMGlobal::initPluginManager();
     DFMGlobal::initMimesAppsManager();
     DFMGlobal::initDialogManager();
+
 
     return app.exec();
 }

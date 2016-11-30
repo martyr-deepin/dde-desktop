@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 include($$PWD/../build.pri)
-include($$PWD/development.pri)
+include($$PWD/util/util.pri)
 
 QT       += core gui widgets svg dbus x11extras
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -32,7 +32,6 @@ SOURCES += \
 # Automating generation .qm files from .ts files
 system($$PWD/translate_generation.sh)
 
-include($$PWD/util/util.pri)
 
 HEADERS += \
     config/config.h \
@@ -52,3 +51,5 @@ RESOURCES += \
 TRANSLATIONS += $$PWD/translations/$${TARGET}.ts \
                 $$PWD/translations/$${TARGET}_zh_CN.ts
 
+
+include($$PWD/development.pri)
