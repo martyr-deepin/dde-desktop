@@ -1258,6 +1258,12 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
 //        sortRoleAction->setChecked(d->autoSort);
     }
 
+    DFileMenuManager::loadEmptyPluginMenu(menu);
+
+    if (!menu){
+        return;
+    }
+
     DUrlList urls;
     urls.append(model()->rootUrl());
 
@@ -1291,99 +1297,25 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
         list << model()->getUrlByIndex(index);
     }
 
-    DFileMenu *menu;
-
     const DAbstractFileInfoPointer &info = model()->fileInfo(index);
     QSet<MenuAction> disableList;
+    QSet<MenuAction> unusedList;
 
     if (!indexFlags.testFlag(Qt::ItemIsEditable)) {
         disableList << MenuAction::Cut << MenuAction::Rename << MenuAction::Remove << MenuAction::Delete;
     }
 
-    if (list.length() == 1) {
-        QVector<MenuAction> actions = info->menuActionList(DAbstractFileInfo::SingleFile);
+    if (list.length() == 1){
+        unusedList << MenuAction::OpenInNewWindow
+                   << MenuAction::OpenInNewTab
+                   << MenuAction::SendToDesktop
+                   << MenuAction::AddToBookMark;
+    }
 
-        if (actions.contains(MenuAction::OpenInNewWindow)) {
-            actions.remove(actions.indexOf(MenuAction::OpenInNewWindow));
-        }
-        if (actions.contains(MenuAction::OpenInNewTab)) {
-            actions.remove(actions.indexOf(MenuAction::OpenInNewTab));
-        }
-        if (actions.contains(MenuAction::SendToDesktop)) {
-            actions.remove(actions.indexOf(MenuAction::SendToDesktop));
-        }
-        if (actions.contains(MenuAction::AddToBookMark)) {
-            actions.remove(actions.indexOf(MenuAction::AddToBookMark));
-        }
+    DFileMenu *menu = DFileMenuManager::createNormalMenu(info->fileUrl(), list, disableList, unusedList, -1);
 
-        if (actions.isEmpty()) {
-            return;
-        }
-
-        const QMap<MenuAction, QVector<MenuAction> > &subActions = info->subMenuActionList();
-        disableList += DFileMenuManager::getDisableActionList(list);
-
-        menu = DFileMenuManager::genereteMenuByKeys(actions, disableList, true, subActions);
-
-        DAction *openWithAction = menu->actionAt(DFileMenuManager::getActionString(DFMGlobal::OpenWith));
-        DFileMenu *openWithMenu = openWithAction ? qobject_cast<DFileMenu *>(openWithAction->menu()) : Q_NULLPTR;
-
-        if (openWithMenu) {
-//            QMimeType mimeType = info->mimeType();
-//            QStringList recommendApps = mimeAppsManager->MimeApps.value(mimeType.name());
-
-//            foreach (QString name, mimeType.aliases()) {
-//                QStringList apps = mimeAppsManager->MimeApps.value(name);
-//                foreach (QString app, apps) {
-//                    if (!recommendApps.contains(app)){
-//                        recommendApps.append(app);
-//                    }
-//                }
-//            }
-
-//            for (QAction *action : d->openWithActionGroup->actions()) {
-//                d->openWithActionGroup->removeAction(action);
-//            }
-
-//            foreach (QString app, recommendApps) {
-//                DAction* action = new DAction(mimeAppsManager->DesktopObjs.value(app).getLocalName(), 0);
-//                action->setProperty("app", app);
-//                action->setProperty("url", info->fileUrl());
-//                openWithMenu->addAction(action);
-//                d->openWithActionGroup->addAction(action);
-//            }
-
-//            DAction* action = new DAction(fileMenuManger->getActionString(MenuAction::OpenWithCustom), 0);
-//            action->setData((int)MenuAction::OpenWithCustom);
-//            openWithMenu->addAction(action);
-        }
-    } else {
-        bool isAllCompressedFiles = true;
-
-        foreach(DUrl url, list) {
-            const DAbstractFileInfoPointer &fileInfo = DFileService::instance()->createFileInfo(url);
-
-            if (!fileInfo->isActive()) {
-                isAllCompressedFiles = false;
-            }
-        }
-
-        QVector<MenuAction> actions;
-        actions = info->menuActionList(DAbstractFileInfo::MultiFiles);
-
-        if (actions.isEmpty()) {
-            return;
-        }
-
-        if (isAllCompressedFiles) {
-            int index = actions.indexOf(MenuAction::Compress);
-            actions.insert(index + 1, MenuAction::Decompress);
-            actions.insert(index + 2, MenuAction::DecompressHere);
-        }
-
-        const QMap<MenuAction, QVector<MenuAction> > subActions;
-        disableList += DFileMenuManager::getDisableActionList(list);
-        menu = DFileMenuManager::genereteMenuByKeys(actions, disableList, true, subActions);
+    if (!menu){
+        return;
     }
 
     DFMEvent event;

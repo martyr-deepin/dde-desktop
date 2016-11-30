@@ -18,6 +18,7 @@
 
 #include "util/dde/ddesession.h"
 #include "util/gtk/gtkworkaround.h"
+#include "dfmglobal.h"
 
 #include "config/config.h"
 #include "desktop.h"
@@ -64,6 +65,9 @@ int main(int argc, char *argv[])
     // Notify dde-desktop start up
     Dde::Session::RegisterDdeSession();
 
+
+    DFMGlobal::initPluginManager();
+    DFMGlobal::initMimesAppsManager();
     DFMGlobal::initDialogManager();
 
     return app.exec();
