@@ -1064,7 +1064,7 @@ void CanvasGridView::updateCanvas()
 
     d->updateCanvasSize(d->canvasRect.size(), geometryMargins, itemSize);
     GridManager::instance()->updateGridSize(d->colCount, d->rowCount);
-    GridManager::instance()->reAlign();
+//    GridManager::instance()->reAlign();
 
     repaint();
 }

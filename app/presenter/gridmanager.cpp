@@ -123,6 +123,27 @@ public:
         itemGrids.clear();
     }
 
+//    void reAlign()
+//    {
+//        auto inUsePos =gridItems.keys();
+
+//        qSort(inUsePos.begin(), inUsePos.end(), qQPointLessThanKey);
+
+//        auto allItem =itemGrids;
+
+//        for (int index = 0; index < inUsePos.length(); ++index) {
+//            auto gridPos = inUsePos.value(index);
+//            auto id = gridItems.value(gridPos);
+//            remove(id);
+//            auto newPos = gridPosAt(index);
+//            add(newPos, id);
+//        }
+
+//        for (auto id : allItem.keys()) {
+//            add(id);
+//        }
+//    }
+
     void loadProfile()
     {
         auto settings = Config::instance()->settings();
@@ -151,15 +172,19 @@ public:
         } else {
             loadProfile();
         }
+
     }
 
     inline void changeSizeProfile(int w, int h)
     {
         Q_ASSERT(!(coordHeight == h && coordWidth == w));
 
+        qDebug() << "changeSizeProfile" << w << h
+                 << coordHeight << coordWidth;
         auto oldGridCount = coordHeight * coordWidth;
         auto newGridCount = w * h;
 
+        auto allItems = itemGrids;
         QVector<int> preferNewIndex;
         QVector<QString> itemIds;
 
@@ -170,6 +195,9 @@ public:
                 itemIds.push_back(gridItems.value(gridPosAt(i)));
             }
         }
+
+        coordHeight = h;
+        coordWidth = w;
 
         createProfile();
         auto profile = QString("Position_%1x%2").arg(w).arg(h);
@@ -186,6 +214,12 @@ public:
                 auto freePos = takeEmptyCoordPos();
                 add(freePos, itemIds.value(i));
             }
+            allItems.remove(itemIds.value(i));
+        }
+
+        for (auto id : allItems.keys()) {
+            auto freePos = takeEmptyCoordPos();
+            add(freePos, id);
         }
     }
 
@@ -193,12 +227,15 @@ public:
     void updateGridProfile(int w, int h)
     {
         if (coordHeight == h && coordWidth == w) {
+            qDebug() << "mo profile changed";
             return;
         }
 
         if (0 == coordWidth && 0 == coordHeight)  {
+            qDebug() << "loadSizeProfile";
             loadSizeProfile(w, h);
         } else {
+            qDebug() << "changeSizeProfile";
             changeSizeProfile(w, h);
         }
     }
@@ -392,7 +429,7 @@ QString GridManager::id(int x, int y)
 
 bool GridManager::isEmpty(int x, int y)
 {
-    return !d->usedGrids.value(d->indexOfGridPos(QPoint(x,y)));
+    return !d->usedGrids.value(d->indexOfGridPos(QPoint(x, y)));
 }
 
 bool GridManager::autoAlign()
@@ -412,24 +449,37 @@ void GridManager::toggleAlign()
 }
 
 
-void GridManager::reAlign()
+void GridManager:: reAlign()
 {
     auto inUsePos = d->gridItems.keys();
 
     qSort(inUsePos.begin(), inUsePos.end(), qQPointLessThanKey);
 
+    auto allItem = d->itemGrids;
+
+    qDebug() <<  d->itemGrids.size() <<  d->gridItems.size();
+
     for (int index = 0; index < inUsePos.length(); ++index) {
         auto gridPos = inUsePos.value(index);
         auto id = d->gridItems.value(gridPos);
         remove(id);
+        allItem.remove(id);
         auto newPos = d->gridPosAt(index);
         add(newPos, id);
+    }
+
+    qDebug() << allItem.keys();
+    for (auto id : allItem.keys()) {
+        add(id);
     }
 }
 
 void GridManager::updateGridSize(int w, int h)
 {
     d->updateGridProfile(w, h);
+    if (d->autoAlign) {
+        this->reAlign();
+    }
     emit AppPresenter::instance()->setConfig(Config::groupGeneral,
             Config::keyProfile,
             d->positionProfile);
