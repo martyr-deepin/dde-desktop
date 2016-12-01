@@ -9,8 +9,14 @@
 
 #include "apppresenter.h"
 
+#include <dfileservices.h>
+
 #include "../config/config.h"
 #include "gridmanager.h"
+#include "desktopitemcontrol.h"
+
+
+#define DESKTOP_SCHEME "desktop"
 
 AppPresenter::AppPresenter(QObject *parent) : QObject(parent)
 {
@@ -22,6 +28,8 @@ void AppPresenter::init()
             Config::instance(), &Config::setConfig);
     connect(AppPresenter::instance(), &AppPresenter::removeConfig,
             Config::instance(), &Config::removeConfig);
+
+//    DFileService::dRegisterUrlHandler<DesktopItemControl>(DESKTOP_SCHEME, "");
 }
 
 void AppPresenter::onSortRoleChanged(int role, Qt::SortOrder order)

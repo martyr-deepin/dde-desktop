@@ -18,6 +18,10 @@
 #include <QTextEdit>
 #include <QStringListModel>
 #include <QStandardItemModel>
+#include <QStandardPaths>
+#include <QDebug>
+
+#include <durl.h>
 
 class DesktopPrivate
 {
@@ -44,7 +48,9 @@ void Desktop::loadData()
 
 void Desktop::loadView()
 {
-
+    auto desktopPath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first();
+    auto desktopUrl = DUrl::fromLocalFile(desktopPath);
+    d->screenFrame.setRootUrl(desktopUrl);
 }
 
 void Desktop::show()

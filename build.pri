@@ -1,3 +1,3 @@
 DEFINES += QT_MESSAGELOGCONTEXT
 
-BUILD_DIST = $$PWD/build/dist
+BUILD_DIST = $$PWD/build/dest

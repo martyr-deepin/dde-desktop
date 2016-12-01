@@ -24,13 +24,14 @@
 #include <QProcess>
 #include <QApplication>
 #include <QScreen>
+#include <QAction>
 #include <QStandardPaths>
 
 #include <dthememanager.h>
 #include <dscrollbar.h>
 #include <dslider.h>
 #include <anchors.h>
-#include <DAction>
+#include <DUtil>
 
 #include <durl.h>
 #include <dfmglobal.h>
@@ -52,6 +53,32 @@
 #include "util/xcb/xcb.h"
 #include "private/canvasviewprivate.h"
 
+
+static inline bool isComputerFile(const QString &url)
+{
+    return url.endsWith("/dde-computer.desktop");
+}
+
+static inline bool isPersistFile(const DUrl &url)
+{
+    return url.toString().endsWith("/dde-computer.desktop")
+           || url.toString().endsWith("/dde-trash.desktop");
+}
+
+static void startProcessDetached(const QString &program,
+                                 const QStringList &arguments = QStringList(),
+                                 QIODevice::OpenMode mode = QIODevice::ReadWrite)
+{
+    QProcess *process = new QProcess();
+    process->start(program, arguments, mode);
+    process->closeReadChannel(QProcess::StandardOutput);
+    process->closeReadChannel(QProcess::StandardError);
+    process->connect(process, static_cast < void(QProcess::*)(int) > (&QProcess::finished),
+    process, [ = ](int) {
+        process->deleteLater();
+    });
+}
+
 DWIDGET_USE_NAMESPACE
 
 CanvasGridView::CanvasGridView(QWidget *parent)
@@ -63,9 +90,6 @@ CanvasGridView::CanvasGridView(QWidget *parent)
 
     initUI();
     initConnection();
-
-    auto desktopPath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first();
-    setRootUrl(DUrl::fromLocalFile(desktopPath));
 }
 
 CanvasGridView::~CanvasGridView()
@@ -377,8 +401,13 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
 {
     DUrlList urls;
 
+    bool canDeleted = true;
     for (const QModelIndex &index : selectedIndexes()) {
-        urls << model()->getUrlByIndex(index);
+        auto url = model()->getUrlByIndex(index);
+        if (isPersistFile(url)) {
+            canDeleted = false;
+        }
+        urls << url;
     }
 
     DFMEvent fmevent;
@@ -406,7 +435,9 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
             model()->refresh();
             return;
         case Qt::Key_Delete:
-            DFileService::instance()->moveToTrash(fmevent);
+            if (canDeleted) {
+                DFileService::instance()->moveToTrash(fmevent);
+            }
             break;
         case Qt::Key_End:
             if (urls.isEmpty()) {
@@ -420,7 +451,7 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
 
     case Qt::ShiftModifier:
         if (event->key() == Qt::Key_Delete) {
-            if (fmevent.fileUrlList().isEmpty()) {
+            if (fmevent.fileUrlList().isEmpty() || !canDeleted) {
                 return;
             }
 
@@ -469,13 +500,14 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
 
 void CanvasGridView::dragEnterEvent(QDragEnterEvent *event)
 {
-    for (const DUrl &url : event->mimeData()->urls()) {
-        const DAbstractFileInfoPointer &fileInfo = DFileService::instance()->createFileInfo(url);
-        if (!fileInfo->isWritable()) {
-            event->ignore();
-            return;
-        }
-    }
+//    for (const DUrl &url : event->mimeData()->urls()) {
+//        qDebug() << url;
+//        const DAbstractFileInfoPointer &fileInfo = DFileService::instance()->createFileInfo(url);
+//        if (!fileInfo->isWritable() || isComputerFile(url.toString())) {
+//            event->ignore();
+//            return;
+//        }
+//    }
 
     if (event->source() == this && !DFMGlobal::keyCtrlIsPressed()) {
         event->setDropAction(Qt::MoveAction);
@@ -534,7 +566,6 @@ void CanvasGridView::dragMoveEvent(QDragMoveEvent *event)
             && (event->source() != this || !(event->possibleActions() & Qt::MoveAction))) {
         QAbstractItemView::dragMoveEvent(event);
     }
-    QAbstractItemView::dragMoveEvent(event);
 }
 
 void CanvasGridView::dragLeaveEvent(QDragLeaveEvent *event)
@@ -707,6 +738,11 @@ void CanvasGridView::paintEvent(QPaintEvent *)
         auto lastRect = visualRect(d->lastCursorIndex);
         painter.fillRect(lastRect, QColor(0, 255, 0, 64));
     }
+
+    if (d->dragMoveHoverIndex.isValid()) {
+        auto lastRect = visualRect(d->dragMoveHoverIndex);
+        painter.fillRect(lastRect, QColor(0, 255, 255, 64));
+    }
 }
 
 void CanvasGridView::resizeEvent(QResizeEvent * /*event*/)
@@ -801,10 +837,6 @@ void CanvasGridView::setItemDelegate(DStyledItemDelegate *delegate)
     }
 
     QAbstractItemView::setItemDelegate(delegate);
-
-    connect(delegate, &DStyledItemDelegate::commitData, this, [ = ](QWidget * editor) {
-        qDebug() << editor;
-    });
 }
 
 bool CanvasGridView::isIndexValid(int index)
@@ -977,6 +1009,7 @@ void CanvasGridView::initConnection()
 
     connect(this->model(), &QAbstractItemModel::rowsInserted,
     this, [ = ](const QModelIndex & parent, int first, int last) {
+        qDebug() << parent << first << last;
         for (int i = first; i <= last; ++i) {
             auto index = model()->index(i, 0, parent);
             auto localFile = model()->getUrlByIndex(index).toLocalFile();
@@ -1007,18 +1040,18 @@ void CanvasGridView::initConnection()
     const QVector<int> &roles) {
         qDebug() << "dataChanged" << topLeft << bottomRight << roles;
 
-        GridManager::instance()->clear();
-        QStringList list;
-        for (int i = 0; i < model()->rowCount(); ++i) {
-            auto index = model()->index(i, 0);
-            auto localFile = model()->getUrlByIndex(index).toLocalFile();
-            list << localFile;
-        }
-        for (auto lf : list) {
-            GridManager::instance()->add(lf);
-        }
+//        GridManager::instance()->clear();
+//        QStringList list;
+//        for (int i = 0; i < model()->rowCount(); ++i) {
+//            auto index = model()->index(i, 0);
+//            auto localFile = model()->getUrlByIndex(index).toLocalFile();
+//            list << localFile;
+//        }
+//        for (auto lf : list) {
+//            GridManager::instance()->add(lf);
+//        }
 
-        this->repaint();
+//        this->repaint();
     });
 
     connect(this, &CanvasGridView::doubleClicked,
@@ -1169,21 +1202,25 @@ void CanvasGridView::handleContextMenuAction(int action)
 
     switch (action) {
     case DisplaySettings:
-        QProcess::startDetached("/usr/bin/dde-control-center",
-                                QStringList() << "-s" << "dispaly");
+        startProcessDetached("/usr/bin/dde-control-center",
+                             QStringList() << "-s" << "dispaly");
         break;
     case CornerSettings:
-        QProcess::startDetached("/usr/lib/deepin-daemon/dde-zone");
+        startProcessDetached("/usr/lib/deepin-daemon/dde-zone");
         break;
     case WallpaperSettings:
-        QProcess::startDetached("/usr/lib/deepin-daemon/dde-wallpaper-chooser");
+        startProcessDetached("/usr/lib/deepin-daemon/dde-wallpaper-chooser");
         break;
     case MenuAction::SelectAll:
         this->selectAll();
         break;
-    case MenuAction::Property:
+    case FileManagerProperty: {
+        QStringList localFiles;
+        localFiles << currentUrl().toLocalFile();
+        startProcessDetached("/usr/bin/dde-property-dialog",
+                             localFiles);
         break;
-
+    }
     case AutoSort:
         emit autoAlignToggled();
         break;
@@ -1249,31 +1286,41 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
     }
 
     DFileMenu *menu = DFileMenuManager::genereteMenuByKeys(actions, disableList, true, subActions);
+    if (!menu) {
+        return;
+    }
 
-    DAction *pasteAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::Paste));
-    DAction autoSort(menu);
+    auto *pasteAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::Paste));
+    QAction autoSort(menu);
     autoSort.setText(tr("Auto arrangement"));
     autoSort.setData(AutoSort);
     autoSort.setCheckable(true);
     autoSort.setChecked(GridManager::instance()->autoAlign());
     menu->insertAction(pasteAction, &autoSort);
 
-    DAction display(menu);
+    auto *propertyAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::Property));
+    QAction property(menu);
+    property.setText(tr("Property"));
+    property.setData(FileManagerProperty);
+    menu->insertAction(propertyAction, &property);
+    menu->removeAction(propertyAction);
+
+    QAction display(menu);
     display.setText(tr("Display Settings"));
     display.setData(DisplaySettings);
     menu->addAction(&display);
 
-    DAction corner(menu);
+    QAction corner(menu);
     corner.setText(tr("Corner Settings"));
     corner.setData(CornerSettings);
     menu->addAction(&corner);
 
-    DAction wallpaper(menu);
+    QAction wallpaper(menu);
     wallpaper.setText(tr("Set Wallpaper"));
     wallpaper.setData(WallpaperSettings);
     menu->addAction(&wallpaper);
 
-    DAction *sortByAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::SortBy));
+    QAction *sortByAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::SortBy));
     DFileMenu *sortBySubMenu = static_cast<DFileMenu *>(sortByAction ? sortByAction->menu() : Q_NULLPTR);
 
     if (sortBySubMenu) {
@@ -1286,16 +1333,13 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
 //        auto sortRole = model()->sortRole();
 //        auto sortMenuAction = sortActions.value(sortRole);
 
-//        DAction *sortRoleAction = sortBySubMenu->actionAt(DFileMenuManager::getActionString(sortMenuAction));
+//        QAction *sortRoleAction = sortBySubMenu->actionAt(DFileMenuManager::getActionString(sortMenuAction));
 
 //        sortRoleAction->setChecked(d->autoSort);
     }
 
     DFileMenuManager::loadEmptyPluginMenu(menu);
 
-    if (!menu) {
-        return;
-    }
 
     DUrlList urls;
     urls.append(model()->rootUrl());
@@ -1307,7 +1351,7 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
     event << DFMEvent::FileView;
     menu->setEvent(event);
 
-    connect(menu, &DFileMenu::triggered, this, [ = ](DAction * action) {
+    connect(menu, &DFileMenu::triggered, this, [ = ](QAction * action) {
         if (!action->data().isValid()) {
             return;
         }
@@ -1318,19 +1362,61 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
     menu->deleteLater();
 }
 
+
+DFileMenu *CanvasGridView::createNormalMenu(const DUrl &currentUrl, const DUrlList &urlList)
+{
+    bool hasComputer = false;
+
+    for (auto &url : urlList) {
+        if (isComputerFile(url.toString())) {
+            hasComputer = true;
+            break;
+        }
+    }
+    if (isComputerFile(currentUrl.toString())) {
+        hasComputer = true;
+    }
+
+    if (!hasComputer) {
+        return nullptr;
+    }
+
+    QSet<MenuAction> disableList;
+    QSet<MenuAction> unusedList;
+
+    disableList << MenuAction::Cut << MenuAction::Rename << MenuAction::Remove << MenuAction::Delete;
+
+    unusedList << MenuAction::OpenInNewWindow
+               << MenuAction::OpenInNewTab
+               << MenuAction::Compress
+               << MenuAction::SendToDesktop
+               << MenuAction::Cut
+               << MenuAction::Copy
+               << MenuAction::Rename
+               << MenuAction::Remove
+               << MenuAction::AddToBookMark
+               << MenuAction::OpenWith;
+
+    DFileMenu *menu = DFileMenuManager::createNormalMenu(currentUrl, urlList, disableList, unusedList, -1);
+    return menu;
+}
+
+
 void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlags &indexFlags)
 {
     if (!index.isValid()) {
         return;
     }
 
-    DUrlList list;
 
+    DUrlList list;
     for (const QModelIndex &index : selectedIndexes()) {
-        list << model()->getUrlByIndex(index);
+        const DAbstractFileInfoPointer &info = model()->fileInfo(index);
+        list << info->fileUrl();
     }
 
     const DAbstractFileInfoPointer &info = model()->fileInfo(index);
+
     QSet<MenuAction> disableList;
     QSet<MenuAction> unusedList;
 
@@ -1345,11 +1431,24 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
                    << MenuAction::AddToBookMark;
     }
 
-    DFileMenu *menu = DFileMenuManager::createNormalMenu(info->fileUrl(), list, disableList, unusedList, -1);
+    DFileMenu *menu = createNormalMenu(info->fileUrl(), list);
+
+    if (!menu) {
+        menu = DFileMenuManager::createNormalMenu(info->fileUrl(), list, disableList, unusedList, -1);
+    }
 
     if (!menu) {
         return;
     }
+
+    auto *propertyAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::Property));
+    if (propertyAction) {
+        menu->removeAction(propertyAction);
+    }
+    QAction property(menu);
+    property.setText(tr("Property"));
+    property.setData(FileManagerProperty);
+    menu->addAction(&property);
 
     DFMEvent event;
 
@@ -1360,12 +1459,13 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
 
     menu->setEvent(event);
 
-    connect(menu, &DFileMenu::triggered, this, [ = ](DAction * action) {
+    connect(menu, &DFileMenu::triggered, this, [ = ](QAction * action) {
         if (!action->data().isValid()) {
             return;
         }
 
-        if (action->data().toInt() == MenuAction::Open) {
+        switch (action->data().toInt()) {
+        case MenuAction::Open: {
             // TODO: Workaround
             for (auto &url : list) {
                 const DAbstractFileInfoPointer &fileInfo = DFileService::instance()->createFileInfo(url);
@@ -1373,6 +1473,17 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
                     QProcess::startDetached("gvfs-open", QStringList() << url.toString());
                 }
             }
+        }
+        break;
+        case FileManagerProperty: {
+            QStringList localFiles;
+            for (auto url : this->selectedUrls()) {
+                localFiles << url.toLocalFile();
+            }
+            startProcessDetached("/usr/bin/dde-property-dialog",
+                                 localFiles);
+        }
+        break;
         }
     });
 
