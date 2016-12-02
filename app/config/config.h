@@ -36,4 +36,5 @@ private:
     friend Singleton<Config>;
 
     QSettings   *m_settings = nullptr;
+    bool        needSync    = false;
 };

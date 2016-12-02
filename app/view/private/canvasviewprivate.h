@@ -38,7 +38,13 @@ private:
     }
 
 public:
-    CanvasViewPrivate();
+    CanvasViewPrivate()
+    {
+        cellMargins = QMargins(5, 5, 5, 5);
+        selectRect = QRect(-1, -1, 1, 1);
+        mousePressed = false;
+        resortCount = 0;
+    }
 
     void updateCanvasSize(const QSize &szCanvas, const QMargins &geometryMargins, const QSize &szItem)
     {
@@ -100,4 +106,6 @@ public:
 
     QRect               canvasRect;
     CanvasViewHelper    *fileViewHelper = nullptr;
+
+    int                 resortCount;
 };

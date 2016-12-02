@@ -103,6 +103,7 @@ private:
     void decreaseIcon();
 
     inline QPoint gridAt(const QPoint &pos) const;
+    inline QRect gridRectAt(const QPoint &pos) const;
     inline QList<QRect> itemPaintGeomertys(const QModelIndex &index) const;
 
     void setSelection(const QRect &rect,

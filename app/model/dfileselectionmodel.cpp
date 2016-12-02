@@ -1,7 +1,5 @@
 #include "dfileselectionmodel.h"
 
-#include <QDebug>
-
 DFileSelectionModel::DFileSelectionModel(QAbstractItemModel *model)
     : QItemSelectionModel(model)
 {

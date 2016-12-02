@@ -1,9 +1,9 @@
 HEADERS += \
     $$PWD/dde/ddesession.h \
-    $$PWD/gtk/gtkworkaround.h \
-    $$PWD/xcb/xcb.h
+    $$PWD/xcb/xcb.h \
+    $$PWD/util.h
 
 SOURCES += \
     $$PWD/dde/ddesession.cpp \
-    $$PWD/gtk/gtkworkaround.cpp \
-    $$PWD/xcb/xcb.cpp
+    $$PWD/xcb/xcb.cpp \
+    $$PWD/util.cpp

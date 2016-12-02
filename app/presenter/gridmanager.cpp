@@ -97,21 +97,6 @@ public:
         return overlapPosition();
     }
 
-    inline bool add(QPoint pos, const QString &id)
-    {
-        if (gridItems.contains(pos) && pos != overlapPosition()) {
-            qDebug() << "grid exist item" << gridItems.value(pos) << pos;
-            return false;
-        }
-
-        gridItems.insert(pos, id);
-        itemGrids.insert(id, pos);
-        cacheItemGrids.insert(id, pos);
-        usedGrids[indexOfGridPos(pos)] = true;
-
-        return true;
-    }
-
     void createProfile()
     {
         usedGrids.clear();
@@ -123,13 +108,57 @@ public:
         itemGrids.clear();
     }
 
+    inline bool add(QPoint pos, const QString &itemId)
+    {
+        if (gridItems.contains(pos)) {
+            if (pos != overlapPosition()) {
+                qCritical() << "add" << itemId  << "failed."
+                            << pos << "grid exist item" << gridItems.value(pos);
+                return false;
+            } else {
+                overlapItemList << gridItems.value(pos);
+            }
+        }
+
+        gridItems.insert(pos, itemId);
+        itemGrids.insert(itemId, pos);
+        cacheItemGrids.insert(itemId, pos);
+        usedGrids[indexOfGridPos(pos)] = true;
+
+        return true;
+    }
+
+    inline bool remove(QPoint pos, const QString &id)
+    {
+        cacheItemGrids.remove(id);
+        if (!itemGrids.contains(id)) {
+            return false;
+        }
+
+        gridItems.remove(pos);
+        itemGrids.remove(id);
+
+        auto usageIndex = indexOfGridPos(pos);
+        usedGrids[usageIndex] = false;
+
+        if (!overlapItemList.isEmpty()
+                && (pos == overlapPosition())) {
+            auto itemId = overlapItemList.takeLast();
+            add(pos, itemId);
+//            gridItems.insert(pos, itemId);
+//            itemGrids.insert(itemId, pos);
+//            usedGrids[usageIndex] = true;
+        }
+        return true;
+    }
+
 //    void reAlign()
 //    {
-//        auto inUsePos =gridItems.keys();
+//        auto inUsePos = gridItems.keys();
 
 //        qSort(inUsePos.begin(), inUsePos.end(), qQPointLessThanKey);
 
-//        auto allItem =itemGrids;
+//        auto allItem = itemGrids;
 
 //        for (int index = 0; index < inUsePos.length(); ++index) {
 //            auto gridPos = inUsePos.value(index);
@@ -175,7 +204,7 @@ public:
 
     }
 
-    inline void changeSizeProfile(int w, int h)
+    inline void changeSizeProfileScaed(int w, int h)
     {
         Q_ASSERT(!(coordHeight == h && coordWidth == w));
 
@@ -223,6 +252,49 @@ public:
         }
     }
 
+    inline void changeSizeProfile(int w, int h)
+    {
+        Q_ASSERT(!(coordHeight == h && coordWidth == w));
+
+        qDebug() << "changeSizeProfile" << w << h
+                 << coordHeight << coordWidth;
+
+        auto allItems = itemGrids;
+        QVector<int> preferNewIndex;
+        QVector<QString> itemIds;
+
+        for (int i = 0; i < usedGrids.length(); ++i) {
+            if (usedGrids.value(i)) {
+                preferNewIndex.push_back(i);
+                itemIds.push_back(gridItems.value(gridPosAt(i)));
+            }
+        }
+
+        coordHeight = h;
+        coordWidth = w;
+
+        createProfile();
+        auto profile = QString("Position_%1x%2").arg(w).arg(h);
+        if (profile != positionProfile) {
+            positionProfile = profile;
+        }
+
+        for (int i = 0; i < preferNewIndex.length(); ++i) {
+            auto index = preferNewIndex.value(i);
+            if (usedGrids.size() > index && !usedGrids.value(index)) {
+                add(gridPosAt(index), itemIds.value(i));
+            } else {
+                auto freePos = takeEmptyCoordPos();
+                add(freePos, itemIds.value(i));
+            }
+            allItems.remove(itemIds.value(i));
+        }
+
+        for (auto id : allItems.keys()) {
+            auto freePos = takeEmptyCoordPos();
+            add(freePos, id);
+        }
+    }
 
     void updateGridProfile(int w, int h)
     {
@@ -241,7 +313,9 @@ public:
     }
 
 public:
+    QStringList             overlapItemList;
     QMap<QString, QPoint>   cacheItemGrids;
+
     QMap<QPoint, QString>   gridItems;
     QMap<QString, QPoint>   itemGrids;
     QVector<bool>           usedGrids;
@@ -271,6 +345,9 @@ bool GridManager::add(const QString &id)
     QPoint freePos;
     if (d->cacheItemGrids.contains(id) && !d->autoAlign) {
         freePos = d->cacheItemGrids.value(id);
+        if (d->gridItems.contains(freePos)) {
+            freePos = d->takeEmptyCoordPos();
+        }
     } else {
         freePos = d->takeEmptyCoordPos();
     }
@@ -371,7 +448,6 @@ bool GridManager::remove(const QString &id)
 {
     auto pos = d->itemGrids.value(id);
     return remove(pos, id);
-
 }
 
 bool GridManager::remove(int x, int y, const QString &id)
@@ -382,18 +458,16 @@ bool GridManager::remove(int x, int y, const QString &id)
 
 bool GridManager::remove(QPoint pos, const QString &id)
 {
-    d->cacheItemGrids.remove(id);
-    if (!d->itemGrids.contains(id)) {
-        return false;
+    auto ret = d->remove(pos, id);
+    if (ret) {
+        auto newItemId = d->gridItems.value(pos);
+        if (newItemId.isEmpty()) {
+            emit AppPresenter::instance()->removeConfig(d->positionProfile, positionKey(pos));
+        } else {
+            emit AppPresenter::instance()->setConfig(d->positionProfile, positionKey(pos), newItemId);
+        }
     }
-    d->gridItems.remove(pos);
-    d->itemGrids.remove(id);
-
-    auto usageIndex = pos.x() * d->coordHeight + pos.y();
-//    qDebug() << "remove" << pos << usageIndex << id;
-    d->usedGrids[usageIndex] = false;
-    emit AppPresenter::instance()->removeConfig(d->positionProfile, positionKey(pos));
-    return true;
+    return ret;
 }
 
 bool GridManager::clear()
@@ -406,6 +480,17 @@ bool GridManager::clear()
     emit AppPresenter::instance()->removeConfig(d->positionProfile, "");
 
     return true;
+}
+
+QString GridManager::firstItemId()
+{
+    for (int i = 0; i < d->usedGrids.length(); ++i) {
+        if (d->usedGrids.value(i)) {
+            auto pos = d->gridPosAt(i);
+            return  itemId(pos);
+        }
+    }
+    return "";
 }
 
 bool GridManager::contains(const QString &id)
@@ -422,9 +507,14 @@ QPoint GridManager::position(const QString &id)
     return d->itemGrids.value(id);
 }
 
-QString GridManager::id(int x, int y)
+QString GridManager::itemId(int x, int y)
 {
     return d->gridItems.value(QPoint(x, y));
+}
+
+QString GridManager::itemId(QPoint pos)
+{
+    return d->gridItems.value(pos);
 }
 
 bool GridManager::isEmpty(int x, int y)

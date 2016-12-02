@@ -24,12 +24,9 @@ SOURCES += \
     view/canvasviewhelper.cpp \
 #    view/canvasview.cpp \
     model/dfileselectionmodel.cpp \
-    view/private/canvasviewprivate.cpp \
     view/canvasgridview.cpp \
     presenter/apppresenter.cpp \
-    presenter/gridmanager.cpp \
-    presenter/desktopitemcontrol.cpp \
-    presenter/desktopiteminfo.cpp
+    presenter/gridmanager.cpp
 
 # Automating generation .qm files from .ts files
 system($$PWD/translate_generation.sh)
@@ -45,9 +42,7 @@ HEADERS += \
     global/singleton.h \
     view/canvasgridview.h \
     presenter/apppresenter.h \
-    presenter/gridmanager.h \
-    presenter/desktopitemcontrol.h \
-    presenter/desktopiteminfo.h
+    presenter/gridmanager.h
 
 RESOURCES += \
     resource/theme/theme.qrc

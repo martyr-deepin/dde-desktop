@@ -15,11 +15,9 @@
 #include <DLog>
 #include <DApplication>
 
-#include "dfmglobal.h"
+#include <dfmglobal.h>
 
 #include "util/dde/ddesession.h"
-#include "util/gtk/gtkworkaround.h"
-#include "dfmglobal.h"
 
 #include "config/config.h"
 #include "desktop.h"
@@ -38,8 +36,8 @@ int main(int argc, char *argv[])
     app.setApplicationVersion((GIT_VERSION));
     app.setTheme("light");
 
-    QThreadPool::globalInstance()->setMaxThreadCount(MAX_THREAD_COUNT);
-
+    const QString m_format = "%{time}{yyyyMMdd.HH:mm:ss.zzz}[%{type:1}][%{function:-35} %{line:-4} %{threadid} ] %{message}\n";
+    DLogManager::setLogFormat(m_format);
     DLogManager::registerConsoleAppender();
     DLogManager::registerFileAppender();
 
@@ -60,9 +58,10 @@ int main(int argc, char *argv[])
         exit(0x0003);
     }
 
-    DFMGlobal::installTranslator();
     app.loadTranslator();
 
+
+    QThreadPool::globalInstance()->setMaxThreadCount(MAX_THREAD_COUNT);
     Config::instance();
 
     Desktop::instance()->loadData();
@@ -71,11 +70,10 @@ int main(int argc, char *argv[])
 
     // Notify dde-desktop start up
     Dde::Session::RegisterDdeSession();
-
+    DFMGlobal::installTranslator();
     DFMGlobal::initPluginManager();
     DFMGlobal::initMimesAppsManager();
     DFMGlobal::initDialogManager();
-
 
     return app.exec();
 }

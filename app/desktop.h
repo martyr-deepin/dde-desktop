@@ -19,7 +19,6 @@
 #define DesktopServicePath          "/com/deepin/dde/Desktop"
 #define DesktopServiceInterface     "com.deepin.dde.Desktop"
 
-class AppPresenter;
 class DesktopPrivate;
 class Desktop : public QObject, public Singleton<Desktop>
 {

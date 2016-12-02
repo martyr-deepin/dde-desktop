@@ -7,11 +7,9 @@
  * (at your option) any later version.
  **/
 
-#include "canvasviewprivate.h"
+#include "util.h"
 
-CanvasViewPrivate::CanvasViewPrivate()
+namespace DesktopUtil
 {
-    cellMargins = QMargins(5,5,5,5);
-    selectRect = QRect(-1, -1, 1, 1);
-    mousePressed = false;
+
 }

@@ -22,18 +22,21 @@ class GridManager: public QObject, public Singleton<GridManager>
 {
     Q_OBJECT
 public:
-    bool add(const QString &id);
-    bool add(QPoint pos, const QString &id);
-    bool move(const QStringList &selectedIds, const QString &id, int x, int y);
-    bool remove(const QString &id);
-    bool remove(int x, int y, const QString &id);
-    bool remove(QPoint pos, const QString &id);
+    bool add(const QString &itemId);
+    bool add(QPoint pos, const QString &itemId);
+    bool move(const QStringList &selectedIds, const QString &itemId, int x, int y);
+    bool remove(const QString &itemId);
+    bool remove(int x, int y, const QString &itemId);
+    bool remove(QPoint pos, const QString &itemId);
 
     bool clear();
 
-    bool contains(const QString &id);
-    QPoint position(const QString &id);
-    QString id(int x, int y);
+    QString firstItemId();
+
+    bool contains(const QString &itemId);
+    QPoint position(const QString &itemId);
+    QString itemId(int x, int y);
+    QString itemId(QPoint pos);
     bool isEmpty(int x, int y);
 
     bool autoAlign();

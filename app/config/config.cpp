@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QTimer>
 #include <QDebug>
 
 const QString Config::groupGeneral = "GeneralConfig";
@@ -32,17 +33,25 @@ Config::Config()
                  + "/" + QApplication::applicationName() + ".conf";
 
     qDebug() << configPath;
-    configPath = "/var/run/shm/desktop.conf";
 
     QFileInfo configFile(configPath);
     if (!configFile.exists()) {
-        qDebug() << "init config";
         configFile.absoluteDir().mkpath(".");
     }
     m_settings = new QSettings(configPath, QSettings::IniFormat);
     auto work = new QThread(this);
     this->moveToThread(work);
     work->start();
+
+    auto syncTimer = new QTimer(this);
+    syncTimer->setInterval(2000);
+    connect(syncTimer, &QTimer::timeout, this, [ = ]() {
+        if (needSync) {
+            needSync = false;
+            m_settings->sync();
+        }
+    });
+    syncTimer->start();
 }
 
 void Config::setConfig(const QString &group, const QString &key, const QVariant &value)
@@ -50,7 +59,7 @@ void Config::setConfig(const QString &group, const QString &key, const QVariant 
     m_settings->beginGroup(group);
     m_settings->setValue(key, value);
     m_settings->endGroup();
-    m_settings->sync();
+    needSync = true;
 }
 
 void Config::removeConfig(const QString &group, const QString &key)
@@ -58,5 +67,5 @@ void Config::removeConfig(const QString &group, const QString &key)
     m_settings->beginGroup(group);
     m_settings->remove(key);
     m_settings->endGroup();
-    m_settings->sync();
+    needSync = true;
 }
