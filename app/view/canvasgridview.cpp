@@ -259,26 +259,25 @@ QModelIndex CanvasGridView::moveCursor(QAbstractItemView::CursorAction cursorAct
     if (!current.isValid()) {
         auto localFile = GridManager::instance()->firstItemId();
         current = model()->index(DUrl::fromLocalFile(localFile));
-        d->lastCursorIndex = current;
+        d->currentCursorIndex = current;
         qDebug() << current;
         return current;
     }
     qDebug() << current;
     if (rectForIndex(current).isEmpty()) {
-        d->lastCursorIndex = model()->index(0, 0, root);
-        return d->lastCursorIndex;
+        d->currentCursorIndex = model()->index(0, 0, root);
+        return d->currentCursorIndex;
     }
 
     QModelIndex index = moveCursorGrid(cursorAction, modifiers);
 
     qDebug() << index;
-    d->lastMoveCursorIndex = current;
     if (index.isValid()) {
-        d->lastCursorIndex = index;
+        d->currentCursorIndex = index;
         return index;
     }
 
-    d->lastCursorIndex = current;
+    d->currentCursorIndex = current;
     return current;
 }
 
@@ -370,13 +369,12 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
     }
 
     QAbstractItemView::mousePressEvent(event);
-    if (d->lastCursorIndex == index) {
-        d->lastCursorIndex = QModelIndex();
+    if (d->currentCursorIndex == index) {
+        d->currentCursorIndex = QModelIndex();
     } else {
-        d->lastCursorIndex = index;
+        d->currentCursorIndex = index;
     }
-    d->lastMoveCursorIndex = index;
-    selectionModel()->setCurrentIndex(d->lastCursorIndex, QItemSelectionModel::Select);
+    selectionModel()->setCurrentIndex(d->currentCursorIndex, QItemSelectionModel::Select);
 }
 
 void CanvasGridView::mouseReleaseEvent(QMouseEvent *event)
@@ -659,7 +657,7 @@ void CanvasGridView::dropEvent(QDropEvent *event)
                 auto point = event->pos();
                 auto row = (point.x() - d->viewMargins.left()) / d->cellWidth;
                 auto col = (point.y() - d->viewMargins.top()) / d->cellHeight;
-                auto current = model()->fileInfo(d->lastCursorIndex)->fileUrl().toLocalFile();
+                auto current = model()->fileInfo(d->currentCursorIndex)->fileUrl().toLocalFile();
                 GridManager::instance()->move(selectLocalFiles, current, row, col);
                 setState(NoState);
                 itemDelegate()->hideNotEditingIndexWidget();
@@ -703,24 +701,21 @@ void CanvasGridView::dropEvent(QDropEvent *event)
 void CanvasGridView::paintEvent(QPaintEvent *)
 {
     QPainter painter(viewport());
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
 
     auto option = viewOptions();
     const QModelIndex current = currentIndex();
-//    const QModelIndex hover = d->hover;
     const QAbstractItemModel *itemModel = this->model();
     const DFileSelectionModel *selections = this->selectionModel();
     const bool focus = (hasFocus() || viewport()->hasFocus()) && current.isValid();
-//    const bool alternate = d->alternatingColors;
     const QStyle::State state = option.state;
     const QAbstractItemView::State viewState = this->state();
     const bool enabled = (state & QStyle::State_Enabled) != 0;
 
-//    bool alternateBase = false;
-//    int previousRow = -2; // trigger the alternateBase adjustment on first pass
-
-//    int maxSize = viewport()->size().width();
 
     painter.setBrush(QColor(255, 0, 0, 0));
+
+#ifdef SHOW_GRID
     if (model()) {
         for (int i = 0; i < d->colCount * d->rowCount; ++i) {
             auto  pos = d->indexCoordinate(i).position();
@@ -733,6 +728,15 @@ void CanvasGridView::paintEvent(QPaintEvent *)
             auto color = (colMode == rowMode) ? QColor(0, 0, 255, 32) : QColor(255, 0, 0, 32);
             painter.fillRect(rect, color);
         }
+    }
+#endif
+
+    if (d->dragMoveHoverIndex.isValid()) {
+        QPainterPath path;
+        auto lastRect = visualRect(d->dragMoveHoverIndex);
+        path.addRoundRect(lastRect, 4, 4);
+        painter.fillPath(path, QColor(43, 167, 248, 0.30 * 255));
+        painter.strokePath(path, QColor(30, 126, 255, 0.20 * 255));
     }
 
     for (int i = 0; i < this->model()->rowCount(); ++i) {
@@ -762,29 +766,25 @@ void CanvasGridView::paintEvent(QPaintEvent *)
                 option.state |= QStyle::State_Editing;
             }
         }
-//        if (index == hover) {
-//            option.state |= QStyle::State_MouseOver;
-//        } else {
-//            option.state &= ~QStyle::State_MouseOver;
-//        }
 
         this->itemDelegate()->paint(&painter, option, index);
     }
 
-    if (d->lastCursorIndex.isValid()) {
-        auto lastRect = visualRect(d->lastCursorIndex);
-        painter.fillRect(lastRect, QColor(0, 255, 0, 64));
+    if (d->currentCursorIndex.isValid()) {
+        auto lastRects = itemPaintGeomertys(d->currentCursorIndex);
+        if (lastRects.length() >= 2) {
+            auto lastRect = lastRects.at(1);
+            lastRect= visualRect(d->currentCursorIndex);
+
+            QPainterPath path;
+            path.addRoundRect(lastRect, 6, 6);
+            QPen pen(QColor(255, 255, 255, 255));
+            pen.setWidth(1);
+            painter.strokePath(path, pen);
+        }
     }
 
-    if (d->lastMoveCursorIndex.isValid()) {
-        auto lastRect = visualRect(d->lastMoveCursorIndex);
-        painter.fillRect(lastRect, QColor(255, 0, 255, 128));
-    }
 
-    if (d->dragMoveHoverIndex.isValid()) {
-        auto lastRect = visualRect(d->dragMoveHoverIndex);
-        painter.fillRect(lastRect, QColor(0, 255, 255, 64));
-    }
 }
 
 void CanvasGridView::resizeEvent(QResizeEvent * /*event*/)
@@ -881,11 +881,6 @@ void CanvasGridView::setItemDelegate(DStyledItemDelegate *delegate)
     QAbstractItemView::setItemDelegate(delegate);
 }
 
-bool CanvasGridView::isIndexValid(int index)
-{
-    return model()->index(index, 0, this->rootIndex()).isValid();
-}
-
 bool CanvasGridView::setCurrentUrl(const DUrl &url)
 {
     DUrl fileUrl = url;
@@ -894,8 +889,6 @@ bool CanvasGridView::setCurrentUrl(const DUrl &url)
         qDebug() << "This scheme isn't support";
         return false;
     }
-
-    qDebug() << "cd: current url:" << currentUrl() << "to url:" << fileUrl;
 
     const DUrl &checkUrl = currentUrl();
 
@@ -907,7 +900,8 @@ bool CanvasGridView::setCurrentUrl(const DUrl &url)
     setRootIndex(index);
 
     if (!model()->canFetchMore(index)) {
-        qDebug() << "updateContentLabel()";
+        // TODO: updateContentLabel
+        qDebug() << "TODO: updateContentLabel()";
     }
 
     if (focusWidget() && focusWidget()->window() == window() && fileUrl.isLocalFile()) {
@@ -997,8 +991,6 @@ bool CanvasGridView::edit(const QModelIndex &index, QAbstractItemView::EditTrigg
 
     bool tmp = QAbstractItemView::edit(index, trigger, event);
 
-//    qDebug() << "callc QAbstractItemView" << tmp;
-
     return tmp;
 }
 
@@ -1063,7 +1055,6 @@ void CanvasGridView::initConnection()
             auto localFile = model()->getUrlByIndex(index).toLocalFile();
             GridManager::instance()->add(localFile);
         }
-//        this->repaint();
     });
     connect(this->model(), &QAbstractItemModel::rowsAboutToBeRemoved,
     this, [ = ](const QModelIndex & parent, int first, int last) {
@@ -1071,8 +1062,8 @@ void CanvasGridView::initConnection()
         qDebug() << model()->getUrlByIndex(parent).toLocalFile();
         for (int i = first; i <= last; ++i) {
             auto index = model()->index(i, 0, parent);
-            if (d->lastCursorIndex == index) {
-                d->lastCursorIndex  = QModelIndex();
+            if (d->currentCursorIndex == index) {
+                d->currentCursorIndex  = QModelIndex();
                 selectionModel()->setCurrentIndex(QModelIndex(), QItemSelectionModel::Clear);
                 setCurrentIndex(QModelIndex());
             }
@@ -1087,7 +1078,6 @@ void CanvasGridView::initConnection()
         if (GridManager::instance()->autoAlign()) {
             GridManager::instance()->reAlign();
         }
-//        this->repaint();
     });
     connect(this->model(), &QAbstractItemModel::dataChanged,
             this, [ = ](const QModelIndex & topLeft,
@@ -1107,8 +1097,6 @@ void CanvasGridView::initConnection()
             for (auto lf : list) {
                 GridManager::instance()->add(lf);
             }
-
-//            this->repaint();
         }
 
     });
@@ -1156,7 +1144,6 @@ void CanvasGridView::updateCanvas()
 
     d->updateCanvasSize(d->canvasRect.size(), geometryMargins, itemSize);
     GridManager::instance()->updateGridSize(d->colCount, d->rowCount);
-//    GridManager::instance()->reAlign();
 
     repaint();
 }
@@ -1206,7 +1193,6 @@ inline QList<QRect> CanvasGridView::itemPaintGeomertys(const QModelIndex &index)
 void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command, bool byIconRect)
 {
     auto selectRect = rect.normalized();
-//    qDebug() << selectRect << command << byIconRect;
     auto topLeftGridPos = gridAt(selectRect.topLeft());
     auto bottomRightGridPos = gridAt(selectRect.bottomRight());
 
@@ -1215,10 +1201,8 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
         selection = selectionModel()->selection();
     }
 
-    qDebug() <<  d->mousePressed << d->lastCursorIndex << DFMGlobal::keyShiftIsPressed();
-    if (!d->mousePressed && d->lastCursorIndex.isValid()) {
-        qDebug() <<  "shift select signle" << command;
-        QItemSelectionRange selectionRange(d->lastCursorIndex);
+    if (!d->mousePressed && d->currentCursorIndex.isValid()) {
+        QItemSelectionRange selectionRange(d->currentCursorIndex);
         selection.push_back(selectionRange);
         QAbstractItemView::selectionModel()->select(selection, command);
         return;
@@ -1231,8 +1215,8 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
         }
 
         auto clickedPoint = visualRect(clickIndex).center();
-        auto lastPoint = visualRect(d->lastCursorIndex).center();
-        if (!d->lastCursorIndex.isValid()) {
+        auto lastPoint = visualRect(d->currentCursorIndex).center();
+        if (!d->currentCursorIndex.isValid()) {
             lastPoint = clickedPoint + QPoint(1, 1);
         }
         selectRect = QRect(clickedPoint, lastPoint).normalized();
@@ -1260,7 +1244,6 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
             }
         }
     }
-
 
     QAbstractItemView::selectionModel()->select(selection, command);
 }
@@ -1389,10 +1372,9 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
     wallpaper.setData(WallpaperSettings);
     menu->addAction(&wallpaper);
 
-    QAction *sortByAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::SortBy));
-    DFileMenu *sortBySubMenu = static_cast<DFileMenu *>(sortByAction ? sortByAction->menu() : Q_NULLPTR);
-
-    if (sortBySubMenu) {
+//    QAction *sortByAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::SortBy));
+//    DFileMenu *sortBySubMenu = static_cast<DFileMenu *>(sortByAction ? sortByAction->menu() : Q_NULLPTR);
+//    if (sortBySubMenu) {
 //        QMap<int, MenuAction> sortActions;
 //        sortActions.insert(DFileSystemModel::FileDisplayNameRole, MenuAction::Name);
 //        sortActions.insert(DFileSystemModel::FileSizeRole, MenuAction::Size);
@@ -1405,9 +1387,9 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
 //        QAction *sortRoleAction = sortBySubMenu->actionAt(DFileMenuManager::getActionString(sortMenuAction));
 
 //        sortRoleAction->setChecked(d->autoSort);
-    }
+//}
 
-    DFileMenuManager::loadEmptyPluginMenu(menu);
+//    DFileMenuManager::loadEmptyPluginMenu(menu);
 
 
     DUrlList urls;

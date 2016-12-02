@@ -95,8 +95,7 @@ public:
     int cellHeight;
 
     QModelIndex         dragMoveHoverIndex;
-    QModelIndex         lastCursorIndex;
-    QModelIndex         lastMoveCursorIndex;
+    QModelIndex         currentCursorIndex;
 
     QPoint              lastPos;
     QFrame              *selectFrame = nullptr;

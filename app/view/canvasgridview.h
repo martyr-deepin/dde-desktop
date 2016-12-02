@@ -117,7 +117,6 @@ private:
     void showEmptyAreaMenu(const Qt::ItemFlags &indexFlags);
     void showNormalMenu(const QModelIndex &index, const Qt::ItemFlags &indexFlags);
     bool isIndexEmpty();
-    inline bool isIndexValid(int index);
     QModelIndex moveCursorGrid(CursorAction cursorAction, Qt::KeyboardModifiers modifiers);
 
     QScopedPointer<CanvasViewPrivate> d;
