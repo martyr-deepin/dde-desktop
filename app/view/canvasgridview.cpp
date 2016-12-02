@@ -171,9 +171,9 @@ QModelIndex CanvasGridView::moveCursorGrid(CursorAction cursorAction, Qt::Keyboa
     Q_UNUSED(modifiers);
 
     auto selections = this->selectionModel();
-    auto root = this->rootIndex();
-    auto headIndex = model()->index(0, 0, root);
-    auto tailIndex = model()->index(model()->rowCount() - 1, 0, root);
+    auto headIndex = firstIndex();
+    auto tailIndex = lastIndex();
+
     QModelIndex current = currentIndex();
     if (!current.isValid() || !selections->isSelected(current)) {
         return headIndex;
@@ -247,31 +247,26 @@ QModelIndex CanvasGridView::moveCursorGrid(CursorAction cursorAction, Qt::Keyboa
         return newIndex;
     }
 
-    qDebug() << pos;
     return current;
 }
 
 QModelIndex CanvasGridView::moveCursor(QAbstractItemView::CursorAction cursorAction, Qt::KeyboardModifiers modifiers)
 {
-    auto root = this->rootIndex();
-    auto current = currentIndex();
-    qDebug() << current << selectionModel()->currentIndex();
+    auto current = d->currentCursorIndex;
     if (!current.isValid()) {
-        auto localFile = GridManager::instance()->firstItemId();
-        current = model()->index(DUrl::fromLocalFile(localFile));
+        current = firstIndex();
         d->currentCursorIndex = current;
-        qDebug() << current;
         return current;
     }
-    qDebug() << current;
+
     if (rectForIndex(current).isEmpty()) {
-        d->currentCursorIndex = model()->index(0, 0, root);
+        qCritical() << "current never emptr" << current;
+        d->currentCursorIndex = firstIndex();
         return d->currentCursorIndex;
     }
 
     QModelIndex index = moveCursorGrid(cursorAction, modifiers);
 
-    qDebug() << index;
     if (index.isValid()) {
         d->currentCursorIndex = index;
         return index;
@@ -352,7 +347,7 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
 
     d->mousePressed = true;
 
-    d->selectFrame->resize(0, 0);
+    d->selectFrame->resize(1, 1);
     bool showSelectFrame = event->button() == Qt::LeftButton;
     showSelectFrame &= !index.isValid();
     d->selectFrame->setVisible(showSelectFrame);
@@ -369,12 +364,9 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
     }
 
     QAbstractItemView::mousePressEvent(event);
-    if (d->currentCursorIndex == index) {
-        d->currentCursorIndex = QModelIndex();
-    } else {
-        d->currentCursorIndex = index;
-    }
-    selectionModel()->setCurrentIndex(d->currentCursorIndex, QItemSelectionModel::Select);
+
+    d->currentCursorIndex = index;
+    selectionModel()->setCurrentIndex(d->currentCursorIndex, QItemSelectionModel::ToggleCurrent);
 }
 
 void CanvasGridView::mouseReleaseEvent(QMouseEvent *event)
@@ -774,12 +766,11 @@ void CanvasGridView::paintEvent(QPaintEvent *)
         auto lastRects = itemPaintGeomertys(d->currentCursorIndex);
         if (lastRects.length() >= 2) {
             auto lastRect = lastRects.at(1);
-            lastRect= visualRect(d->currentCursorIndex);
+            lastRect = visualRect(d->currentCursorIndex);
 
             QPainterPath path;
             path.addRoundRect(lastRect, 6, 6);
-            QPen pen(QColor(255, 255, 255, 255));
-            pen.setWidth(1);
+            QPen pen(QColor(255, 255, 255, 255), 2.0);
             painter.strokePath(path, pen);
         }
     }
@@ -1188,6 +1179,18 @@ inline QList<QRect> CanvasGridView::itemPaintGeomertys(const QModelIndex &index)
     QStyleOptionViewItem option = viewOptions();
     option.rect = visualRect(index);
     return itemDelegate()->paintGeomertys(option, index);
+}
+
+inline QModelIndex CanvasGridView::firstIndex()
+{
+    auto localFile = GridManager::instance()->firstItemId();
+    return model()->index(DUrl::fromLocalFile(localFile));
+}
+
+inline QModelIndex CanvasGridView::lastIndex()
+{
+    auto localFile = GridManager::instance()->lastItemId();
+    return model()->index(DUrl::fromLocalFile(localFile));
 }
 
 void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command, bool byIconRect)

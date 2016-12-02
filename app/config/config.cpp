@@ -43,14 +43,14 @@ Config::Config()
     this->moveToThread(work);
     work->start();
 
-    auto syncTimer = new QTimer(this);
+    auto syncTimer = new QTimer();
     syncTimer->setInterval(2000);
     connect(syncTimer, &QTimer::timeout, this, [ = ]() {
         if (needSync) {
             needSync = false;
             m_settings->sync();
         }
-    });
+    }, Qt::QueuedConnection);
     syncTimer->start();
 }
 

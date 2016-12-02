@@ -106,6 +106,9 @@ private:
     inline QRect gridRectAt(const QPoint &pos) const;
     inline QList<QRect> itemPaintGeomertys(const QModelIndex &index) const;
 
+    inline QModelIndex firstIndex();
+    inline QModelIndex lastIndex();
+
     void setSelection(const QRect &rect,
                       QItemSelectionModel::SelectionFlags command,
                       bool byIconRect);

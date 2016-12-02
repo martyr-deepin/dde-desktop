@@ -493,6 +493,18 @@ QString GridManager::firstItemId()
     return "";
 }
 
+QString GridManager::lastItemId()
+{
+    auto len = d->usedGrids.length();
+    for (int i = 0; i < len; ++i) {
+        if (d->usedGrids.value(len - 1 - i)) {
+            auto pos = d->gridPosAt(len - 1 - i);
+            return  itemId(pos);
+        }
+    }
+    return "";
+}
+
 bool GridManager::contains(const QString &id)
 {
     return d->itemGrids.contains(id);

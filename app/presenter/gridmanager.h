@@ -32,6 +32,7 @@ public:
     bool clear();
 
     QString firstItemId();
+    QString lastItemId();
 
     bool contains(const QString &itemId);
     QPoint position(const QString &itemId);
