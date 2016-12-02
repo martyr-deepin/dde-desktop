@@ -71,6 +71,8 @@ int main(int argc, char *argv[])
     // Notify dde-desktop start up
     Dde::Session::RegisterDdeSession();
     DFMGlobal::installTranslator();
+    DFMGlobal::autoLoadDefaultPlugins();
+    DFMGlobal::autoLoadDefaultMenuExtensions();
     DFMGlobal::initPluginManager();
     DFMGlobal::initMimesAppsManager();
     DFMGlobal::initDialogManager();

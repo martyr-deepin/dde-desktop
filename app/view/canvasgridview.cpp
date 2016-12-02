@@ -1364,22 +1364,6 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
     property.setText(tr("Property"));
     property.setData(FileManagerProperty);
     menu->insertAction(propertyAction, &property);
-    menu->removeAction(propertyAction);
-
-    QAction display(menu);
-    display.setText(tr("Display Settings"));
-    display.setData(DisplaySettings);
-    menu->addAction(&display);
-
-    QAction corner(menu);
-    corner.setText(tr("Corner Settings"));
-    corner.setData(CornerSettings);
-    menu->addAction(&corner);
-
-    QAction wallpaper(menu);
-    wallpaper.setText(tr("Set Wallpaper"));
-    wallpaper.setData(WallpaperSettings);
-    menu->addAction(&wallpaper);
 
 //    QAction *sortByAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::SortBy));
 //    DFileMenu *sortBySubMenu = static_cast<DFileMenu *>(sortByAction ? sortByAction->menu() : Q_NULLPTR);
@@ -1398,7 +1382,33 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
 //        sortRoleAction->setChecked(d->autoSort);
 //}
 
-//    DFileMenuManager::loadEmptyPluginMenu(menu);
+    QList<QAction*>  pluginActions  = DFileMenuManager::loadEmptyAreaPluginMenu(menu, model()->rootUrl());
+    QList<QAction*>  extensionActions = DFileMenuManager::loadEmptyAreaExtensionMenu(menu, model()->rootUrl());
+
+    qDebug() << pluginActions.count() << extensionActions.count();
+    if (pluginActions.count() > 0){
+        QAction* separator = new QAction(menu);
+        separator->setSeparator(true);
+        menu->insertAction(pluginActions.at(0), separator);
+    }
+
+    QAction display(menu);
+    display.setText(tr("Display Settings"));
+    display.setData(DisplaySettings);
+    menu->addAction(&display);
+
+    QAction corner(menu);
+    corner.setText(tr("Corner Settings"));
+    corner.setData(CornerSettings);
+    menu->addAction(&corner);
+
+    QAction wallpaper(menu);
+    wallpaper.setText(tr("Set Wallpaper"));
+    wallpaper.setData(WallpaperSettings);
+    menu->addAction(&wallpaper);
+
+    menu->removeAction(propertyAction);
+
 
 
     DUrlList urls;
@@ -1489,6 +1499,8 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
                    << MenuAction::OpenInNewTab
                    << MenuAction::SendToDesktop
                    << MenuAction::AddToBookMark;
+    }else{
+        unusedList << MenuAction::SendToDesktop;
     }
 
     DFileMenu *menu = createNormalMenu(info->fileUrl(), list);
