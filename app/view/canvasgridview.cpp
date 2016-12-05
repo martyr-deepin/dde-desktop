@@ -174,7 +174,7 @@ QModelIndex CanvasGridView::moveCursorGrid(CursorAction cursorAction, Qt::Keyboa
     auto headIndex = firstIndex();
     auto tailIndex = lastIndex();
 
-    QModelIndex current = currentIndex();
+    QModelIndex current = d->currentCursorIndex;
     if (!current.isValid() || !selections->isSelected(current)) {
         return headIndex;
     }
@@ -1029,7 +1029,7 @@ void CanvasGridView::initUI()
 void CanvasGridView::initConnection()
 {
     auto syncTimer = new QTimer(this);
-    syncTimer->setInterval(500);
+    syncTimer->setInterval(2000);
     connect(syncTimer, &QTimer::timeout, this, [ = ]() {
         this->update();
     });
