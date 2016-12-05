@@ -366,7 +366,7 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
     QAbstractItemView::mousePressEvent(event);
 
     d->currentCursorIndex = index;
-    selectionModel()->setCurrentIndex(d->currentCursorIndex, QItemSelectionModel::ToggleCurrent);
+//    selectionModel()->setCurrentIndex(d->currentCursorIndex, QItemSelectionModel::ToggleCurrent);
 }
 
 void CanvasGridView::mouseReleaseEvent(QMouseEvent *event)
@@ -587,12 +587,17 @@ void CanvasGridView::dropEvent(QDropEvent *event)
     d->dragMoveHoverIndex = QModelIndex();
 //    d->dragMoveHoverIndex = QModelIndex();
 
+    QModelIndex targetIndex = indexAt(event->pos());
+
     QStringList selectLocalFiles;
     auto selects = selectionModel()->selectedIndexes();
     bool canMove = true;
     for (auto index : selects) {
         auto info = model()->fileInfo(index);
         if (isPersistFile(info->fileUrl())) {
+            canMove = false;
+        }
+        if (targetIndex == index) {
             canMove = false;
         }
         selectLocalFiles << info->fileUrl().toLocalFile();
@@ -609,6 +614,7 @@ void CanvasGridView::dropEvent(QDropEvent *event)
         } else {
             event->setDropAction(Qt::MoveAction);
         }
+
     } else {
         if (targetInfo && !targetInfo->supportedDropActions().testFlag(event->dropAction())) {
             QList<Qt::DropAction> actions;
@@ -658,14 +664,14 @@ void CanvasGridView::dropEvent(QDropEvent *event)
             }
         }
 
-        QModelIndex index = indexAt(event->pos());
-        if (!index.isValid()) {
-            index = rootIndex();
+        if (!targetIndex.isValid()) {
+            targetIndex = rootIndex();
         }
 
-        if (model()->supportedDropActions() & event->dropAction() && model()->flags(index) & Qt::ItemIsDropEnabled) {
+
+        if (model()->supportedDropActions() & event->dropAction() && model()->flags(targetIndex) & Qt::ItemIsDropEnabled) {
             const Qt::DropAction action = dragDropMode() == InternalMove ? Qt::MoveAction : event->dropAction();
-            if (model()->dropMimeData(event->mimeData(), action, index.row(), index.column(), index)) {
+            if (model()->dropMimeData(event->mimeData(), action, targetIndex.row(), targetIndex.column(), targetIndex)) {
                 if (action != event->dropAction()) {
                     event->setDropAction(action);
                     event->accept();
@@ -723,7 +729,7 @@ void CanvasGridView::paintEvent(QPaintEvent *)
     }
 #endif
 
-    if (d->dragMoveHoverIndex.isValid()) {
+    if (d->dragMoveHoverIndex.isValid() && d->dragMoveHoverIndex != d->currentCursorIndex) {
         QPainterPath path;
         auto lastRect = visualRect(d->dragMoveHoverIndex);
         path.addRoundRect(lastRect, 4, 4);
