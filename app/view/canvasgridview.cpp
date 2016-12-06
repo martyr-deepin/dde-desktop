@@ -973,6 +973,7 @@ bool CanvasGridView::edit(const QModelIndex &index, QAbstractItemView::EditTrigg
             return false;
         }
         if (trigger == QAbstractItemView::AllEditTriggers) { // force editing
+            d->fileViewHelper->triggerEdit(index);
             return true;
         }
         if ((trigger & editTriggers()) == QAbstractItemView::SelectedClicked
@@ -982,11 +983,15 @@ bool CanvasGridView::edit(const QModelIndex &index, QAbstractItemView::EditTrigg
 
         if (trigger & editTriggers()) {
             w->setFocus();
+            d->fileViewHelper->triggerEdit(index);
             return true;
         }
     }
 
     bool tmp = QAbstractItemView::edit(index, trigger, event);
+
+    if (tmp)
+        d->fileViewHelper->triggerEdit(index);
 
     return tmp;
 }
@@ -1556,6 +1561,10 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
                                  localFiles);
         }
         break;
+        case MenuAction::Rename: {
+            QAbstractItemView::edit(index);
+            break;
+        }
         }
     });
 
