@@ -1018,6 +1018,8 @@ void CanvasGridView::initUI()
     d->fileViewHelper = new CanvasViewHelper(this);
 
     setModel(new DFileSystemModel(d->fileViewHelper));
+    model()->setEnabledSort(false);
+
     setSelectionModel(new DFileSelectionModel(model(), this));
     setItemDelegate(new DIconItemDelegate(d->fileViewHelper));
 
@@ -1088,6 +1090,8 @@ void CanvasGridView::initConnection()
         qDebug() << "dataChanged" << topLeft << bottomRight << roles;
 
         if (d->resortCount > 0) {
+            qDebug() << "resort desktop icons";
+            model()->setEnabledSort(false);
             d->resortCount--;
             GridManager::instance()->clear();
             QStringList list;
@@ -1099,6 +1103,7 @@ void CanvasGridView::initConnection()
             for (auto lf : list) {
                 GridManager::instance()->add(lf);
             }
+            GridManager::instance()->reAlign();
         }
 
     });
@@ -1303,6 +1308,7 @@ void CanvasGridView::handleContextMenuAction(int action)
     }
 
     if (changeSort) {
+        model()->setEnabledSort(true);
         d->resortCount++;
         QMap<int, int> sortActions;
         sortActions.insert(MenuAction::Name, DFileSystemModel::FileDisplayNameRole);
@@ -1316,7 +1322,6 @@ void CanvasGridView::handleContextMenuAction(int action)
 
         model()->setSortRole(sortRole, sortOrder);
         model()->sort();
-
         emit sortRoleChanged(sortRole, sortOrder);
     }
 }
@@ -1390,7 +1395,6 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
     QList<QAction*>  pluginActions  = DFileMenuManager::loadEmptyAreaPluginMenu(menu, model()->rootUrl());
     QList<QAction*>  extensionActions = DFileMenuManager::loadEmptyAreaExtensionMenu(menu, model()->rootUrl());
 
-    qDebug() << pluginActions.count() << extensionActions.count();
     if (pluginActions.count() > 0){
         QAction* separator = new QAction(menu);
         separator->setSeparator(true);
@@ -1414,8 +1418,6 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
 
     menu->removeAction(propertyAction);
 
-
-
     DUrlList urls;
     urls.append(model()->rootUrl());
 
@@ -1427,6 +1429,7 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
     menu->setEvent(event);
 
     connect(menu, &DFileMenu::triggered, this, [ = ](QAction * action) {
+        qDebug() << action->data();
         if (!action->data().isValid()) {
             return;
         }
