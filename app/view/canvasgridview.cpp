@@ -702,7 +702,7 @@ void CanvasGridView::paintEvent(QPaintEvent *)
     painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
 
     auto option = viewOptions();
-    const QModelIndex current = currentIndex();
+    const QModelIndex current = d->currentCursorIndex;
     const QAbstractItemModel *itemModel = this->model();
     const DFileSelectionModel *selections = this->selectionModel();
     const bool focus = (hasFocus() || viewport()->hasFocus()) && current.isValid();
@@ -768,18 +768,18 @@ void CanvasGridView::paintEvent(QPaintEvent *)
         this->itemDelegate()->paint(&painter, option, index);
     }
 
-    if (d->currentCursorIndex.isValid()) {
-        auto lastRects = itemPaintGeomertys(d->currentCursorIndex);
-        if (lastRects.length() >= 2) {
-            auto lastRect = lastRects.at(1);
-            lastRect = visualRect(d->currentCursorIndex);
+//    if (d->currentCursorIndex.isValid()) {
+//        auto lastRects = itemPaintGeomertys(d->currentCursorIndex);
+//        if (lastRects.length() >= 2) {
+//            auto lastRect = lastRects.at(1);
+//            lastRect = visualRect(d->currentCursorIndex);
 
-            QPainterPath path;
-            path.addRoundRect(lastRect, 6, 6);
-            QPen pen(QColor(255, 255, 255, 255), 2.0);
-            painter.strokePath(path, pen);
-        }
-    }
+//            QPainterPath path;
+//            path.addRoundRect(lastRect, 6, 6);
+//            QPen pen(QColor(255, 255, 255, 255), 2.0);
+//            painter.strokePath(path, pen);
+//        }
+//    }
 
 
 }
@@ -1022,6 +1022,8 @@ void CanvasGridView::initUI()
 
     setSelectionModel(new DFileSelectionModel(model(), this));
     setItemDelegate(new DIconItemDelegate(d->fileViewHelper));
+
+    qobject_cast<DIconItemDelegate*>(itemDelegate())->setFocusTextBackgroundBorderColor(Qt::white);
 
     auto settings = Config::instance()->settings();
     settings->beginGroup(Config::groupGeneral);
