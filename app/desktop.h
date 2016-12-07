@@ -15,9 +15,9 @@
 
 #include "global/singleton.h"
 
-#define DesktopServiceName          "com.deepin.dde.Desktop"
-#define DesktopServicePath          "/com/deepin/dde/Desktop"
-#define DesktopServiceInterface     "com.deepin.dde.Desktop"
+#define DesktopServiceName          "com.deepin.dde.desktop"
+#define DesktopServicePath          "/com/deepin/dde/desktop"
+#define DesktopServiceInterface     "com.deepin.dde.desktop"
 
 class DesktopPrivate;
 class Desktop : public QObject, public Singleton<Desktop>
@@ -29,7 +29,7 @@ public:
     void loadView();
 
 public slots:
-    void show();
+    void Show();
 
 private:
     explicit Desktop();

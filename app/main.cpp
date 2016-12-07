@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
     Desktop::instance()->loadData();
     Desktop::instance()->loadView();
-    Desktop::instance()->show();
+    Desktop::instance()->Show();
 
     // Notify dde-desktop start up
     Dde::Session::RegisterDdeSession();

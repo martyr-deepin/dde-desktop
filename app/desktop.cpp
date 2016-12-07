@@ -53,7 +53,7 @@ void Desktop::loadView()
     d->screenFrame.setRootUrl(desktopUrl);
 }
 
-void Desktop::show()
+void Desktop::Show()
 {
     d->screenFrame.show();
 }
