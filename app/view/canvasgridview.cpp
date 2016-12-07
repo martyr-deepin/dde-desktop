@@ -53,6 +53,7 @@
 #include "util/xcb/xcb.h"
 #include "private/canvasviewprivate.h"
 
+static const QString TrashRoot = "trash:///";
 
 static inline bool isComputerFile(const DUrl &url)
 {
@@ -990,8 +991,9 @@ bool CanvasGridView::edit(const QModelIndex &index, QAbstractItemView::EditTrigg
 
     bool tmp = QAbstractItemView::edit(index, trigger, event);
 
-    if (tmp)
+    if (tmp) {
         d->fileViewHelper->triggerEdit(index);
+    }
 
     return tmp;
 }
@@ -1023,7 +1025,7 @@ void CanvasGridView::initUI()
     setSelectionModel(new DFileSelectionModel(model(), this));
     setItemDelegate(new DIconItemDelegate(d->fileViewHelper));
 
-    qobject_cast<DIconItemDelegate*>(itemDelegate())->setFocusTextBackgroundBorderColor(Qt::white);
+    qobject_cast<DIconItemDelegate *>(itemDelegate())->setFocusTextBackgroundBorderColor(Qt::white);
 
     auto settings = Config::instance()->settings();
     settings->beginGroup(Config::groupGeneral);
@@ -1031,6 +1033,8 @@ void CanvasGridView::initUI()
         auto iconSizeLevel = settings->value(Config::keyIconLevel).toInt();
         itemDelegate()->setIconSizeByIconSizeLevel(iconSizeLevel);
         qDebug() << "current icon size level" << itemDelegate()->iconSizeLevel();
+    } else {
+        itemDelegate()->setIconSizeByIconSizeLevel(0);
     }
     settings->endGroup();
 }
@@ -1394,11 +1398,11 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
 //        sortRoleAction->setChecked(d->autoSort);
 //}
 
-    QList<QAction*>  pluginActions  = DFileMenuManager::loadEmptyAreaPluginMenu(menu, model()->rootUrl());
-    QList<QAction*>  extensionActions = DFileMenuManager::loadEmptyAreaExtensionMenu(menu, model()->rootUrl());
+    QList<QAction *>  pluginActions  = DFileMenuManager::loadEmptyAreaPluginMenu(menu, model()->rootUrl());
+    QList<QAction *>  extensionActions = DFileMenuManager::loadEmptyAreaExtensionMenu(menu, model()->rootUrl());
 
-    if (pluginActions.count() > 0){
-        QAction* separator = new QAction(menu);
+    if (pluginActions.count() > 0) {
+        QAction *separator = new QAction(menu);
         separator->setSeparator(true);
         menu->insertAction(pluginActions.at(0), separator);
     }
@@ -1488,10 +1492,14 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
         return;
     }
 
-
+    bool showProperty = true;
     DUrlList list;
     for (const QModelIndex &index : selectedIndexes()) {
         const DAbstractFileInfoPointer &info = model()->fileInfo(index);
+        if (isComputerFile(info->fileUrl())) {
+            showProperty = false;
+        }
+
         list << info->fileUrl();
     }
 
@@ -1509,7 +1517,7 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
                    << MenuAction::OpenInNewTab
                    << MenuAction::SendToDesktop
                    << MenuAction::AddToBookMark;
-    }else{
+    } else {
         unusedList << MenuAction::SendToDesktop;
     }
 
@@ -1527,10 +1535,14 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
     if (propertyAction) {
         menu->removeAction(propertyAction);
     }
+
+    qDebug() << showProperty;
     QAction property(menu);
-    property.setText(tr("Property"));
-    property.setData(FileManagerProperty);
-    menu->addAction(&property);
+    if (showProperty) {
+        property.setText(tr("Property"));
+        property.setData(FileManagerProperty);
+        menu->addAction(&property);
+    }
 
     DFMEvent event;
 
@@ -1560,7 +1572,11 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
         case FileManagerProperty: {
             QStringList localFiles;
             for (auto url : this->selectedUrls()) {
-                localFiles << url.toLocalFile();
+                if (isTrashFile(url)) {
+                    localFiles << TrashRoot;
+                } else {
+                    localFiles << url.toLocalFile();
+                }
             }
             startProcessDetached("/usr/bin/dde-property-dialog",
                                  localFiles);
