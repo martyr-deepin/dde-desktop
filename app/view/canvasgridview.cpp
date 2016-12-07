@@ -406,20 +406,19 @@ void CanvasGridView::wheelEvent(QWheelEvent *event)
 
 void CanvasGridView::keyPressEvent(QKeyEvent *event)
 {
-    DUrlList urls;
-
+    QMap<QString, DUrl> selectUrls;
     bool canDeleted = true;
-    for (const QModelIndex &index : selectedIndexes()) {
+    for (const QModelIndex &index : selectionModel()->selectedIndexes()) {
         auto url = model()->getUrlByIndex(index);
         if (isPersistFile(url)) {
             canDeleted = false;
         }
-        urls << url;
+        selectUrls.insert(url.toString(), url);
     }
 
     DFMEvent fmevent;
 
-    fmevent << urls;
+    fmevent << selectUrls.values();
     fmevent << DFMEvent::FileView;
     fmevent << winId();
     fmevent << model()->rootUrl();
@@ -447,11 +446,11 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
             }
             break;
         case Qt::Key_End:
-            if (urls.isEmpty()) {
+//            if (urls.isEmpty()) {
 //TODO:
 //                setCurrentIndex(model()->index(count() - 1, 0));
-                return;
-            }
+            return;
+//            }
         default: break;
         }
         break;
@@ -1260,7 +1259,9 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
             for (const QRect &r : list) {
                 if (selectRect.intersects(r)) {
                     QItemSelectionRange selectionRange(index);
-                    selection.push_back(selectionRange);
+                    if (!selection.contains(index)) {
+                        selection.push_back(selectionRange);
+                    }
                     break;
                 }
                 if (byIconRect) {
