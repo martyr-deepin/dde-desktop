@@ -22,12 +22,12 @@ class GridManager: public QObject, public Singleton<GridManager>
 {
     Q_OBJECT
 public:
+    bool isInited() const;
+    void initProfile(const QStringList &items);
+
     bool add(const QString &itemId);
-    bool add(QPoint pos, const QString &itemId);
     bool move(const QStringList &selectedIds, const QString &itemId, int x, int y);
     bool remove(const QString &itemId);
-    bool remove(int x, int y, const QString &itemId);
-    bool remove(QPoint pos, const QString &itemId);
 
     bool clear();
 
@@ -47,11 +47,14 @@ public:
     void updateGridSize(int w, int h);
 
 protected:
+    bool remove(int x, int y, const QString &itemId);
+    bool remove(QPoint pos, const QString &itemId);
+    bool add(QPoint pos, const QString &itemId);
+
     friend Singleton<GridManager>;
 
     GridManager();
     ~GridManager();
-
 
     QScopedPointer<GridManagerPrivate> d;
 };

@@ -24,6 +24,8 @@ public:
 signals:
     void setConfig(const QString &group, const QString &key, const QVariant &value);
     void removeConfig(const QString &group, const QString &key);
+    void setConfigList(const QString &group, const QStringList &keys, const QVariantList &values);
+    void removeConfigList(const QString &group, const QStringList &keys);
 
 public slots:
     void onSortRoleChanged(int role, Qt::SortOrder order);

@@ -62,10 +62,30 @@ void Config::setConfig(const QString &group, const QString &key, const QVariant 
     needSync = true;
 }
 
+void Config::setConfigList(const QString &group, const QStringList &keys, const QVariantList &values)
+{
+    m_settings->beginGroup(group);
+    for (int i = 0; i < keys.length(); ++i) {
+        m_settings->setValue(keys.value(i), values.value(i));
+    }
+    m_settings->endGroup();
+    needSync = true;
+}
+
 void Config::removeConfig(const QString &group, const QString &key)
 {
     m_settings->beginGroup(group);
     m_settings->remove(key);
+    m_settings->endGroup();
+    needSync = true;
+}
+
+void Config::removeConfigList(const QString &group, const QStringList &keys)
+{
+    m_settings->beginGroup(group);
+    for (int i = 0; i < keys.length(); ++i) {
+        m_settings->remove(keys.value(i));
+    }
     m_settings->endGroup();
     needSync = true;
 }

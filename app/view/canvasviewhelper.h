@@ -25,7 +25,7 @@ public:
     virtual DStyledItemDelegate *itemDelegate() const;
     virtual DFileSystemModel *model() const;
     virtual const DUrlList selectedUrls() const;
-
+    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const;
 };
 
 #endif // CANVASVIEWHELPER_H

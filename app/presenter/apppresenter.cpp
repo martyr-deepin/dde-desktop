@@ -24,6 +24,10 @@ void AppPresenter::init()
             Config::instance(), &Config::setConfig, Qt::QueuedConnection);
     connect(AppPresenter::instance(), &AppPresenter::removeConfig,
             Config::instance(), &Config::removeConfig, Qt::QueuedConnection);
+    connect(AppPresenter::instance(), &AppPresenter::setConfigList,
+            Config::instance(), &Config::setConfigList, Qt::QueuedConnection);
+    connect(AppPresenter::instance(), &AppPresenter::removeConfigList,
+            Config::instance(), &Config::removeConfigList, Qt::QueuedConnection);
 }
 
 void AppPresenter::onSortRoleChanged(int role, Qt::SortOrder order)

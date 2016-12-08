@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QScreen>
 #include <QAction>
+#include <QDir>
 #include <QStandardPaths>
 
 #include <dthememanager.h>
@@ -57,16 +58,31 @@ static const QString TrashRoot = "trash:///";
 
 static inline bool isComputerFile(const DUrl &url)
 {
+#ifdef DDE_COMPUTER_TRASH
     return url.toString().endsWith("/dde-computer.desktop");
+#else
+    Q_UNUSED(url);
+    return false;
+#endif
 }
 static inline bool isTrashFile(const DUrl &url)
 {
+#ifdef DDE_COMPUTER_TRASH
     return url.toString().endsWith("/dde-trash.desktop");
+#else
+    Q_UNUSED(url);
+    return false;
+#endif
 }
 static inline bool isPersistFile(const DUrl &url)
 {
+#ifdef DDE_COMPUTER_TRASH
     return url.toString().endsWith("/dde-computer.desktop")
            || url.toString().endsWith("/dde-trash.desktop");
+#else
+    Q_UNUSED(url);
+    return false;
+#endif
 }
 
 static void startProcessDetached(const QString &program,
@@ -737,6 +753,7 @@ void CanvasGridView::paintEvent(QPaintEvent *)
         painter.strokePath(path, QColor(30, 126, 255, 0.20 * 255));
     }
 
+    // TODO draw later
     for (int i = 0; i < this->model()->rowCount(); ++i) {
         auto index = this->model()->index(i, 0) ;
         Q_ASSERT(index.isValid());
@@ -910,7 +927,6 @@ bool CanvasGridView::setCurrentUrl(const DUrl &url)
     return true;
 }
 
-
 bool CanvasGridView::setRootUrl(const DUrl &url)
 {
     if (url.isEmpty()) {
@@ -925,7 +941,9 @@ bool CanvasGridView::setRootUrl(const DUrl &url)
         setFocus();
     }
 
+    QDir rootDir(url.toLocalFile());
     return setCurrentUrl(url);
+
 }
 
 const DUrlList CanvasGridView::selectedUrls() const
@@ -1022,7 +1040,9 @@ void CanvasGridView::initUI()
     model()->setEnabledSort(false);
 
     setSelectionModel(new DFileSelectionModel(model(), this));
-    setItemDelegate(new DIconItemDelegate(d->fileViewHelper));
+    auto delegate = new DIconItemDelegate(d->fileViewHelper);
+    delegate->setEnabledTextShadow(true);
+    setItemDelegate(delegate);
 
     qobject_cast<DIconItemDelegate *>(itemDelegate())->setFocusTextBackgroundBorderColor(Qt::white);
 
@@ -1059,9 +1079,24 @@ void CanvasGridView::initConnection()
 
     connect(this->model(), &QAbstractItemModel::rowsInserted,
     this, [ = ](const QModelIndex & parent, int first, int last) {
+        qDebug() << "++++++++++++++++++++++++++++++" << parent << first << last;
+
+        if (!GridManager::instance()->isInited()) {
+            QStringList files;
+            for (int i = first; i <= last; ++i) {
+                auto index = model()->index(i, 0, parent);
+                auto localFile = model()->getUrlByIndex(index).toLocalFile();
+                files << localFile;
+            }
+            qDebug() << "init GridManager cells";
+            GridManager::instance()->initProfile(files);
+            return;
+        }
+
         for (int i = first; i <= last; ++i) {
             auto index = model()->index(i, 0, parent);
             auto localFile = model()->getUrlByIndex(index).toLocalFile();
+            qDebug() << "add" << localFile;
             GridManager::instance()->add(localFile);
         }
     });
@@ -1485,7 +1520,6 @@ DFileMenu *CanvasGridView::createNormalMenu(const DUrl &currentUrl, const DUrlLi
     DFileMenu *menu = DFileMenuManager::createNormalMenu(currentUrl, urlList, disableList, unusedList, -1);
     return menu;
 }
-
 
 void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlags &indexFlags)
 {
