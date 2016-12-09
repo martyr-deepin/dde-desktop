@@ -15,6 +15,7 @@
 #include <QPoint>
 #include <QRect>
 #include <QMargins>
+#include <QItemSelection>
 #include <QDebug>
 
 #include "../../global/coorinate.h"
@@ -98,6 +99,8 @@ public:
     QModelIndex         currentCursorIndex;
 
     QPoint              lastPos;
+
+    QItemSelection      beforeMoveSelection;
     QFrame              *selectFrame = nullptr;
     QRect               selectRect;
 

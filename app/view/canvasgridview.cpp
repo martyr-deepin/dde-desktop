@@ -373,12 +373,14 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
     bool isEmptyArea = !index.isValid();
 
     if (isEmptyArea) {
-        if (!DFMGlobal::keyCtrlIsPressed()) {
+        if (!DFMGlobal::keyCtrlIsPressed() && !DFMGlobal::keyShiftIsPressed()) {
             itemDelegate()->hideNotEditingIndexWidget();
             QAbstractItemView::setCurrentIndex(QModelIndex());
             clearSelection();;
         }
     }
+
+    d->beforeMoveSelection = selectionModel()->selection();
 
     QAbstractItemView::mousePressEvent(event);
 
@@ -1269,18 +1271,24 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
 
     if (d->mousePressed && DFMGlobal::keyShiftIsPressed()) {
         auto clickIndex = indexAt(d->lastPos);
-        if (!clickIndex.isValid()) {
-            return;
+        if (clickIndex.isValid()) {
+            auto clickedPoint = visualRect(clickIndex).center();
+            auto lastPoint = visualRect(d->currentCursorIndex).center();
+            if (!d->currentCursorIndex.isValid()) {
+                lastPoint = clickedPoint + QPoint(1, 1);
+            }
+            selectRect = QRect(clickedPoint, lastPoint).normalized();
+            topLeftGridPos = gridAt(selectRect.topLeft());
+            bottomRightGridPos = gridAt(selectRect.bottomRight());
+        } else {
+            if (!d->selectFrame->isVisible()) {
+                return;
+            }
+            selection = d->beforeMoveSelection;
+            topLeftGridPos = d->selectRect.topLeft();
+            bottomRightGridPos = d->selectRect.bottomRight();
         }
 
-        auto clickedPoint = visualRect(clickIndex).center();
-        auto lastPoint = visualRect(d->currentCursorIndex).center();
-        if (!d->currentCursorIndex.isValid()) {
-            lastPoint = clickedPoint + QPoint(1, 1);
-        }
-        selectRect = QRect(clickedPoint, lastPoint).normalized();
-        topLeftGridPos = gridAt(selectRect.topLeft());
-        bottomRightGridPos = gridAt(selectRect.bottomRight());
     }
 
     for (auto x = topLeftGridPos.x(); x <= bottomRightGridPos.x(); ++x) {
