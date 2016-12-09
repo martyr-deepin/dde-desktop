@@ -28,8 +28,6 @@ SOURCES += \
     presenter/apppresenter.cpp \
     presenter/gridmanager.cpp
 
-# Automating generation .qm files from .ts files
-system($$PWD/translate_generation.sh)
 
 
 HEADERS += \
@@ -47,6 +45,8 @@ HEADERS += \
 RESOURCES += \
     resource/theme/theme.qrc
 
+# Automating generation .qm files from .ts files
+system($$PWD/translate_generation.sh)
 TRANSLATIONS += $$PWD/translations/$${TARGET}.ts \
                 $$PWD/translations/$${TARGET}_zh_CN.ts
 
