@@ -1,5 +1,5 @@
 CanvasGridView {
-    border: 1px solid darkgray;
+    border: 0px solid darkgray;
 }
 
 #SelectRect{

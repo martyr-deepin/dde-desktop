@@ -926,6 +926,8 @@ bool CanvasGridView::setCurrentUrl(const DUrl &url)
 
     QAbstractItemView::setCurrentIndex(QModelIndex());
 
+    model()->setFilters(model()->filters() & ~QDir::Hidden);
+
     return true;
 }
 
@@ -1081,7 +1083,7 @@ void CanvasGridView::initConnection()
 
     connect(this->model(), &QAbstractItemModel::rowsInserted,
     this, [ = ](const QModelIndex & parent, int first, int last) {
-        qDebug() << "++++++++++++++++++++++++++++++" << parent << first << last;
+//        qDebug() << parent << first << last;
 
         if (!GridManager::instance()->isInited()) {
             QStringList files;
