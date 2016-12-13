@@ -577,21 +577,23 @@ void CanvasGridView::dragMoveEvent(QDragMoveEvent *event)
             if (!fileInfo->isDir() &&  !isTrashFile(fileInfo->fileUrl())) {
                 d->dragMoveHoverIndex = QModelIndex();
             } else if (!fileInfo->supportedDropActions().testFlag(event->dropAction())
-                       &&  !isTrashFile(fileInfo->fileUrl())) {
-                qDebug() << isTrashFile(fileInfo->fileUrl());
+                       && !isTrashFile(fileInfo->fileUrl())) {
                 d->dragMoveHoverIndex = QModelIndex();
-                update();
-                return event->ignore();
+                event->ignore();
             }
         }
+    } else {
+        event->accept();
+        event->setDropAction(Qt::MoveAction);
     }
 
     update();
 
-    if (dragDropMode() == InternalMove
-            && (event->source() != this || !(event->possibleActions() & Qt::MoveAction))) {
-        QAbstractItemView::dragMoveEvent(event);
-    }
+//    if ((event->source() != this || !(event->possibleActions() & Qt::MoveAction))) {
+
+//        qDebug() << dragDropMode();
+//        QAbstractItemView::dragMoveEvent(event);
+//    }
 }
 
 void CanvasGridView::dragLeaveEvent(QDragLeaveEvent *event)
