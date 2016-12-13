@@ -18,6 +18,8 @@
 #include <QItemSelection>
 #include <QDebug>
 
+#include <dfilesystemwatcher.h>
+
 #include "../../global/coorinate.h"
 
 class QFrame;
@@ -110,4 +112,6 @@ public:
     CanvasViewHelper    *fileViewHelper = nullptr;
 
     int                 resortCount;
+
+    DFileSystemWatcher  *filesystemWatcher = nullptr;
 };

@@ -928,6 +928,36 @@ bool CanvasGridView::setCurrentUrl(const DUrl &url)
 
     model()->setFilters(model()->filters() & ~QDir::Hidden);
 
+    if (d->filesystemWatcher) {
+        d->filesystemWatcher->deleteLater();
+    }
+
+    d->filesystemWatcher = new DFileSystemWatcher(QStringList() << fileUrl.toLocalFile());
+
+    connect(d->filesystemWatcher, &DFileSystemWatcher::fileCreated,
+    this, [ = ](const QString & path, const QString & name) {
+//        qDebug() << path << name;
+        const QString &filePath = path + QDir::separator() + name;
+        if (filePath.endsWith(".desktop")) {
+            d->filesystemWatcher->addPath(filePath);
+        }
+    });
+
+    connect(d->filesystemWatcher, &DFileSystemWatcher::fileClosed,
+    this, [ = ](const QString & path, const QString & /*name*/) {
+//        qDebug() << path << name;
+        auto index = model()->index(DUrl::fromLocalFile(path));
+        auto info = model()->fileInfo(index);
+        if (info) {
+            info->refresh();
+        }
+    });
+
+    connect(d->filesystemWatcher, &DFileSystemWatcher::fileDeleted,
+    this, [ = ](const QString & path, const QString & /*name*/) {
+//        qDebug() << path << name;
+        d->filesystemWatcher->removePath(path);
+    });
     return true;
 }
 
@@ -947,7 +977,6 @@ bool CanvasGridView::setRootUrl(const DUrl &url)
 
     QDir rootDir(url.toLocalFile());
     return setCurrentUrl(url);
-
 }
 
 const DUrlList CanvasGridView::selectedUrls() const
@@ -1079,6 +1108,23 @@ void CanvasGridView::initConnection()
 
         updateCanvas();
         repaint();
+    });
+
+    connect(this->model(), &QAbstractItemModel::rowsAboutToBeInserted,
+    this, [ = ](const QModelIndex & parent, int first, int last) {
+        if (!d->filesystemWatcher) {
+            return;
+        }
+
+        QStringList files;
+        for (int i = first; i <= last; ++i) {
+            auto index = model()->index(i, 0, parent);
+            auto localFile = model()->getUrlByIndex(index).toLocalFile();
+
+            files << localFile;
+        }
+//        qDebug() << "add watch" << files;
+        d->filesystemWatcher->addPaths(files);
     });
 
     connect(this->model(), &QAbstractItemModel::rowsInserted,
