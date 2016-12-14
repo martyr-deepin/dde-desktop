@@ -7,11 +7,11 @@
  * (at your option) any later version.
  **/
 
-#ifndef CANVASVIEWHELPER_H
-#define CANVASVIEWHELPER_H
+#pragma once
 
 #include <dfileviewhelper.h>
 
+class DFMEvent;
 class CanvasGridView;
 class CanvasViewHelper : public DFileViewHelper
 {
@@ -26,6 +26,7 @@ public:
     virtual DFileSystemModel *model() const;
     virtual const DUrlList selectedUrls() const;
     void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const;
-};
 
-#endif // CANVASVIEWHELPER_H
+public slots:
+    void edit(const DFMEvent &event);
+};

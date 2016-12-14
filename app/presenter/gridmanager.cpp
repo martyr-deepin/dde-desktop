@@ -417,8 +417,8 @@ public:
 
 //            qDebug() << keyList;
 
-            emit AppPresenter::instance()->removeConfig(positionProfile, "");
-            emit AppPresenter::instance()->setConfigList(positionProfile, keyList, valueList);
+            emit Presenter::instance()->removeConfig(positionProfile, "");
+            emit Presenter::instance()->setConfigList(positionProfile, keyList, valueList);
 
             return this->autoArrang;
         }
@@ -473,7 +473,7 @@ bool GridManager::add(QPoint pos, const QString &id)
 {
     auto ret = d->add(pos, id);
     if (ret) {
-        emit AppPresenter::instance()->setConfig(d->positionProfile, positionKey(pos), id);
+        emit Presenter::instance()->setConfig(d->positionProfile, positionKey(pos), id);
     }
     return ret;
 }
@@ -576,9 +576,9 @@ bool GridManager::remove(QPoint pos, const QString &id)
     if (ret) {
         auto newItemId = d->m_gridItems.value(pos);
         if (newItemId.isEmpty()) {
-            emit AppPresenter::instance()->removeConfig(d->positionProfile, positionKey(pos));
+            emit Presenter::instance()->removeConfig(d->positionProfile, positionKey(pos));
         } else {
-            emit AppPresenter::instance()->setConfig(d->positionProfile, positionKey(pos), newItemId);
+            emit Presenter::instance()->setConfig(d->positionProfile, positionKey(pos), newItemId);
         }
     }
     return ret;
@@ -588,7 +588,7 @@ bool GridManager::clear()
 {
     d->createProfile();
 
-    emit AppPresenter::instance()->removeConfig(d->positionProfile, "");
+    emit Presenter::instance()->removeConfig(d->positionProfile, "");
 
     return true;
 }
@@ -673,8 +673,8 @@ void GridManager:: reAlign()
         valueList << d->m_gridItems.value(pos);
     }
 
-    emit AppPresenter::instance()->removeConfig(d->positionProfile, "");
-    emit AppPresenter::instance()->setConfigList(d->positionProfile, keyList, valueList);
+    emit Presenter::instance()->removeConfig(d->positionProfile, "");
+    emit Presenter::instance()->setConfigList(d->positionProfile, keyList, valueList);
 }
 
 void GridManager::updateGridSize(int w, int h)
@@ -683,7 +683,7 @@ void GridManager::updateGridSize(int w, int h)
         d->arrange();
     }
 
-    emit AppPresenter::instance()->setConfig(Config::groupGeneral,
+    emit Presenter::instance()->setConfig(Config::groupGeneral,
             Config::keyProfile,
             d->positionProfile);
 }

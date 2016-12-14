@@ -26,7 +26,7 @@
 class DesktopPrivate
 {
 public:
-    AppPresenter        presenter;
+    Presenter        presenter;
     CanvasGridView      screenFrame;
 };
 

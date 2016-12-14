@@ -13,11 +13,11 @@
 #include "../global/singleton.h"
 
 class DFileSystemModel;
-class AppPresenter : public QObject, public Singleton<AppPresenter>
+class Presenter : public QObject, public Singleton<Presenter>
 {
     Q_OBJECT
 public:
-    explicit AppPresenter(QObject *parent = 0);
+    explicit Presenter(QObject *parent = 0);
 
     void init();
 
@@ -33,6 +33,6 @@ public slots:
     void OnIconLevelChanged(int iconLevel);
 
 private:
-    friend Singleton<AppPresenter>;
+    friend Singleton<Presenter>;
 };
 

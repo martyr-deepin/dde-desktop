@@ -61,8 +61,7 @@ static inline bool isComputerFile(const DUrl &url)
 #ifdef DDE_COMPUTER_TRASH
     return url.toString().endsWith("/dde-computer.desktop");
 #else
-    Q_UNUSED(url);
-    return false;
+    return url.toString().endsWith("/dde-computer.desktop");
 #endif
 }
 static inline bool isTrashFile(const DUrl &url)
@@ -365,7 +364,8 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
     d->mousePressed = true;
 
     d->selectFrame->resize(1, 1);
-    bool showSelectFrame = event->button() == Qt::LeftButton;
+    bool leftButtonPressed = event->button() == Qt::LeftButton;
+    bool showSelectFrame = leftButtonPressed;
     showSelectFrame &= !index.isValid();
     d->selectFrame->setVisible(showSelectFrame);
     d->lastPos = event->pos();
@@ -384,7 +384,9 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
 
     QAbstractItemView::mousePressEvent(event);
 
-    d->currentCursorIndex = index;
+    if (leftButtonPressed) {
+        d->currentCursorIndex = index;
+    }
 //    selectionModel()->setCurrentIndex(d->currentCursorIndex, QItemSelectionModel::ToggleCurrent);
 }
 
@@ -1222,11 +1224,11 @@ void CanvasGridView::initConnection()
 
 
     connect(this, &CanvasGridView::autoAlignToggled,
-            AppPresenter::instance(), &AppPresenter::onAutoAlignToggled);
+            Presenter::instance(), &Presenter::onAutoAlignToggled);
     connect(this, &CanvasGridView::sortRoleChanged,
-            AppPresenter::instance(), &AppPresenter::onSortRoleChanged);
+            Presenter::instance(), &Presenter::onSortRoleChanged);
     connect(this, &CanvasGridView::changeIconLevel,
-            AppPresenter::instance(), &AppPresenter::OnIconLevelChanged);
+            Presenter::instance(), &Presenter::OnIconLevelChanged);
 }
 
 void CanvasGridView::updateCanvas()

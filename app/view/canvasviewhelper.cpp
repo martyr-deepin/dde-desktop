@@ -9,6 +9,7 @@
 
 #include "canvasviewhelper.h"
 
+#include <dfmevent.h>
 #include <dfileinfo.h>
 #include <dfilesystemmodel.h>
 #include <diconitemdelegate.h>
@@ -45,6 +46,23 @@ const DUrlList CanvasViewHelper::selectedUrls() const
     qDebug() << parent()->selectedUrls();
     return parent()->selectedUrls();
 }
+
+void CanvasViewHelper::edit(const DFMEvent &event)
+{
+    qDebug() << event.windowId() << windowId();
+    if (event.windowId() != windowId() || event.fileUrlList().isEmpty())
+        return;
+
+    DUrl fileUrl = event.fileUrlList().first();
+
+    if (fileUrl.isEmpty())
+        return;
+
+    const QModelIndex &index = model()->index(fileUrl);
+
+    parent()->edit(index, QAbstractItemView::EditKeyPressed, 0);
+}
+
 
 void CanvasViewHelper::initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const
 {

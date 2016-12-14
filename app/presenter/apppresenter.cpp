@@ -14,35 +14,35 @@
 #include "../config/config.h"
 #include "gridmanager.h"
 
-AppPresenter::AppPresenter(QObject *parent) : QObject(parent)
+Presenter::Presenter(QObject *parent) : QObject(parent)
 {
 }
 
-void AppPresenter::init()
+void Presenter::init()
 {
-    connect(AppPresenter::instance(), &AppPresenter::setConfig,
+    connect(Presenter::instance(), &Presenter::setConfig,
             Config::instance(), &Config::setConfig, Qt::QueuedConnection);
-    connect(AppPresenter::instance(), &AppPresenter::removeConfig,
+    connect(Presenter::instance(), &Presenter::removeConfig,
             Config::instance(), &Config::removeConfig, Qt::QueuedConnection);
-    connect(AppPresenter::instance(), &AppPresenter::setConfigList,
+    connect(Presenter::instance(), &Presenter::setConfigList,
             Config::instance(), &Config::setConfigList, Qt::QueuedConnection);
-    connect(AppPresenter::instance(), &AppPresenter::removeConfigList,
+    connect(Presenter::instance(), &Presenter::removeConfigList,
             Config::instance(), &Config::removeConfigList, Qt::QueuedConnection);
 }
 
-void AppPresenter::onSortRoleChanged(int role, Qt::SortOrder order)
+void Presenter::onSortRoleChanged(int role, Qt::SortOrder order)
 {
     emit setConfig(Config::groupGeneral, Config::keySortBy, role);
     emit setConfig(Config::groupGeneral, Config::keySortOrder, order);
 }
 
-void AppPresenter::onAutoAlignToggled()
+void Presenter::onAutoAlignToggled()
 {
     GridManager::instance()->toggleAlign();
     emit setConfig(Config::groupGeneral, Config::keyAutoAlign, GridManager::instance()->autoAlign());
 }
 
-void AppPresenter::OnIconLevelChanged(int iconLevel)
+void Presenter::OnIconLevelChanged(int iconLevel)
 {
     emit setConfig(Config::groupGeneral, Config::keyIconLevel, iconLevel);
 }
