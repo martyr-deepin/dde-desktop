@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     app.setApplicationVersion((GIT_VERSION));
     app.setTheme("light");
 
-    QFont font;
+    QFont font = app.font();
     font.setPixelSize(14);
     app.setFont(font);
 
@@ -64,7 +64,6 @@ int main(int argc, char *argv[])
 
     app.loadTranslator();
 
-
     QThreadPool::globalInstance()->setMaxThreadCount(MAX_THREAD_COUNT);
     Config::instance();
 
@@ -72,14 +71,15 @@ int main(int argc, char *argv[])
     Desktop::instance()->loadView();
     Desktop::instance()->Show();
 
-    // Notify dde-desktop start up
-    Dde::Session::RegisterDdeSession();
     DFMGlobal::installTranslator();
     DFMGlobal::autoLoadDefaultPlugins();
     DFMGlobal::autoLoadDefaultMenuExtensions();
     DFMGlobal::initPluginManager();
     DFMGlobal::initMimesAppsManager();
     DFMGlobal::initDialogManager();
+
+    // Notify dde-desktop start up
+    Dde::Session::RegisterDdeSession();
 
     return app.exec();
 }

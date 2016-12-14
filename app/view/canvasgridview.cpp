@@ -717,6 +717,7 @@ void CanvasGridView::dropEvent(QDropEvent *event)
         viewport()->update();
     }
 }
+#include <QApplication>
 
 void CanvasGridView::paintEvent(QPaintEvent *)
 {
@@ -724,6 +725,9 @@ void CanvasGridView::paintEvent(QPaintEvent *)
     painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
 
     auto option = viewOptions();
+    option.font.setPixelSize(14);
+    qApp->setFont(option.font);
+
     const QModelIndex current = d->currentCursorIndex;
     const QAbstractItemModel *itemModel = this->model();
     const DFileSelectionModel *selections = this->selectionModel();
@@ -731,7 +735,6 @@ void CanvasGridView::paintEvent(QPaintEvent *)
     const QStyle::State state = option.state;
     const QAbstractItemView::State viewState = this->state();
     const bool enabled = (state & QStyle::State_Enabled) != 0;
-
 
     painter.setBrush(QColor(255, 0, 0, 0));
 
