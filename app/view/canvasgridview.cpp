@@ -997,6 +997,19 @@ const DUrlList CanvasGridView::selectedUrls() const
     return urls;
 }
 
+void CanvasGridView::select(const QList<DUrl> &list)
+{
+    QItemSelection selection;
+    for (auto &url : list) {
+        auto index = model()->index(url);
+        QItemSelectionRange selectionRange(index);
+        if (!selection.contains(index)) {
+            selection.push_back(selectionRange);
+        }
+        QAbstractItemView::selectionModel()->select(selection, QItemSelectionModel::Select);
+    }
+}
+
 int CanvasGridView::selectedIndexCount() const
 {
     return static_cast<const DFileSelectionModel *>(selectionModel())->selectedCount();

@@ -65,17 +65,16 @@ public:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent *event) Q_DECL_OVERRIDE;
-
     void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
+
     // list view function
     QRect rectForIndex(const QModelIndex &index) const;
-
     DUrl currentUrl() const;
     bool setCurrentUrl(const DUrl &url);
     bool setRootUrl(const DUrl &url);
     const DUrlList selectedUrls() const;
-    // draw cell
 
+    void select(const QList<DUrl> &list);
     int selectedIndexCount() const;
 
     DFileSystemModel *model() const;

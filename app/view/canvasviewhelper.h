@@ -21,10 +21,12 @@ public:
 
     CanvasGridView *parent() const;
 
+    virtual int windowId() const;
     virtual const DAbstractFileInfoPointer fileInfo(const QModelIndex &index) const;
     virtual DStyledItemDelegate *itemDelegate() const;
     virtual DFileSystemModel *model() const;
     virtual const DUrlList selectedUrls() const;
+    virtual void select(const QList<DUrl> &list);
     void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const;
 
 public slots:

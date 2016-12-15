@@ -26,6 +26,11 @@ CanvasGridView *CanvasViewHelper::parent() const
     return qobject_cast<CanvasGridView *>(DFileViewHelper::parent());
 }
 
+int CanvasViewHelper::windowId() const
+{
+    return parent()->winId();
+}
+
 const DAbstractFileInfoPointer CanvasViewHelper::fileInfo(const QModelIndex &index) const
 {
     return parent()->model()->fileInfo(index);
@@ -47,16 +52,24 @@ const DUrlList CanvasViewHelper::selectedUrls() const
     return parent()->selectedUrls();
 }
 
+void CanvasViewHelper::select(const QList<DUrl> &list)
+{
+    qDebug() << "+++++++++++++++ ------------" << list;
+    return parent()->select(list);
+}
+
 void CanvasViewHelper::edit(const DFMEvent &event)
 {
     qDebug() << event.windowId() << windowId();
-    if (event.windowId() != windowId() || event.fileUrlList().isEmpty())
+    if (event.windowId() != windowId() || event.fileUrlList().isEmpty()) {
         return;
+    }
 
     DUrl fileUrl = event.fileUrlList().first();
 
-    if (fileUrl.isEmpty())
+    if (fileUrl.isEmpty()) {
         return;
+    }
 
     const QModelIndex &index = model()->index(fileUrl);
 
@@ -66,17 +79,19 @@ void CanvasViewHelper::edit(const DFMEvent &event)
 
 void CanvasViewHelper::initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const
 {
-    if (isSelected(index))
+    if (isSelected(index)) {
         option->state |= QStyle::State_Selected;
-    else
+    } else {
         option->state &= QStyle::StateFlag(~QStyle::State_Selected);
+    }
 
     option->palette.setColor(QPalette::Text, QColor("white"));
     option->palette.setColor(QPalette::Disabled, QPalette::Text, QColor("#797979"));
-    if ((option->state & QStyle::State_Selected) && option->showDecorationSelected)
+    if ((option->state & QStyle::State_Selected) && option->showDecorationSelected) {
         option->palette.setColor(QPalette::Inactive, QPalette::Text, QColor("#e9e9e9"));
-    else
+    } else {
         option->palette.setColor(QPalette::Inactive, QPalette::Text, QColor("#797979"));
+    }
     option->palette.setColor(QPalette::BrightText, Qt::white);
     option->palette.setBrush(QPalette::Shadow, QColor(0, 0, 0, 178));
 
