@@ -48,6 +48,7 @@
 #include "../model/dfileselectionmodel.h"
 #include "../presenter/gridmanager.h"
 #include "../presenter/apppresenter.h"
+#include "../desktop.h"
 #include "../config/config.h"
 
 #include "canvasviewhelper.h"
@@ -717,7 +718,6 @@ void CanvasGridView::dropEvent(QDropEvent *event)
         viewport()->update();
     }
 }
-#include <QApplication>
 
 void CanvasGridView::paintEvent(QPaintEvent *)
 {
@@ -725,8 +725,8 @@ void CanvasGridView::paintEvent(QPaintEvent *)
     painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
 
     auto option = viewOptions();
-    option.font.setPixelSize(14);
-    qApp->setFont(option.font);
+    Desktop::instance()->fixFontSize(option);
+    option.textElideMode = Qt::ElideMiddle;
 
     const QModelIndex current = d->currentCursorIndex;
     const QAbstractItemModel *itemModel = this->model();
@@ -1095,9 +1095,8 @@ void CanvasGridView::initUI()
     setSelectionModel(new DFileSelectionModel(model(), this));
     auto delegate = new DIconItemDelegate(d->fileViewHelper);
     delegate->setEnabledTextShadow(true);
+    delegate->setFocusTextBackgroundBorderColor(Qt::white);
     setItemDelegate(delegate);
-
-    qobject_cast<DIconItemDelegate *>(itemDelegate())->setFocusTextBackgroundBorderColor(Qt::white);
 
     auto settings = Config::instance()->settings();
     settings->beginGroup(Config::groupGeneral);
@@ -1392,7 +1391,7 @@ void CanvasGridView::handleContextMenuAction(int action)
     switch (action) {
     case DisplaySettings:
         startProcessDetached("/usr/bin/dde-control-center",
-                             QStringList() << "-s" << "dispaly");
+                             QStringList() << "-s" << "display");
         break;
     case CornerSettings:
         startProcessDetached("/usr/lib/deepin-daemon/dde-zone");

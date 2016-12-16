@@ -19,6 +19,7 @@
 #define DesktopServicePath          "/com/deepin/dde/desktop"
 #define DesktopServiceInterface     "com.deepin.dde.desktop"
 
+class QStyleOptionViewItem;
 class DesktopPrivate;
 class Desktop : public QObject, public Singleton<Desktop>
 {
@@ -27,6 +28,9 @@ class Desktop : public QObject, public Singleton<Desktop>
 public:
     void loadData();
     void loadView();
+
+    //TODO: workaround, setFixed font
+    void fixFontSize(QStyleOptionViewItem &opt);
 
 public slots:
     void Show();

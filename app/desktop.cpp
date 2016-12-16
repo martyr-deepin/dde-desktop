@@ -9,19 +9,15 @@
 
 #include "desktop.h"
 
-#include "view/canvasgridview.h"
-#include "presenter/apppresenter.h"
-
-#include <QPushButton>
-#include <QListView>
-#include <QLabel>
-#include <QTextEdit>
-#include <QStringListModel>
-#include <QStandardItemModel>
-#include <QStandardPaths>
 #include <QDebug>
+#include <QApplication>
+#include <QStandardPaths>
+#include <QStyleOptionViewItem>
 
 #include <durl.h>
+
+#include "view/canvasgridview.h"
+#include "presenter/apppresenter.h"
 
 class DesktopPrivate
 {
@@ -51,6 +47,12 @@ void Desktop::loadView()
     auto desktopPath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first();
     auto desktopUrl = DUrl::fromLocalFile(desktopPath);
     d->screenFrame.setRootUrl(desktopUrl);
+}
+
+void Desktop::fixFontSize(QStyleOptionViewItem& opt)
+{
+    opt.font.setPixelSize(14);
+    qApp->setFont(opt.font);
 }
 
 void Desktop::Show()
