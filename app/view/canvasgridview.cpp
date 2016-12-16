@@ -1119,8 +1119,16 @@ void CanvasGridView::initConnection()
     this, [ = ](const QRect & geometry) {
         qDebug() << "Init primaryScreen availableGeometryChanged changed to:" << geometry;
         qDebug() << "Init primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
-        setGeometry(geometry);
-        d->canvasRect = geometry;
+
+        auto newGeometry = qApp->primaryScreen()->geometry();
+        bool geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
+        if (!geometryValid) {
+            return;
+        }
+
+        qDebug() << "set newGeometry" << newGeometry;
+        setGeometry(newGeometry);
+        d->canvasRect = newGeometry;
         updateCanvas();
         repaint();
     });
@@ -1129,20 +1137,39 @@ void CanvasGridView::initConnection()
     this, [ = ](QScreen * screen) {
         qDebug() << "primaryScreenChanged to:" << screen << screen->availableGeometry();
         qDebug() << "currend primaryScreen" << qApp->primaryScreen() << qApp->primaryScreen()->availableGeometry();
-        setGeometry(screen->geometry());
-        d->canvasRect = screen->availableGeometry();
+
+        if (!screen) {
+            return;
+        }
 
         disconnect(screen, &QScreen::availableGeometryChanged, this, Q_NULLPTR);
         connect(screen, &QScreen::availableGeometryChanged,
         this, [ = ](const QRect & geometry) {
             qDebug() << "primaryScreen availableGeometryChanged changed to:" << geometry;
             qDebug() << "primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
-            setGeometry(geometry);
-            d->canvasRect = geometry;
+
+            auto newGeometry = qApp->primaryScreen()->geometry();
+            bool geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
+            if (!geometryValid) {
+                return;
+            }
+
+            qDebug() << "set newGeometry" << newGeometry;
+            setGeometry(newGeometry);
+            d->canvasRect = newGeometry;
             updateCanvas();
             repaint();
         });
 
+        auto newGeometry = qApp->primaryScreen()->geometry();
+        bool geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
+        if (!geometryValid) {
+            return;
+        }
+
+        qDebug() << "set newGeometry" << newGeometry;
+        setGeometry(newGeometry);
+        d->canvasRect = newGeometry;
         updateCanvas();
         repaint();
     });
