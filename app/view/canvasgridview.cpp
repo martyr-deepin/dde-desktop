@@ -466,12 +466,6 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
                 DFileService::instance()->moveToTrash(fmevent);
             }
             break;
-        case Qt::Key_End:
-//            if (urls.isEmpty()) {
-//TODO:
-//                setCurrentIndex(model()->index(count() - 1, 0));
-            return;
-//            }
         default: break;
         }
         break;
