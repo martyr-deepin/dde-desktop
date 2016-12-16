@@ -713,10 +713,12 @@ void CanvasGridView::dropEvent(QDropEvent *event)
     }
 }
 
-void CanvasGridView::paintEvent(QPaintEvent *)
+void CanvasGridView::paintEvent(QPaintEvent *event)
 {
+//    qDebug() << "start repaint" << event->rect() ;
     QPainter painter(viewport());
-    painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
+    auto repaintRect = event->rect();
+//    painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
 
     auto option = viewOptions();
     Desktop::instance()->fixFontSize(option);
@@ -748,6 +750,7 @@ void CanvasGridView::paintEvent(QPaintEvent *)
     }
 #endif
 
+
     if (d->dragMoveHoverIndex.isValid() && d->dragMoveHoverIndex != d->currentCursorIndex) {
         QPainterPath path;
         auto lastRect = visualRect(d->dragMoveHoverIndex);
@@ -756,11 +759,35 @@ void CanvasGridView::paintEvent(QPaintEvent *)
         painter.strokePath(path, QColor(30, 126, 255, 0.20 * 255));
     }
 
-    // TODO draw later
-    for (int i = 0; i < this->model()->rowCount(); ++i) {
-        auto index = this->model()->index(i, 0) ;
-        Q_ASSERT(index.isValid());
+    QStringList repaintLocalFiles;
+    for (int x = 0; x < d->colCount; ++x) {
+        for (int y = 0; y < d->rowCount; ++y) {
+            auto localFile = GridManager::instance()->itemId(x, y);
+            if (!localFile.isEmpty()) {
+                repaintLocalFiles << localFile;
+            }
+        }
+    }
+
+    auto overlayItems = GridManager::instance()->overlapItems();
+    for (int i = 0; i < 10 && i < overlayItems.length(); ++i) {
+        auto localFile = overlayItems.value(i);
+        if (!localFile.isEmpty()) {
+            repaintLocalFiles << localFile;
+        }
+    }
+
+    for (auto &localFile : repaintLocalFiles) {
+        auto index = model()->index(DUrl::fromLocalFile(localFile));
+        if (!index.isValid()) {
+            continue;
+        }
         option.rect = visualRect(index);
+
+        if (!repaintRect.intersects(option.rect)) {
+            continue;
+        }
+
         QPainterPath path;
         path.addRect(option.rect.marginsAdded(QMargins(1, 1, 1, 1)));
         option.rect.marginsRemoved(QMargins(5, 5, 5, 5));
@@ -788,20 +815,20 @@ void CanvasGridView::paintEvent(QPaintEvent *)
         this->itemDelegate()->paint(&painter, option, index);
     }
 
-//    if (d->currentCursorIndex.isValid()) {
-//        auto lastRects = itemPaintGeomertys(d->currentCursorIndex);
-//        if (lastRects.length() >= 2) {
-//            auto lastRect = lastRects.at(1);
-//            lastRect = visualRect(d->currentCursorIndex);
+//    qDebug() << "end repaint time one" << d->colCount << d->rowCount;
 
-//            QPainterPath path;
-//            path.addRoundRect(lastRect, 6, 6);
-//            QPen pen(QColor(255, 255, 255, 255), 2.0);
-//            painter.strokePath(path, pen);
-//        }
-//    }
+    //    if (d->currentCursorIndex.isValid()) {
+    //        auto lastRects = itemPaintGeomertys(d->currentCursorIndex);
+    //        if (lastRects.length() >= 2) {
+    //            auto lastRect = lastRects.at(1);
+    //            lastRect = visualRect(d->currentCursorIndex);
 
-
+    //            QPainterPath path;
+    //            path.addRoundRect(lastRect, 6, 6);
+    //            QPen pen(QColor(255, 255, 255, 255), 2.0);
+    //            painter.strokePath(path, pen);
+    //        }
+    //    }
 }
 
 void CanvasGridView::resizeEvent(QResizeEvent * /*event*/)
@@ -1109,7 +1136,7 @@ void CanvasGridView::initUI()
 void CanvasGridView::initConnection()
 {
     auto syncTimer = new QTimer(this);
-    syncTimer->setInterval(2000);
+    syncTimer->setInterval(3000);
     connect(syncTimer, &QTimer::timeout, this, [ = ]() {
         this->update();
     });
@@ -1174,26 +1201,24 @@ void CanvasGridView::initConnection()
         repaint();
     });
 
-    connect(this->model(), &QAbstractItemModel::rowsAboutToBeInserted,
-    this, [ = ](const QModelIndex & parent, int first, int last) {
-        if (!d->filesystemWatcher) {
-            return;
-        }
-
-        QStringList files;
-        for (int i = first; i <= last; ++i) {
-            auto index = model()->index(i, 0, parent);
-            auto localFile = model()->getUrlByIndex(index).toLocalFile();
-
-            files << localFile;
-        }
-//        qDebug() << "add watch" << files;
-        d->filesystemWatcher->addPaths(files);
-    });
-
     connect(this->model(), &QAbstractItemModel::rowsInserted,
     this, [ = ](const QModelIndex & parent, int first, int last) {
 //        qDebug() << parent << first << last;
+
+        if (d->filesystemWatcher) {
+            QStringList files;
+            for (int i = first; i <= last; ++i) {
+                auto index = model()->index(i, 0, parent);
+                if (!index.isValid()) {
+                    continue;
+                }
+                auto localFile = model()->getUrlByIndex(index).toLocalFile();
+
+                files << localFile;
+            }
+//            qDebug() << "add watch" << files;
+            d->filesystemWatcher->addPaths(files);
+        }
 
         if (!GridManager::instance()->isInited()) {
             QStringList files;

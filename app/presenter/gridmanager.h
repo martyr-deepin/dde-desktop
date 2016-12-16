@@ -40,6 +40,7 @@ public:
     QString itemId(QPoint pos);
     bool isEmpty(int x, int y);
 
+    const QStringList& overlapItems() const;
     bool autoAlign();
     void toggleAlign();
     void reAlign();

@@ -645,6 +645,11 @@ bool GridManager::isEmpty(int x, int y)
     return !d->m_cellStatus.value(d->indexOfGridPos(QPoint(x, y)));
 }
 
+const QStringList &GridManager::overlapItems() const
+{
+    return d->m_overlapItems;
+}
+
 bool GridManager::autoAlign()
 {
     return d->autoArrang;
@@ -684,7 +689,7 @@ void GridManager::updateGridSize(int w, int h)
     }
 
     emit Presenter::instance()->setConfig(Config::groupGeneral,
-            Config::keyProfile,
-            d->positionProfile);
+                                          Config::keyProfile,
+                                          d->positionProfile);
 }
 
