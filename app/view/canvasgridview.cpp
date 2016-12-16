@@ -1068,6 +1068,8 @@ void CanvasGridView::initUI()
     viewport()->setAttribute(Qt::WA_TranslucentBackground);
     Xcb::XcbMisc::instance().set_window_type(winId(), Xcb::XcbMisc::Desktop);
 
+    qDebug() << "qApp->primaryScreen()" << qApp->primaryScreen();
+    qDebug() << "qApp->primaryScreen()->availableGeometry()" << qApp->primaryScreen()->availableGeometry();
     setGeometry(qApp->primaryScreen()->geometry());
     d->canvasRect = qApp->primaryScreen()->availableGeometry();
 
@@ -1115,9 +1117,31 @@ void CanvasGridView::initConnection()
 
     connect(qApp->primaryScreen(), &QScreen::availableGeometryChanged,
     this, [ = ](const QRect & geometry) {
-        qDebug() << "Screen geometry changed" << geometry;
-        setGeometry(qApp->primaryScreen()->geometry());
-        d->canvasRect = qApp->primaryScreen()->availableGeometry();
+        qDebug() << "Init primaryScreen availableGeometryChanged changed to:" << geometry;
+        qDebug() << "Init primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
+        setGeometry(geometry);
+        d->canvasRect = geometry;
+        updateCanvas();
+        repaint();
+    });
+
+    connect(qApp, &QApplication::primaryScreenChanged,
+    this, [ = ](QScreen * screen) {
+        qDebug() << "primaryScreenChanged to:" << screen << screen->availableGeometry();
+        qDebug() << "currend primaryScreen" << qApp->primaryScreen() << qApp->primaryScreen()->availableGeometry();
+        setGeometry(screen->geometry());
+        d->canvasRect = screen->availableGeometry();
+
+        disconnect(screen, &QScreen::availableGeometryChanged, this, Q_NULLPTR);
+        connect(screen, &QScreen::availableGeometryChanged,
+        this, [ = ](const QRect & geometry) {
+            qDebug() << "primaryScreen availableGeometryChanged changed to:" << geometry;
+            qDebug() << "primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
+            setGeometry(geometry);
+            d->canvasRect = geometry;
+            updateCanvas();
+            repaint();
+        });
 
         updateCanvas();
         repaint();
