@@ -428,6 +428,7 @@ void CanvasGridView::wheelEvent(QWheelEvent *event)
 void CanvasGridView::keyPressEvent(QKeyEvent *event)
 {
     QMap<QString, DUrl> selectUrls;
+    auto rootUrl = model()->rootUrl();
     bool canDeleted = true;
     for (const QModelIndex &index : selectionModel()->selectedIndexes()) {
         auto url = model()->getUrlByIndex(index);
@@ -437,13 +438,13 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
         }
         selectUrls.insert(url.toString(), url);
     }
+    selectUrls.remove(rootUrl.toString());
 
     DFMEvent fmevent;
-
+    fmevent << model()->rootUrl();
     fmevent << selectUrls.values();
     fmevent << DFMEvent::FileView;
     fmevent << winId();
-    fmevent << model()->rootUrl();
 
     switch (event->modifiers()) {
     case Qt::NoModifier:
@@ -463,7 +464,7 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
             model()->refresh();
             return;
         case Qt::Key_Delete:
-            if (canDeleted) {
+            if (canDeleted && !selectUrls.contains(rootUrl.toString())) {
                 DFileService::instance()->moveToTrash(fmevent);
             }
             break;
