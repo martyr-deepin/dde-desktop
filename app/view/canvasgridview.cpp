@@ -1134,6 +1134,24 @@ void CanvasGridView::initUI()
     settings->endGroup();
 }
 
+static inline QRect getValidNewGeometry(const QRect &geometry, const QRect &oldGeometry)
+{
+    auto newGeometry = geometry;
+    bool geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
+    if (geometryValid) {
+        return newGeometry;
+    }
+
+    newGeometry = qApp->primaryScreen()->geometry();;
+    geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
+    if (geometryValid) {
+        return newGeometry;
+    }
+
+    qCritical() << "new valid geometry";
+    return oldGeometry;
+}
+
 void CanvasGridView::initConnection()
 {
     auto syncTimer = new QTimer(this);
@@ -1148,12 +1166,7 @@ void CanvasGridView::initConnection()
         qDebug() << "Init primaryScreen availableGeometryChanged changed to:" << geometry;
         qDebug() << "Init primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
 
-        auto newGeometry = qApp->primaryScreen()->geometry();
-        bool geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
-        if (!geometryValid) {
-            return;
-        }
-
+        auto newGeometry =  getValidNewGeometry(geometry, this->geometry());
         qDebug() << "set newGeometry" << newGeometry;
         setGeometry(newGeometry);
         d->canvasRect = newGeometry;
@@ -1176,12 +1189,7 @@ void CanvasGridView::initConnection()
             qDebug() << "primaryScreen availableGeometryChanged changed to:" << geometry;
             qDebug() << "primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
 
-            auto newGeometry = qApp->primaryScreen()->geometry();
-            bool geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
-            if (!geometryValid) {
-                return;
-            }
-
+            auto newGeometry =  getValidNewGeometry(geometry, this->geometry());
             qDebug() << "set newGeometry" << newGeometry;
             setGeometry(newGeometry);
             d->canvasRect = newGeometry;
@@ -1189,12 +1197,7 @@ void CanvasGridView::initConnection()
             repaint();
         });
 
-        auto newGeometry = qApp->primaryScreen()->geometry();
-        bool geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
-        if (!geometryValid) {
-            return;
-        }
-
+        auto newGeometry =  getValidNewGeometry(screen->availableGeometry(), this->geometry());
         qDebug() << "set newGeometry" << newGeometry;
         setGeometry(newGeometry);
         d->canvasRect = newGeometry;
