@@ -1691,6 +1691,9 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
     if (!indexFlags.testFlag(Qt::ItemIsEditable)) {
         disableList << MenuAction::Cut << MenuAction::Rename << MenuAction::Remove << MenuAction::Delete;
     }
+    if (!info->isReadable()) {
+        disableList << MenuAction::Copy << MenuAction::Compress << MenuAction::Decompress << MenuAction::DecompressHere;
+    }
 
     if (list.length() == 1) {
         unusedList << MenuAction::OpenInNewWindow
