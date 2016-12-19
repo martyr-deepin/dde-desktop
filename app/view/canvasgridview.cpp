@@ -433,6 +433,7 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
         auto url = model()->getUrlByIndex(index);
         if (isPersistFile(url)) {
             canDeleted = false;
+            continue;
         }
         selectUrls.insert(url.toString(), url);
     }
@@ -472,7 +473,7 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
 
     case Qt::ShiftModifier:
         if (event->key() == Qt::Key_Delete) {
-            if (fmevent.fileUrlList().isEmpty() || !canDeleted) {
+            if (!canDeleted) {
                 return;
             }
 
