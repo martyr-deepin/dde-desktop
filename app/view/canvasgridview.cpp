@@ -48,6 +48,7 @@
 #include "../model/dfileselectionmodel.h"
 #include "../presenter/gridmanager.h"
 #include "../presenter/apppresenter.h"
+#include "../presenter/display.h"
 #include "../desktop.h"
 #include "../config/config.h"
 
@@ -1097,10 +1098,13 @@ void CanvasGridView::initUI()
     viewport()->setAttribute(Qt::WA_TranslucentBackground);
     Xcb::XcbMisc::instance().set_window_type(winId(), Xcb::XcbMisc::Desktop);
 
+    qDebug() << "Display::instance()->primaryScreen()" << Display::instance()->primaryScreen();
     qDebug() << "qApp->primaryScreen()" << qApp->primaryScreen();
     qDebug() << "qApp->primaryScreen()->availableGeometry()" << qApp->primaryScreen()->availableGeometry();
-    setGeometry(qApp->primaryScreen()->geometry());
-    d->canvasRect = qApp->primaryScreen()->availableGeometry();
+
+    auto primaryScreen = Display::instance()->primaryScreen();
+    setGeometry(primaryScreen->geometry());
+    d->canvasRect = primaryScreen->availableGeometry();
 
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setAcceptDrops(true);
@@ -1143,7 +1147,8 @@ static inline QRect getValidNewGeometry(const QRect &geometry, const QRect &oldG
         return newGeometry;
     }
 
-    newGeometry = qApp->primaryScreen()->geometry();;
+    auto primaryScreen = Display::instance()->primaryScreen();
+    newGeometry = primaryScreen->geometry();;
     geometryValid = (newGeometry.width() > 0) && (newGeometry.height() > 0);
     if (geometryValid) {
         return newGeometry;
@@ -1162,7 +1167,7 @@ void CanvasGridView::initConnection()
     });
     syncTimer->start();
 
-    connect(qApp->primaryScreen(), &QScreen::availableGeometryChanged,
+    connect(Display::instance()->primaryScreen(), &QScreen::availableGeometryChanged,
     this, [ = ](const QRect & geometry) {
         qDebug() << "Init primaryScreen availableGeometryChanged changed to:" << geometry;
         qDebug() << "Init primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
@@ -1175,14 +1180,15 @@ void CanvasGridView::initConnection()
         repaint();
     });
 
-    connect(qApp, &QApplication::primaryScreenChanged,
+    connect(Display::instance(), &Display::primaryScreenChanged,
     this, [ = ](QScreen * screen) {
-        qDebug() << "primaryScreenChanged to:" << screen << screen->availableGeometry();
+        qDebug() << "primaryScreenChanged to:" << screen;
         qDebug() << "currend primaryScreen" << qApp->primaryScreen() << qApp->primaryScreen()->availableGeometry();
 
         if (!screen) {
             return;
         }
+        qDebug() << "screen availableGeometry:" << screen->availableGeometry();
 
         disconnect(screen, &QScreen::availableGeometryChanged, this, Q_NULLPTR);
         connect(screen, &QScreen::availableGeometryChanged,

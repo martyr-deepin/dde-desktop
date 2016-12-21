@@ -12,10 +12,10 @@
 #include <QObject>
 #include "../global/singleton.h"
 
-class DFileSystemModel;
 class Presenter : public QObject, public Singleton<Presenter>
 {
     Q_OBJECT
+    friend Singleton<Presenter>;
 public:
     explicit Presenter(QObject *parent = 0);
 
@@ -32,7 +32,5 @@ public slots:
     void onAutoAlignToggled();
     void OnIconLevelChanged(int iconLevel);
 
-private:
-    friend Singleton<Presenter>;
 };
 

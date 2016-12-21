@@ -14,8 +14,7 @@ TEMPLATE    = app
 TARGET      = dde-desktop
 DESTDIR     = $$BUILD_DIST
 CONFIG      += c++11 link_pkgconfig
-PKGCONFIG   += x11 gtk+-2.0 xcb xcb-ewmh gsettings-qt gio-2.0 \
-    dtkbase dtkutil dtkwidget dde-file-manager
+PKGCONFIG   += xcb xcb-ewmh dde-file-manager
 
 SOURCES += \
     main.cpp \
@@ -26,7 +25,9 @@ SOURCES += \
     model/dfileselectionmodel.cpp \
     view/canvasgridview.cpp \
     presenter/apppresenter.cpp \
-    presenter/gridmanager.cpp
+    presenter/gridmanager.cpp \
+    dbus/dbusdisplay.cpp \
+    presenter/display.cpp
 
 
 
@@ -40,7 +41,9 @@ HEADERS += \
     global/singleton.h \
     view/canvasgridview.h \
     presenter/apppresenter.h \
-    presenter/gridmanager.h
+    presenter/gridmanager.h \
+    dbus/dbusdisplay.h \
+    presenter/display.h
 
 RESOURCES += \
     resource/theme/theme.qrc
