@@ -1188,9 +1188,12 @@ void CanvasGridView::initConnection()
         if (!screen) {
             return;
         }
-        qDebug() << "screen availableGeometry:" << screen->availableGeometry();
 
-        disconnect(screen, &QScreen::availableGeometryChanged, this, Q_NULLPTR);
+        qDebug() << "screen availableGeometry:" << screen->availableGeometry();
+        for (auto screen : qApp->screens()) {
+            disconnect(screen, &QScreen::availableGeometryChanged, this, Q_NULLPTR);
+        }
+
         connect(screen, &QScreen::availableGeometryChanged,
         this, [ = ](const QRect & geometry) {
             qDebug() << "primaryScreen availableGeometryChanged changed to:" << geometry;
