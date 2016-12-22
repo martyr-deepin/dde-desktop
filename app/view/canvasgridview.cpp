@@ -49,6 +49,7 @@
 #include "../presenter/gridmanager.h"
 #include "../presenter/apppresenter.h"
 #include "../presenter/display.h"
+#include "../presenter/dfmsocketinterface.h"
 #include "../desktop.h"
 #include "../config/config.h"
 
@@ -86,9 +87,9 @@ static inline bool isPersistFile(const DUrl &url)
 #endif
 }
 
-static void startProcessDetached(const QString &program,
-                                 const QStringList &arguments = QStringList(),
-                                 QIODevice::OpenMode mode = QIODevice::ReadWrite)
+void startProcessDetached(const QString &program,
+                          const QStringList &arguments = QStringList(),
+                          QIODevice::OpenMode mode = QIODevice::ReadWrite)
 {
     QProcess *process = new QProcess();
     process->start(program, arguments, mode);
@@ -1137,6 +1138,8 @@ void CanvasGridView::initUI()
         itemDelegate()->setIconSizeByIconSizeLevel(0);
     }
     settings->endGroup();
+
+    DFMSocketInterface::instance();
 }
 
 static inline QRect getValidNewGeometry(const QRect &geometry, const QRect &oldGeometry)
@@ -1489,8 +1492,8 @@ void CanvasGridView::handleContextMenuAction(int action)
     case FileManagerProperty: {
         QStringList localFiles;
         localFiles << currentUrl().toLocalFile();
-        startProcessDetached("/usr/bin/dde-property-dialog",
-                             localFiles);
+        qDebug() << localFiles;
+        DFMSocketInterface::instance()->showProperty(localFiles);
         break;
     }
     case AutoSort:
@@ -1775,8 +1778,7 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
                     localFiles << url.toLocalFile();
                 }
             }
-            startProcessDetached("/usr/bin/dde-property-dialog",
-                                 localFiles);
+            DFMSocketInterface::instance()->showProperty(localFiles);
         }
         break;
         case MenuAction::Rename: {

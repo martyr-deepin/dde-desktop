@@ -7,7 +7,7 @@
 include($$PWD/../build.pri)
 include($$PWD/util/util.pri)
 
-QT       += core gui widgets svg dbus x11extras
+QT       += core gui widgets svg dbus x11extras network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE    = app
@@ -27,7 +27,8 @@ SOURCES += \
     presenter/apppresenter.cpp \
     presenter/gridmanager.cpp \
     dbus/dbusdisplay.cpp \
-    presenter/display.cpp
+    presenter/display.cpp \
+    presenter/dfmsocketinterface.cpp
 
 
 
@@ -43,7 +44,8 @@ HEADERS += \
     presenter/apppresenter.h \
     presenter/gridmanager.h \
     dbus/dbusdisplay.h \
-    presenter/display.h
+    presenter/display.h \
+    presenter/dfmsocketinterface.h
 
 RESOURCES += \
     resource/theme/theme.qrc
