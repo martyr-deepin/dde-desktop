@@ -1552,9 +1552,9 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
         disableList << MenuAction::SortBy;
     }
 
-    if (!indexFlags.testFlag(Qt::ItemIsEditable)) {
-        disableList << MenuAction::NewDocument << MenuAction::NewFolder << MenuAction::Paste;
-    }
+//    if (!indexFlags.testFlag(Qt::ItemIsEditable)) {
+//        disableList << MenuAction::NewDocument << MenuAction::NewFolder << MenuAction::Paste;
+//    }
 
     if (!model()->rowCount()) {
         disableList << MenuAction::SelectAll;
