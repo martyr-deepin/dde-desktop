@@ -328,31 +328,27 @@ QRegion CanvasGridView::visualRegionForSelection(const QItemSelection &selection
 
 void CanvasGridView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (dragEnabled() || event->buttons() != Qt::LeftButton
-            || selectionMode() == NoSelection || selectionMode() == SingleSelection) {
-        QAbstractItemView::mouseMoveEvent(event);
-    }
+    QAbstractItemView::mouseMoveEvent(event);
 
     auto curPos = event->pos();
     QRect selectRect;
 
-    if (d->selectFrame->isVisible()) {
+    if (d->showSelectRect) {
         selectRect.setLeft(qMin(curPos.x(), d->lastPos.x()));
         selectRect.setTop(qMin(curPos.y(), d->lastPos.y()));
         selectRect.setRight(qMax(curPos.x(), d->lastPos.x()));
         selectRect.setBottom(qMax(curPos.y(), d->lastPos.y()));
-        d->selectFrame->setGeometry(selectRect);
-        d->selectFrame->raise();
+        d->selectRect = selectRect.normalized();
+        d->selectFrame->setGeometry(d->selectRect);
     }
 
-
-    if (d->selectFrame->isVisible()) {
-        auto topLeftGridPos = gridAt(selectRect.topLeft());
-        auto bottomRightGridPos = gridAt(selectRect.bottomRight());
+    if (d->showSelectRect) {
+//        auto topLeftGridPos = gridAt(selectRect.topLeft());
+//        auto bottomRightGridPos = gridAt(selectRect.bottomRight());
 
 //        if (topLeftGridPos != d->selectRect.topLeft()
 //                || bottomRightGridPos != d->selectRect.bottomRight()) {
-        d->selectRect = QRect(topLeftGridPos, bottomRightGridPos);
+//        d->selectRect = QRect(topLeftGridPos, bottomRightGridPos);
         auto flag = QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect;
         setSelection(selectRect, flag, true);
 //    }
@@ -366,11 +362,11 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
 
     d->mousePressed = true;
 
-    d->selectFrame->resize(1, 1);
     bool leftButtonPressed = event->button() == Qt::LeftButton;
     bool showSelectFrame = leftButtonPressed;
     showSelectFrame &= !index.isValid();
-    d->selectFrame->setVisible(showSelectFrame);
+    d->showSelectRect = showSelectFrame;
+    d->selectFrame->setVisible(d->showSelectRect);
     d->lastPos = event->pos();
 
     bool isEmptyArea = !index.isValid();
@@ -390,17 +386,19 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
     if (leftButtonPressed) {
         d->currentCursorIndex = index;
     }
-//    selectionModel()->setCurrentIndex(d->currentCursorIndex, QItemSelectionModel::ToggleCurrent);
 }
 
 void CanvasGridView::mouseReleaseEvent(QMouseEvent *event)
 {
+    QAbstractItemView::mouseReleaseEvent(event);
     d->mousePressed = false;
-    d->selectFrame->setVisible(false);
-    if (dragEnabled()) {
-        return QAbstractItemView::mouseReleaseEvent(event);
+    if (d->showSelectRect && d->selectRect.isValid()) {
+        d->showSelectRect = false;
+        d->selectRect = QRect();
+//        update(d->selectRect);
     }
-
+    d->selectFrame->setGeometry(d->selectRect);
+    d->selectFrame->setVisible(d->showSelectRect);
 }
 
 void CanvasGridView::mouseDoubleClickEvent(QMouseEvent *event)
@@ -719,7 +717,7 @@ void CanvasGridView::dropEvent(QDropEvent *event)
 
 void CanvasGridView::paintEvent(QPaintEvent *event)
 {
-//    qDebug() << "start repaint" << event->rect() ;
+//    qDebug() << "start repaint" << event->rect()  << event->region().rectCount();
     QPainter painter(viewport());
     auto repaintRect = event->rect();
 //    painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -781,20 +779,29 @@ void CanvasGridView::paintEvent(QPaintEvent *event)
         }
     }
 
+//    int drawCount = 0;
     for (auto &localFile : repaintLocalFiles) {
         auto index = model()->index(DUrl::fromLocalFile(localFile));
         if (!index.isValid()) {
             continue;
         }
         option.rect = visualRect(index);
+        bool needflash = false;
+        for (auto &rr : event->region().rects())
+            if (rr.intersects(option.rect)) {
+                needflash = true;
+            }
+
+        if (!needflash) {
+            continue;
+        }
+
 
         if (!repaintRect.intersects(option.rect)) {
             continue;
         }
 
-        QPainterPath path;
-        path.addRect(option.rect.marginsAdded(QMargins(1, 1, 1, 1)));
-        option.rect.marginsRemoved(QMargins(5, 5, 5, 5));
+        option.rect = option.rect.marginsRemoved(QMargins(2, 0, 2, 0));
         option.state = state;
         if (selections && selections->isSelected(index)) {
             option.state |= QStyle::State_Selected;
@@ -815,11 +822,36 @@ void CanvasGridView::paintEvent(QPaintEvent *event)
                 option.state |= QStyle::State_Editing;
             }
         }
+        option.state &= ~QStyle::State_MouseOver;
 
+//        painter.save();
+//        qDebug() << "+++  begin itemDelegate()->paint";
+//        drawCount++;
         this->itemDelegate()->paint(&painter, option, index);
+//        qDebug() << "---  end itemDelegate()->paint";
+//        painter.restore();
     }
 
-//    qDebug() << "end repaint time one" << d->colCount << d->rowCount;
+//    qDebug() << d->showSelectRect << d->selectRect;
+//    if (d->showSelectRect && d->selectRect.isValid()) {
+////        QPainterPath path;
+////        path.addRoundedRect(d->selectRect, 4, 4);
+////        painter.fillPath(path, QColor(43, 167, 248, 0.30 * 255));
+////        painter.strokePath(path, QColor(30, 126, 255, 0.20 * 255));
+
+//        QStyleOptionRubberBand opt;
+//        opt.initFrom(this);
+//        opt.shape = QRubberBand::Rectangle;
+//        opt.opaque = false;
+//        opt.rect = d->selectRect.intersected(viewport()->rect().adjusted(-16, -16, 16, 16));
+
+//        qDebug() << "draw " << opt.rect;
+//        painter.save();
+//        style()->drawControl(QStyle::CE_RubberBand, &opt, &painter);
+//        painter.restore();
+//    }
+
+//    qDebug() << "end repaint time one" << d->colCount << d->rowCount << drawCount;
 
     //    if (d->currentCursorIndex.isValid()) {
     //        auto lastRects = itemPaintGeomertys(d->currentCursorIndex);
@@ -1164,7 +1196,7 @@ static inline QRect getValidNewGeometry(const QRect &geometry, const QRect &oldG
 void CanvasGridView::initConnection()
 {
     auto syncTimer = new QTimer(this);
-    syncTimer->setInterval(3000);
+    syncTimer->setInterval(5000);
     connect(syncTimer, &QTimer::timeout, this, [ = ]() {
         this->update();
     });
@@ -1283,9 +1315,9 @@ void CanvasGridView::initConnection()
             this, [ = ](const QModelIndex & topLeft,
                         const QModelIndex & bottomRight,
     const QVector<int> &roles) {
-        qDebug() << "dataChanged" << topLeft << bottomRight << roles;
 
         if (d->resortCount > 0) {
+            qDebug() << "dataChanged" << topLeft << bottomRight << roles;
             qDebug() << "resort desktop icons";
             model()->setEnabledSort(false);
             d->resortCount--;
@@ -1435,14 +1467,13 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
             topLeftGridPos = gridAt(selectRect.topLeft());
             bottomRightGridPos = gridAt(selectRect.bottomRight());
         } else {
-            if (!d->selectFrame->isVisible()) {
+            if (!d->showSelectRect) {
                 return;
             }
             selection = d->beforeMoveSelection;
             topLeftGridPos = d->selectRect.topLeft();
             bottomRightGridPos = d->selectRect.bottomRight();
         }
-
     }
 
     for (auto x = topLeftGridPos.x(); x <= bottomRightGridPos.x(); ++x) {
@@ -1452,7 +1483,7 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
                 continue;
             }
             auto index = model()->index(DUrl::fromLocalFile(localFile));
-            auto list = itemPaintGeomertys(index);
+            auto list = QList<QRect>() << itemPaintGeomertys(index);
             for (const QRect &r : list) {
                 if (selectRect.intersects(r)) {
                     QItemSelectionRange selectionRange(index);

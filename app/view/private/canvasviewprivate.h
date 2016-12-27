@@ -103,8 +103,9 @@ public:
     QPoint              lastPos;
 
     QItemSelection      beforeMoveSelection;
-    QFrame              *selectFrame = nullptr;
-    QRect               selectRect;
+    bool                showSelectRect  = false;
+    QRect               selectRect      = QRect();
+    QFrame              *selectFrame    = nullptr;
 
     bool                mousePressed;
 
