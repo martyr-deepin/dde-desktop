@@ -1210,9 +1210,9 @@ void CanvasGridView::initConnection()
     d->syncTimer = new QTimer(this);
     connect(d->syncTimer, &QTimer::timeout, this, [ = ]() {
         this->update();
-        auto interval = d->syncTimer->interval() + 500;
-        if (interval > 5000) {
-            interval = 5000;
+        auto interval = d->syncTimer->interval() + 800;
+        if (interval > 10000) {
+            interval = 10000;
         }
         d->syncTimer->setInterval(interval);
     });
@@ -1303,6 +1303,7 @@ void CanvasGridView::initConnection()
             qDebug() << "add" << localFile;
             GridManager::instance()->add(localFile);
         }
+        d->quickSync();
     });
     connect(this->model(), &QAbstractItemModel::rowsAboutToBeRemoved,
     this, [ = ](const QModelIndex & parent, int first, int last) {
@@ -1326,6 +1327,7 @@ void CanvasGridView::initConnection()
         if (GridManager::instance()->autoAlign()) {
             GridManager::instance()->reAlign();
         }
+        d->quickSync();
     });
     connect(this->model(), &QAbstractItemModel::dataChanged,
             this, [ = ](const QModelIndex & topLeft,
@@ -1350,11 +1352,7 @@ void CanvasGridView::initConnection()
             GridManager::instance()->reAlign();
         }
 
-        if (d->syncTimer->interval() > 1000) {
-            d->syncTimer->setInterval(1000);
-            d->syncTimer->stop();
-            d->syncTimer->start();
-        }
+        d->quickSync();
     });
 
     connect(this, &CanvasGridView::doubleClicked,

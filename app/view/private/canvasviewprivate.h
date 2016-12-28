@@ -17,13 +17,13 @@
 #include <QMargins>
 #include <QItemSelection>
 #include <QDebug>
+#include <QTimer>
 
 #include <dfilesystemwatcher.h>
 
 #include "../../global/coorinate.h"
 
 class QFrame;
-class QTimer;
 class CanvasViewHelper;
 
 class CanvasViewPrivate
@@ -88,6 +88,16 @@ public:
         return (coord.position().x() >= 0 && coord.position().x() < colCount)
                && (coord.position().y() >= 0 && coord.position().y() < rowCount);
     }
+
+    void quickSync()
+    {
+        if (syncTimer->interval() > 1000) {
+            syncTimer->setInterval(100);
+            syncTimer->stop();
+            syncTimer->start();
+        }
+    }
+
 public:
 
     QMargins viewMargins;
