@@ -29,7 +29,7 @@ private:
     QItemSelectionModel::SelectionFlags m_currentCommand;
     QTimer m_timer;
 
-    friend class CanvasView;
+    friend class CanvasGridView;
 };
 
 #endif // DFILESELECTIONMODEL_H

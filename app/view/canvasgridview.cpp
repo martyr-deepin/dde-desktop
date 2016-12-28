@@ -108,8 +108,6 @@ CanvasGridView::CanvasGridView(QWidget *parent)
 {
     D_THEME_INIT_WIDGET(CanvasGridView);
 
-    qRegisterMetaType<QList<DAbstractFileInfoPointer>>(QT_STRINGIFY(QList<DAbstractFileInfoPointer>));
-
     initUI();
     initConnection();
 }
@@ -715,9 +713,17 @@ void CanvasGridView::dropEvent(QDropEvent *event)
     }
 }
 
+
 void CanvasGridView::paintEvent(QPaintEvent *event)
 {
 //    qDebug() << "start repaint" << event->rect()  << event->region().rectCount();
+//    auto currentTime = QTime::currentTime().msecsSinceStartOfDay();
+//    auto deta = currentTime - d->lastRepaintTime;
+//    if (deta < 500) {
+////        return;
+//    }
+//    d->lastRepaintTime = currentTime;
+
     QPainter painter(viewport());
     auto repaintRect = event->rect();
 //    painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -1054,6 +1060,11 @@ const DUrlList CanvasGridView::selectedUrls() const
     return urls;
 }
 
+bool CanvasGridView::isSelected(const QModelIndex &index) const
+{
+    return static_cast<DFileSelectionModel *>(selectionModel())->isSelected(index);
+}
+
 void CanvasGridView::select(const QList<DUrl> &list)
 {
     QItemSelection selection;
@@ -1063,7 +1074,8 @@ void CanvasGridView::select(const QList<DUrl> &list)
         if (!selection.contains(index)) {
             selection.push_back(selectionRange);
         }
-        QAbstractItemView::selectionModel()->select(selection, QItemSelectionModel::Select);
+        auto selectModel = static_cast<DFileSelectionModel *>(selectionModel());
+        selectModel->select(selection, QItemSelectionModel::Select);
     }
 }
 
@@ -1195,12 +1207,16 @@ static inline QRect getValidNewGeometry(const QRect &geometry, const QRect &oldG
 
 void CanvasGridView::initConnection()
 {
-    auto syncTimer = new QTimer(this);
-    syncTimer->setInterval(5000);
-    connect(syncTimer, &QTimer::timeout, this, [ = ]() {
+    d->syncTimer = new QTimer(this);
+    connect(d->syncTimer, &QTimer::timeout, this, [ = ]() {
         this->update();
+        auto interval = d->syncTimer->interval() + 500;
+        if (interval > 5000) {
+            interval = 5000;
+        }
+        d->syncTimer->setInterval(interval);
     });
-    syncTimer->start();
+    d->syncTimer->start();
 
     connect(Display::instance()->primaryScreen(), &QScreen::availableGeometryChanged,
     this, [ = ](const QRect & geometry) {
@@ -1334,6 +1350,11 @@ void CanvasGridView::initConnection()
             GridManager::instance()->reAlign();
         }
 
+        if (d->syncTimer->interval() > 1000) {
+            d->syncTimer->setInterval(1000);
+            d->syncTimer->stop();
+            d->syncTimer->start();
+        }
     });
 
     connect(this, &CanvasGridView::doubleClicked,

@@ -101,3 +101,13 @@ void CanvasViewHelper::initStyleOption(QStyleOptionViewItem *option, const QMode
         option->backgroundBrush = QColor("#2da6f7");
     }
 }
+
+int CanvasViewHelper::selectedIndexsCount() const
+{
+    return parent()->selectedIndexCount();
+}
+
+bool CanvasViewHelper::isSelected(const QModelIndex &index) const
+{
+    return parent()->isSelected(index);
+}

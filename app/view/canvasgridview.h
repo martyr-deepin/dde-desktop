@@ -74,6 +74,7 @@ public:
     bool setRootUrl(const DUrl &url);
     const DUrlList selectedUrls() const;
 
+    bool isSelected(const QModelIndex &index) const;
     void select(const QList<DUrl> &list);
     int selectedIndexCount() const;
 

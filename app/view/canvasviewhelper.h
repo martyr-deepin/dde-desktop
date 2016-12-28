@@ -21,13 +21,15 @@ public:
 
     CanvasGridView *parent() const;
 
-    virtual int windowId() const;
-    virtual const DAbstractFileInfoPointer fileInfo(const QModelIndex &index) const;
-    virtual DStyledItemDelegate *itemDelegate() const;
-    virtual DFileSystemModel *model() const;
-    virtual const DUrlList selectedUrls() const;
-    virtual void select(const QList<DUrl> &list);
-    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const;
+    virtual int windowId() const Q_DECL_OVERRIDE;
+    virtual const DAbstractFileInfoPointer fileInfo(const QModelIndex &index) const Q_DECL_OVERRIDE;
+    virtual DStyledItemDelegate *itemDelegate() const Q_DECL_OVERRIDE;
+    virtual DFileSystemModel *model() const Q_DECL_OVERRIDE;
+    virtual const DUrlList selectedUrls() const Q_DECL_OVERRIDE;
+    virtual void select(const QList<DUrl> &list) Q_DECL_OVERRIDE;
+    virtual void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const Q_DECL_OVERRIDE;
+    virtual int selectedIndexsCount() const Q_DECL_OVERRIDE;
+    virtual bool isSelected(const QModelIndex &index) const Q_DECL_OVERRIDE;
 
 public slots:
     void edit(const DFMEvent &event);

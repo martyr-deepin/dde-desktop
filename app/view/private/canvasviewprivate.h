@@ -23,6 +23,7 @@
 #include "../../global/coorinate.h"
 
 class QFrame;
+class QTimer;
 class CanvasViewHelper;
 
 class CanvasViewPrivate
@@ -114,5 +115,8 @@ public:
 
     int                 resortCount;
 
-    DFileSystemWatcher  *filesystemWatcher = nullptr;
+    // secice system up
+    QTimer              *syncTimer          = nullptr;
+//    qint64              lastRepaintTime     = 0;
+    DFileSystemWatcher  *filesystemWatcher  = nullptr;
 };
