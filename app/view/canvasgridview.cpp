@@ -93,6 +93,7 @@ void startProcessDetached(const QString &program,
 {
     QProcess *process = new QProcess();
     process->start(program, arguments, mode);
+//    qDebug() << process->program() << process->arguments();
     process->closeReadChannel(QProcess::StandardOutput);
     process->closeReadChannel(QProcess::StandardError);
     process->connect(process, static_cast < void(QProcess::*)(int) > (&QProcess::finished),
@@ -1526,10 +1527,14 @@ void CanvasGridView::handleContextMenuAction(int action)
     bool changeSort  = false;
 
     switch (action) {
-    case DisplaySettings:
-        startProcessDetached("/usr/bin/dde-control-center",
-                             QStringList() << "-s" << "display");
+    case DisplaySettings: {
+        QStringList args;
+        args << "--print-reply" << "--dest=com.deepin.dde.ControlCenter"
+             << "/com/deepin/dde/ControlCenter" << "com.deepin.dde.ControlCenter.ShowModule"
+             << "string:display";
+        startProcessDetached("dbus-send", args);
         break;
+    }
     case CornerSettings:
         startProcessDetached("/usr/lib/deepin-daemon/dde-zone");
         break;
