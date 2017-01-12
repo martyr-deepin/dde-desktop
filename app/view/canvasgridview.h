@@ -96,7 +96,7 @@ private:
 
     void initUI();
     void initConnection();
-
+    void updateGeometry(const QRect &geometry);
     void updateCanvas();
 
     void increaseIcon();

@@ -1206,6 +1206,17 @@ static inline QRect getValidNewGeometry(const QRect &geometry, const QRect &oldG
     return oldGeometry;
 }
 
+
+void CanvasGridView::updateGeometry(const QRect &geometry)
+{
+    auto newGeometry =  getValidNewGeometry(geometry, this->geometry());
+    qDebug() << "set newGeometry" << newGeometry;
+    setGeometry(qApp->primaryScreen()->geometry());
+    d->canvasRect = newGeometry;
+    updateCanvas();
+    repaint();
+}
+
 void CanvasGridView::initConnection()
 {
     d->syncTimer = new QTimer(this);
@@ -1223,13 +1234,7 @@ void CanvasGridView::initConnection()
     this, [ = ](const QRect & geometry) {
         qDebug() << "Init primaryScreen availableGeometryChanged changed to:" << geometry;
         qDebug() << "Init primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
-
-        auto newGeometry =  getValidNewGeometry(geometry, this->geometry());
-        qDebug() << "set newGeometry" << newGeometry;
-        setGeometry(newGeometry);
-        d->canvasRect = newGeometry;
-        updateCanvas();
-        repaint();
+        updateGeometry(geometry);
     });
 
     connect(Display::instance(), &Display::primaryScreenChanged,
@@ -1250,21 +1255,10 @@ void CanvasGridView::initConnection()
         this, [ = ](const QRect & geometry) {
             qDebug() << "primaryScreen availableGeometryChanged changed to:" << geometry;
             qDebug() << "primaryScreen:" << qApp->primaryScreen() << qApp->primaryScreen()->geometry();
-
-            auto newGeometry =  getValidNewGeometry(geometry, this->geometry());
-            qDebug() << "set newGeometry" << newGeometry;
-            setGeometry(newGeometry);
-            d->canvasRect = newGeometry;
-            updateCanvas();
-            repaint();
+            updateGeometry(geometry);
         });
 
-        auto newGeometry =  getValidNewGeometry(screen->availableGeometry(), this->geometry());
-        qDebug() << "set newGeometry" << newGeometry;
-        setGeometry(newGeometry);
-        d->canvasRect = newGeometry;
-        updateCanvas();
-        repaint();
+        updateGeometry(screen->availableGeometry());
     });
 
     connect(this->model(), &QAbstractItemModel::rowsInserted,
@@ -1384,6 +1378,7 @@ void CanvasGridView::initConnection()
     connect(this, &CanvasGridView::changeIconLevel,
             Presenter::instance(), &Presenter::OnIconLevelChanged);
 }
+
 
 void CanvasGridView::updateCanvas()
 {
