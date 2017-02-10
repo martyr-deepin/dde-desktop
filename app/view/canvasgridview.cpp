@@ -1741,15 +1741,6 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
 
     bool showProperty = true;
     DUrlList list;
-    for (const QModelIndex &index : selectedIndexes()) {
-        const DAbstractFileInfoPointer &info = model()->fileInfo(index);
-        if (isComputerFile(info->fileUrl())) {
-            showProperty = false;
-        }
-
-        list << info->fileUrl();
-    }
-
     const DAbstractFileInfoPointer &info = model()->fileInfo(index);
 
     QSet<MenuAction> disableList;
