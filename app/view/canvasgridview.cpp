@@ -447,6 +447,11 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
 
     switch (event->modifiers()) {
     case Qt::NoModifier:
+        switch (event->key()) {
+        case Qt::Key_F1:
+            startProcessDetached("dman", QStringList() << "dde");
+            break;
+        }
     case Qt::KeypadModifier:
         switch (event->key()) {
         case Qt::Key_Return:
