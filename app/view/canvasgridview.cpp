@@ -1745,17 +1745,27 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
     }
 
     bool showProperty = true;
-    DUrlList list;
+    DUrlList list = selectedUrls();
+
     const DAbstractFileInfoPointer &info = model()->fileInfo(index);
 
     QSet<MenuAction> disableList;
     QSet<MenuAction> unusedList;
 
-    if (!indexFlags.testFlag(Qt::ItemIsEditable)) {
-        disableList << MenuAction::Cut << MenuAction::Rename << MenuAction::Remove << MenuAction::Delete;
-    }
-    if (!info->isReadable()) {
-        disableList << MenuAction::Copy << MenuAction::Compress << MenuAction::Decompress << MenuAction::DecompressHere;
+
+    if (list.size() == 1) {
+        if (!info->isReadable()) {
+            disableList << MenuAction::Copy;
+        }
+
+        if (!info->isWritable() && !info->isFile()) {
+            disableList << MenuAction::Delete;
+        }
+
+        if (!indexFlags.testFlag(Qt::ItemIsEditable)) {
+            qDebug() << "remove rename" ;
+            disableList << MenuAction::Rename ;
+        }
     }
 
     if (list.length() == 1) {
@@ -1767,10 +1777,10 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
         unusedList << MenuAction::SendToDesktop;
     }
 
-    DFileMenu *menu = createNormalMenu(info->fileUrl(), list);
+    auto *menu = createNormalMenu(info->fileUrl(), list);
 
     if (!menu) {
-        menu = DFileMenuManager::createNormalMenu(info->fileUrl(), list, disableList, unusedList, -1);
+        menu = DFileMenuManager::createNormalMenu(info->fileUrl(), list, disableList, unusedList, winId());
     }
 
     if (!menu) {
@@ -1782,7 +1792,6 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
         menu->removeAction(propertyAction);
     }
 
-    qDebug() << showProperty;
     QAction property(menu);
     if (showProperty) {
         property.setText(tr("Property"));
