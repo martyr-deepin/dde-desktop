@@ -22,6 +22,7 @@ const QString Config::keySortBy = "SortBy";
 const QString Config::keySortOrder = "SortOrder";
 const QString Config::keyAutoAlign = "AutoSort";
 const QString Config::keyIconLevel = "IconLevel";
+const QString Config::keyQuickHide = "QuickHide";
 
 
 Config::Config()

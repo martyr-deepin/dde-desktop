@@ -103,6 +103,8 @@ public:
     QMargins viewMargins;
     QMargins cellMargins;
 
+    bool hideItems  = false;
+
     int rowCount;
     int colCount;
     int cellWidth;

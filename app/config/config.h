@@ -25,6 +25,7 @@ public:
     static const QString keySortOrder;
     static const QString keyAutoAlign;
     static const QString keyIconLevel;
+    static const QString keyQuickHide;
 
 public slots:
     void setConfig(const QString &group, const QString &key, const QVariant &value);
