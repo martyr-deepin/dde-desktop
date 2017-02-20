@@ -1,1 +1,1 @@
-# dde-workspace-2015
+# dde-desktop
