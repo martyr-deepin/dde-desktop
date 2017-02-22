@@ -4,7 +4,7 @@ minimum_perc = 80
 mode = developer
 
 [deepin-desktop-environment.dde-desktop]
-file_filter = translations/dde-desktop_<lang>.ts
-source_file = translations/dde-desktop.ts
+file_filter = app/translations/dde-desktop_<lang>.ts
+source_file = app/translations/dde-desktop.ts
 source_lang = en
 type = QT
