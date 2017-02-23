@@ -1842,11 +1842,8 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
         unusedList << MenuAction::SendToDesktop;
     }
 
-    auto *menu = createNormalMenu(info->fileUrl(), list);
-
-    if (!menu) {
-        menu = DFileMenuManager::createNormalMenu(info->fileUrl(), list, disableList, unusedList, winId());
-    }
+    //totally use dde file manager libs for menu actions
+    auto *menu = DFileMenuManager::createNormalMenu(info->fileUrl(), list, disableList, unusedList, winId());
 
     if (!menu) {
         return;
