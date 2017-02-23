@@ -1117,7 +1117,9 @@ const DUrlList CanvasGridView::selectedUrls() const
     DUrlList urls;
     for (auto index : selects) {
         auto info = model()->fileInfo(index);
-        urls << info->fileUrl();
+        if (info) {
+            urls << info->fileUrl();
+        }
     }
     return urls;
 }
@@ -1438,6 +1440,11 @@ void CanvasGridView::initConnection()
             Presenter::instance(), &Presenter::onSortRoleChanged);
     connect(this, &CanvasGridView::changeIconLevel,
             Presenter::instance(), &Presenter::OnIconLevelChanged);
+
+
+//    connect(selectionModel(), &QItemSelectionModel::selectionChanged,
+//    this, [ = ](const QItemSelection & /*selected*/, const QItemSelection & /*deselected*/) {
+//    });
 }
 
 
