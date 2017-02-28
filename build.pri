@@ -14,6 +14,6 @@ isEqual(EDITION, RACCOON) {
 
 DEFINES += DDE_DBUS_DISPLAY
 
-#PKGCONFIG += dtkbase-0-2 dtkutil-0-2 dtkwidget-0-2
-PKGCONFIG += dtkbase dtkutil dtkwidget
+PKGCONFIG += dtkbase-0-2 dtkutil-0-2 dtkwidget-0-2
+#PKGCONFIG += dtkbase dtkutil dtkwidget
 
