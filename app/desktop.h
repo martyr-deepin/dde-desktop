@@ -29,9 +29,6 @@ public:
     void loadData();
     void loadView();
 
-    //TODO: workaround, setFixed font
-    void fixFontSize(QStyleOptionViewItem &opt);
-
 public slots:
     void Show();
 

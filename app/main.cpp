@@ -60,11 +60,6 @@ int main(int argc, char *argv[])
         exit(0x0003);
     }
 
-
-    QFont font = app.font();
-    font.setPixelSize(14);
-    app.setFont(font);
-
     QThreadPool::globalInstance()->setMaxThreadCount(MAX_THREAD_COUNT);
     Config::instance();
 

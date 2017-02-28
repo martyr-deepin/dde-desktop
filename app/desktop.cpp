@@ -49,12 +49,6 @@ void Desktop::loadView()
     d->screenFrame.setRootUrl(desktopUrl);
 }
 
-void Desktop::fixFontSize(QStyleOptionViewItem& opt)
-{
-    opt.font.setPixelSize(14);
-    qApp->setFont(opt.font);
-}
-
 void Desktop::Show()
 {
     d->screenFrame.show();

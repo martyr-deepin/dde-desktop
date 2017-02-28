@@ -776,7 +776,6 @@ void CanvasGridView::paintEvent(QPaintEvent *event)
 //    painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
 
     auto option = viewOptions();
-    Desktop::instance()->fixFontSize(option);
     option.textElideMode = Qt::ElideMiddle;
 
     const QModelIndex current = d->currentCursorIndex;
