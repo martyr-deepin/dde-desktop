@@ -292,6 +292,12 @@ QModelIndex CanvasGridView::moveCursorGrid(CursorAction cursorAction, Qt::Keyboa
 
 QModelIndex CanvasGridView::moveCursor(QAbstractItemView::CursorAction cursorAction, Qt::KeyboardModifiers modifiers)
 {
+//    qDebug() << modifiers <<  d->currentCursorIndex;
+
+    if (modifiers == Qt::ControlModifier) {
+        return d->currentCursorIndex;
+    }
+
     auto current = d->currentCursorIndex;
     if (!current.isValid()) {
         current = firstIndex();
@@ -1821,7 +1827,7 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
         case FileManagerProperty: {
             QStringList localFiles;
             for (auto url : this->selectedUrls()) {
-                    localFiles << url.toLocalFile();
+                localFiles << url.toLocalFile();
             }
             DFMSocketInterface::instance()->showProperty(localFiles);
         }
