@@ -313,6 +313,7 @@ QModelIndex CanvasGridView::moveCursor(QAbstractItemView::CursorAction cursorAct
 
     QModelIndex index = moveCursorGrid(cursorAction, modifiers);
 
+
     if (index.isValid()) {
         d->currentCursorIndex = index;
         return index;
@@ -564,6 +565,13 @@ void CanvasGridView::keyPressEvent(QKeyEvent *event)
     }
 
     QAbstractItemView::keyPressEvent(event);
+
+    DUtil::TimerSingleShot(10, [this]() {
+        auto index = d->currentCursorIndex;
+        auto marginWidth = d->cellHeight;
+        auto rect = visualRect(index).marginsAdded(QMargins(marginWidth, marginWidth, marginWidth, marginWidth));
+        repaint(rect);
+    });
 }
 
 void CanvasGridView::dragEnterEvent(QDragEnterEvent *event)
@@ -1201,6 +1209,7 @@ void CanvasGridView::initUI()
     d->selectFrame->setVisible(false);
     d->selectFrame->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     d->selectFrame->setObjectName("SelectRect");
+    d->selectFrame->setGeometry(QRect(-1,-1,0,0));
 
     d->fileViewHelper = new CanvasViewHelper(this);
 
@@ -1503,7 +1512,7 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
     auto topLeftGridPos = gridAt(selectRect.topLeft());
     auto bottomRightGridPos = gridAt(selectRect.bottomRight());
 
-    qDebug() << selectRect << topLeftGridPos << bottomRightGridPos;
+//    qDebug() << selectRect << topLeftGridPos << bottomRightGridPos;
 
     QItemSelection selection;
     if (DFMGlobal::keyShiftIsPressed()) {
