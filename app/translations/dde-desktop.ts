@@ -4,28 +4,28 @@
 <context>
     <name>CanvasGridView</name>
     <message>
-        <location filename="../view/canvasgridview.cpp" line="1274"/>
-        <source>Auto arrangement</source>
+        <location filename="../view/canvasgridview.cpp" line="1682"/>
+        <source>Auto arrange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/canvasgridview.cpp" line="1282"/>
-        <location filename="../view/canvasgridview.cpp" line="1379"/>
+        <location filename="../view/canvasgridview.cpp" line="1690"/>
+        <location filename="../view/canvasgridview.cpp" line="1851"/>
         <source>Property</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/canvasgridview.cpp" line="1288"/>
+        <location filename="../view/canvasgridview.cpp" line="1721"/>
         <source>Display Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/canvasgridview.cpp" line="1293"/>
+        <location filename="../view/canvasgridview.cpp" line="1726"/>
         <source>Corner Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/canvasgridview.cpp" line="1298"/>
+        <location filename="../view/canvasgridview.cpp" line="1731"/>
         <source>Set Wallpaper</source>
         <translation type="unfinished"></translation>
     </message>

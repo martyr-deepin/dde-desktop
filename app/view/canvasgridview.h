@@ -115,8 +115,6 @@ private:
 
     void handleContextMenuAction(int action);
 
-    DFileMenu *createNormalMenu(const DUrl &currentUrl, const DUrlList &urlList);
-
     void showEmptyAreaMenu(const Qt::ItemFlags &indexFlags);
     void showNormalMenu(const QModelIndex &index, const Qt::ItemFlags &indexFlags);
     bool isIndexEmpty();

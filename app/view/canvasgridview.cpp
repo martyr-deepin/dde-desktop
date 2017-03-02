@@ -57,25 +57,6 @@
 #include "util/xcb/xcb.h"
 #include "private/canvasviewprivate.h"
 
-static const QString TrashRoot = "trash:///";
-
-static inline bool isComputerFile(const DUrl &url)
-{
-#ifdef DDE_COMPUTER_TRASH
-    return url.toString().endsWith("/dde-computer.desktop");
-#else
-    return url.toString().endsWith("/dde-computer.desktop");
-#endif
-}
-static inline bool isTrashFile(const DUrl &url)
-{
-#ifdef DDE_COMPUTER_TRASH
-    return url.toString().endsWith("/dde-trash.desktop");
-#else
-    Q_UNUSED(url);
-    return false;
-#endif
-}
 static inline bool isPersistFile(const DUrl &url)
 {
 #ifdef DDE_COMPUTER_TRASH
@@ -631,10 +612,11 @@ void CanvasGridView::dragMoveEvent(QDragMoveEvent *event)
         const DAbstractFileInfoPointer &fileInfo = model()->fileInfo(d->dragMoveHoverIndex);
 
         if (fileInfo) {
-            if (!fileInfo->isDir() &&  !isTrashFile(fileInfo->fileUrl())) {
+            if (!fileInfo->canDrop()) {
                 d->dragMoveHoverIndex = QModelIndex();
-            } else if (!fileInfo->supportedDropActions().testFlag(event->dropAction())
-                       && !isTrashFile(fileInfo->fileUrl())) {
+            }
+
+            if (!fileInfo->supportedDropActions().testFlag(event->dropAction())) {
                 d->dragMoveHoverIndex = QModelIndex();
                 event->ignore();
             }
@@ -662,7 +644,6 @@ void CanvasGridView::dragLeaveEvent(QDragLeaveEvent *event)
 void CanvasGridView::dropEvent(QDropEvent *event)
 {
     d->dragMoveHoverIndex = QModelIndex();
-//    d->dragMoveHoverIndex = QModelIndex();
 
     QModelIndex targetIndex = indexAt(event->pos());
 
@@ -758,16 +739,6 @@ void CanvasGridView::dropEvent(QDropEvent *event)
                     event->acceptProposedAction();
                 }
             }
-        }
-
-        if (isTrashFile(targetInfo->fileUrl()) && canMove) {
-            DFMEvent fmevent;
-
-            fmevent << this->selectedUrls();
-            fmevent << DFMEvent::FileView;
-            fmevent << winId();
-            fmevent << model()->rootUrl();
-            DFileService::instance()->moveToTrash(fmevent);
         }
 
         setState(NoState);
@@ -1687,7 +1658,7 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
 
     auto *pasteAction = menu->actionAt(DFileMenuManager::getActionString(MenuAction::Paste));
     QAction autoSort(menu);
-    autoSort.setText(tr("Auto arrangement"));
+    autoSort.setText(tr("Auto arrange"));
     autoSort.setData(AutoSort);
     autoSort.setCheckable(true);
     autoSort.setChecked(GridManager::instance()->autoAlign());
@@ -1762,45 +1733,6 @@ void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
 
     menu->exec();
     menu->deleteLater();
-}
-
-
-DFileMenu *CanvasGridView::createNormalMenu(const DUrl &currentUrl, const DUrlList &urlList)
-{
-    bool useCustomMenu = false;
-
-    for (auto &url : urlList) {
-        if (isPersistFile(url)) {
-            useCustomMenu  = true;
-            break;
-        }
-    }
-    if (isPersistFile(currentUrl)) {
-        useCustomMenu  = true;
-    }
-
-    if (!useCustomMenu) {
-        return nullptr;
-    }
-
-    QSet<MenuAction> disableList;
-    QSet<MenuAction> unusedList;
-
-    disableList << MenuAction::Cut << MenuAction::Rename << MenuAction::Remove << MenuAction::Delete;
-
-    unusedList << MenuAction::OpenInNewWindow
-               << MenuAction::OpenInNewTab
-               << MenuAction::Compress
-               << MenuAction::SendToDesktop
-               << MenuAction::Cut
-               << MenuAction::Copy
-               << MenuAction::Rename
-               << MenuAction::Remove
-               << MenuAction::AddToBookMark
-               << MenuAction::OpenWith;
-
-    DFileMenu *menu = DFileMenuManager::createNormalMenu(currentUrl, urlList, disableList, unusedList, -1);
-    return menu;
 }
 
 void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlags &indexFlags)
@@ -1889,11 +1821,7 @@ void CanvasGridView::showNormalMenu(const QModelIndex &index, const Qt::ItemFlag
         case FileManagerProperty: {
             QStringList localFiles;
             for (auto url : this->selectedUrls()) {
-                if (isTrashFile(url)) {
-                    localFiles << TrashRoot;
-                } else {
                     localFiles << url.toLocalFile();
-                }
             }
             DFMSocketInterface::instance()->showProperty(localFiles);
         }
