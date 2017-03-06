@@ -56,6 +56,7 @@
 #include "canvasviewhelper.h"
 #include "util/xcb/xcb.h"
 #include "private/canvasviewprivate.h"
+#include "watermaskframe.h"
 
 static inline bool isPersistFile(const DUrl &url)
 {
@@ -1233,6 +1234,9 @@ void CanvasGridView::initUI()
     settings->endGroup();
 
     DFMSocketInterface::instance();
+
+    d->waterMaskFrame = new WaterMaskFrame("/usr/share/deepin/dde-desktop-watermask.json", this);
+    d->waterMaskFrame->lower();
 }
 
 static inline QRect getValidNewGeometry(const QRect &geometry, const QRect &oldGeometry)

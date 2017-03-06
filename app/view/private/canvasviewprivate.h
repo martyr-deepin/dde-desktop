@@ -23,8 +23,10 @@
 
 #include "../../global/coorinate.h"
 
+
 class QFrame;
 class CanvasViewHelper;
+class WaterMaskFrame;
 
 class CanvasViewPrivate
 {
@@ -131,4 +133,5 @@ public:
     QTimer              *syncTimer          = nullptr;
 //    qint64              lastRepaintTime     = 0;
     DFileSystemWatcher  *filesystemWatcher  = nullptr;
+    WaterMaskFrame* waterMaskFrame = nullptr;
 };

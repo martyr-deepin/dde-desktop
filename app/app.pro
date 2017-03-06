@@ -28,7 +28,8 @@ SOURCES += \
     presenter/gridmanager.cpp \
     dbus/dbusdisplay.cpp \
     presenter/display.cpp \
-    presenter/dfmsocketinterface.cpp
+    presenter/dfmsocketinterface.cpp \
+    view/watermaskframe.cpp
 
 
 
@@ -45,7 +46,8 @@ HEADERS += \
     presenter/gridmanager.h \
     dbus/dbusdisplay.h \
     presenter/display.h \
-    presenter/dfmsocketinterface.h
+    presenter/dfmsocketinterface.h \
+    view/watermaskframe.h
 
 RESOURCES += \
     resource/theme/theme.qrc
