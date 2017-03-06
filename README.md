@@ -44,6 +44,6 @@ Execute `dde-desktop`
 * [IRC Channel](https://webchat.freenode.net/?channels=deepin)
 * [Wiki](http://wiki.deepin.org/)
 
-## License
+### License
 
 dde-desktop is licensed under [GPLv3](LICENSE)
