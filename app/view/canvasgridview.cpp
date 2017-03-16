@@ -58,6 +58,8 @@
 #include "private/canvasviewprivate.h"
 #include "watermaskframe.h"
 
+//#define SHOW_GRID 1
+
 static inline bool isPersistFile(const DUrl &url)
 {
 #ifdef DDE_COMPUTER_TRASH
@@ -372,17 +374,9 @@ void CanvasGridView::mouseMoveEvent(QMouseEvent *event)
     }
 
     if (d->showSelectRect) {
-//        auto topLeftGridPos = gridAt(selectRect.topLeft());
-//        auto bottomRightGridPos = gridAt(selectRect.bottomRight());
-
-//        if (topLeftGridPos != d->selectRect.topLeft()
-//                || bottomRightGridPos != d->selectRect.bottomRight()) {
-//        d->selectRect = QRect(topLeftGridPos, bottomRightGridPos);
-        auto flag = QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect;
-        setSelection(selectRect, flag, true);
-//    }
+        auto command = QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect;
+        setSelection(selectRect, command, true);
     }
-
 }
 
 void CanvasGridView::mousePressEvent(QMouseEvent *event)
@@ -404,7 +398,7 @@ void CanvasGridView::mousePressEvent(QMouseEvent *event)
         if (!DFMGlobal::keyCtrlIsPressed() && !DFMGlobal::keyShiftIsPressed()) {
             itemDelegate()->hideNotEditingIndexWidget();
             QAbstractItemView::setCurrentIndex(QModelIndex());
-            clearSelection();;
+            clearSelection();
         }
     }
 
@@ -1209,7 +1203,7 @@ void CanvasGridView::initUI()
     d->selectFrame->setVisible(false);
     d->selectFrame->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     d->selectFrame->setObjectName("SelectRect");
-    d->selectFrame->setGeometry(QRect(-1,-1,0,0));
+    d->selectFrame->setGeometry(QRect(-1, -1, 0, 0));
 
     d->fileViewHelper = new CanvasViewHelper(this);
 
@@ -1515,41 +1509,47 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
     auto topLeftGridPos = gridAt(selectRect.topLeft());
     auto bottomRightGridPos = gridAt(selectRect.bottomRight());
 
-//    qDebug() << selectRect << topLeftGridPos << bottomRightGridPos;
-
-    QItemSelection selection;
-    if (DFMGlobal::keyShiftIsPressed()) {
-        selection = selectionModel()->selection();
+    QItemSelection oldSelection;
+    //  keep old selection if mouse press
+    bool ctrlShiftPress = DFMGlobal::keyShiftIsPressed() || DFMGlobal::keyCtrlIsPressed();
+    if (ctrlShiftPress) {
+        oldSelection = selectionModel()->selection();
     }
 
+    // select by  key board, so mouse not pressed
     if (!d->mousePressed && d->currentCursorIndex.isValid()) {
         QItemSelectionRange selectionRange(d->currentCursorIndex);
-        selection.push_back(selectionRange);
-        QAbstractItemView::selectionModel()->select(selection, command);
+        oldSelection.push_back(selectionRange);
+        QAbstractItemView::selectionModel()->select(oldSelection, command);
         return;
     }
 
-    if (d->mousePressed && DFMGlobal::keyShiftIsPressed()) {
+
+    if (d->mousePressed && ctrlShiftPress) {
         auto clickIndex = indexAt(d->lastPos);
         if (clickIndex.isValid()) {
             auto clickedPoint = visualRect(clickIndex).center();
             auto lastPoint = visualRect(d->currentCursorIndex).center();
-            if (!d->currentCursorIndex.isValid()) {
+            // when ctrl, only deal the mouse clicked item
+            if (!d->currentCursorIndex.isValid() || DFMGlobal::keyCtrlIsPressed()) {
                 lastPoint = clickedPoint + QPoint(1, 1);
             }
             selectRect = QRect(clickedPoint, lastPoint).normalized();
             topLeftGridPos = gridAt(selectRect.topLeft());
             bottomRightGridPos = gridAt(selectRect.bottomRight());
         } else {
+            // TODO: what?
             if (!d->showSelectRect) {
                 return;
             }
-            selection = d->beforeMoveSelection;
-            topLeftGridPos = d->selectRect.topLeft();
-            bottomRightGridPos = d->selectRect.bottomRight();
+            oldSelection = d->beforeMoveSelection;
+            topLeftGridPos = gridAt(d->selectRect.topLeft());
+            bottomRightGridPos = gridAt(d->selectRect.bottomRight());
         }
     }
 
+    QItemSelection rectSelection;
+    QItemSelection toRemoveSelection;
     for (auto x = topLeftGridPos.x(); x <= bottomRightGridPos.x(); ++x) {
         for (auto y = topLeftGridPos.y(); y <= bottomRightGridPos.y(); ++y) {
             auto localFile = GridManager::instance()->itemId(x, y);
@@ -1561,8 +1561,9 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
             for (const QRect &r : list) {
                 if (selectRect.intersects(r)) {
                     QItemSelectionRange selectionRange(index);
-                    if (!selection.contains(index)) {
-                        selection.push_back(selectionRange);
+                    rectSelection.push_back(selectionRange);
+                    if (DFMGlobal::keyCtrlIsPressed() && oldSelection.contains(index)) {
+                        toRemoveSelection.push_back(selectionRange);
                     }
                     break;
                 }
@@ -1573,7 +1574,15 @@ void CanvasGridView::setSelection(const QRect &rect, QItemSelectionModel::Select
         }
     }
 
-    QAbstractItemView::selectionModel()->select(selection, command);
+    if (command != QItemSelectionModel::Deselect) {
+        oldSelection += rectSelection;
+        for (auto toRemove : toRemoveSelection) {
+            oldSelection.removeAll(toRemove);
+        }
+        QAbstractItemView::selectionModel()->select(oldSelection, command);
+    } else {
+        QAbstractItemView::selectionModel()->select(rectSelection, command);
+    }
 }
 
 void CanvasGridView::handleContextMenuAction(int action)
@@ -1639,7 +1648,7 @@ void CanvasGridView::handleContextMenuAction(int action)
     }
 }
 
-void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &indexFlags)
+void CanvasGridView::showEmptyAreaMenu(const Qt::ItemFlags &/*indexFlags*/)
 {
     const QModelIndex &index = rootIndex();
     const DAbstractFileInfoPointer &info = model()->fileInfo(index);
