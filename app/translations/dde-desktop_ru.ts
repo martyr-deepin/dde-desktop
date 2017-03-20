@@ -1,31 +1,31 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_CN" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ru" version="2.1">
 <context>
     <name>CanvasGridView</name>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1682"/>
         <source>Auto arrange</source>
-        <translation>自动排列</translation>
+        <translation>Автоматическое упорядочивание</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1690"/>
         <location filename="../view/canvasgridview.cpp" line="1851"/>
         <source>Property</source>
-        <translation>属性</translation>
+        <translation>Свойства</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1721"/>
         <source>Display Settings</source>
-        <translation>显示设置</translation>
+        <translation>Настройки Экрана</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1726"/>
         <source>Corner Settings</source>
-        <translation>热区设置</translation>
+        <translation>Угловая Навигация</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1731"/>
         <source>Set Wallpaper</source>
-        <translation>设置壁纸</translation>
+        <translation>Установка Обоев</translation>
     </message>
 </context>
 </TS>
