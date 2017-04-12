@@ -10,22 +10,22 @@
         <location filename="../view/canvasgridview.cpp" line="1690"/>
         <location filename="../view/canvasgridview.cpp" line="1851"/>
         <source>Property</source>
-        <translation>屬性</translation>
+        <translation>內容</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1721"/>
         <source>Display Settings</source>
-        <translation>顯示設定值</translation>
+        <translation>顯示設定</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1726"/>
         <source>Corner Settings</source>
-        <translation>設定角落</translation>
+        <translation>螢幕熱點設定</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1731"/>
         <source>Set Wallpaper</source>
-        <translation>設定桌布</translation>
+        <translation>桌布設定</translation>
     </message>
 </context>
 </TS>
