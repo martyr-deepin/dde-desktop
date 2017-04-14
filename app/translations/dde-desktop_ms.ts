@@ -1,31 +1,31 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="hu" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ms" version="2.1">
 <context>
     <name>CanvasGridView</name>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1682"/>
         <source>Auto arrange</source>
-        <translation>Automatikus elrendezés </translation>
+        <translation>Auto susun</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1690"/>
         <location filename="../view/canvasgridview.cpp" line="1851"/>
         <source>Property</source>
-        <translation>Tulajdonságok</translation>
+        <translation>Sifat</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1721"/>
         <source>Display Settings</source>
-        <translation>Kijelző beállítások</translation>
+        <translation>Tetapan Paparan</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1726"/>
         <source>Corner Settings</source>
-        <translation>Sarok beállítása</translation>
+        <translation>Tetapan Bucu</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1731"/>
         <source>Set Wallpaper</source>
-        <translation>Háttérválasztás</translation>
+        <translation>Tetapkan Kertas Dinding</translation>
     </message>
 </context>
 </TS>

@@ -4,7 +4,7 @@
     <message>
         <location filename="../view/canvasgridview.cpp" line="1682"/>
         <source>Auto arrange</source>
-        <translation type="unfinished"/>
+        <translation>Organizar automaticamente</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1690"/>

@@ -15,12 +15,12 @@
     <message>
         <location filename="../view/canvasgridview.cpp" line="1721"/>
         <source>Display Settings</source>
-        <translation>Propiedades de Pantalla</translation>
+        <translation>Ajustes de Pantalla</translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1726"/>
         <source>Corner Settings</source>
-        <translation>Configurar Esquinas </translation>
+        <translation>Configuración de Esquinas </translation>
     </message>
     <message>
         <location filename="../view/canvasgridview.cpp" line="1731"/>
